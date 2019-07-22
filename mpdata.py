@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import testing
 from numerics import numerics
+from state import State
 
 
 class MPDATA:
@@ -8,120 +9,72 @@ class MPDATA:
     def magn(q):
         return q.to_base_units().magnitude
 
-    def __init__(s, nr, r_min, r_max, dt, cdf_r_lambda, coord, opts):
-        s.nm = numerics()
-        s.h = s.nm.hlf
-
-        s.opts = opts
+    def __init__(self, nr, r_min, r_max, dt, cdf_r_lambda, coord, opts):
+        self.nm = numerics()
+        self.h = self.nm.half
+        self.opts = opts
 
         #   |-----o-----|-----o--...
         # i-1/2   i   i+1/2   i+1
         # x_min     x_min+dx
 
+        n_halo = self.halo(opts)
+        self.state = State(n_halo, nr,  r_min, r_max, dt, cdf_r_lambda, coord, self.nm)
+
+        # dt
+        self.dt = self.magn(dt)
+
+        # FCT
+        if opts["n_it"] != 1 and self.opts["fct"]:
+            self.psi_min = np.full_like(self.state.psi, np.nan)
+            self.psi_max = np.full_like(self.state.psi, np.nan)
+            self.beta_up = np.full_like(self.state.psi, np.nan)
+            self.beta_dn = np.full_like(self.state.psi, np.nan)
+
+    # TODO move to numerics
+    @staticmethod
+    def halo(opts):
         if opts["n_it"] > 1 and (opts["dfl"] or opts["fct"] or opts["tot"]):
             n_halo = 2
         else:
             n_halo = 1
-
-        s.i = slice(0, nr) + n_halo * s.nm.one
-
-        # cell-border stuff
-        s.ih = s.i % s.nm.hlf
-
-        x_unit = coord.x(r_min).to_base_units().units
-
-        _, s.dx = np.linspace(
-            s.magn(coord.x(r_min)),
-            s.magn(coord.x(r_max)),
-            nr + 1,
-            retstep=True
-        )
-        s.xh = np.linspace(
-            s.magn(coord.x(r_min)) - (n_halo - 1) * s.dx,
-            s.magn(coord.x(r_max)) + (n_halo - 1) * s.dx,
-            nr + 1 + 2 * (n_halo - 1)
-        )
-
-        s.rh = coord.r(s.xh * x_unit)
-        s.Gh = 1 / s.magn(coord.dx_dr(s.rh))
-        s.GCh = np.full_like(s.Gh, np.nan)
-
-        s.flx = np.full_like(s.Gh, np.nan)
-
-        # cell-centered stuff
-        s.x = np.linspace(
-            s.xh[0] - s.dx / 2,
-            s.xh[-1] + s.dx / 2,
-            nr + 2 * n_halo
-        )
-        s._r = coord.r(s.x * x_unit)
-
-        s.G = np.full_like(s.x, np.nan)
-        s.G = 1 / s.magn(coord.dx_dr(s._r))
-
-        # dt
-        s.dt = s.magn(dt)
-
-        # psi from cdf
-        s.psi = np.full_like(s.G, np.nan)
-        s.psi[s.i] = (
-                np.diff(s.magn(cdf_r_lambda(s.rh[s.ih])))
-                /
-                np.diff(s.magn(s.rh[s.ih]))
-        )
-
-        # FCT
-        if opts["n_it"] != 1 and s.opts["fct"]:
-            s.psi_min = np.full_like(s.psi, np.nan)
-            s.psi_max = np.full_like(s.psi, np.nan)
-            s.beta_up = np.full_like(s.psi, np.nan)
-            s.beta_dn = np.full_like(s.psi, np.nan)
-
-    @property
-    def pdf(s):
-        return s.psi[s.i]
-
-    @property
-    def r(s):
-        return s._r[s.i]
+        return n_halo
 
     def fct_init(s):
         if s.opts["n_it"] == 1 or not s.opts["fct"]: return
 
-        ii = s.i % s.nm.one
-        s.psi_min[ii] = s.nm.fct_running_minimum(s.psi, ii)
-        s.psi_max[ii] = s.nm.fct_running_maximum(s.psi, ii)
+        ii = s.state.i % s.nm.one
+        s.psi_min[ii] = s.nm.fct_running_minimum(s.state.psi, ii)
+        s.psi_max[ii] = s.nm.fct_running_maximum(s.state.psi, ii)
 
     def fct_adjust_antidiff(s, it):
         if s.opts["n_it"] == 1 or not s.opts["fct"]: return
 
-        s.bccond_GC(s.GCh)
+        s.bccond_GC(s.state.GCh)
 
         if not s.opts["iga"]:
-            ihi = s.ih % s.nm.one
-            s.flx[ihi] = s.nm.flux(s.psi, s.GCh, ihi)
+            ihi = s.state.ih % s.nm.one
+            s.state.flx[ihi] = s.nm.flux(s.state.psi, s.state.GCh, ihi)
         else:
-            s.flx[:] = s.GCh[:]
+            s.state.flx[:] = s.state.GCh[:]
 
-        ii = s.i % s.nm.one
-        s.beta_up[ii] = s.nm.fct_beta_up(s.psi, s.psi_max, s.flx, s.G, ii)
-        s.beta_dn[ii] = s.nm.fct_beta_dn(s.psi, s.psi_min, s.flx, s.G, ii)
+        ii = s.state.i % s.nm.one
+        s.beta_up[ii] = s.nm.fct_beta_up(s.state.psi, s.psi_max, s.state.flx, s.state.G, ii)
+        s.beta_dn[ii] = s.nm.fct_beta_dn(s.state.psi, s.psi_min, s.state.flx, s.state.G, ii)
 
-        s.GCh[s.ih] = s.nm.fct_GC_mono(s.opts, s.GCh, s.psi, s.beta_up, s.beta_dn, s.ih)
+        s.state.GCh[s.state.ih] = s.nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
 
+    # TODO move to BC
     def bccond_GC(s, GCh):
-        GCh[:s.ih.start] = 0
-        GCh[s.ih.stop:] = 0
-
-    def Gpsi_sum(s):
-        return np.sum(s.G[s.i] * s.psi[s.i])
+        GCh[:s.state.ih.start] = 0
+        GCh[s.state.ih.stop:] = 0
 
     def step(s, drdt_r_lambda):
         # MPDATA iterations
         for it in range(s.opts["n_it"]):
             # boundary cond. for psi
-            s.psi[:s.i.start] = 0
-            s.psi[s.i.stop:] = 0
+            s.state.psi[:s.state.i.start] = 0
+            s.state.psi[s.state.i.stop:] = 0
 
             if it == 0:
                 s.fct_init()
@@ -130,42 +83,42 @@ class MPDATA:
             if it == 0:
                 # C = drdt * dxdr * dt / dx
                 # G = 1 / dxdr
-                C = s.magn(drdt_r_lambda(s.rh[s.ih])) / s.Gh[s.ih] * s.dt / s.dx
-                s.GCh[s.ih] = s.Gh[s.ih] * C
+                C = s.magn(drdt_r_lambda(s.state.rh[s.state.ih])) / s.state.Gh[s.state.ih] * s.dt / s.state.dx
+                s.state.GCh[s.state.ih] = s.state.Gh[s.state.ih] * C
             else:
-                s.GCh[s.ih] = s.nm.GC_antidiff(s.opts, s.psi, s.GCh, s.G, s.ih)
+                s.state.GCh[s.state.ih] = s.nm.GC_antidiff(s.opts, s.state.psi, s.state.GCh, s.state.G, s.state.ih)
                 s.fct_adjust_antidiff(it)
 
             # boundary condition for GCh
-            s.bccond_GC(s.GCh)
+            s.bccond_GC(s.state.GCh)
 
             # check CFL
-            testing.assert_array_less(np.amax(s.GCh[s.ih] / s.Gh[s.ih]), 1)
+            testing.assert_array_less(np.amax(s.state.GCh[s.state.ih] / s.state.Gh[s.state.ih]), 1)
 
             # computing fluxes
             if it == 0 or not s.opts["iga"]:
-                s.flx[s.ih] = s.nm.flux(s.psi, s.GCh, s.ih)
+                s.state.flx[s.state.ih] = s.nm.flux(s.state.psi, s.state.GCh, s.state.ih)
             else:
-                s.flx[:] = s.GCh[:]
+                s.state.flx[:] = s.state.GCh[:]
 
             # recording sum for conservativeness check
-            Gpsi_sum0 = s.Gpsi_sum()
+            Gpsi_sum0 = s.state.Gpsi_sum()
 
             # integration
-            s.psi[s.i] = s.nm.upwind(s.psi, s.flx, s.G, s.i)
+            s.state.psi[s.state.i] = s.nm.upwind(s.state.psi, s.state.flx, s.state.G, s.state.i)
 
             # check positive definiteness
             if s.opts["n_it"] == 1 or not s.opts["iga"]:
-                assert np.amin(s.psi[s.i]) >= 0
+                assert np.amin(s.state.psi[s.state.i]) >= 0
 
             # check conservativeness (including outflow from the domain)
             if s.opts["n_it"] == 1 or not (s.opts["iga"] and not s.opts["fct"]):
                 testing.assert_approx_equal(
                     desired=Gpsi_sum0,
                     actual=(
-                            s.Gpsi_sum() +
-                            s.flx[(s.i + s.h).stop - 1] +
-                            s.flx[(s.i - s.h).start]
+                            s.state.Gpsi_sum() +
+                            s.state.flx[(s.state.i + s.h).stop - 1] +
+                            s.state.flx[(s.state.i - s.h).start]
                     ),
                     significant=15 if not s.opts["fct"] else 5
                 )

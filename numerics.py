@@ -33,18 +33,18 @@ class numerics:
 
     def __init__(self):
         self.one = self.shift(1, 1)
-        self.hlf = self.shift(0, 1)
+        self.half = self.shift(0, 1)
         self.eps = 1e-8
 
     def flux(self, psi, GC, ih):
         o = self.one
-        h = self.hlf
+        h = self.half
         i = ih + h  # TODO !!! (dziala, rozumiemy, ale brzydkie)
 
         return np.maximum(0, GC[i + h]) * psi[i] + np.minimum(0, GC[i + h]) * psi[i + o]
 
     def upwind(self, psi, flx, G, i):
-        h = self.hlf
+        h = self.half
         return psi[i] - (flx[i + h] - flx[i - h]) / G[i]
 
     def A(self, opts, psi, i):
@@ -61,7 +61,7 @@ class numerics:
         return result
 
     def dfl(self, opts, GC, G, psi, i):
-        h = self.hlf
+        h = self.half
         o = self.one
 
         result = -.5 * GC[i + h] / (G[i + o] + G[i]) * (GC[i + o + h] - GC[i - h])
@@ -85,7 +85,7 @@ class numerics:
         return result
 
     def tot(s, opts, GC, G, psi, i):
-        h = s.hlf
+        h = s.half
         o = s.one
 
         return s.ndxx_psi(opts, psi, i) * (
@@ -95,7 +95,7 @@ class numerics:
         ) / 6
 
     def GC_antidiff(self, opts, psi, GC, G, ih):
-        h = self.hlf
+        h = self.half
         o = self.one
         i = ih + h  # TODO !!! (dziala, rozumiemy, ale brzydkie)
 
@@ -131,7 +131,7 @@ class numerics:
     def fct_beta_up(self, psi, psi_max, flx, G, i):
         e = self.eps
         o = self.one
-        h = self.hlf
+        h = self.half
 
         return (
                        (self.fct_extremum(np.maximum, psi_max[i], psi[i - o], psi[i], psi[i + o]) - psi[i]) * G[i]
@@ -144,7 +144,7 @@ class numerics:
     def fct_beta_dn(self, psi, psi_min, flx, G, i):
         e = self.eps
         o = self.one
-        h = self.hlf
+        h = self.half
 
         return (
                        (psi[i] - self.fct_extremum(np.minimum, psi_min[i], psi[i - o], psi[i], psi[i + o])) * G[i]
@@ -155,7 +155,7 @@ class numerics:
                )
 
     def fct_GC_mono(s, opts, GCh, psi, beta_up, beta_dn, ih):
-        h = s.hlf
+        h = s.half
         o = s.one
         i = ih + h
 

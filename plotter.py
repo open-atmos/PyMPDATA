@@ -37,4 +37,4 @@ class plotter:
     def step(self, algo, t):
         o = algo.opts
         label = f"t={t} n_it={o['n_it']} dfl={o['dfl']} tot={o['tot']} iga={o['iga']} fct={o['fct']}"
-        pyplot.step(algo.r, algo.pdf, linestyle='-', where='mid', label=label)
+        pyplot.step(algo.state.r, algo.state.pdf, linestyle='-', where='mid', label=label)
