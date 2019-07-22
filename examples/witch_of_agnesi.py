@@ -37,7 +37,6 @@ class Setup:
 np.seterr(all='raise')
 data = run(Setup, si)
 
-
 # TODO move somewhere
 for fn in data:
     plot = plotter(Setup.r_min, Setup.r_max)

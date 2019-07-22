@@ -7,7 +7,7 @@ Created at 22.07.2019
 
 import numpy as np
 
-from numerics import numerics as nm
+import numerics as nm
 
 
 class State:
@@ -15,11 +15,9 @@ class State:
     def magn(q):
         return q.to_base_units().magnitude
 
-    def __init__(self, n_halo, nr,  r_min, r_max, dt, cdf_r_lambda, coord, nm):
-        self.nm = nm
-
-        self.i = slice(0, nr) + n_halo * self.nm.one
-        self.ih = self.i % self.nm.half  # cell-border stuff
+    def __init__(self, n_halo, nr,  r_min, r_max, dt, cdf_r_lambda, coord):
+        self.i = slice(0, nr) + n_halo * nm.ONE
+        self.ih = self.i % nm.HALF  # cell-border stuff
         x_unit = coord.x(r_min).to_base_units().units
         self.dx = self.init_dx(nr,  r_min, r_max, coord)
         self.xh = self.init_xh(n_halo, nr,  r_min, r_max, coord)
