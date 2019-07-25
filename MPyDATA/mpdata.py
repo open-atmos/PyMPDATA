@@ -1,7 +1,8 @@
 import numpy as np
 from numpy import testing
-import numerics as nm
-from state import State
+
+from MPyDATA import numerics as nm
+from MPyDATA.state import State
 
 
 class MPDATA:

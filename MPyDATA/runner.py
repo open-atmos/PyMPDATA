@@ -5,8 +5,8 @@ Created at 22.07.2019
 @author: Sylwester Arabas
 """
 
-from coord import x_id, x_ln, x_p2
-from mpdata import MPDATA
+from MPyDATA.coord import x_id, x_ln, x_p2
+from MPyDATA.mpdata import MPDATA
 
 
 # RUNNER START
