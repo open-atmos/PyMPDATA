@@ -39,9 +39,13 @@ O = ONE
 H = HALF
 
 
-def flux(psi, GC, ih):
-    i = ih + HALF  # TODO !!! (dziala, rozumiemy, ale brzydkie)
-    return np.maximum(0, GC[i + HALF]) * psi[i] + np.minimum(0, GC[i + HALF]) * psi[i + ONE]
+def flux(opts, it, psi, GCh, ih):
+    i = ih + HALF 
+    if it == 0 or not opts["iga"]:
+        result = np.maximum(0, GCh[ih]) * psi[i] + np.minimum(0, GCh[ih]) * psi[i + ONE]
+    else:
+        result = GCh[ih] 
+    return result
 
 
 def upwind(psi, flx, G, i):
@@ -89,9 +93,8 @@ def tot(opts, GC, G, psi, i):
 
 
 def GC_antidiff(opts, psi, GC, G, ih):
-    i = ih + HALF  # TODO !!! (dziala, rozumiemy, ale brzydkie)
-
-    result = (np.abs(GC[i + HALF]) - GC[i + HALF] ** 2 / (.5 * (G[i + ONE] + G[i]))) * A(opts, psi, i)
+    i = ih + HALF  
+    result = (np.abs(GC[ih]) - GC[ih] ** 2 / (.5 * (G[i + ONE] + G[i]))) * A(opts, psi, i)
 
     if opts["dfl"]:
         result += dfl(opts, GC, G, psi, i)
