@@ -51,11 +51,8 @@ class MPDATA:
 
         s.bccond_GC(s.state.GCh)
 
-        if not s.opts["iga"]:
-            ihi = s.state.ih % nm.ONE
-            s.state.flx[ihi] = nm.flux(s.state.psi, s.state.GCh, ihi)
-        else:
-            s.state.flx[:] = s.state.GCh[:]
+        ihi = s.state.ih % nm.ONE
+        s.state.flx[ihi] = nm.flux(s.opts, it, s.state.psi, s.state.GCh, ihi)
 
         ii = s.state.i % nm.ONE
         s.beta_up[ii] = nm.fct_beta_up(s.state.psi, s.psi_max, s.state.flx, s.state.G, ii)
@@ -96,10 +93,7 @@ class MPDATA:
             testing.assert_array_less(np.amax(state.GCh[state.ih] / state.Gh[state.ih]), 1)
 
             # computing fluxes
-            if it == 0 or not self.opts["iga"]:
-                state.flx[state.ih] = nm.flux(state.psi, state.GCh, state.ih)
-            else:
-                state.flx[:] = state.GCh[:]
+            state.flx[state.ih] = nm.flux(self.opts, it, state.psi, state.GCh, state.ih)
 
             # recording sum for conservativeness check
             Gpsi_sum0 = state.Gpsi_sum()
