@@ -7,6 +7,14 @@ install:
 
 script:
   - python -m pytest --cov-report term --cov=MPyDATA
+  - |
+    pip install nbconvert jupyter_client ipykernel
+    python -m ipykernel install --user
+    for i in examples/*.ipynb; do 
+      jupyter nbconvert --to markdown --execute --stdout $i > $i.md.travis; 
+      # TODO!
+      #diff $i.md.repo $i.md.travis
+    done;
 
 after_success:
   - codecov
