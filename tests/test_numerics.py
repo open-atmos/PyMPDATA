@@ -16,9 +16,11 @@ def test_flux():
     GC = np.array([0.33, 0.5, 0.66])
     ih = slice(0, 3)
     i = ih + nm.HALF
+    it = 0
+    opts = {"iga":False}
 
     # Act
-    result = nm.flux(psi, GC, ih)
+    result = nm.flux(opts, it, psi, GC, ih)
 
     # Assert
     print(result)
