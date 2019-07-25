@@ -3,8 +3,8 @@ import pint
 si = pint.UnitRegistry()
 si.setup_matplotlib()
 
-from runner import run
-from plotter import plotter
+from MPyDATA.runner import run
+from MPyDATA.plotter import plotter
 
 
 class Setup:
