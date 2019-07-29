@@ -1,3 +1,12 @@
+"""
+Created at 22.07.2019
+
+@author: Michael Olesik
+@author: Piotr Bartman
+@author: Sylwester Arabas
+"""
+
+
 import numpy as np
 
 
@@ -38,6 +47,13 @@ EPS = 1e-8
 O = ONE
 H = HALF
 
+
+def halo(opts):
+    if opts["n_it"] > 1 and (opts["dfl"] or opts["fct"] or opts["tot"]):
+        n_halo = 2
+    else:
+        n_halo = 1
+    return n_halo
 
 def flux(opts, it, psi, GCh, ih):
     i = ih + HALF 
