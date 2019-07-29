@@ -1,3 +1,12 @@
+"""
+Created at 22.07.2019
+
+@author: Michael Olesik
+@author: Piotr Bartman
+@author: Sylwester Arabas
+"""
+
+
 import numpy
 
 
