@@ -40,7 +40,7 @@ class x_p2:
         return r**2
 
     def r(self, x):
-        return numpy.sqrt(x)
+        return numpy.sqrt(numpy.where(x < 0, 1e10, x))
 
     def dx_dr(self, r):
         return 2*r
