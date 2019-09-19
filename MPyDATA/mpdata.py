@@ -17,10 +17,6 @@ from MPyDATA import bcond
 
 
 class MPDATA:
-    @staticmethod
-    def magn(q):
-        return q.to_base_units().magnitude
-
     def __init__(self, nr, r_min, r_max, dt, cdf_r_lambda, coord, opts):
         #TODO
         if 'bcond' not in opts:
@@ -36,7 +32,7 @@ class MPDATA:
         self.state = State(self.n_halo, nr,  r_min, r_max, dt, cdf_r_lambda, coord)
 
         # dt
-        self.dt = self.magn(dt)
+        self.dt = dt
 
         # FCT
         if opts["n_it"] != 1 and self.opts["fct"]:
@@ -80,7 +76,7 @@ class MPDATA:
             if it == 0:
                 # C = drdt * dxdr * dt / dx
                 # G = 1 / dxdr
-                C = self.magn(drdt_r_lambda(state.rh[state.ih])) / state.Gh[state.ih] * self.dt / state.dx
+                C = drdt_r_lambda(state.rh[state.ih]) / state.Gh[state.ih] * self.dt / state.dx
                 state.GCh[state.ih] = state.Gh[state.ih] * C
             else:
                 state.GCh[state.ih] = nm.GC_antidiff(self.opts, state.psi, state.GCh, state.G, state.ih)
