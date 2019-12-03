@@ -71,3 +71,8 @@ class State:
     @property
     def r(self):
         return self._r[self.i]
+
+    @property
+    def rb(self):
+        return self.rh[self.ih]
+
