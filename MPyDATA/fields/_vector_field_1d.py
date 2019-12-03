@@ -43,7 +43,7 @@ class VectorField1D:
             raise ValueError()
         return self.i + int(item + .5)
 
-    def get_component(self):
+    def get_component(self, _):
         return self.data_0[self.halo - 1: self.data_0.shape[0] - self.halo + 1]
 
     def apply(self, function, arg_1, arg_2):
