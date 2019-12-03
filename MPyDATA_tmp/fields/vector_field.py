@@ -7,8 +7,8 @@ Created at 02.10.2019
 """
 
 import numpy as np
-from MPyDATA.fields._vector_field_1d import VectorField1D
-from MPyDATA.fields._vector_field_2d import VectorField2D, div_2d
+from MPyDATA_tmp.fields._vector_field_1d import VectorField1D
+from MPyDATA_tmp.fields._vector_field_2d import VectorField2D, div_2d
 
 
 def VectorField(data, halo):

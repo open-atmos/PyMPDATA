@@ -8,7 +8,7 @@ Created at 22.07.2019
 
 import numpy as np
 
-from MPyDATA import numerics as nm
+from MPyDATA_tmp import numerics as nm
 
 
 class State:

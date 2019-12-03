@@ -8,8 +8,8 @@ Created at 07.11.2019
 import numpy as np
 import numba
 
-from MPyDATA.fields.scalar_field import ScalarField
-from MPyDATA.fields.utils import is_integral, is_fractional
+from MPyDATA_tmp.fields.scalar_field import ScalarField
+from MPyDATA_tmp.fields.utils import is_integral, is_fractional
 
 
 @numba.jitclass([
