@@ -1,4 +1,10 @@
 numpy
-pint
+numba
 matplotlib
-scipy
+pytest
+pytest-cov
+codecov
+nbconvert
+jupyter_client
+ipykernel
+ipywidgets

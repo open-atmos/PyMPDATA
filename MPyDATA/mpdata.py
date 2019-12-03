@@ -1,120 +1,106 @@
 """
-Created at 22.07.2019
+Created at 25.09.2019
 
-@author: Michael Olesik
 @author: Piotr Bartman
+@author: Michael Olesik
 @author: Sylwester Arabas
 """
 
-
-import numpy as np
-from numpy import testing
-
-from MPyDATA import numerics as nm
-from MPyDATA.state import State
-from MPyDATA import bcond
+from MPyDATA.fields.scalar_field import ScalarField
+from MPyDATA.fields.vector_field import VectorField
+from MPyDATA.formulae import Formulae
 
 
-
+# @numba.jitclass()
 class MPDATA:
-    def __init__(self, nr, r_min, r_max, dt, cdf_r_lambda, coord, opts):
-        #TODO
-        if 'bcond' not in opts:
-            opts['bcond'] = ''
-        for opt in ('dfl', 'fct', 'iga', 'tot'):
-            if opt not in opts:
-                opts[opt] = False
+    def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
+                 GC_physical: VectorField, GC_antidiff: VectorField,
+                 flux: VectorField, n_iters: int, halo: int):
+        self.curr = curr
+        self.prev = prev
+        self.G = G
+        self.GC_physical = GC_physical
+        self.GC_antidiff = GC_antidiff
+        self.flux = flux
 
-        self.h = nm.HALF
-        self.opts = opts
+        self.n_iters = n_iters
+        self.halo = halo
 
-        self.n_halo = nm.halo(opts)
-        self.state = State(self.n_halo, nr,  r_min, r_max, dt, cdf_r_lambda, coord)
-
-        # dt
-        self.dt = dt
-
-        # FCT
-        if opts["n_it"] != 1 and self.opts["fct"]:
-            self.psi_min = np.full_like(self.state.psi, np.nan)
-            self.psi_max = np.full_like(self.state.psi, np.nan)
-            self.beta_up = np.full_like(self.state.psi, np.nan)
-            self.beta_dn = np.full_like(self.state.psi, np.nan)
-
-    def fct_init(s):
-        if s.opts["n_it"] == 1 or not s.opts["fct"]: return
-
-        ii = s.state.i % nm.ONE
-        s.psi_min[ii] = nm.fct_running_minimum(s.state.psi, ii)
-        s.psi_max[ii] = nm.fct_running_maximum(s.state.psi, ii)
-
-    def fct_adjust_antidiff(s, it):
-        if s.opts["n_it"] == 1 or not s.opts["fct"]: return
-
-        bcond.vector(s.opts, s.state.GCh, s.state.ih, s.n_halo)
-
-        ihi = s.state.ih % nm.ONE
-        s.state.flx[ihi] = nm.flux(s.opts, it, s.state.psi, s.state.GCh, ihi)
-
-        ii = s.state.i % nm.ONE
-        s.beta_up[ii] = nm.fct_beta_up(s.state.psi, s.psi_max, s.state.flx, s.state.G, ii)
-        s.beta_dn[ii] = nm.fct_beta_dn(s.state.psi, s.psi_min, s.state.flx, s.state.G, ii)
-
-        s.state.GCh[s.state.ih] = nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
-
-    def step(self, drdt_r_lambda):
-        # MPDATA iterations
-        state = self.state
-        for it in range(self.opts["n_it"]):
-            # boundary cond. for psi
-            bcond.scalar(self.opts, state.psi, state.i, self.n_halo)
-
-            if it == 0:
-                self.fct_init()
-
-            # evaluate velocities
-            if it == 0:
-                # C = drdt * dxdr * dt / dx
-                # G = 1 / dxdr
-                C = drdt_r_lambda(state.rh[state.ih]) / state.Gh[state.ih] * self.dt / state.dx
-                state.GCh[state.ih] = state.Gh[state.ih] * C
+    # @numba.jit()
+    def step(self):
+        for i in range(self.n_iters):
+            self.prev.swap_memory(self.curr)
+            self.prev.fill_halos()
+            if i == 0:
+                GC = self.GC_physical
             else:
-                state.GCh[state.ih] = nm.GC_antidiff(self.opts, state.psi, state.GCh, state.G, state.ih)
-                self.fct_adjust_antidiff(it)
+                self.GC_antidiff.apply(Formulae.antidiff, self.prev, self.GC_physical)
+                GC = self.GC_antidiff
+            self.flux.apply(Formulae.flux, self.prev, GC)
+            self.curr.apply(Formulae.upwind, self.flux, self.G)
+            self.curr.data += self.prev.data
 
-            # boundary condition for GCh
-            bcond.vector(self.opts, state.GCh, state.ih, self.n_halo)
+    def debug_print(self):
+        print()
+        color = '\033[94m'
+        bold = '\033[7m'
+        endcolor = '\033[0m'
 
-            # check CFL
-            testing.assert_array_less(np.amax(state.GCh[state.ih] / state.Gh[state.ih]), 1)
+        shp0 = self.curr.data.shape[0]
+        shp1 = self.curr.data.shape[1]
 
-            # computing fluxes
-            state.flx[state.ih] = nm.flux(self.opts, it, state.psi, state.GCh, state.ih)
+        self.GC_physical.focus(0,0)
+        self.GC_physical.set_axis(0)
+        self.curr.focus(0,0)
+        self.curr.set_axis(0)
 
-            # recording sum for conservativeness check
-            Gpsi_sum0 = state.Gpsi_sum()
+        print("\t"*2, end='')
+        for j in range(-self.halo, shp1 - self.halo):
+            print("\t{:+.1f}".format(j), end='')
+            if j != shp1-self.halo-1: print("\t{:+.1f}".format(j+.5), end='')
+        print()
 
-            # integration
-            state.psi[state.i] = nm.upwind(state.psi, state.flx, state.G, state.i)
-
-            self.check_positive_definiteness()
-            self.check_conservativeness(Gpsi_sum0)  # (including outflow from the domain)
-
-    def check_positive_definiteness(self):
-        if self.opts["n_it"] == 1 or not self.opts["iga"]:
-            assert np.amin(self.state.psi[self.state.i]) >= 0
-
-    def check_conservativeness(self, Gpsi_sum0):
-        if self.opts["n_it"] == 1 or not (self.opts["iga"] and not self.opts["fct"]):
-            if self.opts['bcond'] == 'periodic':
-                bcflux = 0
-            else:
-                bcflux = (
-                    self.state.flx[(self.state.i + self.h).stop - 1] +
-                    self.state.flx[(self.state.i - self.h).start]
+        for i in range(-self.halo, shp0-self.halo):
+            print("\t{:+.1f}".format(i), end='')
+            # i,j
+            for j in range(-self.halo, shp1-self.halo):
+                is_scalar_halo = (
+                        i < 0 or
+                        j < 0 or
+                        i >= shp0-2*self.halo or
+                        j >= shp1-2*self.halo
                 )
-            testing.assert_approx_equal(
-                desired=Gpsi_sum0,
-                actual=(self.state.Gpsi_sum() + bcflux),
-                significant=13 if not self.opts["fct"] else 5 # TODO!!!!!!
-            )
+                is_not_vector_halo = (
+                    -(self.halo-1) <= i < shp0-2*(self.halo)+(self.halo-1) and
+                        -self.halo <= j < shp1-2*(self.halo)+(self.halo-1)
+                )
+
+                if is_scalar_halo:
+                    print(color, end='')
+                else:
+                    print(bold, end='')
+                svalue = '{:04.1f}'.format(self.curr.at(i,j))
+                print(f"\t{svalue}", end = endcolor)
+
+                # i+.5,j
+                if (is_not_vector_halo):
+                    vvalue = '{:04.1f}'.format(self.GC_physical.at(i, j + .5))
+                    print(f'\t{vvalue}', end='')
+                else:
+                    print('\t' * 2, end='')
+
+            print('')
+            if (i < shp0-(self.halo-1)-2):
+                print("\t{:+.1f}".format(i+.5), end='')
+            for j in range(-self.halo, shp1 - self.halo):
+                pass
+                if (
+                    -(self.halo-1) <= j < shp1-(self.halo-1)-2 and
+                    -self.halo <= i < shp0-(self.halo-1)-2
+                ):
+                    vvalue = '{:04.1f}'.format(self.GC_physical.at(i + .5, j))
+                    print(f"\t\t\t{vvalue}", end='')
+                else:
+                    print("\t" * 2, end='')
+            print('')
+
