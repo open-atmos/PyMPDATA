@@ -7,7 +7,7 @@ Created at 07.11.2019
 
 import numpy as np
 import numba
-from MPyDATA_tmp.fields.utils import is_integral
+from MPyDATA.fields.utils import is_integral
 
 
 @numba.jitclass([

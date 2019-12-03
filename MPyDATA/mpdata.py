@@ -6,9 +6,9 @@ Created at 25.09.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA_tmp.fields.scalar_field import ScalarField
-from MPyDATA_tmp.fields.vector_field import VectorField
-from MPyDATA_tmp.formulae import Formulae
+from MPyDATA.fields.scalar_field import ScalarField
+from MPyDATA.fields.vector_field import VectorField
+from MPyDATA.formulae import Formulae
 
 
 # @numba.jitclass()

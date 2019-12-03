@@ -10,9 +10,9 @@ Created at 22.07.2019
 import numpy as np
 from numpy import testing
 
-from MPyDATA_tmp import numerics as nm
-from MPyDATA_tmp.state import State
-from MPyDATA_tmp import bcond
+from MPyDATA import numerics as nm
+from MPyDATA.state import State
+from MPyDATA import bcond
 
 
 

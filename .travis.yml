@@ -4,10 +4,10 @@ python: "3.6"
 install:
   - pip install -U -r requirements.txt
   - pip install -U -r requirements-dev.txt
-  - pip install -U -r requirements-examples_tmp.txt
+  - pip install -U -r requirements-examples.txt
 
 script:
-  - python -m pytest --cov-report term --cov=MPyDATA_tmp
+  - python -m pytest --cov-report term --cov=MPyDATA
   - |
     python -m ipykernel install --user
     for i in examples/*.ipynb; do 

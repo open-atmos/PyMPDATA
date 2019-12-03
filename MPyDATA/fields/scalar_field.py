@@ -6,8 +6,8 @@ Created at 02.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA_tmp.fields._scalar_field_1d import ScalarField1D
-from MPyDATA_tmp.fields._scalar_field_2d import ScalarField2D
+from MPyDATA.fields._scalar_field_1d import ScalarField1D
+from MPyDATA.fields._scalar_field_2d import ScalarField2D
 
 
 def ScalarField(data, halo):

@@ -6,8 +6,8 @@ Created at 14.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA_tmp.fields.scalar_field import ScalarField
-from MPyDATA_tmp.fields.vector_field import VectorField
+from MPyDATA.fields.scalar_field import ScalarField
+from MPyDATA.fields.vector_field import VectorField
 import numpy as np
 import pytest
 
