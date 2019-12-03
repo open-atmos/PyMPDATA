@@ -7,12 +7,12 @@ Created at 21.10.2019
 """
 
 import numpy as np
-from MPyDATA_tmp.fields.scalar_field import ScalarField
-from MPyDATA_tmp.fields import scalar_field
-from MPyDATA_tmp.fields.vector_field import VectorField
-from MPyDATA_tmp.fields import vector_field
-from MPyDATA_tmp.mpdata import MPDATA
-from MPyDATA_tmp.eulerian_fields import EulerianFields
+from MPyDATA.fields.scalar_field import ScalarField
+from MPyDATA.fields import scalar_field
+from MPyDATA.fields.vector_field import VectorField
+from MPyDATA.fields import vector_field
+from MPyDATA.mpdata import MPDATA
+from MPyDATA.eulerian_fields import EulerianFields
 
 
 class MPDATAFactory:

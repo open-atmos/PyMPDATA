@@ -1,4 +1,4 @@
-from MPyDATA_tmp import bcond
+from MPyDATA import bcond
 import numpy as np
 
 
