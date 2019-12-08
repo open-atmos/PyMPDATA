@@ -8,7 +8,7 @@ script:
   - python -m pytest --ignore=prototype --cov-report term --cov=MPyDATA
   - |
     python -m ipykernel install --user
-    for i in examples/*.ipynb; do 
+    for i in examples/*/*.ipynb; do 
       jupyter nbconvert --to markdown --stdout $i > $i.md.repo; 
       jupyter nbconvert --to markdown --execute --stdout $i > $i.md.travis; 
       # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
