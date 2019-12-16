@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 
 # noinspection PyUnresolvedReferences
-from tests.__parametrisation__ import halo
+from MPyDATA_tests.__parametrisation__ import halo
 
 
 class TestMPDATA2D:
