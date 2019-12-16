@@ -1,10 +1,9 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-from examples.Smolarkiewicz_2006_Figs_3_4_10_11_12 import setup
 import numpy as np
 
 
-class Simulation():
-    def __init__(self):
+class Simulation:
+    def __init__(self, setup):
         dx = (setup.x_max - setup.x_min) / setup.nx
         x = np.linspace(setup.x_min+dx/2, setup.x_max-dx/2, setup.nx)
         xh = np.linspace(setup.x_min, setup.x_max, setup.nx+1)
@@ -17,13 +16,9 @@ class Simulation():
         # plt.plot(state)
         # plt.show()
 
-        self.mpdata = MPDATAFactory.uniform_C_1d(state, setup.C)
+        self.mpdata = MPDATAFactory.uniform_C_1d(state, setup.C, n_iters=setup.n_iters)
         self.nt = setup.nt
 
     def run(self):
         for _ in range(self.nt):
             self.mpdata.step()
-
-
-if __name__ == '__main__':
-    Simulation().run()

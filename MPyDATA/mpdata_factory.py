@@ -16,14 +16,14 @@ from MPyDATA.eulerian_fields import EulerianFields
 
 class MPDATAFactory:
     @staticmethod
-    def uniform_C_1d(state, C):
+    def uniform_C_1d(state, C, n_iters):
         nx = state.shape[0]
         halo = 1
 
         state = ScalarField(state, halo)
         GC = VectorField(data=[np.full((nx+1,), C)], halo=halo)
         g_factor = ScalarField(np.ones((nx,)), halo=0)
-        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, n_iters=1)
+        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, n_iters=n_iters)
 
     @staticmethod
     def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, halo=1):

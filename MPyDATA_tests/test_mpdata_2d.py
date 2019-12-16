@@ -13,10 +13,10 @@ import numpy as np
 import pytest
 
 # noinspection PyUnresolvedReferences
-from tests.unit_tests.__parametrisation__ import halo
+from tests.__parametrisation__ import halo
 
 
-class TestMPDATA:
+class TestMPDATA2D:
     @pytest.mark.parametrize("shape, ij0, out, C, n_steps", [
         pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.), 1),
         pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.), 1),

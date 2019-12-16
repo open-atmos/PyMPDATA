@@ -12,6 +12,23 @@ import numpy as np
 import pytest
 
 
+class TestScalarField1D:
+    def test_fill_halos(self):
+        # Arrange
+        halo = 2
+        data = np.arange(0, 9)
+        sut = ScalarField(data, halo)
+
+        # Act
+        sut.fill_halos()
+
+        # Assert
+        np.testing.assert_equal(sut.get(), data)
+
+        np.testing.assert_equal(sut.data[:halo], data[-halo:])
+        np.testing.assert_equal(sut.data[-halo:], data[:halo])
+
+
 class TestScalarField2D:
     def test_fill_halos(self):
         # Arrange
@@ -46,7 +63,7 @@ class TestVectorField1D:
         sut = VectorField(data=[data], halo=halo)
 
         # Act
-        value = sut.at((halo - 1) + (idx - 0.5))
+        value = sut.at((halo - 1) + (idx - 0.5), None)
 
         # Assert
         assert value == data[idx]
