@@ -14,12 +14,15 @@ from MPyDATA.fields.utils import is_integral
     ('halo', numba.int64),
     ('shape_0', numba.int64),
     ('data_0', numba.float64[:]),
-    ('i', numba.int64)])
+    ('i', numba.int64),
+    ('axis', numba.int64)
+])
 class VectorField1D:
     def __init__(self, data_0, halo):
         assert halo > 0
+        self.axis = 0
         self.halo = halo
-        self.shape_0 = data_0.shape[0]
+        self.shape_0 = data_0.shape[0] - 1
         self.data_0 = np.zeros((data_0.shape[0] + 2 * (halo - 1)), dtype=np.float64)
 
         shape_with_halo = data_0.shape[0] + 2 * (halo - 1)
@@ -34,7 +37,7 @@ class VectorField1D:
     def focus(self, i):
         self.i = i + self.halo - 1
 
-    def at(self, item):
+    def at(self, item, _):
         idx = self.__idx(item)
         return self.data_0[idx]
 
@@ -43,15 +46,14 @@ class VectorField1D:
             raise ValueError()
         return self.i + int(item + .5)
 
-    def get_component(self):
+    def get_component(self, _):
         return self.data_0[self.halo - 1: self.data_0.shape[0] - self.halo + 1]
 
     def apply(self, function, arg_1, arg_2):
-        for i in range(-1, self.shape[0]):
+        for i in range(-1, self.shape_0):
             self.focus(i)
             arg_1.focus(i)
             arg_2.focus(i)
 
             idx = self.__idx(+.5)
-            self.data_0[idx] = 0
-            self.data_0[idx] += function(arg_1, arg_2)
+            self.data_0[idx] = function(arg_1, arg_2)

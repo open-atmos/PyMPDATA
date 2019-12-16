@@ -24,8 +24,7 @@ class ScalarField2D:
         self.shape[0] = data.shape[0] + 2 * halo
         self.shape[1] = data.shape[1] + 2 * halo
 
-        shape_without_halo = data.shape
-        self.data = np.zeros((shape_without_halo[0] + 2 * halo, shape_without_halo[1] + 2 * halo), dtype=np.float64)
+        self.data = np.zeros((self.shape[0], self.shape[1]), dtype=np.float64)
         self.data[halo:self.shape[0] - halo, halo:self.shape[1] - halo] = data[:, :]
 
         self.i = 0

@@ -13,10 +13,10 @@ import numpy as np
 import pytest
 
 # noinspection PyUnresolvedReferences
-from tests.__parametrisation__ import halo
+from MPyDATA_tests.__parametrisation__ import halo
 
 
-class TestMPDATA:
+class TestMPDATA2D:
     @pytest.mark.parametrize("shape, ij0, out, C, n_steps", [
         pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.), 1),
         pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.), 1),
@@ -35,7 +35,7 @@ class TestMPDATA:
         vector_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo)
 
         G = ScalarField(np.ones(shape), halo=0)
-        mpdata = MPDATAFactory.mpdata(GC_field=vector_field, state=scalar_field, g_factor=G, n_iters=1)
+        mpdata = MPDATAFactory._mpdata(GC_field=vector_field, state=scalar_field, g_factor=G, n_iters=1)
         mpdata.debug_print()
         for _ in range(n_steps):
             mpdata.step()

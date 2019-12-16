@@ -8,10 +8,10 @@ Created at 25.09.2019
 
 from MPyDATA.fields.scalar_field import ScalarField
 from MPyDATA.fields.vector_field import VectorField
-from MPyDATA.formulae import Formulae
+from MPyDATA import formulae as Formulae
+import numba
 
 
-# @numba.jitclass()
 class MPDATA:
     def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
                  GC_physical: VectorField, GC_antidiff: VectorField,
@@ -26,7 +26,9 @@ class MPDATA:
         self.n_iters = n_iters
         self.halo = halo
 
-    # @numba.jit()
+#        self.iga = False
+
+    @numba.jit()
     def step(self):
         for i in range(self.n_iters):
             self.prev.swap_memory(self.curr)
