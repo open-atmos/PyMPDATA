@@ -8,14 +8,20 @@ Created at 25.09.2019
 
 from MPyDATA.fields.scalar_field import ScalarField
 from MPyDATA.fields.vector_field import VectorField
-from MPyDATA import formulae as Formulae
+
+from MPyDATA.formulae.antidiff import make_antidiff
+from MPyDATA.formulae.flux import make_flux
+from MPyDATA.formulae.upwind import make_upwind
+
+from MPyDATA.opts import Opts
+
 import numba
 
 
 class MPDATA:
     def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
                  GC_physical: VectorField, GC_antidiff: VectorField,
-                 flux: VectorField, opts: dict, halo: int):
+                 flux: VectorField, opts: Opts, halo: int):
         self.curr = curr
         self.prev = prev
         self.G = G
@@ -23,14 +29,15 @@ class MPDATA:
         self.GC_antidiff = GC_antidiff
         self.flux = flux
 
-        self.n_iters = opts["n_iters"]
+        self.n_iters = opts.n_iters
         self.halo = halo
 
         self.formulae = {}
-        self.formulae["antidiff"] = Formulae.make_antidiff(iga=opts["iga"])
+        self.formulae["antidiff"] = make_antidiff(opts)
         self.formulae["flux"] = []
         for it in range(self.n_iters):
-            self.formulae["flux"].append(Formulae.make_flux(iga=opts["iga"], it=it))
+            self.formulae["flux"].append(make_flux(opts, it=it))
+        self.formulae["upwind"] = make_upwind(opts)
 
     @numba.jit()
     def step(self):
@@ -43,7 +50,7 @@ class MPDATA:
                 self.GC_antidiff.apply(self.formulae["antidiff"], self.prev, self.GC_physical)
                 GC = self.GC_antidiff
             self.flux.apply(self.formulae["flux"][i], self.prev, GC)
-            self.curr.apply(Formulae.upwind, self.flux, self.G)
+            self.curr.apply(self.formulae["upwind"], self.flux, self.G)
             self.curr.data += self.prev.data
 
     def debug_print(self):

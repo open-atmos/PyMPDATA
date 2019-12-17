@@ -9,6 +9,14 @@ class Setup:
     x_min = -250
     x_max = 250
 
+    def __init__(self, shape: str):
+        if shape == "cosine":
+            self.cdf = Setup.cdf_cosine
+        elif shape == "rect":
+            self.cdf = Setup.cdf_rect
+        else:
+            raise ValueError()
+
     @staticmethod
     def cdf_cosine(x):
         x_mid = -150
