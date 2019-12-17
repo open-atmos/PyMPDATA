@@ -15,7 +15,7 @@ import numba
 class MPDATA:
     def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
                  GC_physical: VectorField, GC_antidiff: VectorField,
-                 flux: VectorField, n_iters: int, halo: int):
+                 flux: VectorField, opts: dict, halo: int):
         self.curr = curr
         self.prev = prev
         self.G = G
@@ -23,10 +23,14 @@ class MPDATA:
         self.GC_antidiff = GC_antidiff
         self.flux = flux
 
-        self.n_iters = n_iters
+        self.n_iters = opts["n_iters"]
         self.halo = halo
 
-#        self.iga = False
+        self.formulae = {}
+        self.formulae["antidiff"] = Formulae.make_antidiff(iga=opts["iga"])
+        self.formulae["flux"] = []
+        for it in range(self.n_iters):
+            self.formulae["flux"].append(Formulae.make_flux(iga=opts["iga"], it=it))
 
     @numba.jit()
     def step(self):
@@ -36,9 +40,9 @@ class MPDATA:
             if i == 0:
                 GC = self.GC_physical
             else:
-                self.GC_antidiff.apply(Formulae.antidiff, self.prev, self.GC_physical)
+                self.GC_antidiff.apply(self.formulae["antidiff"], self.prev, self.GC_physical)
                 GC = self.GC_antidiff
-            self.flux.apply(Formulae.flux, self.prev, GC)
+            self.flux.apply(self.formulae["flux"][i], self.prev, GC)
             self.curr.apply(Formulae.upwind, self.flux, self.G)
             self.curr.data += self.prev.data
 

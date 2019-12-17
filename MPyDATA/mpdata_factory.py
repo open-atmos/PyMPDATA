@@ -16,30 +16,30 @@ from MPyDATA.eulerian_fields import EulerianFields
 
 class MPDATAFactory:
     @staticmethod
-    def uniform_C_1d(state, C, n_iters):
+    def uniform_C_1d(state, C, opts):
         nx = state.shape[0]
         halo = 1
 
         state = ScalarField(state, halo)
         GC = VectorField(data=[np.full((nx+1,), C)], halo=halo)
         g_factor = ScalarField(np.ones((nx,)), halo=0)
-        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, n_iters=n_iters)
+        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, halo=1):
+    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts, halo=1):
         GC = _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function)
         G = ScalarField(g_factor, halo=0)
 
         mpdatas = {}
         for key, value in field_values.items():
             state = _uniform_scalar_field(grid, value, halo)
-            mpdatas[key] = MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=G, n_iters=1)
+            mpdatas[key] = MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=G, opts=opts)
 
         eulerian_fields = EulerianFields(mpdatas)
         return GC, eulerian_fields
 
     @staticmethod
-    def _mpdata(state: ScalarField, g_factor: ScalarField, GC_field: VectorField, n_iters):
+    def _mpdata(state: ScalarField, g_factor: ScalarField, GC_field: VectorField, opts):
         if len(state.data.shape) == 2:
             assert state.data.shape[0] == GC_field.data(0).shape[0] + 1
             assert state.data.shape[1] == GC_field.data(0).shape[1] + 2
@@ -53,7 +53,7 @@ class MPDATAFactory:
         flux = vector_field.clone(GC_field)
         halo = state.halo
         mpdata = MPDATA(curr=state, prev=prev, G=g_factor, GC_physical=GC_field, GC_antidiff=GC_antidiff, flux=flux,
-                        n_iters=n_iters, halo=halo)
+                        opts=opts, halo=halo)
 
         return mpdata
 

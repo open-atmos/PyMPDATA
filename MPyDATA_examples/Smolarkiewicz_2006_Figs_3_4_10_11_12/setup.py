@@ -8,7 +8,6 @@ class Setup:
     C = 0.5
     x_min = -250
     x_max = 250
-    n_iters = 2
 
     @staticmethod
     def cdf_cosine(x):
