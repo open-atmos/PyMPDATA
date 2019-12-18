@@ -6,8 +6,6 @@ Created at 17.12.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields.scalar_field import ScalarField
-from MPyDATA.fields.vector_field import VectorField
 from MPyDATA.opts import Opts
 import numpy as np
 import numba
@@ -19,7 +17,7 @@ def make_antidiff(opts: Opts):
     eps = opts.eps
 
     @numba.njit()
-    def antidiff(psi: ScalarField, C: VectorField):
+    def antidiff(psi, C):
         # TODO comment
         def A(psi):
             result = psi.at(1, 0) - psi.at(0, 0)

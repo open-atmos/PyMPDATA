@@ -3,15 +3,31 @@ from MPyDATA.opts import Opts
 import numpy as np
 
 
-def test():
-    state = np.array([0,1,0])
-    C = 1
+class TestMPDATA1D:
+    def test_fct_init(self):
+        # Arrange
+        state = np.array([1, 2, 3])
+        C = 0
+        opts = Opts(fct=True, n_iters=2)
+        sut = MPDATAFactory.uniform_C_1d(state, C, opts)
+        sut.prev.fill_halos()
 
-    mpdata = MPDATAFactory.uniform_C_1d(state, C, Opts())
-    nt = 3
+        # Act
+        sut.fct_init()
 
-    conserved = np.sum(mpdata.curr.get())
-    for _ in range(nt):
-        mpdata.step()
+        # Assert
+        np.testing.assert_equal(np.array([3]*5), sut.psi_max.data[1:-1])
+        np.testing.assert_equal(np.array([1]*5), sut.psi_min.data[1:-1])
 
-    assert np.sum(mpdata.curr.get()) == conserved
+    def test_TODO(self):
+        state = np.array([0, 1, 0])
+        C = 1
+
+        mpdata = MPDATAFactory.uniform_C_1d(state, C, Opts())
+        nt = 3
+
+        conserved = np.sum(mpdata.curr.get())
+        for _ in range(nt):
+            mpdata.step()
+
+        assert np.sum(mpdata.curr.get()) == conserved

@@ -47,9 +47,9 @@ class ScalarField2D:
         else:
             return self.data[self.i + arg1, self.j + arg2]
 
-    def apply(self, function, arg1, arg2):
-        for i in range(self.shape[0] - 2 * self.halo):
-            for j in range(self.shape[1] - 2 * self.halo):
+    def apply_2arg(self, function, arg1, arg2, ext):
+        for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
+            for j in range(-ext, self.shape[1] - 2 * self.halo + ext):
                 self.focus(i, j)
                 arg1.focus(i, j)
                 arg2.focus(i, j)

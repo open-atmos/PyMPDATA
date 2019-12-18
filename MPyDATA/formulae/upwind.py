@@ -6,8 +6,8 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields.scalar_field import ScalarField
-from MPyDATA.fields.vector_field import VectorField
+from MPyDATA.fields import scalar_field
+from MPyDATA.fields import vector_field
 from MPyDATA.opts import Opts
 import numba
 
@@ -16,7 +16,7 @@ def make_upwind(opts: Opts):
     nug = opts.nug
 
     @numba.njit()
-    def upwind(flx: VectorField, G: ScalarField):
+    def upwind(flx: vector_field.Interface, G:scalar_field.Interface):
         result = - 1 * (
                 flx.at(+.5, 0) -
                 flx.at(-.5, 0)

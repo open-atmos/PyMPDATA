@@ -11,7 +11,14 @@ from MPyDATA.fields._vector_field_1d import VectorField1D
 from MPyDATA.fields._vector_field_2d import VectorField2D, div_2d
 
 
-def VectorField(data, halo):
+class Interface:
+    def at(self, i, j): raise NotImplementedError()
+    def apply(self, function, arg_1, arg_2): raise NotImplementedError()
+    def fill_halos(self): raise NotImplementedError()
+    # TODO: ...
+
+
+def make(data, halo):
     if len(data) == 1:
         return VectorField1D(data[0], halo)
     if len(data) == 2:
@@ -24,7 +31,12 @@ def VectorField(data, halo):
 
 def clone(vector_field, value=np.nan):
     data = [np.full_like(vector_field.get_component(d), value) for d in range(vector_field.dimension)]
-    return VectorField(data, halo=vector_field.halo)
+    return make(data, halo=vector_field.halo)
+
+
+def apply(function, output, args: tuple, ext=0):
+    assert len(args) == 2
+    output.apply_2arg(function, args[0], args[1], ext)
 
 
 def div(vector_field, grid_step: tuple):

@@ -5,68 +5,59 @@ Created at 25.09.2019
 @author: Michael Olesik
 @author: Sylwester Arabas
 """
-from MPyDATA import opts
-from MPyDATA.fields.scalar_field import ScalarField
-from MPyDATA.fields.vector_field import VectorField
+from MPyDATA.fields import scalar_field, vector_field
 
 from MPyDATA.formulae.antidiff import make_antidiff
-from MPyDATA.formulae.flux import make_flux
+from MPyDATA.formulae.flux import make_fluxes
+from MPyDATA.formulae import fct_utils as fct
 from MPyDATA.formulae.upwind import make_upwind
 
 from MPyDATA.opts import Opts
-import numpy as np
 import numba
 
 
 class MPDATA:
-    def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
-                 GC_physical: VectorField, GC_antidiff: VectorField,
-                 flux: VectorField, opts: Opts, halo: int):
+    def __init__(self, prev: scalar_field.Interface, curr: scalar_field.Interface, G: scalar_field.Interface,
+                 GC_physical: vector_field.Interface, GC_antidiff: vector_field.Interface,
+                 flux: vector_field.Interface,
+                 psi_min: scalar_field.Interface, psi_max: scalar_field.Interface,
+                 beta_up: scalar_field.Interface, beta_dn: scalar_field.Interface,
+                 opts: Opts, halo: int):
         self.curr = curr
         self.prev = prev
         self.G = G
         self.GC_physical = GC_physical
         self.GC_antidiff = GC_antidiff
         self.flux = flux
+        self.psi_min = psi_min
+        self.psi_max = psi_max
+        self.beta_up = beta_up
+        self.beta_dn = beta_dn
 
         self.n_iters = opts.n_iters
         self.halo = halo
 
+        self.formulae = {
+            "antidiff": make_antidiff(opts),
+            "flux": make_fluxes(opts),
+            "upwind": make_upwind(opts)
+        }
 
-        self.formulae = {}
-        self.formulae["antidiff"] = make_antidiff(opts)
-        self.formulae["flux"] = []
-        for it in range(self.n_iters):
-            self.formulae["flux"].append(make_flux(opts, it = it))
-        # self.formulae["flux"] = make_flux(opts)
-        # print(len(self.formulae["flux"]))
-        self.formulae["upwind"] = make_upwind(opts)
-
-
-       # FCT
-        if (opts.n_iters != 1) & opts.fct:
-            self.psi_min = np.full_like(self.curr, np.nan)
-            self.psi_max = np.full_like(self.curr, np.nan)
-            self.beta_up = np.full_like(self.curr, np.nan)
-            self.beta_dn = np.full_like(self.curr, np.nan)
+        self.opts = opts
 
     def fct_init(self):
-        if (opts.n_iters == 1) | ~opts.fct: return
+        if (self.opts.n_iters == 1) or not self.opts.fct: return
+        scalar_field.apply(fct.psi_min, output=self.psi_min, args=(self.prev,), ext=1)
+        scalar_field.apply(fct.psi_max, output=self.psi_max, args=(self.prev,), ext=1)
 
+    def fct_adjust_antidiff(self, GC, it):
+        if self.opts.n_iters == 1 or not self.opts.fct:
+            return
+        GC.fill_halos()
+        vector_field.apply(self.formulae["flux"][it], self.flux, (self.prev, GC), ext=1)
+        scalar_field.apply(fct.beta_up, self.beta_up, (self.prev, self.psi_max, self.flux, self.G), ext=1)
+        scalar_field.apply(fct.beta_dn, self.beta_dn, (self.prev, self.psi_min, self.flux, self.G), ext=1)
 
-
-    def fct_adjust_antidiff(self):
-        if opts.n_iters == 1 | ~opts.fct: return
-
-        # bcond.vector(s.opts, s.state.GCh, s.state.ih, s.n_halo)
-        #
-        # ihi = s.state.ih % nm.ONE
-        # s.state.flx[ihi] = nm.flux(s.opts, it, s.state.psi, s.state.GCh, ihi)
-        #
-        # ii = s.state.i % nm.ONE
-        # s.beta_up[ii] = nm.fct_beta_up(s.state.psi, s.psi_max, s.state.flx, s.state.G, ii)
-        # s.beta_dn[ii] = nm.fct_beta_dn(s.state.psi, s.psi_min, s.state.flx, s.state.G, ii)
-        #
         # s.state.GCh[s.state.ih] = nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
 
     @numba.jit()
@@ -76,11 +67,13 @@ class MPDATA:
             self.prev.fill_halos()
             if i == 0:
                 GC = self.GC_physical
+                self.fct_init()
             else:
-                self.GC_antidiff.apply(self.formulae["antidiff"], self.prev, self.GC_physical)
                 GC = self.GC_antidiff
-            self.flux.apply(self.formulae["flux"][i], self.prev, GC)
-            self.curr.apply(self.formulae["upwind"], self.flux, self.G)
+                vector_field.apply(self.formulae["antidiff"], output=GC, args=(self.prev, self.GC_physical))
+                self.fct_adjust_antidiff(GC, i)
+            vector_field.apply(self.formulae["flux"][i], self.flux, (self.prev, GC))
+            scalar_field.apply(self.formulae["upwind"], self.curr, (self.flux, self.G))
             self.curr.data += self.prev.data
 
     def debug_print(self):

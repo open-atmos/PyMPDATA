@@ -3,6 +3,8 @@ class Opts:
                  nug: bool = False,
                  iga: bool = False,
                  fct: bool = False,
+                 dfl: bool = False,
+                 tot: bool = False,
                  n_iters: int = 2,
                  eps: float = 1e-8
                  ):
@@ -10,6 +12,8 @@ class Opts:
         self._n_iters = n_iters
         self._iga = iga
         self._fct = fct
+        self._dfl = dfl
+        self._tot = tot
         self._eps = eps
 
     @property
@@ -28,6 +32,13 @@ class Opts:
     def fct(self) -> bool:
         return self._fct
 
+    @property
+    def dfl(self) -> bool:
+        return self._dfl
+
+    @property
+    def tot(self) -> bool:
+        return self._tot
 
     @property
     def eps(self) -> float:
