@@ -5,7 +5,7 @@ Created at 25.09.2019
 @author: Michael Olesik
 @author: Sylwester Arabas
 """
-
+from MPyDATA import opts
 from MPyDATA.fields.scalar_field import ScalarField
 from MPyDATA.fields.vector_field import VectorField
 
@@ -14,7 +14,7 @@ from MPyDATA.formulae.flux import make_flux
 from MPyDATA.formulae.upwind import make_upwind
 
 from MPyDATA.opts import Opts
-
+import numpy as np
 import numba
 
 
@@ -32,12 +32,42 @@ class MPDATA:
         self.n_iters = opts.n_iters
         self.halo = halo
 
+
         self.formulae = {}
         self.formulae["antidiff"] = make_antidiff(opts)
         self.formulae["flux"] = []
         for it in range(self.n_iters):
-            self.formulae["flux"].append(make_flux(opts, it=it))
+            self.formulae["flux"].append(make_flux(opts, it = it))
+        # self.formulae["flux"] = make_flux(opts)
+        # print(len(self.formulae["flux"]))
         self.formulae["upwind"] = make_upwind(opts)
+
+
+       # FCT
+        if (opts.n_iters != 1) & opts.fct:
+            self.psi_min = np.full_like(self.curr, np.nan)
+            self.psi_max = np.full_like(self.curr, np.nan)
+            self.beta_up = np.full_like(self.curr, np.nan)
+            self.beta_dn = np.full_like(self.curr, np.nan)
+
+    def fct_init(self):
+        if (opts.n_iters == 1) | ~opts.fct: return
+
+
+
+    def fct_adjust_antidiff(self):
+        if opts.n_iters == 1 | ~opts.fct: return
+
+        # bcond.vector(s.opts, s.state.GCh, s.state.ih, s.n_halo)
+        #
+        # ihi = s.state.ih % nm.ONE
+        # s.state.flx[ihi] = nm.flux(s.opts, it, s.state.psi, s.state.GCh, ihi)
+        #
+        # ii = s.state.i % nm.ONE
+        # s.beta_up[ii] = nm.fct_beta_up(s.state.psi, s.psi_max, s.state.flx, s.state.G, ii)
+        # s.beta_dn[ii] = nm.fct_beta_dn(s.state.psi, s.psi_min, s.state.flx, s.state.G, ii)
+        #
+        # s.state.GCh[s.state.ih] = nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
 
     @numba.jit()
     def step(self):
