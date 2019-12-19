@@ -36,7 +36,7 @@ class TestMPDATA2D:
         GC_field = vector_field.make((vector_field_init_x, vector_field_init_y), halo=halo)
 
         G = scalar_field.make(np.ones(shape), halo=0)
-        mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Opts(n_iters=1))
+        mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Opts(n_iters=2))
         mpdata.debug_print()
         for _ in range(n_steps):
             mpdata.step()
