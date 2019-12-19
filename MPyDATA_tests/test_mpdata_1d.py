@@ -1,26 +1,33 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-#from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
-
+from MPyDATA.opts import Opts
 import numpy as np
 
 
-def test():
-#    setup = Setup()
+class TestMPDATA1D:
+    def test_fct_init(self):
+        # Arrange
+        state = np.array([1, 2, 3])
+        C = 0
+        opts = Opts(fct=True, n_iters=2)
+        sut = MPDATAFactory.uniform_C_1d(state, C, opts)
+        sut.prev.fill_halos()
 
-    #dx = (setup.x_max - setup.x_min) / setup.nx
-    #xh = np.linspace(setup.x_min, setup.x_max, setup.nx + 1)
-    #state = np.diff(setup.cdf_cosine(xh)) / dx
+        # Act
+        sut.fct_init()
 
-    state = np.array([0,1,0])
-    C = 1
+        # Assert
+        np.testing.assert_equal(np.array([3]*5), sut.psi_max.data[1:-1])
+        np.testing.assert_equal(np.array([1]*5), sut.psi_min.data[1:-1])
 
-    mpdata = MPDATAFactory.uniform_C_1d(state, C, 1)
-    nt = 3
+    def test_TODO(self):
+        state = np.array([0, 1, 0])
+        C = 1
 
-    conserved = np.sum(mpdata.curr.get())
-    for _ in range(nt):
-        # print("\n State before step:\n",mpdata.curr.data)
-        mpdata.step()
-        # print("\n State after step with velocity {0}:\n".format(str(C)), mpdata.curr.data)
+        mpdata = MPDATAFactory.uniform_C_1d(state, C, Opts())
+        nt = 3
 
-    assert np.sum(mpdata.curr.get()) == conserved
+        conserved = np.sum(mpdata.curr.get())
+        for _ in range(nt):
+            mpdata.step()
+
+        assert np.sum(mpdata.curr.get()) == conserved

@@ -37,12 +37,27 @@ class ScalarField1D:
     def at(self, item, _):
         return self.data[self.i + item]
 
-    def apply(self, function, arg1, arg2):
-        for i in range(self.shape[0] - 2 * self.halo):
+    def apply_1arg(self, function, arg1, ext):
+        for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
+            self.focus(i)
+            arg1.focus(i)
+            self.data[self.i] = function(arg1)
+
+    def apply_2arg(self, function, arg1, arg2, ext):
+        for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
             self.focus(i)
             arg1.focus(i)
             arg2.focus(i)
             self.data[self.i] = function(arg1, arg2)
+
+    def apply_4arg(self, function, arg1, arg2, arg3, arg4, ext):
+        for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
+            self.focus(i)
+            arg1.focus(i)
+            arg2.focus(i)
+            arg3.focus(i)
+            arg4.focus(i)
+            self.data[self.i] = function(arg1, arg2, arg3, arg4)
 
     def get(self):
         results = self.data[self.halo: self.data.shape[0] - self.halo]

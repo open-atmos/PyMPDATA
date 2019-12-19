@@ -49,11 +49,27 @@ class VectorField1D:
     def get_component(self, _):
         return self.data_0[self.halo - 1: self.data_0.shape[0] - self.halo + 1]
 
-    def apply(self, function, arg_1, arg_2):
-        for i in range(-1, self.shape_0):
+    def apply_2arg(self, function, arg_1, arg_2, ext):
+        for i in range(-1 - ext, self.shape_0 + ext):
             self.focus(i)
             arg_1.focus(i)
             arg_2.focus(i)
 
             idx = self.__idx(+.5)
             self.data_0[idx] = function(arg_1, arg_2)
+
+    def fill_halos(self):
+        if self.halo == 1:
+            return
+
+        hm1 = self.halo - 1
+        sp1 = self.shape_0 + 1
+
+        left_halo = slice(0, hm1)
+        left_edge = slice(left_halo.stop, 2 * hm1)
+
+        right_edge = slice(sp1, sp1 + hm1)
+        right_halo = slice(right_edge.stop, sp1 + 2 * hm1)
+
+        self.data_0[left_halo] = self.data_0[right_edge]
+        self.data_0[right_halo] = self.data_0[left_edge]

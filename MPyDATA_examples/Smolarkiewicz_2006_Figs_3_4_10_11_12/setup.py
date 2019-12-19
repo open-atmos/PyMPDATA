@@ -8,7 +8,14 @@ class Setup:
     C = 0.5
     x_min = -250
     x_max = 250
-    n_iters = 2
+
+    def __init__(self, shape: str):
+        if shape == "cosine":
+            self.cdf = Setup.cdf_cosine
+        elif shape == "rect":
+            self.cdf = Setup.cdf_rect
+        else:
+            raise ValueError()
 
     @staticmethod
     def cdf_cosine(x):

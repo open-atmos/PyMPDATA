@@ -7,8 +7,9 @@ Created at 11.10.2019
 """
 
 from MPyDATA.mpdata_factory import MPDATAFactory
-from MPyDATA.fields.scalar_field import ScalarField
-from MPyDATA.fields.vector_field import VectorField
+from MPyDATA.opts import Opts
+
+from MPyDATA.fields import scalar_field, vector_field
 import numpy as np
 import pytest
 
@@ -31,11 +32,11 @@ class TestMPDATA2D:
 
         vector_field_init_x = np.full((shape[0] + 1, shape[1]), C[0])
         vector_field_init_y = np.full((shape[0], shape[1] + 1), C[1])
-        scalar_field = ScalarField(scalar_field_init, halo=halo)
-        vector_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo)
+        state = scalar_field.make(scalar_field_init, halo=halo)
+        GC_field = vector_field.make((vector_field_init_x, vector_field_init_y), halo=halo)
 
-        G = ScalarField(np.ones(shape), halo=0)
-        mpdata = MPDATAFactory._mpdata(GC_field=vector_field, state=scalar_field, g_factor=G, n_iters=1)
+        G = scalar_field.make(np.ones(shape), halo=0)
+        mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Opts(n_iters=1))
         mpdata.debug_print()
         for _ in range(n_steps):
             mpdata.step()

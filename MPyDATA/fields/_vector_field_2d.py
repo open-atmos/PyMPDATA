@@ -8,7 +8,7 @@ Created at 07.11.2019
 import numpy as np
 import numba
 
-from MPyDATA.fields.scalar_field import ScalarField
+from MPyDATA.fields import scalar_field
 from MPyDATA.fields.utils import is_integral, is_fractional
 
 
@@ -90,10 +90,9 @@ class VectorField2D:
         return self.data(i)[self.halo - 1: self.data(i).shape[0] - self.halo + 1,
                             self.halo - 1: self.data(i).shape[1] - self.halo + 1]
 
-    def apply(self, function, arg_1, arg_2):
-        for i in range(-1, self.shape[0]):
-            for j in range(-1, self.shape[1]):
-
+    def apply_2arg(self, function, arg_1, arg_2, ext):
+        for i in range(-1-ext, self.shape[0]+ext):
+            for j in range(-1-ext, self.shape[1]+ext):
                 self.focus(i, j)
                 arg_1.focus(i, j)
                 arg_2.focus(i, j)
@@ -111,8 +110,8 @@ class VectorField2D:
                     self.data(d)[idx_i, idx_j] += function(arg_1, arg_2)
 
 
-def div_2d(vector_field: VectorField2D, grid_step: tuple) -> ScalarField:
-    result = ScalarField(np.zeros(vector_field.shape), halo=0)
+def div_2d(vector_field: VectorField2D, grid_step: tuple):
+    result = scalar_field.make(np.zeros(vector_field.shape), halo=0)
     for d in range(vector_field.dimension):
         result.data[:, :] += np.diff(vector_field.data(d), axis=d) / grid_step[d]
     return result
