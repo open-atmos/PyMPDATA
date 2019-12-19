@@ -7,7 +7,11 @@ Created at 07.11.2019
 
 
 import numpy as np
-import numba
+from MPyDATA.utils import debug
+if debug.DEBUG:
+    import MPyDATA.utils.fake_numba as numba
+else:
+    import numba
 
 
 @numba.jitclass([

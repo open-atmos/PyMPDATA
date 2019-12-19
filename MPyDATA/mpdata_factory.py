@@ -29,7 +29,21 @@ class MPDATAFactory:
 
         state = scalar_field.make(psi, halo)
         GC = vector_field.make(data=[np.full((nx + 1,), C)], halo=halo)
-        g_factor = scalar_field.make(np.ones((nx,)), halo=0)
+        g_factor = scalar_field.make(np.ones((nx,)), halo=0)  # TODO
+        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
+
+    @staticmethod
+    def uniform_C_2d(psi, C, opts):
+        nx = psi.shape[0]
+        ny = psi.shape[1]
+        halo = MPDATAFactory.n_halo(opts)
+
+        state = scalar_field.make(psi, halo)
+        GC = vector_field.make(data=[
+            np.full((nx + 1, ny), C[0]),
+            np.full((nx, ny+1), C[1])
+        ], halo=halo)
+        g_factor = scalar_field.make(np.ones((nx,ny)), halo=0)  # TODO
         return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
@@ -55,9 +69,9 @@ class MPDATAFactory:
     ):
         if len(state.data.shape) == 2:
             assert state.data.shape[0] == GC_field.data(0).shape[0] + 1
-            assert state.data.shape[1] == GC_field.data(0).shape[1] + 2
-            assert GC_field.data(0).shape[0] == GC_field.data(1).shape[0] + 1
-            assert GC_field.data(0).shape[1] == GC_field.data(1).shape[1] - 1
+            assert state.data.shape[1] == GC_field.data(0).shape[1]
+            assert GC_field.data(0).shape[0] == GC_field.data(1).shape[0] - 1
+            assert GC_field.data(0).shape[1] == GC_field.data(1).shape[1] + 1
         # TODO: assert G.data.shape == state.data.shape (but halo...)
         # TODO assert halo
 

@@ -5,7 +5,11 @@ Created at 07.11.2019
 @author: Sylwester Arabas
 """
 
-import numba
+from MPyDATA.utils import debug
+if debug.DEBUG:
+    import MPyDATA.utils.fake_numba as numba
+else:
+    import numba
 
 
 @numba.njit([numba.boolean(numba.float64),

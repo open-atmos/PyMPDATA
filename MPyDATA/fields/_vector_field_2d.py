@@ -6,7 +6,11 @@ Created at 07.11.2019
 """
 
 import numpy as np
-import numba
+from MPyDATA.utils import debug
+if debug.DEBUG:
+    import MPyDATA.utils.fake_numba as numba
+else:
+    import numba
 
 from MPyDATA.fields import scalar_field
 from MPyDATA.fields.utils import is_integral, is_fractional
@@ -22,20 +26,25 @@ from MPyDATA.fields.utils import is_integral, is_fractional
     ('axis', numba.int64)])
 class VectorField2D:
     def __init__(self, data_0, data_1, halo):
-        assert halo > 0
         self.halo = halo
         self.shape = np.zeros(2, dtype=np.int64)
         self.shape[0] = data_1.shape[0]
         self.shape[1] = data_0.shape[1]
+
         assert data_0.shape[0] == data_1.shape[0] + 1
         assert data_0.shape[1] == data_1.shape[1] - 1
-        self.data_0 = np.zeros((data_0.shape[0] + 2 * (halo - 1), data_0.shape[1] + 2 * (halo - 1)), dtype=np.float64)
-        self.data_1 = np.zeros((data_1.shape[0] + 2 * (halo - 1), data_1.shape[1] + 2 * (halo - 1)), dtype=np.float64)
 
-        shape = (data_0.shape[0] + 2 * (halo - 1), data_0.shape[1] + 2 * (halo - 1))
-        self.data(0)[halo - 1:shape[0] - (halo - 1), halo - 1:shape[1] - (halo - 1)] = data_0[:, :]
-        shape = (data_1.shape[0] + 2 * (halo - 1), data_1.shape[1] + 2 * (halo - 1))
-        self.data(1)[halo - 1:shape[0] - (halo - 1), halo - 1:shape[1] - (halo - 1)] = data_1[:, :]
+        self.data_0 = np.zeros((
+            data_0.shape[0] + 2 * (halo - 1),
+            data_0.shape[1] + 2 * halo
+        ), dtype=np.float64)
+        self.data_1 = np.zeros((
+            data_1.shape[0] + 2 * halo,
+            data_1.shape[1] + 2 * (halo - 1)
+        ), dtype=np.float64)
+
+        self.get_component(0)[:, :] = data_0[:, :]
+        self.get_component(1)[:, :] = data_1[:, :]
 
         self._i = 0
         self._j = 0
@@ -81,14 +90,34 @@ class VectorField2D:
         else:
             raise ValueError()
 
+        # TODO: rely on tests
         assert self._i + idx1 >= 0
         assert self._j + idx2 >= 0
 
         return d, int(self._i + idx1), int(self._j + idx2)
 
     def get_component(self, i):
-        return self.data(i)[self.halo - 1: self.data(i).shape[0] - self.halo + 1,
-                            self.halo - 1: self.data(i).shape[1] - self.halo + 1]
+        domain = (
+            slice(
+                self.halo - 1,
+                self.halo - 1 + self.shape[0] + 1
+            ),
+            slice(
+                self.halo,
+                self.halo + self.shape[1]
+            )
+        ) if i == 0 else (
+            slice(
+                self.halo,
+                self.halo + self.shape[0]
+            ),
+            slice(
+                self.halo - 1,
+                self.halo - 1 + self.shape[1] + 1
+            )
+        )
+        print(i, self.shape, domain[0], domain[1])
+        return self.data(i)[domain]
 
     def apply_2arg(self, function, arg_1, arg_2, ext):
         for i in range(-1-ext, self.shape[0]+ext):

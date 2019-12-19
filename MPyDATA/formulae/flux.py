@@ -10,7 +10,11 @@ from MPyDATA.fields import scalar_field
 from MPyDATA.fields import vector_field
 from MPyDATA.opts import Opts
 import numpy as np
-import numba
+from MPyDATA.utils import debug
+if debug.DEBUG:
+    import MPyDATA.utils.fake_numba as numba
+else:
+    import numba
 
 # TODO
 HALO = 1

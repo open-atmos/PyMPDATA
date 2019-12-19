@@ -13,7 +13,7 @@ from MPyDATA.formulae import fct_utils as fct
 from MPyDATA.formulae.upwind import make_upwind
 
 from MPyDATA.opts import Opts
-import numba
+#import numba  # TODO ? needed, not taken into account in fake_numba
 
 
 class MPDATA:
@@ -60,7 +60,7 @@ class MPDATA:
 
         # s.state.GCh[s.state.ih] = nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
 
-    @numba.jit()
+    #@numba.jit()
     def step(self):
         for i in range(self.n_iters):
             self.prev.swap_memory(self.curr)
