@@ -105,7 +105,7 @@ class TestVectorField2D:
         sut = vector_field.make(data=(data1, data2), halo=halo)
 
         # Act
-        value = sut.at((halo - 1) + (idx[0] - 0.5), (halo - 1) + idx[1])
+        value = sut.at((halo - 1) + (idx[0] - 0.5), halo + idx[1])
 
         # Assert
         assert value == data1[idx]
@@ -125,7 +125,7 @@ class TestVectorField2D:
 
         # Act
         sut.set_axis(1)
-        value = sut.at(halo - 1 + idx[0] - 0.5, halo - 1 + idx[1])
+        value = sut.at(halo - 1 + idx[0] - 0.5, halo + idx[1])
 
         # Assert
         assert value == data2[idx]

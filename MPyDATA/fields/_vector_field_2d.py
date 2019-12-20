@@ -116,7 +116,6 @@ class VectorField2D:
                 self.halo - 1 + self.shape[1] + 1
             )
         )
-        print(i, self.shape, domain[0], domain[1])
         return self.data(i)[domain]
 
     def apply_2arg(self, function, arg_1, arg_2, ext):
