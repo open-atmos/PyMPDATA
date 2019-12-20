@@ -79,13 +79,13 @@ class VectorField2D:
 
         if is_integral(arg1) and is_fractional(arg2):
             d = 1
-            idx1 = arg1
+            idx1 = arg1 + 1
             idx2 = int(arg2 + .5)
             assert idx2 == arg2 + .5
         elif is_integral(arg2) and is_fractional(arg1):
             d = 0
             idx1 = int(arg1 + .5)
-            idx2 = arg2
+            idx2 = arg2 + 1
             assert idx1 == arg1 + .5
         else:
             raise ValueError()
