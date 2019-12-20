@@ -5,9 +5,10 @@ Created at 07.11.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 

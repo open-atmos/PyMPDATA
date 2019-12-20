@@ -7,7 +7,7 @@ Created at 11.10.2019
 """
 
 from MPyDATA.mpdata_factory import MPDATAFactory
-from MPyDATA.opts import Opts
+from MPyDATA.options import Options
 
 from MPyDATA.fields import scalar_field, vector_field
 import numpy as np
@@ -36,7 +36,7 @@ class TestMPDATA2D:
         GC_field = vector_field.make((vector_field_init_x, vector_field_init_y), halo=halo)
 
         G = scalar_field.make(np.ones(shape), halo=0)
-        mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Opts(n_iters=1))
+        mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Options(n_iters=1))
         mpdata.debug_print()
         for _ in range(n_steps):
             mpdata.step()
@@ -62,7 +62,7 @@ class TestMPDATA2D:
         sut = MPDATAFactory.uniform_C_2d(
             case["input"].reshape((case["nx"], case["ny"])),
             [case["Cx"], case["Cy"]],
-            Opts(n_iters=case["ni"])
+            Options(n_iters=case["ni"])
         )
 
         # Act
@@ -70,4 +70,4 @@ class TestMPDATA2D:
             sut.step()
 
         # Assert
-        np.testing.assert_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]))
+        np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]))

@@ -9,7 +9,7 @@ Created at 21.10.2019
 import numpy as np
 from MPyDATA.fields import vector_field, scalar_field
 from MPyDATA.mpdata import MPDATA
-from MPyDATA.opts import Opts
+from MPyDATA.options import Options
 from MPyDATA.eulerian_fields import EulerianFields
 
 
@@ -65,7 +65,7 @@ class MPDATAFactory:
             state: scalar_field.Interface,
             g_factor: scalar_field.Interface,
             GC_field: vector_field.Interface,
-            opts: Opts
+            opts: Options
     ):
         if len(state.data.shape) == 2:
             assert state.data.shape[0] == GC_field.data(0).shape[0] + 1
@@ -100,8 +100,7 @@ class MPDATAFactory:
 
 def _uniform_scalar_field(grid, value, halo):
     data = np.full(grid, value)
-    scalar_field = make(data=data, halo=halo)
-    return scalar_field
+    return scalar_field.make(data=data, halo=halo)
 
 
 # TODO: move asserts to a unit test
@@ -153,7 +152,7 @@ def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callabl
     for d in range(len(GC)):
         np.testing.assert_array_less(np.abs(GC[d]), 1)
 
-    result = make(data=GC, halo=halo)
+    result = vector_field.make(data=GC, halo=halo)
 
     # nondivergence (of velocity field, hence dt)
     assert np.amax(abs(vector_field.div(result, (dt, dt)).data)) < 5e-9

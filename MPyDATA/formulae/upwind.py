@@ -8,15 +8,16 @@ Created at 11.10.2019
 
 from MPyDATA.fields import scalar_field
 from MPyDATA.fields import vector_field
-from MPyDATA.opts import Opts
-from MPyDATA.utils import debug
+from MPyDATA.options import Options
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 
 
-def make_upwind(opts: Opts):
+def make_upwind(opts: Options):
     nug = opts.nug
 
     @numba.njit()

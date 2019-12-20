@@ -41,6 +41,10 @@ def clone(scalar_field):
 
 def apply(function, output, args, ext=0):
     assert ext < output.halo
+
+    for arg in args:
+        arg.fill_halos()
+
     if len(args) == 1:
         output.apply_1arg(function, args[0], ext)
     elif len(args) == 2:
@@ -49,3 +53,5 @@ def apply(function, output, args, ext=0):
         output.apply_4arg(function, args[0], args[1], args[2], args[3], ext)
     else:
         raise NotImplementedError()
+
+    output.invalidate_halos()

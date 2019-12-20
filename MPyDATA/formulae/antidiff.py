@@ -6,18 +6,19 @@ Created at 17.12.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.opts import Opts
+from MPyDATA.options import Options
 import numpy as np
 
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 
 
 # TODO: G!
-def make_antidiff(opts: Opts):
+def make_antidiff(opts: Options):
     iga = opts.iga
     eps = opts.eps
 

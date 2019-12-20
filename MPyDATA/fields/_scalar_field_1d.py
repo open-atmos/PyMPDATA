@@ -7,11 +7,14 @@ Created at 07.11.2019
 
 
 import numpy as np
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
+    print("fake")
 else:
     import numba
+    print("numba!")
 
 
 @numba.jitclass([
@@ -19,7 +22,8 @@ else:
     ('shape', numba.int64[:]),
     ('data', numba.float64[:]),
     ('i', numba.int64),
-    ('axis', numba.int64)
+    ('axis', numba.int64),
+    ('halo_valid', numba.boolean)
 ])
 class ScalarField1D:
     def __init__(self, data, halo):
@@ -31,6 +35,7 @@ class ScalarField1D:
         self.data[halo:self.shape[0] - halo] = data[:]
 
         self.i = 0
+        self.halo_valid = False
 
     def focus(self, i):
         self.i = i + self.halo
@@ -68,6 +73,14 @@ class ScalarField1D:
         return results
 
     def fill_halos(self):
+        if self.halo_valid:
+            return
+
         # TODO: hardcoded periodic boundary
         self.data[: self.halo] = self.data[-2*self.halo:-self.halo]
         self.data[-self.halo:] = self.data[self.halo:2 * self.halo]
+
+        self.halo_valid = True
+
+    def invalidate_halos(self):
+        self.halo_valid = False

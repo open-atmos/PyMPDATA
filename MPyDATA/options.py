@@ -1,4 +1,4 @@
-class Opts:
+class Options:
     def __init__(self,
                  nug: bool = False,
                  iga: bool = False,

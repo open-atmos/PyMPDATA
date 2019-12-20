@@ -12,8 +12,13 @@ from MPyDATA.formulae.flux import make_fluxes
 from MPyDATA.formulae import fct_utils as fct
 from MPyDATA.formulae.upwind import make_upwind
 
-from MPyDATA.opts import Opts
-#import numba  # TODO ? needed, not taken into account in fake_numba
+from MPyDATA.options import Options
+
+from MPyDATA_tests.utils import debug
+if debug.DEBUG:
+    import MPyDATA_tests.utils.fake_numba as numba
+else:
+    import numba
 
 
 class MPDATA:
@@ -22,7 +27,7 @@ class MPDATA:
                  flux: vector_field.Interface,
                  psi_min: scalar_field.Interface, psi_max: scalar_field.Interface,
                  beta_up: scalar_field.Interface, beta_dn: scalar_field.Interface,
-                 opts: Opts, halo: int):
+                 opts: Options, halo: int):
         self.curr = curr
         self.prev = prev
         self.G = G
@@ -60,11 +65,10 @@ class MPDATA:
 
         # s.state.GCh[s.state.ih] = nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
 
-    #@numba.jit()
+    @numba.jit()
     def step(self):
         for i in range(self.n_iters):
             self.prev.swap_memory(self.curr)
-            self.prev.fill_halos()
             if i == 0:
                 GC = self.GC_physical
                 self.fct_init()

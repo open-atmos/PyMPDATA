@@ -6,9 +6,10 @@ Created at 07.11.2019
 """
 
 import numpy as np
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 
@@ -23,7 +24,9 @@ from MPyDATA.fields.utils import is_integral, is_fractional
     ('data_1', numba.float64[:, :]),
     ('_i', numba.int64),
     ('_j', numba.int64),
-    ('axis', numba.int64)])
+    ('axis', numba.int64),
+    ('halo_valid', numba.boolean)
+])
 class VectorField2D:
     def __init__(self, data_0, data_1, halo):
         self.halo = halo
@@ -34,14 +37,14 @@ class VectorField2D:
         assert data_0.shape[0] == data_1.shape[0] + 1
         assert data_0.shape[1] == data_1.shape[1] - 1
 
-        self.data_0 = np.zeros((
+        self.data_0 = np.full((
             data_0.shape[0] + 2 * (halo - 1),
             data_0.shape[1] + 2 * halo
-        ), dtype=np.float64)
-        self.data_1 = np.zeros((
+        ), np.nan, dtype=np.float64)
+        self.data_1 = np.full((
             data_1.shape[0] + 2 * halo,
             data_1.shape[1] + 2 * (halo - 1)
-        ), dtype=np.float64)
+        ), np.nan, dtype=np.float64)
 
         self.get_component(0)[:, :] = data_0[:, :]
         self.get_component(1)[:, :] = data_1[:, :]
@@ -49,6 +52,7 @@ class VectorField2D:
         self._i = 0
         self._j = 0
         self.axis = 0
+        self.halo_valid = False
 
     def data(self, i):
         if i == 0:
@@ -137,6 +141,16 @@ class VectorField2D:
 
                     self.data(d)[idx_i, idx_j] += function(arg_1, arg_2)
 
+    def fill_halos(self):
+        if self.halo_valid:
+            return
+
+        raise NotImplementedError()
+
+        self.halo_valid = True
+
+    def invalidate_halos(self):
+        self.halo_valid = False
 
 def div_2d(vector_field: VectorField2D, grid_step: tuple):
     result = scalar_field.make(np.zeros(vector_field.shape), halo=0)

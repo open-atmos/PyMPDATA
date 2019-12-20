@@ -8,11 +8,12 @@ Created at 11.10.2019
 
 from MPyDATA.fields import scalar_field
 from MPyDATA.fields import vector_field
-from MPyDATA.opts import Opts
+from MPyDATA.options import Options
 import numpy as np
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 
@@ -20,7 +21,7 @@ else:
 HALO = 1
 
 
-def make_flux(opts: Opts, it: int):
+def make_flux(opts: Options, it: int):
     iga = opts.iga
     @numba.njit()         # TODO: check if (abs(c)-C)/2 is not faster
     def flux(psi: scalar_field.Interface, GC: vector_field.Interface):
@@ -34,7 +35,7 @@ def make_flux(opts: Opts, it: int):
         return result
     return flux
 
-def make_fluxes(opts: Opts):
+def make_fluxes(opts: Options):
     fluxes = []
     for it in range(opts.n_iters):
         fluxes.append(make_flux(opts, it))

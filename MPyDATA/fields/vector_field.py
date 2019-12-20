@@ -36,7 +36,10 @@ def clone(vector_field, value=np.nan):
 
 def apply(function, output, args: tuple, ext=0):
     assert len(args) == 2
+    for arg in args:
+        arg.fill_halos()
     output.apply_2arg(function, args[0], args[1], ext)
+    output.invalidate_halos()
 
 
 def div(vector_field, grid_step: tuple):

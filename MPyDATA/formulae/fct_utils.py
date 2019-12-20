@@ -8,9 +8,10 @@ Created at 17.12.2019
 
 from MPyDATA.fields import scalar_field, vector_field
 import numpy as np
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 

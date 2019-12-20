@@ -6,9 +6,10 @@ Created at 07.11.2019
 """
 
 import numpy as np
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 from MPyDATA.fields.utils import is_integral
@@ -19,7 +20,8 @@ from MPyDATA.fields.utils import is_integral
     ('shape_0', numba.int64),
     ('data_0', numba.float64[:]),
     ('i', numba.int64),
-    ('axis', numba.int64)
+    ('axis', numba.int64),
+    ('halo_valid', numba.boolean)
 ])
 class VectorField1D:
     def __init__(self, data_0, halo):
@@ -33,6 +35,8 @@ class VectorField1D:
         self.data_0[halo - 1:shape_with_halo - (halo - 1)] = data_0[:]
 
         self.i = 0
+
+        self.halo_valid = False
 
     @property
     def dimension(self):
@@ -63,6 +67,9 @@ class VectorField1D:
             self.data_0[idx] = function(arg_1, arg_2)
 
     def fill_halos(self):
+        if self.halo_valid:
+            return
+
         if self.halo == 1:
             return
 
@@ -77,3 +84,8 @@ class VectorField1D:
 
         self.data_0[left_halo] = self.data_0[right_edge]
         self.data_0[right_halo] = self.data_0[left_edge]
+
+        self.halo_valid = True
+
+    def invalidate_halos(self):
+        self.halo_valid = False

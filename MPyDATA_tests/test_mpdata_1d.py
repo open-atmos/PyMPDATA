@@ -1,5 +1,5 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-from MPyDATA.opts import Opts
+from MPyDATA.options import Options
 import numpy as np
 
 
@@ -8,7 +8,7 @@ class TestMPDATA1D:
         # Arrange
         state = np.array([1, 2, 3])
         C = 0
-        opts = Opts(fct=True, n_iters=2)
+        opts = Options(fct=True, n_iters=2)
         sut = MPDATAFactory.uniform_C_1d(state, C, opts)
         sut.prev.fill_halos()
 
@@ -23,7 +23,7 @@ class TestMPDATA1D:
         state = np.array([0, 1, 0])
         C = 1
 
-        mpdata = MPDATAFactory.uniform_C_1d(state, C, Opts())
+        mpdata = MPDATAFactory.uniform_C_1d(state, C, Options())
         nt = 3
 
         conserved = np.sum(mpdata.curr.get())
