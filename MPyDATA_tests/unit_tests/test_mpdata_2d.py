@@ -6,15 +6,15 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
+from MPyDATA.fields.factories import make_scalar_field, make_vector_field
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
 
-from MPyDATA.fields import scalar_field, vector_field
 import numpy as np
 import pytest
 
 # noinspection PyUnresolvedReferences
-from MPyDATA_tests.__parametrisation__ import halo, case
+from MPyDATA_tests.unit_tests.__parametrisation__ import halo, case
 
 
 class TestMPDATA2D:
@@ -32,15 +32,13 @@ class TestMPDATA2D:
 
         vector_field_init_x = np.full((shape[0] + 1, shape[1]), C[0])
         vector_field_init_y = np.full((shape[0], shape[1] + 1), C[1])
-        state = scalar_field.make(scalar_field_init, halo=halo)
-        GC_field = vector_field.make((vector_field_init_x, vector_field_init_y), halo=halo)
+        state = make_scalar_field(scalar_field_init, halo=halo)
+        GC_field = make_vector_field((vector_field_init_x, vector_field_init_y), halo=halo)
 
-        G = scalar_field.make(np.ones(shape), halo=0)
+        G = make_scalar_field(np.ones(shape), halo=0)
         mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Options(n_iters=1))
-        mpdata.debug_print()
         for _ in range(n_steps):
             mpdata.step()
-        mpdata.debug_print()
 
         np.testing.assert_array_equal(
             mpdata.curr.get(),
@@ -70,4 +68,4 @@ class TestMPDATA2D:
             sut.step()
 
         # Assert
-        np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]))
+        np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)

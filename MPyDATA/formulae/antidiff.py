@@ -7,10 +7,10 @@ Created at 17.12.2019
 """
 
 from MPyDATA.options import Options
+from MPyDATA.fields.interfaces import IScalarField, IVectorField
 import numpy as np
 
 from MPyDATA_tests.utils import debug
-
 if debug.DEBUG:
     import MPyDATA_tests.utils.fake_numba as numba
 else:
@@ -23,7 +23,7 @@ def make_antidiff(opts: Options):
     eps = opts.eps
 
     @numba.njit()
-    def antidiff(psi, C):
+    def antidiff(psi: IScalarField, C: IVectorField):
         # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
         def A(psi):
             result = psi.at(1, 0) - psi.at(0, 0)

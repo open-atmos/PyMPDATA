@@ -23,7 +23,7 @@ class TestDisabledNumba:
     def test_class():
         # Arrange
         sut = DisabledNumba()
-        cls = lambda: _scalar_field_2d.ScalarField2D
+        cls = lambda: _scalar_field_2d._ScalarField2D
 
         # Act & Assert
         assert "numba" in str(cls())

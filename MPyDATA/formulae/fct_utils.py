@@ -6,10 +6,9 @@ Created at 17.12.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields import scalar_field, vector_field
+from MPyDATA.fields.interfaces import IScalarField, IVectorField
 import numpy as np
 from MPyDATA_tests.utils import debug
-
 if debug.DEBUG:
     import MPyDATA_tests.utils.fake_numba as numba
 else:
@@ -29,7 +28,7 @@ def extremum_4arg(extremum: callable, a1: float, a2: float, a3: float, a4: float
 
 
 @numba.njit
-def psi_max(psi: scalar_field.Interface):
+def psi_max(psi: IScalarField):
     a1 = psi.at(-1, 0)
     a2 = psi.at(0, 0)
     a3 = psi.at(1, 0)
@@ -37,18 +36,19 @@ def psi_max(psi: scalar_field.Interface):
 
 
 @numba.njit
-def psi_min(psi: scalar_field.Interface):
+def psi_min(psi: IScalarField):
     a1 = psi.at(-1, 0)
     a2 = psi.at(0, 0)
     a3 = psi.at(1, 0)
     return extremum_3arg(np.minimum, a1, a2, a3)
 
 
+@numba.njit
 def beta_up(
-        psi: scalar_field.Interface,
-        psi_max: scalar_field.Interface,
-        flx: vector_field.Interface,
-        G: scalar_field.Interface
+        psi: IScalarField,
+        psi_max: IScalarField,
+        flx: IVectorField,
+        G: IScalarField
 ):
     return (
         (
@@ -62,11 +62,12 @@ def beta_up(
     )
 
 
+@numba.njit
 def beta_dn(
-        psi: scalar_field.Interface,
-        psi_min: scalar_field.Interface,
-        flx: vector_field.Interface,
-        G: scalar_field.Interface
+        psi: IScalarField,
+        psi_min: IScalarField,
+        flx: IVectorField,
+        G: IScalarField
 ):
     return (
        (
@@ -81,6 +82,7 @@ def beta_dn(
 
 
 #
+#@numba.njit
 # def fct_GC_mono(GC, beta_up: scalar_field.Interface, beta_dn: scalar_field.Interface):
 #
 #     result = GC.at(+.5, 0) * np.where(
