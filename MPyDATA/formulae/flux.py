@@ -6,7 +6,8 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields.interfaces import IScalarField, IVectorField
+from MPyDATA.arakawa_c.scalar_field import ScalarField
+from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.options import Options
 import numpy as np
 from MPyDATA_tests.utils import debug
@@ -23,7 +24,7 @@ HALO = 1
 def make_flux(opts: Options, it: int):
     iga = opts.iga
     @numba.njit()         # TODO: check if (abs(c)-C)/2 is not faster
-    def flux(psi: IScalarField, GC: IVectorField):
+    def flux(psi: ScalarField.Impl, GC: VectorField.Impl):
         if it == 0 or not iga:
             result = (
                 np.maximum(0, GC.at(+.5, 0)) * psi.at(0, 0) +
@@ -33,6 +34,7 @@ def make_flux(opts: Options, it: int):
             result = GC.at(+.5, 0)
         return result
     return flux
+
 
 def make_fluxes(opts: Options):
     fluxes = []

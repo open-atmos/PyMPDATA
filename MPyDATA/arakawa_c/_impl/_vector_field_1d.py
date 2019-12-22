@@ -11,7 +11,7 @@ if debug.DEBUG:
     import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
-from MPyDATA.fields.utils import _is_integral
+from MPyDATA.arakawa_c._impl._vector_fields_utils import _is_integral
 
 
 @numba.jitclass([

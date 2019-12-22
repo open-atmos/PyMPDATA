@@ -12,7 +12,7 @@ if debug.DEBUG:
 else:
     import numba
 
-from MPyDATA.fields.utils import _is_integral, _is_fractional
+from MPyDATA.arakawa_c._impl._vector_fields_utils import _is_integral, _is_fractional
 
 
 @numba.jitclass([

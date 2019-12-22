@@ -6,7 +6,9 @@ Created at 17.12.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields.interfaces import IScalarField, IVectorField
+from MPyDATA.arakawa_c.scalar_field import ScalarField
+from MPyDATA.arakawa_c.vector_field import VectorField
+
 import numpy as np
 from MPyDATA_tests.utils import debug
 if debug.DEBUG:
@@ -28,7 +30,7 @@ def extremum_4arg(extremum: callable, a1: float, a2: float, a3: float, a4: float
 
 
 @numba.njit
-def psi_max(psi: IScalarField):
+def psi_max(psi: ScalarField):
     a1 = psi.at(-1, 0)
     a2 = psi.at(0, 0)
     a3 = psi.at(1, 0)
@@ -36,7 +38,7 @@ def psi_max(psi: IScalarField):
 
 
 @numba.njit
-def psi_min(psi: IScalarField):
+def psi_min(psi: ScalarField):
     a1 = psi.at(-1, 0)
     a2 = psi.at(0, 0)
     a3 = psi.at(1, 0)
@@ -45,10 +47,10 @@ def psi_min(psi: IScalarField):
 
 @numba.njit
 def beta_up(
-        psi: IScalarField,
-        psi_max: IScalarField,
-        flx: IVectorField,
-        G: IScalarField
+        psi: ScalarField,
+        psi_max: ScalarField,
+        flx: VectorField,
+        G: ScalarField
 ):
     return (
         (
@@ -64,10 +66,10 @@ def beta_up(
 
 @numba.njit
 def beta_dn(
-        psi: IScalarField,
-        psi_min: IScalarField,
-        flx: IVectorField,
-        G: IScalarField
+        psi: ScalarField,
+        psi_min: ScalarField,
+        flx: VectorField,
+        G: ScalarField
 ):
     return (
        (

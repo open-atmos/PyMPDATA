@@ -46,10 +46,6 @@ class _ScalarField2D:
     def _set_axis(self, axis):
         self.axis = axis
 
-    def swap_memory(self, other):
-        self._data, other._data = other._data, self._data
-        self._halo_valid, other._halo_valid = other._halo_valid, self._halo_valid
-
     def at(self, arg1, arg2):
         if self.axis == 1:
             return self._data[self._i + arg2, self._j + arg1]
@@ -70,6 +66,10 @@ class _ScalarField2D:
                     arg2._set_axis(dim)
 
                     self._data[self._i, self._j] += function(arg1, arg2)
+
+    @property
+    def dimension(self) -> int:
+        return 2
 
     def get(self):
         results = self._data[

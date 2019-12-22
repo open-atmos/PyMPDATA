@@ -1,6 +1,6 @@
 from MPyDATA_tests.utils.disabled_numba import DisabledNumba
 from MPyDATA.formulae.antidiff import make_antidiff
-from MPyDATA.fields import _scalar_field_2d
+from MPyDATA.arakawa_c._impl import _scalar_field_2d
 from MPyDATA.options import Options
 
 

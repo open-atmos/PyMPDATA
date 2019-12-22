@@ -37,10 +37,6 @@ class _ScalarField1D:
     def _focus(self, i):
         self._i = i + self.halo
 
-    def swap_memory(self, other):
-        self._data, other._data = other._data, self._data
-        self._halo_valid, other._halo_valid = other._halo_valid, self._halo_valid
-
     def at(self, item, _):
         return self._data[self._i + item]
 
@@ -65,6 +61,10 @@ class _ScalarField1D:
             arg3._focus(i)
             arg4._focus(i)
             self._data[self._i] = function(arg1, arg2, arg3, arg4)
+
+    @property
+    def dimension(self) -> int:
+        return 1
 
     def get(self):
         results = self._data[self.halo: self._data.shape[0] - self.halo]
