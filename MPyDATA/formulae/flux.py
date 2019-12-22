@@ -6,9 +6,9 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.arakawa_c.scalar_field import ScalarField
-from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.options import Options
+from ..arakawa_c.scalar_field import ScalarField
+from ..arakawa_c.vector_field import VectorField
+from ..options import Options
 import numpy as np
 from MPyDATA_tests.utils import debug
 

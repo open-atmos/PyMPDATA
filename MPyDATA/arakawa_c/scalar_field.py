@@ -1,6 +1,6 @@
-from MPyDATA.arakawa_c.impl.field import Field
-from MPyDATA.arakawa_c.impl.scalar_field_1d import ScalarField1D
-from MPyDATA.arakawa_c.impl.scalar_field_2d import ScalarField2D
+from .impl.field import Field
+from .impl.scalar_field_1d import ScalarField1D
+from .impl.scalar_field_2d import ScalarField2D
 import numpy as np
 
 

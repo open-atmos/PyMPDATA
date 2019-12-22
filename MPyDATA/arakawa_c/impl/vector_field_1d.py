@@ -64,6 +64,16 @@ class VectorField1D:
             idx = self.__idx(+.5)
             self._data_0[idx] = function(arg_1, arg_2)
 
+    def apply_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
+        for i in range(-1 - ext, self.shape_0 + ext):
+            self.focus(i)
+            arg_1.focus(i)
+            arg_2.focus(i)
+            arg_3.focus(i)
+
+            idx = self.__idx(+.5)
+            self._data_0[idx] = function(arg_1, arg_2, arg_3)
+
     def fill_halos(self):
         if self._halo_valid or self.halo < 2:
             return

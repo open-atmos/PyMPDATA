@@ -6,14 +6,13 @@ Created at 25.09.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.arakawa_c.scalar_field import ScalarField
-from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.formulae.antidiff import make_antidiff
-from MPyDATA.formulae.flux import make_fluxes
-from MPyDATA.formulae import fct_utils as fct
-from MPyDATA.formulae.upwind import make_upwind
-
-from MPyDATA.options import Options
+from .arakawa_c.scalar_field import ScalarField
+from .arakawa_c.vector_field import VectorField
+from .formulae.antidiff import make_antidiff
+from .formulae.flux import make_fluxes
+from .formulae import fct_utils as fct
+from .formulae.upwind import make_upwind
+from .options import Options
 
 from MPyDATA_tests.utils import debug
 if debug.DEBUG:
@@ -47,7 +46,8 @@ class MPDATA:
         self.formulae = {
             "antidiff": make_antidiff(opts),
             "flux": make_fluxes(opts),
-            "upwind": make_upwind(opts)
+            "upwind": make_upwind(opts),
+            "fct_GC_mono": fct.fct_GC_mono
         }
 
         self.opts = opts
@@ -62,8 +62,7 @@ class MPDATA:
         self.flux.nd_sum(self.formulae["flux"][it], (self.prev, GC), ext=1)
         self.beta_up.nd_sum(fct.beta_up, (self.prev, self.psi_max, self.flux, self.G), ext=1)
         self.beta_dn.nd_sum(fct.beta_dn, (self.prev, self.psi_min, self.flux, self.G), ext=1)
-
-        # s.state.GCh[s.state.ih] = nm.fct_GC_mono(s.opts, s.state.GCh, s.state.psi, s.beta_up, s.beta_dn, s.state.ih)
+        GC.nd_sum(self.formulae["fct_GC_mono"], (GC, self.beta_up, self.beta_dn))
 
     @numba.jit()
     def step(self):

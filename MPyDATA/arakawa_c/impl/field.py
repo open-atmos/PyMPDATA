@@ -3,13 +3,13 @@ class Field:
         dimension: int
         halo: int
 
-        def at(self, i, j=-1, k=-1):
+        def at(self, i: [int, float], j: [int, float] = -1, k: [int,float] = -1):
             raise NotImplementedError()
 
-        def focus(self, i, j=-1, k=-1):
+        def focus(self, i: int, j: int = -1, k: int = -1):
             raise NotImplementedError()
 
-        def set_axis(self, d:int):
+        def set_axis(self, d: int):
             raise NotImplementedError()
 
     _impl = None
@@ -36,10 +36,10 @@ class Field:
             self._impl.apply_1arg(function, args[0]._impl, ext)
         elif len(args) == 2:
             self._impl.apply_2arg(function, args[0]._impl, args[1]._impl, ext)
-        elif len(args) == 2:
-            self._impl._apply_3arg(function, args[0]._impl, args[1]._impl, args[2]._impl, ext)
+        elif len(args) == 3:
+            self._impl.apply_3arg(function, args[0]._impl, args[1]._impl, args[2]._impl, ext)
         elif len(args) == 4:
-            self._impl._apply_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            self._impl.apply_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
         else:
             raise NotImplementedError()
 

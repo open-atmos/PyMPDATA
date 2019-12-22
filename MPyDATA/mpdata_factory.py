@@ -7,11 +7,11 @@ Created at 21.10.2019
 """
 
 import numpy as np
-from MPyDATA.arakawa_c.scalar_field import ScalarField
-from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.mpdata import MPDATA
-from MPyDATA.options import Options
-from MPyDATA.eulerian_fields import EulerianFields
+from .arakawa_c.scalar_field import ScalarField
+from .arakawa_c.vector_field import VectorField
+from .mpdata import MPDATA
+from .options import Options
+from .eulerian_fields import EulerianFields
 
 
 class MPDATAFactory:
