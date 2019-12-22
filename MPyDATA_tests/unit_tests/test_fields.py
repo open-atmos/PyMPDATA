@@ -125,7 +125,7 @@ class TestVectorField2D:
         sut = VectorField(data=(data1, data2), halo=halo)
 
         # Act
-        sut._impl._set_axis(1)
+        sut._impl.set_axis(1)
         value = sut._impl.at(halo - 1 + idx[0] - 0.5, halo + idx[1] - 1)
 
         # Assert

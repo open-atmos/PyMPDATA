@@ -1,25 +1,25 @@
-from MPyDATA.arakawa_c._field import __Field
-from MPyDATA.arakawa_c._impl._scalar_field_1d import _ScalarField1D
-from MPyDATA.arakawa_c._impl._scalar_field_2d import _ScalarField2D
+from MPyDATA.arakawa_c.impl.field import Field
+from MPyDATA.arakawa_c.impl.scalar_field_1d import ScalarField1D
+from MPyDATA.arakawa_c.impl.scalar_field_2d import ScalarField2D
 import numpy as np
 
 
-class ScalarField(__Field):
-    class Impl:
-        def at(self, i: int, j: int=-1, k: int=-1):
-            raise NotImplementedError()
-
+class ScalarField(Field):
     def __init__(self, data, halo):
         dimension = len(data.shape)
 
         if dimension == 1:
-            self._impl = _ScalarField1D(data, halo)
+            self._impl = ScalarField1D(data, halo)
         elif dimension == 2:
-            self._impl = _ScalarField2D(data, halo)
+            self._impl = ScalarField2D(data, halo)
         elif dimension == 3:
             raise NotImplementedError()
         else:
             raise ValueError()
+
+    def add(self, rhs):
+        self._impl.get()[:] += rhs._impl.get()[:]
+        self._impl.invalidate_halos()
 
     def get(self) -> np.ndarray:
         return self._impl.get()

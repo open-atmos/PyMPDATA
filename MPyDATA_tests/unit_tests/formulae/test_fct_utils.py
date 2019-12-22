@@ -1,5 +1,4 @@
 from MPyDATA.arakawa_c.scalar_field import ScalarField
-from MPyDATA.arakawa_c.operators import NdSum
 import MPyDATA.formulae.fct_utils as fct
 import numpy as np
 
@@ -15,7 +14,7 @@ class TestFCTUtils:
         ext=1
 
         # Act
-        psi_min += NdSum(sut, (psi,), ext=ext)
+        psi_min.nd_sum(sut, (psi,), ext=ext)
 
         # Assert
         np.testing.assert_array_equal(np.array([1]*5), psi_min._impl._data[ext:-ext])
@@ -30,7 +29,7 @@ class TestFCTUtils:
         ext=1
 
         # Act
-        psi_max += NdSum(sut, (psi,), ext=ext)
+        psi_max.nd_sum(sut, (psi,), ext=ext)
 
         # Assert
         np.testing.assert_array_equal(np.array([3]*5), psi_max._impl._data[ext:-ext])

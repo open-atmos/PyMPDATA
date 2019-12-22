@@ -5,14 +5,15 @@ Created at 07.11.2019
 @author: Sylwester Arabas
 """
 
+from .field import Field
+from .vector_fields_utils import _is_integral, _is_fractional
 import numpy as np
+
 from MPyDATA_tests.utils import debug
 if debug.DEBUG:
     import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
-
-from MPyDATA.arakawa_c._impl._vector_fields_utils import _is_integral, _is_fractional
 
 
 @numba.jitclass([
@@ -25,9 +26,10 @@ from MPyDATA.arakawa_c._impl._vector_fields_utils import _is_integral, _is_fract
     ('axis', numba.int64),
     ('_halo_valid', numba.boolean)
 ])
-class _VectorField2D:
-    def __init__(self, data_0, data_1, halo):
+class VectorField2D:
+    def __init__(self, data_0: np.ndarray, data_1: np.ndarray, halo: int):
         self.halo = halo
+        self.axis = 0
         self.shape = np.zeros(2, dtype=np.int64)
         self.shape[0] = data_1.shape[0]
         self.shape[1] = data_0.shape[1]
@@ -43,16 +45,14 @@ class _VectorField2D:
             data_1.shape[0] + 2 * halo,
             data_1.shape[1] + 2 * (halo - 1)
         ), np.nan, dtype=np.float64)
+        self._i = 0
+        self._j = 0
+        self._halo_valid = False
 
         self.get_component(0)[:, :] = data_0[:, :]
         self.get_component(1)[:, :] = data_1[:, :]
 
-        self._i = 0
-        self._j = 0
-        self.axis = 0
-        self._halo_valid = False
-
-    def data(self, i) -> np.ndarray:
+    def __data(self, i) -> np.ndarray:
         if i == 0:
             return self._data_0
         elif i == 1:
@@ -64,18 +64,18 @@ class _VectorField2D:
     def dimension(self) -> int:
         return 2
 
-    def _focus(self, i: int, j: int):
+    def focus(self, i: int, j: int):
         self._i = i + self.halo - 1
         self._j = j + self.halo - 1
 
-    def _set_axis(self, axis: int):
+    def set_axis(self, axis: int):
         self.axis = axis
 
-    def at(self, arg1: int, arg2: int):
-        d, idx1, idx2 = self.__idx_2d(arg1, arg2)
-        return self.data(d)[idx1, idx2]
+    def at(self, arg1: [int, float], arg2: [int, float]):
+        d, idx1, idx2 = self.__idx(arg1, arg2)
+        return self.__data(d)[idx1, idx2]
 
-    def __idx_2d(self, arg1: int, arg2: int):
+    def __idx(self, arg1: [int, float], arg2: [int, float]):
         if self.axis == 1:
             arg1, arg2 = arg2, arg1
 
@@ -118,26 +118,26 @@ class _VectorField2D:
                 self.halo - 1 + self.shape[1] + 1
             )
         )
-        return self.data(i)[domain]
+        return self.__data(i)[domain]
 
-    def _apply_2arg(self, function: callable, arg_1: int, arg_2: int, ext: int):
+    def apply_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
         for i in range(-1-ext, self.shape[0]+ext):
             for j in range(-1-ext, self.shape[1]+ext):
-                self._focus(i, j)
-                arg_1._focus(i, j)
-                arg_2._focus(i, j)
+                self.focus(i, j)
+                arg_1.focus(i, j)
+                arg_2.focus(i, j)
 
                 for dd in range(2):
                     if (i == -1 and dd == 1) or (j == -1 and dd == 0):
                         continue
 
-                    self._set_axis(dd)
-                    d, idx_i, idx_j = self.__idx_2d(+.5, 0)
-                    self.data(d)[idx_i, idx_j] = 0
-                    arg_1._set_axis(dd)
-                    arg_2._set_axis(dd)
+                    self.set_axis(dd)
+                    d, idx_i, idx_j = self.__idx(+.5, 0)
+                    self.__data(d)[idx_i, idx_j] = 0
+                    arg_1.set_axis(dd)
+                    arg_2.set_axis(dd)
 
-                    self.data(d)[idx_i, idx_j] += function(arg_1, arg_2)
+                    self.__data(d)[idx_i, idx_j] += function(arg_1, arg_2)
 
     def fill_halos(self):
         if self._halo_valid or self.halo == 0:
@@ -154,9 +154,7 @@ class _VectorField2D:
         self._data_1[: self.halo, :] = self._data_1[-2 * self.halo:-self.halo, :]
         self._data_1[-self.halo:, :] = self._data_1[self.halo:2 * self.halo, :]
 
-
         self._halo_valid = True
 
     def invalidate_halos(self):
         self._halo_valid = False
-

@@ -9,7 +9,6 @@ Created at 21.10.2019
 import numpy as np
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.arakawa_c.divergence import div
 from MPyDATA.mpdata import MPDATA
 from MPyDATA.options import Options
 from MPyDATA.eulerian_fields import EulerianFields
@@ -158,6 +157,6 @@ def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callabl
     result = VectorField(data=GC, halo=halo)
 
     # nondivergence (of velocity field, hence dt)
-    assert np.amax(abs(div(result, (dt, dt)).data)) < 5e-9
+    assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9
 
     return result

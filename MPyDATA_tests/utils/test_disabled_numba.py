@@ -1,6 +1,6 @@
 from MPyDATA_tests.utils.disabled_numba import DisabledNumba
 from MPyDATA.formulae.antidiff import make_antidiff
-from MPyDATA.arakawa_c._impl import _scalar_field_2d
+from MPyDATA.arakawa_c.impl import scalar_field_2d
 from MPyDATA.options import Options
 
 
@@ -23,7 +23,7 @@ class TestDisabledNumba:
     def test_class():
         # Arrange
         sut = DisabledNumba()
-        cls = lambda: _scalar_field_2d._ScalarField2D
+        cls = lambda: scalar_field_2d.ScalarField2D
 
         # Act & Assert
         assert "numba" in str(cls())
