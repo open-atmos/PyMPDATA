@@ -6,21 +6,22 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields import scalar_field
-from MPyDATA.fields import vector_field
-from MPyDATA.opts import Opts
-from MPyDATA.utils import debug
+from ..options import Options
+from ..arakawa_c.scalar_field import ScalarField
+from ..arakawa_c.vector_field import VectorField
+
+from MPyDATA_tests.utils import debug
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 
 
-def make_upwind(opts: Opts):
+def make_upwind(opts: Options):
     nug = opts.nug
 
-    @numba.njit()
-    def upwind(flx: vector_field.Interface, G:scalar_field.Interface):
+    @numba.njit
+    def upwind(flx: VectorField.Impl, G: ScalarField.Impl):
         result = - 1 * (
                 flx.at(+.5, 0) -
                 flx.at(-.5, 0)

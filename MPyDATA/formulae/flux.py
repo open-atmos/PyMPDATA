@@ -6,13 +6,14 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.fields import scalar_field
-from MPyDATA.fields import vector_field
-from MPyDATA.opts import Opts
+from ..arakawa_c.scalar_field import ScalarField
+from ..arakawa_c.vector_field import VectorField
+from ..options import Options
 import numpy as np
-from MPyDATA.utils import debug
+from MPyDATA_tests.utils import debug
+
 if debug.DEBUG:
-    import MPyDATA.utils.fake_numba as numba
+    import MPyDATA_tests.utils.fake_numba as numba
 else:
     import numba
 
@@ -20,10 +21,10 @@ else:
 HALO = 1
 
 
-def make_flux(opts: Opts, it: int):
+def make_flux(opts: Options, it: int):
     iga = opts.iga
     @numba.njit()         # TODO: check if (abs(c)-C)/2 is not faster
-    def flux(psi: scalar_field.Interface, GC: vector_field.Interface):
+    def flux(psi: ScalarField.Impl, GC: VectorField.Impl):
         if it == 0 or not iga:
             result = (
                 np.maximum(0, GC.at(+.5, 0)) * psi.at(0, 0) +
@@ -34,7 +35,8 @@ def make_flux(opts: Opts, it: int):
         return result
     return flux
 
-def make_fluxes(opts: Opts):
+
+def make_fluxes(opts: Options):
     fluxes = []
     for it in range(opts.n_iters):
         fluxes.append(make_flux(opts, it))
