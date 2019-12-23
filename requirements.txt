@@ -1,2 +1,10 @@
 numpy
+numba
+matplotlib
 pytest
+pytest-cov
+codecov
+nbconvert
+jupyter_client
+ipykernel
+ipywidgets

@@ -2,48 +2,44 @@
 Created at 22.07.2019
 
 @author: Michael Olesik
+@author: Piotr Bartman
 @author: Sylwester Arabas
 """
 
 import numpy as np
 
-import numerics as nm
+from MPyDATA import numerics as nm
 
 
 class State:
-    @staticmethod
-    def magn(q):
-        return q.to_base_units().magnitude
-
     def __init__(self, n_halo, nr,  r_min, r_max, dt, cdf_r_lambda, coord):
         self.i = slice(0, nr) + n_halo * nm.ONE
         self.ih = self.i % nm.HALF  # cell-border stuff
-        x_unit = coord.x(r_min).to_base_units().units
         self.dx = self.init_dx(nr,  r_min, r_max, coord)
         self.xh = self.init_xh(n_halo, nr,  r_min, r_max, coord)
-        self.rh = coord.r(self.xh * x_unit)
-        self.Gh = 1 / self.magn(coord.dx_dr(self.rh))
+        self.rh = coord.r(self.xh)
+        self.Gh = 1 / coord.dx_dr(self.rh)
         self.GCh = np.full_like(self.Gh, np.nan)
         self.flx = np.full_like(self.Gh, np.nan)
         # cell-centered stuff
         self.x = self.init_x(n_halo, nr)
-        self._r = coord.r(self.x * x_unit)
-        self.G = 1 / self.magn(coord.dx_dr(self._r))
+        self._r = coord.r(self.x)
+        self.G = 1 / coord.dx_dr(self._r)
         self.psi = self.init_psi(cdf_r_lambda)
 
     def init_psi(self, cdf_r_lambda):
         psi = np.full_like(self.G, np.nan)
         psi[self.i] = (
-                np.diff(self.magn(cdf_r_lambda(self.rh[self.ih])))
+                np.diff(cdf_r_lambda(self.rh[self.ih]))
                 /
-                np.diff(self.magn(self.rh[self.ih]))
+                np.diff(self.rh[self.ih])
         )
         return psi
 
     def init_dx(self, nr,  r_min, r_max, coord):
         _, dx = np.linspace(
-            self.magn(coord.x(r_min)),
-            self.magn(coord.x(r_max)),
+            coord.x(r_min),
+            coord.x(r_max),
             nr + 1,
             retstep=True
         )
@@ -51,8 +47,8 @@ class State:
 
     def init_xh(self, n_halo, nr,  r_min, r_max, coord):
         xh = np.linspace(
-            self.magn(coord.x(r_min)) - (n_halo - 1) * self.dx,
-            self.magn(coord.x(r_max)) + (n_halo - 1) * self.dx,
+            coord.x(r_min) - (n_halo - 1) * self.dx,
+            coord.x(r_max) + (n_halo - 1) * self.dx,
             nr + 1 + 2 * (n_halo - 1)
         )
         return xh
@@ -75,3 +71,8 @@ class State:
     @property
     def r(self):
         return self._r[self.i]
+
+    @property
+    def rb(self):
+        return self.rh[self.ih]
+

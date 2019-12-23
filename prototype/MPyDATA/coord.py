@@ -1,10 +1,16 @@
+"""
+Created at 22.07.2019
+
+@author: Michael Olesik
+@author: Piotr Bartman
+@author: Sylwester Arabas
+"""
+
+
 import numpy
 
 
 class x_id:
-    def __init__(self, si):
-        self.si = si
-
     def x(self, r):
         return r
 
@@ -12,14 +18,12 @@ class x_id:
         return x
 
     def dx_dr(self, r):
-        return r**0 * self.si.dimensionless
+        return r**0
 
 
 class x_ln:
-    def __init__(self, si):
-        self.si = si
-        self.r0 = 1 * si.metre
-        self.x_unit = si.dimensionless
+    def __init__(self):
+        self.r0 = 1
 
     def x(self, r):
         return numpy.log(r / self.r0)
@@ -32,14 +36,11 @@ class x_ln:
 
 
 class x_p2:
-    def __init__(self, _):
-        pass
-
     def x(self, r):
         return r**2
 
     def r(self, x):
-        return numpy.sqrt(x)
+        return numpy.sqrt(numpy.where(x < 0, 1e10, x))
 
     def dx_dr(self, r):
         return 2*r
