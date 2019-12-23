@@ -15,5 +15,6 @@ class DisabledNumba:
     @staticmethod
     def __reload():
         modules = [module for module in sys.modules.values() if "MPyDATA." in str(module)]
+        modules.reverse()
         for module in modules:
             reload(module)

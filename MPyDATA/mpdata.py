@@ -64,8 +64,7 @@ class MPDATA:
         self.beta_dn.nd_sum(fct.beta_dn, (self.prev, self.psi_min, self.flux, self.G), ext=1)
         GC.nd_sum(self.formulae["fct_GC_mono"], (GC, self.beta_up, self.beta_dn))
 
-    # TODO
-#    @numba.jit()
+    @numba.jit()
     def step(self):
         for i in range(self.n_iters):
             self.prev.swap_memory(self.curr)
