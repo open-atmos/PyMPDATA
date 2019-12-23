@@ -52,12 +52,14 @@ class MPDATA:
 
         self.opts = opts
 
-    @numba.jit()
+    # TODO
+    # @numba.jit()
     def fct_init(self):
         self.psi_min.nd_sum(fct.psi_min, args=(self.prev,), ext=1)
         self.psi_max.nd_sum(fct.psi_max, args=(self.prev,), ext=1)
 
-    @numba.jit()
+    # TODO
+    # @numba.jit()
     def fct_adjust_antidiff(self, GC: VectorField, it:int):
         self.flux.nd_sum(self.formulae["flux"][it], (self.prev, GC), ext=1)
         self.beta_up.nd_sum(fct.beta_up, (self.prev, self.psi_max, self.flux, self.G), ext=1)
@@ -65,7 +67,7 @@ class MPDATA:
         GC.nd_sum(self.formulae["fct_GC_mono"], (GC, self.beta_up, self.beta_dn))
 
     # TODO
-#    @numba.jit()
+    # @numba.jit()
     def step(self):
         for i in range(self.n_iters):
             self.prev.swap_memory(self.curr)

@@ -1,5 +1,0 @@
-nbconvert 
-jupyter_client 
-ipykernel
-pint
-matplotlib
