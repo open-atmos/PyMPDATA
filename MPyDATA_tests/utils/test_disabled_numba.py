@@ -2,6 +2,8 @@ from MPyDATA_tests.utils.disabled_numba import DisabledNumba
 from MPyDATA.formulae.antidiff import make_antidiff
 from MPyDATA.arakawa_c.impl import scalar_field_2d
 from MPyDATA.options import Options
+from MPyDATA.mpdata_factory import MPDATAFactory
+import numpy as np
 
 
 class TestDisabledNumba:
