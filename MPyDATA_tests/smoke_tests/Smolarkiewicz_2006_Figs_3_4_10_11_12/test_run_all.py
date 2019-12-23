@@ -4,7 +4,8 @@ from MPyDATA.options import Options
 
 
 # TODO: run all cases
-if __name__ == '__main__':
+# TODO: add asserts (not in "run_all"...)
+def test_run_all():
     opts = Options()
     setup = Setup(shape='cosine')
     Simulation(setup, opts).run()

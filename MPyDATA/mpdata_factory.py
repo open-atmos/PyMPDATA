@@ -7,61 +7,102 @@ Created at 21.10.2019
 """
 
 import numpy as np
-from MPyDATA.fields.scalar_field import ScalarField
-from MPyDATA.fields.vector_field import VectorField
-from MPyDATA.fields import vector_field, scalar_field
-from MPyDATA.mpdata import MPDATA
-from MPyDATA.eulerian_fields import EulerianFields
+from .arakawa_c.scalar_field import ScalarField
+from .arakawa_c.vector_field import VectorField
+from .mpdata import MPDATA
+from .options import Options
+from .eulerian_fields import EulerianFields
 
 
 class MPDATAFactory:
     @staticmethod
-    def uniform_C_1d(state, C, n_iters):
-        nx = state.shape[0]
-        halo = 1
-
-        state = ScalarField(state, halo)
-        GC = VectorField(data=[np.full((nx+1,), C)], halo=halo)
-        g_factor = ScalarField(np.ones((nx,)), halo=0)
-        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, n_iters=n_iters)
+    def n_halo(opts: Options):
+        if opts.n_iters > 1 and (opts.dfl or opts.fct or opts.tot):
+            n_halo = 2
+        else:
+            n_halo = 1
+        return n_halo
 
     @staticmethod
-    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, halo=1):
+    def uniform_C_1d(psi: np.ndarray, C: float, opts: Options):
+        nx = psi.shape[0]
+        halo = MPDATAFactory.n_halo(opts)
+
+        state = ScalarField(psi, halo)
+        GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo)
+        g_factor = ScalarField(np.ones((nx,)), halo=0)  # TODO
+        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
+
+    @staticmethod
+    def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
+        nx = psi.shape[0]
+        ny = psi.shape[1]
+        halo = MPDATAFactory.n_halo(opts)
+
+        state = ScalarField(psi, halo)
+        GC = VectorField(data=[
+            np.full((nx + 1, ny), C[0]),
+            np.full((nx, ny+1), C[1])
+        ], halo=halo)
+        g_factor = ScalarField(np.ones((nx,ny)), halo=0)  # TODO
+        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
+
+    @staticmethod
+    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts):
+        halo = MPDATAFactory.n_halo(opts)
         GC = _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function)
         G = ScalarField(g_factor, halo=0)
 
         mpdatas = {}
         for key, value in field_values.items():
             state = _uniform_scalar_field(grid, value, halo)
-            mpdatas[key] = MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=G, n_iters=1)
+            mpdatas[key] = MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=G, opts=opts)
 
         eulerian_fields = EulerianFields(mpdatas)
         return GC, eulerian_fields
 
     @staticmethod
-    def _mpdata(state: ScalarField, g_factor: ScalarField, GC_field: VectorField, n_iters):
-        if len(state.data.shape) == 2:
-            assert state.data.shape[0] == GC_field.data(0).shape[0] + 1
-            assert state.data.shape[1] == GC_field.data(0).shape[1] + 2
-            assert GC_field.data(0).shape[0] == GC_field.data(1).shape[0] + 1
-            assert GC_field.data(0).shape[1] == GC_field.data(1).shape[1] - 1
+    def _mpdata(
+            state: ScalarField,
+            g_factor: ScalarField,
+            GC_field: VectorField,
+            opts: Options
+    ):
+        # TODO: move to tests
+        if len(state.shape) == 2:
+            assert state._impl._data.shape[0] == GC_field._impl._data_0.shape[0] + 1
+            assert state._impl._data.shape[1] == GC_field._impl._data_0.shape[1]
+            assert GC_field._impl._data_0.shape[0] == GC_field._impl._data_1.shape[0] - 1
+            assert GC_field._impl._data_0.shape[1] == GC_field._impl._data_1.shape[1] + 1
         # TODO: assert G.data.shape == state.data.shape (but halo...)
         # TODO assert halo
 
-        prev = scalar_field.clone(state)  # TODO rename?
-        GC_antidiff = vector_field.clone(GC_field)
-        flux = vector_field.clone(GC_field)
+        prev = ScalarField.full_like(state)  # TODO rename?
+        GC_antidiff = VectorField.full_like(GC_field)
+        flux = VectorField.full_like(GC_field)
         halo = state.halo
+
+        if (opts.n_iters != 1) & opts.fct:
+            psi_min = ScalarField.full_like(state)
+            psi_max = ScalarField.full_like(state)
+            beta_up = ScalarField.full_like(state)
+            beta_dn = ScalarField.full_like(state)
+        else:
+            psi_min = None
+            psi_max = None
+            beta_up = None
+            beta_dn = None
+
         mpdata = MPDATA(curr=state, prev=prev, G=g_factor, GC_physical=GC_field, GC_antidiff=GC_antidiff, flux=flux,
-                        n_iters=n_iters, halo=halo)
+                        psi_min=psi_min, psi_max=psi_max, beta_up=beta_up, beta_dn=beta_dn,
+                        opts=opts, halo=halo)
 
         return mpdata
 
 
-def _uniform_scalar_field(grid, value, halo):
+def _uniform_scalar_field(grid, value: float, halo: int):
     data = np.full(grid, value)
-    scalar_field = ScalarField(data=data, halo=halo)
-    return scalar_field
+    return ScalarField(data=data, halo=halo)
 
 
 # TODO: move asserts to a unit test
@@ -116,6 +157,6 @@ def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callabl
     result = VectorField(data=GC, halo=halo)
 
     # nondivergence (of velocity field, hence dt)
-    assert np.amax(abs(vector_field.div(result, (dt, dt)).data)) < 5e-9
+    assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9
 
     return result
