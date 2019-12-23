@@ -10,14 +10,15 @@ class TestMPDATA1D:
         C = 0
         opts = Options(fct=True, n_iters=2)
         sut = MPDATAFactory.uniform_C_1d(state, C, opts)
-        sut.prev.fill_halos()
+        sut.prev.swap_memory(sut.curr)
+        sut.prev._impl.fill_halos()
 
         # Act
         sut.fct_init()
 
         # Assert
-        np.testing.assert_equal(np.array([3]*5), sut.psi_max.data[1:-1])
-        np.testing.assert_equal(np.array([1]*5), sut.psi_min.data[1:-1])
+        np.testing.assert_equal(np.array([3]*5), sut.psi_max._impl._data[1:-1])
+        np.testing.assert_equal(np.array([1]*5), sut.psi_min._impl._data[1:-1])
 
     def test_TODO(self):
         state = np.array([0, 1, 0])
