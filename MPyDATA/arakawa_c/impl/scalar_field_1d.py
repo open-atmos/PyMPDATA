@@ -22,7 +22,7 @@ else:
     ('axis', numba.int64),
     ('_halo_valid', numba.boolean)
 ])
-class _ScalarField1D:
+class ScalarField1D:
     def __init__(self, data, halo):
         self.axis = 0
         self.halo = halo
@@ -34,37 +34,37 @@ class _ScalarField1D:
         self._i = 0
         self._halo_valid = False
 
-    def _focus(self, i):
+    def focus(self, i):
         self._i = i + self.halo
-
-    def swap_memory(self, other):
-        self._data, other._data = other._data, self._data
-        self._halo_valid, other._halo_valid = other._halo_valid, self._halo_valid
 
     def at(self, item, _):
         return self._data[self._i + item]
 
-    def _apply_1arg(self, function, arg1, ext):
+    def apply_1arg(self, function, arg1, ext):
         for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
-            self._focus(i)
-            arg1._focus(i)
+            self.focus(i)
+            arg1.focus(i)
             self._data[self._i] = function(arg1)
 
-    def _apply_2arg(self, function, arg1, arg2, ext):
+    def apply_2arg(self, function, arg1, arg2, ext):
         for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
-            self._focus(i)
-            arg1._focus(i)
-            arg2._focus(i)
+            self.focus(i)
+            arg1.focus(i)
+            arg2.focus(i)
             self._data[self._i] = function(arg1, arg2)
 
     def apply_4arg(self, function, arg1, arg2, arg3, arg4, ext):
         for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
-            self._focus(i)
-            arg1._focus(i)
-            arg2._focus(i)
-            arg3._focus(i)
-            arg4._focus(i)
+            self.focus(i)
+            arg1.focus(i)
+            arg2.focus(i)
+            arg3.focus(i)
+            arg4.focus(i)
             self._data[self._i] = function(arg1, arg2, arg3, arg4)
+
+    @property
+    def dimension(self) -> int:
+        return 1
 
     def get(self):
         results = self._data[self.halo: self._data.shape[0] - self.halo]

@@ -6,8 +6,9 @@ Created at 17.12.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.options import Options
-from MPyDATA.fields.interfaces import IScalarField, IVectorField
+from ..arakawa_c.scalar_field import ScalarField
+from ..arakawa_c.vector_field import VectorField
+from ..options import Options
 import numpy as np
 
 from MPyDATA_tests.utils import debug
@@ -22,8 +23,8 @@ def make_antidiff(opts: Options):
     iga = opts.iga
     eps = opts.eps
 
-    @numba.njit()
-    def antidiff(psi: IScalarField, C: IVectorField):
+    @numba.njit
+    def antidiff(psi: ScalarField.Impl, C: VectorField.Impl):
         # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
         def A(psi):
             result = psi.at(1, 0) - psi.at(0, 0)
@@ -51,7 +52,7 @@ def make_antidiff(opts: Options):
 
         # eq. 13 in Smolarkiewicz 1984
         result = (np.abs(C.at(+.5, 0)) - C.at(+.5, 0) ** 2) * A(psi)
-        for i in range(len(psi.shape)):
+        for i in range(psi.dimension):
             if i == psi.axis:
                 continue
             result -= (
