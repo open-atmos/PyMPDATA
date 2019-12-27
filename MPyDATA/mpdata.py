@@ -14,9 +14,9 @@ from .formulae import fct_utils as fct
 from .formulae.upwind import make_upwind
 from .options import Options
 
-from MPyDATA_tests.utils import debug
-if debug.DEBUG:
-    import MPyDATA_tests.utils.fake_numba as numba
+from .utils import debug_flag
+if debug_flag.VALUE:
+    import MPyDATA.utils.fake_numba as numba
 else:
     import numba
 
@@ -42,7 +42,7 @@ class MPDATA:
         self.n_iters: int = opts.n_iters
         self.halo: int = halo
 
-        # TODO: assert for numba decorators? (depending on value of debug.DEBUG)
+        # TODO: assert for numba decorators? (depending on value of utils.DEBUG)
         self.formulae = {
             "antidiff": make_antidiff(opts),
             "flux": make_fluxes(opts),

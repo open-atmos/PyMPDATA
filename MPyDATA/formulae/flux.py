@@ -10,10 +10,10 @@ from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
 from ..options import Options
 import numpy as np
-from MPyDATA_tests.utils import debug
+from ..utils import debug_flag
 
-if debug.DEBUG:
-    import MPyDATA_tests.utils.fake_numba as numba
+if debug_flag.VALUE:
+    import MPyDATA.utils.fake_numba as numba
 else:
     import numba
 

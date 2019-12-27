@@ -1,4 +1,4 @@
-from MPyDATA_tests.utils.disabled_numba import DisabledNumba
+from MPyDATA.utils.disabled_numba import DisabledNumba
 from MPyDATA.formulae.antidiff import make_antidiff
 from MPyDATA.arakawa_c.impl import scalar_field_2d
 from MPyDATA.options import Options
@@ -16,8 +16,8 @@ class TestDisabledNumba:
         # Act & Assert
         assert hasattr(fun(), "py_func")
         with sut:
-            from MPyDATA_tests.utils.debug import DEBUG
-            assert DEBUG
+            from MPyDATA.utils.debug_flag import VALUE
+            assert VALUE
             assert not hasattr(fun(), "py_func")
         assert hasattr(fun(), "py_func")
 
@@ -31,8 +31,8 @@ class TestDisabledNumba:
         assert "numba" in str(cls())
         with sut:
             assert not "numba" in str(cls())
-            from MPyDATA_tests.utils.debug import DEBUG
-            assert DEBUG
+            from MPyDATA.utils.debug_flag import VALUE
+            assert VALUE
         assert "numba" in str(cls())
 
     @staticmethod
