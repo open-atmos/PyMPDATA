@@ -8,6 +8,7 @@ Created at 11.10.2019
 
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
+from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
 
@@ -31,12 +32,17 @@ class TestMPDATA2D:
         scalar_field_init = np.zeros(shape)
         scalar_field_init[ij0] = value
 
+        bcond = (
+            (CyclicLeft(), CyclicRight()),
+            (CyclicLeft(), CyclicRight()),
+        )
+
         vector_field_init_x = np.full((shape[0] + 1, shape[1]), C[0])
         vector_field_init_y = np.full((shape[0], shape[1] + 1), C[1])
-        state = ScalarField(scalar_field_init, halo=halo)
-        GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo)
+        state = ScalarField(scalar_field_init, halo=halo, boundary_conditions=bcond)
+        GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo, boundary_conditions=bcond)
 
-        G = ScalarField(np.ones(shape), halo=0)
+        G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
         mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Options(n_iters=1))
         for _ in range(n_steps):
             mpdata.step()

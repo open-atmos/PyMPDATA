@@ -6,7 +6,8 @@ class Options:
                  dfl: bool = False,
                  tot: bool = False,
                  n_iters: int = 2,
-                 eps: float = 1e-8
+                 eps: float = 1e-8,
+                 mu: float = 0
                  ):
         self._nug = nug
         self._n_iters = n_iters
@@ -15,6 +16,7 @@ class Options:
         self._dfl = dfl
         self._tot = tot
         self._eps = eps
+        self._mu = mu
 
     @property
     def nug(self) -> bool:
@@ -44,3 +46,6 @@ class Options:
     def eps(self) -> float:
         return self._eps
 
+    @property
+    def mu(self) -> float:
+        return self._mu

@@ -25,7 +25,7 @@ class TestDisabledNumba:
     def test_class():
         # Arrange
         sut = DisabledNumba()
-        cls = lambda: scalar_field_2d.ScalarField2D
+        cls = lambda: scalar_field_2d.make_scalar_field_2d(np.eye(3), 2)
 
         # Act & Assert
         assert "numba" in str(cls())
@@ -37,14 +37,14 @@ class TestDisabledNumba:
 
     @staticmethod
     def test_method():
-        sut = MPDATAFactory.uniform_C_1d(np.array([0, 1, 0]), 0, Options())
+        sut = MPDATAFactory.uniform_C_1d(np.array([0, 1, 0]), 0, Options(), None)
         assert hasattr(sut.step, "py_func")
 
         with DisabledNumba():
-            sut = MPDATAFactory.uniform_C_1d(np.array([0, 1, 0]), 0, Options())
+            sut = MPDATAFactory.uniform_C_1d(np.array([0, 1, 0]), 0, Options(), None)
             assert not hasattr(sut.step, "py_func")
 
-        sut = MPDATAFactory.uniform_C_1d(np.array([0, 1, 0]), 0, Options())
+        sut = MPDATAFactory.uniform_C_1d(np.array([0, 1, 0]), 0, Options(), None)
         assert hasattr(sut.step, "py_func")
 
 

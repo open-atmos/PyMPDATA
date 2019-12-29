@@ -9,6 +9,7 @@ Created at 21.10.2019
 import numpy as np
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
+from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
@@ -24,38 +25,50 @@ class MPDATAFactory:
         return n_halo
 
     @staticmethod
-    def uniform_C_1d(psi: np.ndarray, C: float, opts: Options):
+    def uniform_C_1d(psi: np.ndarray, C: float, opts: Options, boundary_conditions):
         nx = psi.shape[0]
         halo = MPDATAFactory.n_halo(opts)
 
-        state = ScalarField(psi, halo)
-        GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo)
-        g_factor = ScalarField(np.ones((nx,)), halo=0)  # TODO
+        state = ScalarField(psi, halo, boundary_conditions=boundary_conditions)
+        GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo, boundary_conditions=boundary_conditions)
+        g_factor = ScalarField(np.ones((nx,)), halo=0, boundary_conditions=boundary_conditions)  # TODO: nug:False?
         return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
     def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
+        # TODO
+        bcond = (
+            (CyclicLeft(), CyclicRight()),
+            (CyclicLeft(), CyclicRight())
+        )
+
         nx = psi.shape[0]
         ny = psi.shape[1]
         halo = MPDATAFactory.n_halo(opts)
 
-        state = ScalarField(psi, halo)
+        state = ScalarField(psi, halo, boundary_conditions=bcond)
         GC = VectorField(data=[
             np.full((nx + 1, ny), C[0]),
             np.full((nx, ny+1), C[1])
-        ], halo=halo)
-        g_factor = ScalarField(np.ones((nx,ny)), halo=0)  # TODO
+        ], halo=halo, boundary_conditions=bcond)
+        g_factor = ScalarField(np.ones((nx, ny)), halo=0, boundary_conditions=bcond)  # TODO
         return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
     def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts):
+        # TODO
+        bcond = (
+            (CyclicLeft(), CyclicRight()),
+            (CyclicLeft(), CyclicRight())
+        )
+
         halo = MPDATAFactory.n_halo(opts)
-        GC = _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function)
-        G = ScalarField(g_factor, halo=0)
+        GC = _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function, boundary_conditions=bcond)
+        G = ScalarField(g_factor, halo=0, boundary_conditions=bcond)
 
         mpdatas = {}
         for key, value in field_values.items():
-            state = _uniform_scalar_field(grid, value, halo)
+            state = _uniform_scalar_field(grid, value, halo, boundary_conditions=bcond)
             mpdatas[key] = MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=G, opts=opts)
 
         eulerian_fields = EulerianFields(mpdatas)
@@ -69,7 +82,7 @@ class MPDATAFactory:
             opts: Options
     ):
         # TODO: move to tests
-        if len(state.shape) == 2:
+        if state.dimension == 2:
             assert state._impl._data.shape[0] == GC_field._impl._data_0.shape[0] + 1
             assert state._impl._data.shape[1] == GC_field._impl._data_0.shape[1]
             assert GC_field._impl._data_0.shape[0] == GC_field._impl._data_1.shape[0] - 1
@@ -100,9 +113,9 @@ class MPDATAFactory:
         return mpdata
 
 
-def _uniform_scalar_field(grid, value: float, halo: int):
+def _uniform_scalar_field(grid, value: float, halo: int, boundary_conditions):
     data = np.full(grid, value)
-    return ScalarField(data=data, halo=halo)
+    return ScalarField(data=data, halo=halo, boundary_conditions=boundary_conditions)
 
 
 # TODO: move asserts to a unit test
@@ -135,7 +148,7 @@ def z_vec_coord(grid, size):
     return xX, zZ
 
 
-def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callable):
+def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callable, boundary_conditions):
     # TODO: density!
     dx = size[0] / grid[0]
     dz = size[1] / grid[1]
@@ -154,7 +167,7 @@ def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callabl
     for d in range(len(GC)):
         np.testing.assert_array_less(np.abs(GC[d]), 1)
 
-    result = VectorField(data=GC, halo=halo)
+    result = VectorField(data=GC, halo=halo, boundary_conditions=boundary_conditions)
 
     # nondivergence (of velocity field, hence dt)
     assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9

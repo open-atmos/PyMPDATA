@@ -16,82 +16,78 @@ else:
     import numba
 
 
-@numba.jitclass([
-    ('halo', numba.int64),
-    ('shape', numba.int64[:]),
-    ('_data', numba.float64[:, :]),
-    ('_i', numba.int64),
-    ('_j', numba.int64),
-    ('axis', numba.int64),
-    ('_halo_valid', numba.boolean)
-])
-class ScalarField2D:
-    def __init__(self, data: np.ndarray, halo: int):
-        self.halo = halo
-        self.axis = 0
-        self.shape = np.zeros(2, dtype=np.int64)
-        self.shape[0] = data.shape[0] + 2 * halo
-        self.shape[1] = data.shape[1] + 2 * halo
+def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
+    halo = int(arg_halo)
+    shape = (arg_data.shape[0] + 2 * halo, arg_data.shape[1] + 2 * halo)
 
-        self._data = np.zeros((self.shape[0], self.shape[1]), dtype=np.float64)
-        self._i = 0
-        self._j = 0
-        self._halo_valid = False
+    @numba.jitclass([
+        ('_data', numba.float64[:, :]),
+        ('_i', numba.int64),
+        ('_j', numba.int64),
+        ('axis', numba.int64)
+    ])
+    class ScalarField2D:
+        def __init__(self, data: np.ndarray):
+            self.axis = 0
+            self._data = np.zeros((shape[0], shape[1]), dtype=np.float64)
+            self._i = 0
+            self._j = 0
+            self.get()[:, :] = data[:, :]
 
-        self.get()[:, :] = data[:, :]
+        def focus(self, i: int, j: int):
+            self._i = i + halo
+            self._j = j + halo
 
-    def focus(self, i: int, j: int):
-        self._i = i + self.halo
-        self._j = j + self.halo
+        def set_axis(self, axis):
+            self.axis = axis
 
-    def set_axis(self, axis):
-        self.axis = axis
+        def at(self, arg1: int, arg2: int):
+            if self.axis == 1:
+                return self._data[self._i + arg2, self._j + arg1]
+            else:
+                return self._data[self._i + arg1, self._j + arg2]
 
-    def at(self, arg1: int, arg2: int):
-        if self.axis == 1:
-            return self._data[self._i + arg2, self._j + arg1]
-        else:
-            return self._data[self._i + arg1, self._j + arg2]
+        def apply_2arg(self, function: callable, arg1: Field.Impl, arg2: Field.Impl, ext: int):
+            for i in range(-ext, shape[0] - 2 * halo + ext):
+                for j in range(-ext, shape[1] - 2 * halo + ext):
+                    self.focus(i, j)
+                    arg1.focus(i, j)
+                    arg2.focus(i, j)
 
-    def apply_2arg(self, function: callable, arg1: Field.Impl, arg2: Field.Impl, ext: int):
-        for i in range(-ext, self.shape[0] - 2 * self.halo + ext):
-            for j in range(-ext, self.shape[1] - 2 * self.halo + ext):
-                self.focus(i, j)
-                arg1.focus(i, j)
-                arg2.focus(i, j)
+                    self._data[self._i, self._j] = 0
+                    for dim in range(2):
+                        self.set_axis(dim)
+                        arg1.set_axis(dim)
+                        arg2.set_axis(dim)
 
-                self._data[self._i, self._j] = 0
-                for dim in range(2):
-                    self.set_axis(dim)
-                    arg1.set_axis(dim)
-                    arg2.set_axis(dim)
+                        self._data[self._i, self._j] += function(arg1, arg2)
 
-                    self._data[self._i, self._j] += function(arg1, arg2)
+        @property
+        def dimension(self) -> int:
+            return 2
 
-    @property
-    def dimension(self) -> int:
-        return 2
+        def get(self):
+            results = self._data[
+                halo: self._data.shape[0] - halo,
+                halo: self._data.shape[1] - halo
+            ]
+            return results
 
-    def get(self):
-        results = self._data[
-            self.halo: self._data.shape[0] - self.halo,
-            self.halo: self._data.shape[1] - self.halo
-        ]
-        return results
+        def left_halo(self, d: int):
+            if d == 0: return self._data[: halo, :]
+            if d == 1: return self._data[:, : halo]
 
-    def fill_halos(self):
-        if self._halo_valid or self.halo == 0:
-            return
+        def right_halo(self, d: int):
+            if d == 0: return self._data[-halo:, :]
+            if d == 1: return self._data[:, -halo:]
 
-        # TODO: use set_axis and loop over dimensions
-        # TODO: hardcoded periodic boundary
-        self._data[: self.halo, :] = self._data[-2 * self.halo:-self.halo, :]
-        self._data[-self.halo:, :] = self._data[self.halo:2 * self.halo, :]
+        def left_edge(self, d: int):
+            if d == 0: return self._data[halo:2 * halo, :]
+            if d == 1: return self._data[:, halo:2 * halo]
 
-        self._data[:, : self.halo] = self._data[:, -2 * self.halo:-self.halo]
-        self._data[:, -self.halo:] = self._data[:, self.halo:2 * self.halo]
+        def right_edge(self, d: int):
+            if d == 0: return self._data[-2 * halo:-halo, :]
+            if d == 1: return self._data[:, -2 * halo:-halo]
 
-        self._halo_valid = True
+    return ScalarField2D(data=arg_data)
 
-    def invalidate_halos(self):
-        self._halo_valid = False

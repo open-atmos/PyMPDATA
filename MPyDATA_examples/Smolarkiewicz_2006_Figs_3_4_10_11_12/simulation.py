@@ -1,4 +1,5 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
 import numpy as np
 from MPyDATA.options import Options
@@ -15,7 +16,12 @@ class Simulation:
         assert x.shape == state.shape
         assert (state >= 0).all()
 
-        self.stepper = MPDATAFactory.uniform_C_1d(state, setup.C, opts=opts)
+        self.stepper = MPDATAFactory.uniform_C_1d(
+            state,
+            setup.C,
+            opts=opts,
+            boundary_conditions=((CyclicLeft(), CyclicRight()),)
+        )
         self.nt = setup.nt
 
     @property

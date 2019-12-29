@@ -13,14 +13,19 @@ class Field:
             raise NotImplementedError()
 
     _impl = None
+    _halo_valid: bool = False
+
+    def __init__(self, halo, grid):
+        self._halo = halo
+        self._grid = grid
 
     @property
     def halo(self):
-        return self._impl.halo
+        return self._halo
 
     @property
-    def shape(self):
-        return self._impl.shape
+    def grid(self):
+        return self._grid
 
     @property
     def dimension(self):
@@ -30,7 +35,7 @@ class Field:
         assert ext < self.halo
 
         for arg in args:
-            arg._impl.fill_halos()
+            arg.fill_halos()
 
         if len(args) == 1:
             self._impl.apply_1arg(function, args[0]._impl, ext)
@@ -43,7 +48,17 @@ class Field:
         else:
             raise NotImplementedError()
 
-        self._impl.invalidate_halos()
+        self._halo_valid = False
 
     def swap_memory(self, other):
         self._impl, other._impl = other._impl, self._impl
+        self._halo_valid, other._halo_valid = other._halo_valid, self._halo_valid
+
+    def _fill_halos_impl(self):
+        raise NotImplementedError()
+
+    def fill_halos(self):
+        if self._halo_valid or self.halo == 0:
+            return
+        self._fill_halos_impl()
+        self._halo_valid = True

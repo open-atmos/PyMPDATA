@@ -1,4 +1,5 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from MPyDATA.options import Options
 import numpy as np
 
@@ -9,9 +10,9 @@ class TestMPDATA1D:
         state = np.array([1, 2, 3])
         C = 0
         opts = Options(fct=True, n_iters=2)
-        sut = MPDATAFactory.uniform_C_1d(state, C, opts)
+        sut = MPDATAFactory.uniform_C_1d(state, C, opts, boundary_conditions=((CyclicLeft(), CyclicRight()),))
         sut.prev.swap_memory(sut.curr)
-        sut.prev._impl.fill_halos()
+        sut.prev.fill_halos()
 
         # Act
         sut.fct_init()
@@ -24,7 +25,7 @@ class TestMPDATA1D:
         state = np.array([0, 1, 0])
         C = 1
 
-        mpdata = MPDATAFactory.uniform_C_1d(state, C, Options())
+        mpdata = MPDATAFactory.uniform_C_1d(state, C, Options(), ((CyclicLeft, CyclicRight),))
         nt = 3
 
         conserved = np.sum(mpdata.curr.get())

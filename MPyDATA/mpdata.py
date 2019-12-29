@@ -78,7 +78,6 @@ class MPDATA:
                 if self.opts.n_iters != 1 and self.opts.fct:
                     self.fct_adjust_antidiff(GC, i)
             self.flux.nd_sum(self.formulae["flux"][i], (self.prev, GC))
-
             self.curr.nd_sum(self.formulae["upwind"], (self.flux, self.G))
             self.curr.add(self.prev)
 
