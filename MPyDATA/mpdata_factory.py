@@ -91,7 +91,8 @@ class MPDATAFactory:
         # TODO assert halo
 
         prev = ScalarField.full_like(state)  # TODO rename?
-        GC_antidiff = VectorField.full_like(GC_field)
+        GC_prev = VectorField.full_like(GC_field) if opts.n_iters > 1 else None
+        GC_curr = VectorField.full_like(GC_field) if opts.n_iters > 0 else None
         flux = VectorField.full_like(GC_field)
         halo = state.halo
 
@@ -106,7 +107,8 @@ class MPDATAFactory:
             beta_up = None
             beta_dn = None
 
-        mpdata = MPDATA(curr=state, prev=prev, G=g_factor, GC_physical=GC_field, GC_antidiff=GC_antidiff, flux=flux,
+        mpdata = MPDATA(curr=state, prev=prev, G=g_factor, GC_physical=GC_field,
+                        GC_prev=GC_prev, GC_curr=GC_curr, flux=flux,
                         psi_min=psi_min, psi_max=psi_max, beta_up=beta_up, beta_dn=beta_dn,
                         opts=opts, halo=halo)
 

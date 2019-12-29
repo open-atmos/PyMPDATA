@@ -23,7 +23,9 @@ else:
 
 class MPDATA:
     def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
-                 GC_physical: VectorField, GC_antidiff: VectorField,
+                 GC_physical: VectorField,
+                 GC_prev: VectorField,
+                 GC_curr: VectorField,
                  flux: VectorField,
                  psi_min: ScalarField, psi_max: ScalarField,
                  beta_up: ScalarField, beta_dn: ScalarField,
@@ -32,7 +34,8 @@ class MPDATA:
         self.prev: ScalarField = prev
         self.G: ScalarField = G
         self.GC_physical: VectorField = GC_physical
-        self.GC_antidiff: VectorField = GC_antidiff
+        self.GC_curr: VectorField = GC_curr
+        self.GC_prev: VectorField = GC_prev
         self.flux: VectorField = flux
         self.psi_min: ScalarField = psi_min
         self.psi_max: ScalarField = psi_max
@@ -54,11 +57,15 @@ class MPDATA:
 
     @numba.jit()
     def fct_init(self):
-        self.psi_min.nd_sum(fct.psi_min, args=(self.prev,), ext=1)
-        self.psi_max.nd_sum(fct.psi_max, args=(self.prev,), ext=1)
+        if self.opts.n_iters == 1 or not self.opts.fct:
+            return
+        self.psi_min.nd_sum(fct.psi_min, args=(self.curr,), ext=1)
+        self.psi_max.nd_sum(fct.psi_max, args=(self.curr,), ext=1)
 
     @numba.jit()
     def fct_adjust_antidiff(self, GC: VectorField, it:int):
+        if self.opts.n_iters == 1 or not self.opts.fct:
+            return
         self.flux.nd_sum(self.formulae["flux"][it], (self.prev, GC), ext=1)
         self.beta_up.nd_sum(fct.beta_up, (self.prev, self.psi_max, self.flux, self.G), ext=1)
         self.beta_dn.nd_sum(fct.beta_dn, (self.prev, self.psi_min, self.flux, self.G), ext=1)
@@ -66,18 +73,17 @@ class MPDATA:
 
     @numba.jit()
     def step(self):
+        self.fct_init()
         for i in range(self.n_iters):
             self.prev.swap_memory(self.curr)
-            if i == 0:
-                GC = self.GC_physical
-                if self.opts.n_iters != 1 and self.opts.fct:
-                    self.fct_init()
-            else:
-                GC = self.GC_antidiff
-                GC.nd_sum(self.formulae["antidiff"], args=(self.prev, self.GC_physical))
-                if self.opts.n_iters != 1 and self.opts.fct:
-                    self.fct_adjust_antidiff(GC, i)
-            self.flux.nd_sum(self.formulae["flux"][i], (self.prev, GC))
+            if i > 0:
+                self.GC_curr.nd_sum(self.formulae["antidiff"], args=(
+                    self.prev,
+                    self.GC_prev if i > 0 else self.GC_physical
+                ))
+                self.fct_adjust_antidiff(self.GC_curr, i)
+            self.flux.nd_sum(self.formulae["flux"][i], (self.prev, self.GC_curr if i > 0 else self.GC_physical))
             self.curr.nd_sum(self.formulae["upwind"], (self.flux, self.G))
             self.curr.add(self.prev)
-
+            if self.n_iters > 2:
+                self.GC_prev.swap_memory(self.GC_curr)
