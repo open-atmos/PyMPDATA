@@ -6,13 +6,13 @@ import numpy as np
 
 
 class VectorField(Field):
-    def __init__(self, data: iter, halo: int, boundary_conditions):
+    def __init__(self, data: iter, halo: int, boundary_conditions, impl=None):
         if len(data) == 1:
             super().__init__(halo, (data[0].shape[0]-1,))
-            self._impl = make_vector_field_1d(data[0], halo)
+            self._impl = make_vector_field_1d(data[0], halo) if impl is None else impl
         elif len(data) == 2:
             super().__init__(halo, (data[1].shape[0], data[0].shape[1]))
-            self._impl = make_vector_field_2d(data, halo)
+            self._impl = make_vector_field_2d(data, halo) if impl is None else impl
         elif len(data) == 3:
             raise NotImplementedError()
         else:
@@ -35,7 +35,8 @@ class VectorField(Field):
         return VectorField(
             data=data,
             halo=vector_field.halo,
-            boundary_conditions=vector_field.boundary_conditions
+            boundary_conditions=vector_field.boundary_conditions,
+            impl=vector_field._impl.clone()
         )
 
     def _fill_halos_impl(self):

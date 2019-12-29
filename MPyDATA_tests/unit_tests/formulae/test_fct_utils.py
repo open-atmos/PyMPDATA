@@ -18,7 +18,7 @@ class TestFCTUtils:
         psi_min.nd_sum(sut, (psi,), ext=ext)
 
         # Assert
-        np.testing.assert_array_equal(np.array([1]*5), psi_min._impl._data[ext:-ext])
+        np.testing.assert_array_equal(np.array([1]*5), psi_min._impl.data[ext:-ext])
 
     def test_psi_max(self):
         # Arrange
@@ -33,4 +33,4 @@ class TestFCTUtils:
         psi_max.nd_sum(sut, (psi,), ext=ext)
 
         # Assert
-        np.testing.assert_array_equal(np.array([3]*5), psi_max._impl._data[ext:-ext])
+        np.testing.assert_array_equal(np.array([3]*5), psi_max._impl.data[ext:-ext])

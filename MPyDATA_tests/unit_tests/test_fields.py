@@ -26,8 +26,8 @@ class TestScalarField1D:
         # Assert
         np.testing.assert_equal(sut.get(), data)
 
-        np.testing.assert_equal(sut._impl._data[:halo], data[-halo:])
-        np.testing.assert_equal(sut._impl._data[-halo:], data[:halo])
+        np.testing.assert_equal(sut._impl.data[:halo], data[-halo:])
+        np.testing.assert_equal(sut._impl.data[-halo:], data[:halo])
 
 
 class TestScalarField2D:
@@ -47,11 +47,11 @@ class TestScalarField2D:
         # Assert
         np.testing.assert_equal(sut.get(), data)
 
-        np.testing.assert_equal(sut._impl._data[:halo,halo:-halo], data[-halo:,:])
-        np.testing.assert_equal(sut._impl._data[-halo:,halo:-halo], data[:halo,:])
+        np.testing.assert_equal(sut._impl.data[:halo,halo:-halo], data[-halo:,:])
+        np.testing.assert_equal(sut._impl.data[-halo:,halo:-halo], data[:halo,:])
 
-        np.testing.assert_equal(sut._impl._data[halo:-halo,:halo], data[:,-halo:])
-        np.testing.assert_equal(sut._impl._data[halo:-halo,-halo:], data[:,:halo])
+        np.testing.assert_equal(sut._impl.data[halo:-halo,:halo], data[:,-halo:])
+        np.testing.assert_equal(sut._impl.data[halo:-halo,-halo:], data[:,:halo])
 
 
 class TestVectorField1D:

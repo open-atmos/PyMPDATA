@@ -34,6 +34,15 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
             self._i = 0
             self.get_component(0)[:] = data_0[:]
 
+        def clone(self):
+            return VectorField1D(self.get_component(0).copy())
+
+        def data(self, i) -> np.ndarray:
+            if i == 0:
+                return self._data_0
+            else:
+                raise ValueError()
+
         @property
         def dimension(self):
             return 1
@@ -73,15 +82,15 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 self._data_0[idx] = function(arg_1, arg_2, arg_3)
 
         def left_halo(self, _, __):
-            return self._data_0[slice(0, halo - 1)]
+            return slice(0, halo - 1)
 
         def left_edge(self, _, __):
-            return self._data_0[slice(halo - 1, 2 * (halo - 1))]
+            return slice(halo - 1, 2 * (halo - 1))
 
         def right_edge(self, _, __):
-            return self._data_0[slice((shape_0 + 1), (shape_0 + 1) + halo - 1)]
+            return slice((shape_0 + 1), (shape_0 + 1) + halo - 1)
 
         def right_halo(self, _, __):
-            return self._data_0[slice((shape_0 + 1) + halo - 1, (shape_0 + 1) + 2 * (halo - 1))]
+            return slice((shape_0 + 1) + halo - 1, (shape_0 + 1) + 2 * (halo - 1))
 
     return VectorField1D(data_0=arg_data_0)

@@ -5,18 +5,21 @@ import numpy as np
 
 
 class ScalarField(Field):
-    def __init__(self, data, halo, boundary_conditions):
+    def __init__(self, data, halo, boundary_conditions, impl=None):
         super().__init__(halo, data.shape)
         dimension = len(data.shape)
 
-        if dimension == 1:
-            self._impl = make_scalar_field_1d(data, halo)
-        elif dimension == 2:
-            self._impl = make_scalar_field_2d(data, halo)
-        elif dimension == 3:
-            raise NotImplementedError()
+        if impl is None:
+            if dimension == 1:
+                self._impl = make_scalar_field_1d(data, halo)
+            elif dimension == 2:
+                self._impl = make_scalar_field_2d(data, halo)
+            elif dimension == 3:
+                raise NotImplementedError()
+            else:
+                raise ValueError()
         else:
-            raise ValueError()
+            self._impl = impl
 
         self.boundary_conditions = boundary_conditions
 
@@ -32,7 +35,8 @@ class ScalarField(Field):
         return ScalarField(
             data=np.full_like(scalar_field.get(), value),
             halo=scalar_field.halo,
-            boundary_conditions=scalar_field.boundary_conditions
+            boundary_conditions=scalar_field.boundary_conditions,
+            impl=scalar_field._impl.clone()
         )
 
     def _fill_halos_impl(self):

@@ -83,8 +83,8 @@ class MPDATAFactory:
     ):
         # TODO: move to tests
         if state.dimension == 2:
-            assert state._impl._data.shape[0] == GC_field._impl._data_0.shape[0] + 1
-            assert state._impl._data.shape[1] == GC_field._impl._data_0.shape[1]
+            assert state._impl.data.shape[0] == GC_field._impl._data_0.shape[0] + 1
+            assert state._impl.data.shape[1] == GC_field._impl._data_0.shape[1]
             assert GC_field._impl._data_0.shape[0] == GC_field._impl._data_1.shape[0] - 1
             assert GC_field._impl._data_0.shape[1] == GC_field._impl._data_1.shape[1] + 1
         # TODO: assert G.data.shape == state.data.shape (but halo...)

@@ -18,8 +18,8 @@ class TestMPDATA1D:
         sut.fct_init()
 
         # Assert
-        np.testing.assert_equal(np.array([3]*5), sut.psi_max._impl._data[1:-1])
-        np.testing.assert_equal(np.array([1]*5), sut.psi_min._impl._data[1:-1])
+        np.testing.assert_equal(np.array([3]*5), sut.psi_max._impl.data[1:-1])
+        np.testing.assert_equal(np.array([1]*5), sut.psi_min._impl.data[1:-1])
 
     def test_TODO(self):
         state = np.array([0, 1, 0])

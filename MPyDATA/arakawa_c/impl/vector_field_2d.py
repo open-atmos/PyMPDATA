@@ -16,6 +16,7 @@ if debug_flag.VALUE:
 else:
     import numba
 
+
 def make_vector_field_2d(arg_data, arg_halo: int):
     assert arg_data[0].shape[0] == arg_data[1].shape[0] + 1
     assert arg_data[0].shape[1] == arg_data[1].shape[1] - 1
@@ -47,7 +48,13 @@ def make_vector_field_2d(arg_data, arg_halo: int):
             self.get_component(0)[:, :] = data_0[:, :]
             self.get_component(1)[:, :] = data_1[:, :]
 
-        def __data(self, i) -> np.ndarray:
+        def clone(self):
+            return VectorField2D(
+                self.get_component(0).copy(),
+                self.get_component(1).copy()
+            )
+
+        def data(self, i) -> np.ndarray:
             if i == 0:
                 return self._data_0
             elif i == 1:
@@ -68,7 +75,7 @@ def make_vector_field_2d(arg_data, arg_halo: int):
 
         def at(self, arg1: [int, float], arg2: [int, float]):
             d, idx1, idx2 = self.__idx(arg1, arg2)
-            return self.__data(d)[idx1, idx2]
+            return self.data(d)[idx1, idx2]
 
         def __idx(self, arg1: [int, float], arg2: [int, float]):
             if self.axis == 1:
@@ -113,7 +120,7 @@ def make_vector_field_2d(arg_data, arg_halo: int):
                     halo - 1 + shape[1] + 1
                 )
             )
-            return self.__data(i)[domain]
+            return self.data(i)[domain]
 
         def apply_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
             for i in range(-1-ext, shape[0]+ext):
@@ -128,42 +135,47 @@ def make_vector_field_2d(arg_data, arg_halo: int):
 
                         self.set_axis(dd)
                         d, idx_i, idx_j = self.__idx(+.5, 0)
-                        self.__data(d)[idx_i, idx_j] = 0
+                        self.data(d)[idx_i, idx_j] = 0
                         arg_1.set_axis(dd)
                         arg_2.set_axis(dd)
 
-                        self.__data(d)[idx_i, idx_j] += function(arg_1, arg_2)
+                        self.data(d)[idx_i, idx_j] += function(arg_1, arg_2)
 
+        # TODO: replace Nones with actual numbers (which are constant)
         def left_halo(self, a: int, c: int):
             if c == 0:
-                if a == 0: return self._data_0[: (halo - 1), :]
-                if a == 1: return self._data_0[:, : halo]
+                if a == 0: return slice(0, halo - 1), slice(None, None)
+                if a == 1: return slice(None, None), slice(0, halo)
             if c == 1:
-                if a == 0: return self._data_1[: halo, :]
-                if a == 1: return self._data_1[:, : (halo - 1)]
+                if a == 0: return slice(0, halo), slice(None, None)
+                if a == 1: return slice(None, None), slice(0, halo - 1)
+            raise ValueError()
 
         def left_edge(self, a: int, c: int):
             if c == 0:
-                if a == 0: return self._data_0[(halo - 1):2 * (halo - 1), :]
-                if a == 1: return self._data_0[:, halo:2 * halo]
+                if a == 0: return slice(halo - 1,2 * (halo - 1)), slice(None, None)
+                if a == 1: return slice(None, None), slice(halo, 2 * halo)
             if c == 1:
-                if a == 0: return self._data_1[halo:2 * halo, :]
-                if a == 1: return self._data_1[:, (halo - 1):2 * (halo - 1)]
+                if a == 0: return slice(halo, 2 * halo), slice(None, None)
+                if a == 1: return slice(None, None), slice(halo - 1, 2 * (halo - 1))
+            raise ValueError()
 
         def right_halo(self, a: int, c: int):
             if c == 0:
-                if a == 0: return self._data_0[-(halo - 1):, :]
-                if a == 1: return self._data_0[:, -halo:]
+                if a == 0: return slice(-(halo - 1), None), slice(None, None)
+                if a == 1: return slice(None, None), slice(-halo, None)
             if c == 1:
-                if a == 0: return self._data_1[-halo:, :]
-                if a == 1: return self._data_1[:, -(halo - 1):]
+                if a == 0: return slice(-halo, None), slice(None, None)
+                if a == 1: return slice(None, None), slice(-(halo - 1), None)
+            raise ValueError()
 
         def right_edge(self, a: int, c: int):
             if c == 0:
-                if a == 0: return self._data_0[-2 * (halo - 1):-(halo - 1), :]
-                if a == 1: return self._data_0[:, -2 * halo:-halo]
+                if a == 0: return slice(-2 * (halo - 1), -(halo - 1)), slice(None, None)
+                if a == 1: return slice(None, None), slice(-2 * halo, -halo)
             if c == 1:
-                if a == 0: return self._data_1[-2 * halo:-halo, :]
-                if a == 1: return self._data_1[:, -2 * (halo - 1):-(halo - 1)]
+                if a == 0: return slice(-2 * halo, -halo), slice(None, None)
+                if a == 1: return slice(None, None), slice(-2 * (halo - 1), -(halo - 1))
+            raise ValueError()
 
     return VectorField2D(data_0=arg_data[0], data_1=arg_data[1])
