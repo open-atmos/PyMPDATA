@@ -17,6 +17,7 @@ class DisabledNumba:
         modules = [
             module for module in sys.modules.values() if "MPyDATA." in str(module) and ".debug_flag" not in str(module)
         ]
-        modules.reverse()
+        for module in modules:
+            reload(module)
         for module in modules:
             reload(module)
