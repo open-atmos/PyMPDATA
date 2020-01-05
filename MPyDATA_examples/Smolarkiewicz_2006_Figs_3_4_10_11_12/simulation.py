@@ -6,7 +6,7 @@ from MPyDATA.options import Options
 
 
 class Simulation:
-    def __init__(self, setup: Setup, opts: Options):
+    def __init__(self, setup: Setup, opts: Options, n_iters: int):
         dx = (setup.x_max - setup.x_min) / setup.nx
         x = np.linspace(setup.x_min+dx/2, setup.x_max-dx/2, setup.nx)
         xh = np.linspace(setup.x_min, setup.x_max, setup.nx+1)
@@ -23,11 +23,12 @@ class Simulation:
             boundary_conditions=((CyclicLeft(), CyclicRight()),)
         )
         self.nt = setup.nt
+        self.n_iters = n_iters
 
     @property
     def state(self):
-        return self.stepper.curr.get().copy()
+        return self.stepper.arrays.curr.get().copy()
 
-    def run(self, n_iters: int):
+    def run(self):
         for _ in range(self.nt):
-            self.stepper.step(n_iters)
+            self.stepper.step(self.n_iters)
