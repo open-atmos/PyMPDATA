@@ -3,6 +3,7 @@ from .arakawa_c.vector_field import VectorField
 from .options import Options
 
 
+# TODO: rename (data)
 class Arrays:
     def __init__(self,
         state: ScalarField,

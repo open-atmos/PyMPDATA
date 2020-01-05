@@ -8,7 +8,6 @@ Created at 17.12.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
-from ..options import Options
 import numpy as np
 
 from ..utils import debug_flag
@@ -20,7 +19,7 @@ else:
 
 
 # TODO: G!
-def make_antidiff(opts: Options):
+def make_antidiff(opts):
     iga = opts.iga
     eps = opts.eps
 

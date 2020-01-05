@@ -8,7 +8,6 @@ Created at 11.10.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
-from ..options import Options
 import numpy as np
 from ..utils import debug_flag
 
@@ -20,7 +19,7 @@ else:
 # TODO: check if (abs(c)-C)/2 is not faster - or as an option like in libmpdata
 
 
-def make_flux(opts: Options, it: int):
+def make_flux(opts, it: int):
     iga = opts.iga
 
     @numba.njit()
@@ -36,7 +35,7 @@ def make_flux(opts: Options, it: int):
     return flux
 
 
-def make_fluxes(opts: Options):
+def make_fluxes(opts):
     fluxes = []
     for it in (0, 1):
         fluxes.append(make_flux(opts, it))

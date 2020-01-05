@@ -2,6 +2,7 @@ class Field:
     class Impl:
         dimension: int
         halo: int
+        axis: int
 
         def at(self, i: [int, float], j: [int, float] = -1, k: [int,float] = -1):
             raise NotImplementedError()

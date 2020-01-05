@@ -10,7 +10,6 @@ from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from MPyDATA.mpdata import MPDATA
-from MPyDATA.mpdata_formulae import MPDATAFormulae
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
 
@@ -46,7 +45,7 @@ class TestMPDATA2D:
 
         G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
         opts = Options()
-        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=opts, formulae=MPDATAFormulae(opts))
+        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=opts)
         for _ in range(n_steps):
             mpdata.step(n_iters=1)
 

@@ -11,7 +11,6 @@ from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .mpdata import MPDATA
-from .mpdata_formulae import MPDATAFormulae
 from .options import Options
 from .eulerian_fields import EulerianFields
 
@@ -33,7 +32,7 @@ class MPDATAFactory:
         state = ScalarField(psi, halo, boundary_conditions=boundary_conditions)
         GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo, boundary_conditions=boundary_conditions)
         g_factor = ScalarField(np.ones((nx,)), halo=0, boundary_conditions=boundary_conditions)  # TODO: nug:False?
-        return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts, formulae=MPDATAFormulae(opts))
+        return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
     def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
@@ -53,7 +52,7 @@ class MPDATAFactory:
             np.full((nx, ny+1), C[1])
         ], halo=halo, boundary_conditions=bcond)
         g_factor = ScalarField(np.ones((nx, ny)), halo=0, boundary_conditions=bcond)  # TODO
-        return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts, formulae=MPDATAFormulae(opts))
+        return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
     def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts):
@@ -70,7 +69,7 @@ class MPDATAFactory:
         mpdatas = {}
         for key, value in field_values.items():
             state = _uniform_scalar_field(grid, value, halo, boundary_conditions=bcond)
-            mpdatas[key] = MPDATA(opts=opts, state=state, GC_field=GC, g_factor=G, formulae=MPDATAFormulae(opts))
+            mpdatas[key] = MPDATA(opts=opts, state=state, GC_field=GC, g_factor=G)
 
         eulerian_fields = EulerianFields(mpdatas)
         return GC, eulerian_fields

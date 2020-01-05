@@ -1,4 +1,3 @@
-from ..options import Options
 from ..utils import debug_flag
 
 if debug_flag.VALUE:
@@ -7,16 +6,15 @@ else:
     import numba
 
 
-def make_laplacian(opts: Options):
-    if opts.mu == 0:
+def make_laplacian(opts):
+    if not opts.nzm:
         return
 
     eps = opts.eps
-    mu = opts.mu
 
     @numba.njit
-    def A(psi):
-        result = -2 * mu * (
+    def A(psi, mu):
+        result = -2 * mu.value * (
                 psi.at(1, 0) - psi.at(0, 0)
         ) / (
                 psi.at(1, 0) + psi.at(0, 0) + eps

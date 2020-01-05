@@ -1,6 +1,7 @@
+from MPyDATA_examples.Arabas_and_Farhat_2019.options import OPTIONS
 from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.arakawa_c.scalar_constant import ScalarConstant
 from MPyDATA.arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
-from MPyDATA.options import Options
 import numpy as np
 
 
@@ -47,10 +48,11 @@ class Simulation:
         self.solvers[1] = MPDATAFactory.uniform_C_1d(
             setup.payoff(self.S),
             self.C,
-            opts=Options(mu=0.5/self.l2),
+            opts=OPTIONS,
             boundary_conditions=((ExtrapolatedLeft(), ExtrapolatedRight()),)
         )
         self.solvers[2] = self.solvers[1].clone()
+        self.mu = ScalarConstant(0.5 / self.l2)
 
     def run(self, n_iters: int):
         psi = self.solvers[n_iters].arrays.curr.get()
@@ -59,7 +61,7 @@ class Simulation:
         t = self.setup.T
 
         for _ in range(self.nt):
-            self.solvers[n_iters].step(n_iters)
+            self.solvers[n_iters].step(n_iters, mu=self.mu)
             if self.setup.amer:
                 psi = self.solvers[n_iters].arrays.curr.get()
                 t -= self.dt
