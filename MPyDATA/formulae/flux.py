@@ -17,13 +17,13 @@ if debug_flag.VALUE:
 else:
     import numba
 
-# TODO
-HALO = 1
+# TODO: check if (abs(c)-C)/2 is not faster - or as an option like in libmpdata
 
 
 def make_flux(opts: Options, it: int):
     iga = opts.iga
-    @numba.njit()         # TODO: check if (abs(c)-C)/2 is not faster
+
+    @numba.njit()
     def flux(psi: ScalarField.Impl, GC: VectorField.Impl):
         if it == 0 or not iga:
             result = (
@@ -38,9 +38,6 @@ def make_flux(opts: Options, it: int):
 
 def make_fluxes(opts: Options):
     fluxes = []
-    for it in range(opts.n_iters):
+    for it in (0, 1):
         fluxes.append(make_flux(opts, it))
     return fluxes
-
-
-

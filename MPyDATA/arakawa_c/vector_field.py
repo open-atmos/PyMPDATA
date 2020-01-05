@@ -6,37 +6,48 @@ import numpy as np
 
 
 class VectorField(Field):
-    def __init__(self, data: iter, halo: int, boundary_conditions, impl=None):
-        if len(data) == 1:
-            super().__init__(halo, (data[0].shape[0]-1,))
-            self._impl = make_vector_field_1d(data[0], halo) if impl is None else impl
-        elif len(data) == 2:
-            super().__init__(halo, (data[1].shape[0], data[0].shape[1]))
-            self._impl = make_vector_field_2d(data, halo) if impl is None else impl
-        elif len(data) == 3:
-            raise NotImplementedError()
+    def __init__(self, data, halo, boundary_conditions, impl=None):
+        if impl is None:
+            dimension = len(data)
+            if dimension == 1:
+                self._impl = make_vector_field_1d(data[0], halo) if impl is None else impl
+            elif dimension == 2:
+                self._impl = make_vector_field_2d(data, halo) if impl is None else impl
+            elif dimension == 3:
+                raise NotImplementedError()
+            else:
+                raise ValueError()
         else:
-            raise ValueError()
+            self._impl = impl
 
         self.boundary_conditions = boundary_conditions
+        super().__init__(halo)
+
+    def add(self, rhs):
+        for d in range(self.dimension):
+            self.get_component(d)[:] += rhs.get_component(d)[:]
+        self._halo_valid = False
 
     def div(self, grid_step: tuple) -> ScalarField:
-        result = ScalarField(np.zeros(self.grid), halo=0, boundary_conditions=None)
+        diffsum = None
         for d in range(self.dimension):
-            result.get()[:] += np.diff(self.get_component(d), axis=d) / grid_step[d]
+            tmp = np.diff(self.get_component(d), axis=d) / grid_step[d]
+            if diffsum is None:
+                diffsum = tmp
+            else:
+                diffsum += tmp
+        result = ScalarField(diffsum, halo=0, boundary_conditions=None)
         return result
 
     def get_component(self, i: int) -> np.ndarray:
         return self._impl.get_component(i)
 
-    @staticmethod
-    def full_like(vector_field, value: float = np.nan):
-        data = [np.full_like(vector_field.get_component(d), value) for d in range(vector_field.dimension)]
+    def clone(self):
         return VectorField(
-            data=data,
-            halo=vector_field.halo,
-            boundary_conditions=vector_field.boundary_conditions,
-            impl=vector_field._impl.clone()
+            data=None,
+            halo=self.halo,
+            boundary_conditions=self.boundary_conditions,
+            impl=self._impl.clone()
         )
 
     def _fill_halos_impl(self):

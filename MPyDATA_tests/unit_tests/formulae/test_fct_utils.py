@@ -10,7 +10,7 @@ class TestFCTUtils:
         data = np.array([1, 2, 3])
         psi = ScalarField(data, halo=2, boundary_conditions=((CyclicLeft(), CyclicRight()),))
         psi.fill_halos()
-        psi_min = ScalarField.full_like(psi)
+        psi_min = ScalarField.clone(psi)
         sut = fct.psi_min
         ext=1
 
@@ -24,7 +24,7 @@ class TestFCTUtils:
         # Arrange
         data = np.array([1, 2, 3])
         psi = ScalarField(data, halo=2, boundary_conditions=((CyclicLeft(), CyclicRight()),))
-        psi_max = ScalarField.full_like(psi)
+        psi_max = ScalarField.clone(psi)
         psi.fill_halos()
         sut = fct.psi_max
         ext=1

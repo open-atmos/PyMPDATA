@@ -77,9 +77,9 @@ def make_scalar_field_1d(arg_data, arg_halo):
             return slice(halo, 2 * halo)
 
         def right_halo(self, _):
-            return slice(-halo, shape)
+            return slice(shape - halo, shape)
 
         def right_edge(self, _):
-            return slice(-2 * halo, -halo)
+            return slice(-2 * halo, shape-halo)
 
     return ScalarField1D(data=arg_data)

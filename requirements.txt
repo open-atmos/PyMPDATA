@@ -8,3 +8,5 @@ nbconvert
 jupyter_client
 ipykernel
 ipywidgets
+scipy
+joblib

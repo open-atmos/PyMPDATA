@@ -9,6 +9,8 @@ Created at 11.10.2019
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
+from MPyDATA.mpdata import MPDATA
+from MPyDATA.mpdata_formulae import MPDATAFormulae
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
 
@@ -43,12 +45,13 @@ class TestMPDATA2D:
         GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo, boundary_conditions=bcond)
 
         G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
-        mpdata = MPDATAFactory._mpdata(GC_field=GC_field, state=state, g_factor=G, opts=Options(n_iters=1))
+        opts = Options()
+        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=opts, formulae=MPDATAFormulae(opts))
         for _ in range(n_steps):
-            mpdata.step()
+            mpdata.step(n_iters=1)
 
         np.testing.assert_array_equal(
-            mpdata.curr.get(),
+            mpdata.arrays.curr.get(),
             out
         )
 
@@ -67,12 +70,12 @@ class TestMPDATA2D:
         sut = MPDATAFactory.uniform_C_2d(
             case["input"].reshape((case["nx"], case["ny"])),
             [case["Cx"], case["Cy"]],
-            Options(n_iters=case["ni"])
+            Options()
         )
 
         # Act
         for _ in range(case["nt"]):
-            sut.step()
+            sut.step(n_iters=case["ni"])
 
         # Assert
-        np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)
+        np.testing.assert_almost_equal(sut.arrays.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)

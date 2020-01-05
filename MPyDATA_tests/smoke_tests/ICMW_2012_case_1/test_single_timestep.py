@@ -28,10 +28,10 @@ def test_single_timestep():
         stream_function=stream_function,
         field_values={'th': 300, 'qv': .001},
         g_factor=rhod,
-        opts = Options(n_iters=1)
+        opts = Options()
     )
 
     # Plot
 
     # Act
-    eulerian_fields.step()
+    eulerian_fields.step(n_iters=1)

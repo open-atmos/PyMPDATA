@@ -28,6 +28,6 @@ class Simulation:
     def state(self):
         return self.stepper.curr.get().copy()
 
-    def run(self):
+    def run(self, n_iters: int):
         for _ in range(self.nt):
-            self.stepper.step()
+            self.stepper.step(n_iters)

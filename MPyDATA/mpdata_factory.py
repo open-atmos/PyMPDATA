@@ -11,6 +11,7 @@ from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .mpdata import MPDATA
+from .mpdata_formulae import MPDATAFormulae
 from .options import Options
 from .eulerian_fields import EulerianFields
 
@@ -18,7 +19,7 @@ from .eulerian_fields import EulerianFields
 class MPDATAFactory:
     @staticmethod
     def n_halo(opts: Options):
-        if opts.n_iters > 1 and (opts.dfl or opts.fct or opts.tot):
+        if opts.dfl or opts.fct or opts.tot:
             n_halo = 2
         else:
             n_halo = 1
@@ -32,7 +33,7 @@ class MPDATAFactory:
         state = ScalarField(psi, halo, boundary_conditions=boundary_conditions)
         GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo, boundary_conditions=boundary_conditions)
         g_factor = ScalarField(np.ones((nx,)), halo=0, boundary_conditions=boundary_conditions)  # TODO: nug:False?
-        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
+        return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts, formulae=MPDATAFormulae(opts))
 
     @staticmethod
     def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
@@ -52,7 +53,7 @@ class MPDATAFactory:
             np.full((nx, ny+1), C[1])
         ], halo=halo, boundary_conditions=bcond)
         g_factor = ScalarField(np.ones((nx, ny)), halo=0, boundary_conditions=bcond)  # TODO
-        return MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
+        return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts, formulae=MPDATAFormulae(opts))
 
     @staticmethod
     def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts):
@@ -69,50 +70,10 @@ class MPDATAFactory:
         mpdatas = {}
         for key, value in field_values.items():
             state = _uniform_scalar_field(grid, value, halo, boundary_conditions=bcond)
-            mpdatas[key] = MPDATAFactory._mpdata(state=state, GC_field=GC, g_factor=G, opts=opts)
+            mpdatas[key] = MPDATA(opts=opts, state=state, GC_field=GC, g_factor=G, formulae=MPDATAFormulae(opts))
 
         eulerian_fields = EulerianFields(mpdatas)
         return GC, eulerian_fields
-
-    @staticmethod
-    def _mpdata(
-            state: ScalarField,
-            g_factor: ScalarField,
-            GC_field: VectorField,
-            opts: Options
-    ):
-        # TODO: move to tests
-        if state.dimension == 2:
-            assert state._impl.data.shape[0] == GC_field._impl._data_0.shape[0] + 1
-            assert state._impl.data.shape[1] == GC_field._impl._data_0.shape[1]
-            assert GC_field._impl._data_0.shape[0] == GC_field._impl._data_1.shape[0] - 1
-            assert GC_field._impl._data_0.shape[1] == GC_field._impl._data_1.shape[1] + 1
-        # TODO: assert G.data.shape == state.data.shape (but halo...)
-        # TODO assert halo
-
-        prev = ScalarField.full_like(state)  # TODO rename?
-        GC_prev = VectorField.full_like(GC_field) if opts.n_iters > 1 else None
-        GC_curr = VectorField.full_like(GC_field) if opts.n_iters > 0 else None
-        flux = VectorField.full_like(GC_field)
-        halo = state.halo
-
-        if (opts.n_iters != 1) & opts.fct:
-            psi_min = ScalarField.full_like(state)
-            psi_max = ScalarField.full_like(state)
-            beta_up = ScalarField.full_like(state)
-            beta_dn = ScalarField.full_like(state)
-        else:
-            psi_min = None
-            psi_max = None
-            beta_up = None
-            beta_dn = None
-
-        mpdata = MPDATA(curr=state, prev=prev, G=g_factor, GC_physical=GC_field,
-                        GC_prev=GC_prev, GC_curr=GC_curr, flux=flux,
-                        psi_min=psi_min, psi_max=psi_max, beta_up=beta_up, beta_dn=beta_dn,
-                        opts=opts, halo=halo)
-
-        return mpdata
 
 
 def _uniform_scalar_field(grid, value: float, halo: int, boundary_conditions):

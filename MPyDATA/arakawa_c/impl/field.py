@@ -15,17 +15,12 @@ class Field:
     _impl = None
     _halo_valid: bool = False
 
-    def __init__(self, halo, grid):
+    def __init__(self, halo):
         self._halo = halo
-        self._grid = grid
 
     @property
     def halo(self):
         return self._halo
-
-    @property
-    def grid(self):
-        return self._grid
 
     @property
     def dimension(self):

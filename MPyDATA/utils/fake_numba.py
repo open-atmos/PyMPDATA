@@ -16,6 +16,10 @@ float64 = FakeType()
 boolean = FakeType()
 
 
+class types:
+    slice2_type = None
+
+
 def optional_arg_decorator(fn):
     @functools.wraps(fn)
     def wrapped_decorator(*args, **kwargs):
