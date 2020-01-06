@@ -8,13 +8,11 @@ Created at 25.09.2019
 
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
-from .formulae.antidiff import make_antidiff
-from .formulae.flux import make_fluxes
 from .formulae import fct_utils as fct
-from .formulae.upwind import make_upwind
 from .options import Options
-
+from .arrays import Arrays
 from .utils import debug_flag
+
 if debug_flag.VALUE:
     import MPyDATA.utils.fake_numba as numba
 else:
@@ -22,63 +20,74 @@ else:
 
 
 class MPDATA:
-    def __init__(self, prev: ScalarField, curr: ScalarField, G: ScalarField,
-                 GC_physical: VectorField, GC_antidiff: VectorField,
-                 flux: VectorField,
-                 psi_min: ScalarField, psi_max: ScalarField,
-                 beta_up: ScalarField, beta_dn: ScalarField,
-                 opts: Options, halo: int):
-        self.curr: ScalarField = curr
-        self.prev: ScalarField = prev
-        self.G: ScalarField = G
-        self.GC_physical: VectorField = GC_physical
-        self.GC_antidiff: VectorField = GC_antidiff
-        self.flux: VectorField = flux
-        self.psi_min: ScalarField = psi_min
-        self.psi_max: ScalarField = psi_max
-        self.beta_up: ScalarField = beta_up
-        self.beta_dn: ScalarField = beta_dn
-
-        self.n_iters: int = opts.n_iters
-        self.halo: int = halo
-
-        # TODO: assert for numba decorators? (depending on value of utils.DEBUG)
-        self.formulae = {
-            "antidiff": make_antidiff(opts),
-            "flux": make_fluxes(opts),
-            "upwind": make_upwind(opts),
-            "fct_GC_mono": fct.fct_GC_mono
-        }
-
+    def __init__(self,
+        opts: Options,
+        state: ScalarField,
+        g_factor: ScalarField,
+        GC_field: VectorField,
+    ):
+        self.arrays = Arrays(state, g_factor, GC_field, opts)
         self.opts = opts
 
-    @numba.jit()
-    def fct_init(self):
-        self.psi_min.nd_sum(fct.psi_min, args=(self.prev,), ext=1)
-        self.psi_max.nd_sum(fct.psi_max, args=(self.prev,), ext=1)
+    def clone(self):
+        return MPDATA(
+            self.opts.clone(),
+            self.arrays.curr.clone(),
+            self.arrays.G.clone(),
+            self.arrays.GC_phys.clone(),
+        )
 
     @numba.jit()
-    def fct_adjust_antidiff(self, GC: VectorField, it:int):
-        self.flux.nd_sum(self.formulae["flux"][it], (self.prev, GC), ext=1)
-        self.beta_up.nd_sum(fct.beta_up, (self.prev, self.psi_max, self.flux, self.G), ext=1)
-        self.beta_dn.nd_sum(fct.beta_dn, (self.prev, self.psi_min, self.flux, self.G), ext=1)
-        GC.nd_sum(self.formulae["fct_GC_mono"], (GC, self.beta_up, self.beta_dn))
+    def step(self, n_iters, mu=0.):
+        assert n_iters > 0
+        assert mu == 0 or self.opts.nzm
 
-    @numba.jit()
-    def step(self):
-        for i in range(self.n_iters):
-            self.prev.swap_memory(self.curr)
-            if i == 0:
-                GC = self.GC_physical
-                if self.opts.n_iters != 1 and self.opts.fct:
-                    self.fct_init()
+        self.fct_init(psi=self.arrays.curr, n_iters=n_iters)
+        if self.opts.nzm:
+            assert self.arrays.curr.dimension == 1  # TODO
+            assert self.opts.nug is False
+
+            self.arrays.GC_curr.nd_sum(self.opts.formulae["laplacian"], args=(self.arrays.curr, mu))
+            self.arrays.GC_curr.add(self.arrays.GC_phys)
+        else:
+            self.arrays.GC_curr.swap_memory(self.arrays.GC_phys)
+
+        for i in range(n_iters):
+            self.arrays.prev.swap_memory(self.arrays.curr)
+            self.arrays.GC_prev.swap_memory(self.arrays.GC_curr)
+
+            if i > 0:
+                self.arrays.GC_curr.nd_sum(
+                    self.opts.formulae["antidiff"],
+                    args=(self.arrays.prev, self.arrays.GC_prev, self.arrays.G)
+                )
+                self.fct_adjust_antidiff(self.arrays.GC_curr, i, flux=self.arrays.GC_prev, n_iters=n_iters)
             else:
-                GC = self.GC_antidiff
-                GC.nd_sum(self.formulae["antidiff"], args=(self.prev, self.GC_physical))
-                if self.opts.n_iters != 1 and self.opts.fct:
-                    self.fct_adjust_antidiff(GC, i)
-            self.flux.nd_sum(self.formulae["flux"][i], (self.prev, GC))
+                self.arrays.GC_curr.swap_memory(self.arrays.GC_prev)
 
-            self.curr.nd_sum(self.formulae["upwind"], (self.flux, self.G))
-            self.curr.add(self.prev)
+            self.upwind(i, flux=self.arrays.GC_prev)
 
+            if i == 0 and not self.opts.nzm:
+                self.arrays.GC_phys.swap_memory(self.arrays.GC_curr)
+
+    @numba.jit()
+    def upwind(self, i: int, flux: VectorField):
+        flux.nd_sum(self.opts.formulae["flux"][0 if i == 0 else 1], (self.arrays.prev, self.arrays.GC_curr))
+        self.arrays.curr.nd_sum(self.opts.formulae["upwind"], (flux, self.arrays.G))
+        self.arrays.curr.add(self.arrays.prev)
+
+    @numba.jit()
+    def fct_init(self, psi: ScalarField, n_iters: int):
+        if n_iters == 1 or not self.opts.fct:
+            return
+        self.arrays.psi_min.nd_sum(fct.psi_min, args=(psi,), ext=1)
+        self.arrays.psi_max.nd_sum(fct.psi_max, args=(psi,), ext=1)
+
+    @numba.jit()
+    def fct_adjust_antidiff(self, GC: VectorField, it: int, flux: VectorField, n_iters: int):
+        if n_iters == 1 or not self.opts.fct:
+            return
+        flux.nd_sum(self.opts.formulae["flux"][0 if it == 0 else 1], (self.arrays.prev, GC), ext=1)
+        self.arrays.beta_up.nd_sum(fct.beta_up, (self.arrays.prev, self.arrays.psi_max, flux, self.arrays.G), ext=1)
+        self.arrays.beta_dn.nd_sum(fct.beta_dn, (self.arrays.prev, self.arrays.psi_min, flux, self.arrays.G), ext=1)
+        GC.nd_sum(self.opts.formulae["GC_mono"], (GC, self.arrays.beta_up, self.arrays.beta_dn))

@@ -88,19 +88,21 @@ def beta_dn(
     )
 
 
-@numba.njit
-def fct_GC_mono(
-    GC: VectorField.Impl,
-    beta_up: ScalarField.Impl,
-    beta_dn: ScalarField.Impl
-):
-    # TODO: this version is for iga or positive sign signal only
-    result = GC.at(+.5, 0) * np.where(
-        # if
-        GC.at(+.5, 0) > 0,
-        # then
-        extremum_3arg(np.minimum, 1, beta_dn.at(0, 0), beta_up.at(1, 0)),
-        # else
-        extremum_3arg(np.minimum, 1, beta_up.at(0, 0), beta_dn.at(1, 0))
-    )
-    return result
+def make_GC_mono():
+    @numba.njit
+    def fct_GC_mono(
+        GC: VectorField.Impl,
+        beta_up: ScalarField.Impl,
+        beta_dn: ScalarField.Impl
+    ):
+        # TODO: this version is for iga or positive sign signal only
+        result = GC.at(+.5, 0) * np.where(
+            # if
+            GC.at(+.5, 0) > 0,
+            # then
+            extremum_3arg(np.minimum, 1, beta_dn.at(0, 0), beta_up.at(1, 0)),
+            # else
+            extremum_3arg(np.minimum, 1, beta_up.at(0, 0), beta_dn.at(1, 0))
+        )
+        return result
+    return fct_GC_mono

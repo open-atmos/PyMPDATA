@@ -1,28 +1,48 @@
+from .formulae.antidiff import make_antidiff
+from .formulae.flux import make_fluxes
+from .formulae.upwind import make_upwind
+from .formulae.laplacian import make_laplacian
+from .formulae.fct_utils import make_GC_mono
+
+
+# TODO: rename (algorithms)
 class Options:
     def __init__(self,
-                 nug: bool = False,
-                 iga: bool = False,
-                 fct: bool = False,
-                 dfl: bool = False,
-                 tot: bool = False,
-                 n_iters: int = 2,
-                 eps: float = 1e-8
+                 nug: bool = False,  # non-unit g_factor
+                 iga: bool = False,  # infinite gauge
+                 fct: bool = False,  # flux-corrected transport
+                 dfl: bool = False,  # divergent flow
+                 tot: bool = False,  # third-order terms
+                 nzm: bool = False,  # non-zero mu
+                 eps: float = 1e-8,
                  ):
         self._nug = nug
-        self._n_iters = n_iters
         self._iga = iga
         self._fct = fct
         self._dfl = dfl
         self._tot = tot
         self._eps = eps
+        self._nzm = nzm
+
+        # TODO: assert for numba decorators? (depending on value of utils.DEBUG)
+        self._formulae = {
+            "antidiff": make_antidiff(self),
+            "flux": make_fluxes(self),
+            "upwind": make_upwind(self),
+            "GC_mono": make_GC_mono(),
+            "laplacian": make_laplacian(self)
+        }
+
+    def clone(self):
+        return self
+
+    @property
+    def formulae(self):
+        return self._formulae
 
     @property
     def nug(self) -> bool:
         return self._nug
-
-    @property
-    def n_iters(self) -> int:
-        return self._n_iters
 
     @property
     def iga(self) -> bool:
@@ -44,3 +64,8 @@ class Options:
     def eps(self) -> float:
         return self._eps
 
+    # for definition of mu (mesh Fourier number),
+    # see eq. 20 in Sousa 2009, doi:10.1002/fld.1984
+    @property
+    def nzm(self) -> float:
+        return self._nzm
