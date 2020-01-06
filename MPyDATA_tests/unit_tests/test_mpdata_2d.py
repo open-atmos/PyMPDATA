@@ -20,6 +20,11 @@ import pytest
 from MPyDATA_tests.unit_tests.__parametrisation__ import halo, case
 
 
+@pytest.fixture(scope="module")
+def options():
+    return Options()
+
+
 class TestMPDATA2D:
     @pytest.mark.parametrize("shape, ij0, out, C, n_steps", [
         pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.), 1),
@@ -28,7 +33,7 @@ class TestMPDATA2D:
         pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5), 1),
         pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5), 1),
     ])
-    def test_44(self, shape, ij0, out, C, n_steps, halo):
+    def test_44(self, shape, ij0, out, C, n_steps, halo, options):
         value = 44
         scalar_field_init = np.zeros(shape)
         scalar_field_init[ij0] = value
@@ -44,8 +49,7 @@ class TestMPDATA2D:
         GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo, boundary_conditions=bcond)
 
         G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
-        opts = Options()
-        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=opts)
+        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=options)
         for _ in range(n_steps):
             mpdata.step(n_iters=1)
 
@@ -54,7 +58,7 @@ class TestMPDATA2D:
             out
         )
 
-    def test_Arabas_et_al_2014_sanity(self, case):
+    def test_Arabas_et_al_2014_sanity(self, case, options):
         case = {
             "nx": case[0],
             "ny": case[1],
@@ -69,7 +73,7 @@ class TestMPDATA2D:
         sut = MPDATAFactory.uniform_C_2d(
             case["input"].reshape((case["nx"], case["ny"])),
             [case["Cx"], case["Cy"]],
-            Options()
+            options
         )
 
         # Act

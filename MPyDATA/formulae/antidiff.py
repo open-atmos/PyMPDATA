@@ -68,20 +68,21 @@ def make_antidiff(opts):
         if tot:
             assert psi.dimension == 1  # TODO!
             # TODO: if nug
-            tmp = 2 * (psi.at(2,0) - psi.at(1,0) - psi.at(0,0) + psi.at(-1,0)) * (
-                     3 * GC.at(.5,0) * np.abs(GC.at(.5,0)) / ((G.at(1,0) + G.at(0,0)) / 2)
-                     - 2 * GC.at(.5,0) ** 3 / ((G.at(1,0) + G.at(0,0)) / 2) ** 2
-                     - GC.at(.5,0)
+            tmp = 2 * (psi.at(2, 0) - psi.at(1, 0) - psi.at(0, 0) + psi.at(-1, 0)) * (
+                     3 * GC.at(.5, 0) * np.abs(GC.at(.5, 0)) / ((G.at(1, 0) + G.at(0, 0)) / 2)
+                     - 2 * GC.at(.5, 0) ** 3 / ((G.at(1, 0) + G.at(0, 0)) / 2) ** 2
+                     - GC.at(.5, 0)
              ) / 6
 
             if iga:
                 tmp /= (1 + 1 + 1 + 1)
             else:
-                tmp /= (psi.at(2,0) + psi.at(1,0) + psi.at(0,0) + psi.at(-1,0))
+                tmp /= (psi.at(2, 0) + psi.at(1, 0) + psi.at(0, 0) + psi.at(-1, 0))
 
             result += tmp
 
         # divergent flow option
+        # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if dfl:
             assert psi.dimension == 1  # TODO!
             tmp = -.5 * GC.at(.5, 0) * (GC.at(1.5, 0) - GC.at(-.5, 0))

@@ -7,8 +7,10 @@ MPyDATA is a Numba-accelerated Pythonic implementation of the MPDATA algorithm o
 As of the current version, it supports 1D and 2D integration without any parallelism.
 
 ## Demos:
-- [Smolarkiewicz 2006 ](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12
+- [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)
+- [Arabas & Farhat 2019](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1   
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FArabas_and_Farhat_2019/)
 
 ## Credits:
 Development of MPyDATA is supported by the EU through a grant of the Foundation for Polish Science (POIR.04.04.00-00-5E1C/18).
