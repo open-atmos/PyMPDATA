@@ -1,3 +1,4 @@
 from MPyDATA.options import Options
 
-OPTIONS = Options(nzm=True)
+# TODO: all True
+OPTIONS = Options(nzm=True, iga=True, fct=True, dfl=True, tot=True)

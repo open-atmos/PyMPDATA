@@ -89,16 +89,16 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 idx = self.__idx(+.5)
                 self._data_0[idx] = function(arg_1, arg_2, arg_3)
 
-        def left_halo(self, _, __):
+        def left_halo(self, _):
             return slice(0, halo - 1)
 
-        def left_edge(self, _, __):
+        def left_edge(self, _):
             return slice(halo - 1, 2 * (halo - 1))
 
-        def right_edge(self, _, __):
+        def right_edge(self, _):
             return slice((shape_0 + 1), (shape_0 + 1) + halo - 1)
 
-        def right_halo(self, _, __):
+        def right_halo(self, _):
             return slice((shape_0 + 1) + halo - 1, (shape_0 + 1) + 2 * (halo - 1))
 
     return VectorField1D(data_0=arg_data_0)

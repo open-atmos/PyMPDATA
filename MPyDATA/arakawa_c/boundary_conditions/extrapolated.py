@@ -27,8 +27,9 @@ class ExtrapolatedLeft:
     @staticmethod
     @numba.njit
     def vector(impl, axis, comp):
-        raise NotImplementedError()
-
+        lh = impl.left_halo(axis)
+        for i in range(lh.start, lh.stop):
+            impl.data(comp)[i] = impl.data(comp)[lh.start]
 
 class ExtrapolatedRight:
     @staticmethod
@@ -48,4 +49,6 @@ class ExtrapolatedRight:
     @staticmethod
     @numba.njit
     def vector(impl, axis, comp):
-        raise NotImplementedError()
+        rh = impl.right_halo(axis)
+        for i in range(rh.start, rh.stop):
+            impl.data(comp)[i] = rh.stop-1

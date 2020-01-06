@@ -31,7 +31,7 @@ class MPDATAFactory:
 
         state = ScalarField(psi, halo, boundary_conditions=boundary_conditions)
         GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo, boundary_conditions=boundary_conditions)
-        g_factor = ScalarField(np.ones((nx,)), halo=0, boundary_conditions=boundary_conditions)  # TODO: nug:False?
+        g_factor = ScalarField(np.ones((nx,)), halo=halo, boundary_conditions=boundary_conditions)  # TODO: nug:False?
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
@@ -51,7 +51,7 @@ class MPDATAFactory:
             np.full((nx + 1, ny), C[0]),
             np.full((nx, ny+1), C[1])
         ], halo=halo, boundary_conditions=bcond)
-        g_factor = ScalarField(np.ones((nx, ny)), halo=0, boundary_conditions=bcond)  # TODO
+        g_factor = ScalarField(np.ones((nx, ny)), halo=halo, boundary_conditions=bcond)  # TODO
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
@@ -64,7 +64,7 @@ class MPDATAFactory:
 
         halo = MPDATAFactory.n_halo(opts)
         GC = _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function, boundary_conditions=bcond)
-        G = ScalarField(g_factor, halo=0, boundary_conditions=bcond)
+        G = ScalarField(g_factor, halo=halo, boundary_conditions=bcond)
 
         mpdatas = {}
         for key, value in field_values.items():

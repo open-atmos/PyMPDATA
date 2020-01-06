@@ -22,7 +22,7 @@ def make_upwind(opts):
 
     @numba.njit
     def upwind(flx: VectorField.Impl, G: ScalarField.Impl):
-        result = - 1 * (
+        result = -1 * (
                 flx.at(+.5, 0) -
                 flx.at(-.5, 0)
         )

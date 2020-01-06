@@ -57,7 +57,10 @@ class MPDATA:
             self.arrays.GC_prev.swap_memory(self.arrays.GC_curr)
 
             if i > 0:
-                self.arrays.GC_curr.nd_sum(self.opts.formulae["antidiff"], args=(self.arrays.prev, self.arrays.GC_prev))
+                self.arrays.GC_curr.nd_sum(
+                    self.opts.formulae["antidiff"],
+                    args=(self.arrays.prev, self.arrays.GC_prev, self.arrays.G)
+                )
                 self.fct_adjust_antidiff(self.arrays.GC_curr, i, flux=self.arrays.GC_prev, n_iters=n_iters)
             else:
                 self.arrays.GC_curr.swap_memory(self.arrays.GC_prev)

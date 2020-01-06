@@ -4,8 +4,12 @@ import pytest
 
 
 def check(actual, desired):
-    # TODO: improve when done
-    np.testing.assert_allclose(actual, desired, rtol=.05, atol=.5)
+    assert actual[0] == desired[0]
+    assert actual[1] == desired[1]
+    assert np.round(actual[2], 1) <= desired[2]
+    assert np.round(actual[3], 1) <= desired[3]
+    assert np.round(actual[4], 1) <= desired[4]
+    np.testing.assert_allclose(actual[5:], desired[5:], rtol=0.0005, atol=0.005)
 
 
 @pytest.fixture(scope="module")
