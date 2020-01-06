@@ -141,6 +141,27 @@ def make_vector_field_2d(arg_data, arg_halo: int):
 
                         self.data(d)[idx_i, idx_j] += function(arg_1, arg_2)
 
+        def apply_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
+            for i in range(-1-ext, shape[0]+ext):
+                for j in range(-1-ext, shape[1]+ext):
+                    self.focus(i, j)
+                    arg_1.focus(i, j)
+                    arg_2.focus(i, j)
+                    arg_3.focus(i, j)
+
+                    for dd in range(2):
+                        if (i == -1 and dd == 1) or (j == -1 and dd == 0):
+                            continue
+
+                        self.set_axis(dd)
+                        d, idx_i, idx_j = self.__idx(+.5, 0)
+                        self.data(d)[idx_i, idx_j] = 0
+                        arg_1.set_axis(dd)
+                        arg_2.set_axis(dd)
+                        arg_3.set_axis(dd)
+
+                        self.data(d)[idx_i, idx_j] += function(arg_1, arg_2, arg_3)
+
         # TODO: replace Nones with actual numbers (which are constant)
         def left_halo(self, a: int, c: int):
             if c == 0:

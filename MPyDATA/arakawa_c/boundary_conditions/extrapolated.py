@@ -27,7 +27,7 @@ class ExtrapolatedLeft:
     @staticmethod
     @numba.njit
     def vector(impl, axis, comp):
-        lh = impl.left_halo(axis)
+        lh = impl.left_halo(axis, comp)
         for i in range(lh.start, lh.stop):
             impl.data(comp)[i] = impl.data(comp)[lh.start]
 
@@ -49,6 +49,6 @@ class ExtrapolatedRight:
     @staticmethod
     @numba.njit
     def vector(impl, axis, comp):
-        rh = impl.right_halo(axis)
+        rh = impl.right_halo(axis, comp)
         for i in range(rh.start, rh.stop):
             impl.data(comp)[i] = rh.stop-1
