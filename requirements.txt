@@ -9,4 +9,5 @@ jupyter_client
 ipykernel
 ipywidgets
 scipy
+pint
 joblib

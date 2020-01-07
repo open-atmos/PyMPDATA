@@ -35,6 +35,50 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
+    def TODO(nr, r_min, r_max, dt, coord, cdf, drdt, opts: Options):
+        assert opts.nug
+
+        _, dx = np.linspace(
+            coord.x(r_min),
+            coord.x(r_max),
+            nr + 1,
+            retstep=True
+        )
+        n_halo = MPDATAFactory.n_halo(opts)
+        xh = np.linspace(
+            coord.x(r_min) - (n_halo - 1) * dx,
+            coord.x(r_max) + (n_halo - 1) * dx,
+            nr + 1 + 2 * (n_halo - 1)
+        )
+        rh = coord.r(xh)
+        Gh = 1 / coord.dx_dr(rh)
+        x = np.linspace(
+            xh[0] - dx / 2,
+            xh[-1] + dx / 2,
+            nr + 2 * n_halo
+        )
+        r = coord.r(x)
+        G = 1 / coord.dx_dr(r)
+
+        psi = (
+            np.diff(cdf(rh))
+            /
+            np.diff(rh)
+        )
+
+        # C = drdt * dxdr * dt / dx
+        # G = 1 / dxdr
+        C = drdt(rh) / Gh * dt / dx
+        GCh = Gh * C
+
+        bcond = ((None, None),)
+        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond)
+        state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond)
+        GC_field = VectorField(GCh, halo=n_halo, boundary_conditions=bcond)
+        return MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field)
+
+
+    @staticmethod
     def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
         # TODO
         bcond = (
