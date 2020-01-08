@@ -10,6 +10,7 @@ import numpy as np
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
+from .arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
 from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
@@ -71,11 +72,11 @@ class MPDATAFactory:
         C = drdt(rh) / Gh * dt / dx
         GCh = Gh * C
 
-        bcond = ((None, None),)
+        bcond = ((ExtrapolatedLeft, ExtrapolatedRight),)
         g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond)
         state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond)
-        GC_field = VectorField(GCh, halo=n_halo, boundary_conditions=bcond)
-        return MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field)
+        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
+        return MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field), r
 
 
     @staticmethod

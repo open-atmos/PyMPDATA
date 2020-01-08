@@ -2,12 +2,22 @@ from MPyDATA_examples.condensational_growth.simulation import Simulation
 from MPyDATA_examples.condensational_growth.setups import east_1957_fig3
 from MPyDATA_examples.condensational_growth.coord import x_id, x_ln, x_p2
 from MPyDATA.options import Options
+import pint, pytest
+import numpy as np
 
 
-
-def test_simulation():
-    setup = east_1957_fig3.East1957Fig3
-    coord = x_id()
+@pytest.mark.parametrize("coord", [x_id(), x_p2(), x_ln()])
+def test_init(coord):
+    # Arrange
+    si = pint.UnitRegistry()
+    setup = east_1957_fig3.East1957Fig3(si)
     opts = Options(nug=True)
 
+    # Act
     simulation = Simulation(coord, setup, opts)
+    simulation.solver.arrays.G.fill_halos()
+
+    # Assert
+    G_with_halo = simulation.solver.arrays.G._impl.data
+    assert np.isfinite(G_with_halo).all()
+    assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) < 0).all()

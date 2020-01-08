@@ -1,21 +1,22 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-from MPyDATA_examples.condensational_growth import coord
-import numpy as np
 
 
 class Simulation:
     @staticmethod
-    def __mgn(quantity):
-        return quantity.to_base_units().magnitude
+    def __mgn(quantity, unit):
+        return quantity.to(unit).magnitude
 
     def __init__(self, coord, setup, opts):
-      solver = MPDATAFactory.TODO(
-          setup.nr,
-          self.__mgn(setup.r_min),
-          self.__mgn(setup.r_max),
-          self.__mgn(setup.dt),
-          coord,
-          setup.cdf,
-          setup.drdt,
-          opts
-      )
+        self.t_unit = setup.si.seconds
+        self.r_unit = setup.si.metres
+        self.n_unit = setup.si.metres**-3
+        self.solver, self.r = MPDATAFactory.TODO(
+            setup.nr,
+            self.__mgn(setup.r_min, self.r_unit),
+            self.__mgn(setup.r_max, self.r_unit),
+            self.__mgn(setup.dt, self.t_unit),
+            coord,
+            lambda r: self.__mgn(setup.cdf(r * self.r_unit), self.n_unit),
+            lambda r: self.__mgn(setup.drdt(r * self.r_unit), self.r_unit / self.t_unit),
+            opts
+        )
