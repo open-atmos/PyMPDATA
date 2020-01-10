@@ -36,7 +36,8 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def TODO(nr, r_min, r_max, dt, coord, cdf, drdt, opts: Options):
+    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, coord, cdf, drdt, opts: Options):
+        # TODO
         assert opts.nug
 
         _, dx = np.linspace(
@@ -76,7 +77,10 @@ class MPDATAFactory:
         g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond)
         state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond)
         GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
-        return MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field), r
+        return (
+            MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
+            r[1:-1]
+        )
 
 
     @staticmethod
