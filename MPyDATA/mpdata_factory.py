@@ -46,18 +46,17 @@ class MPDATAFactory:
             nr + 1,
             retstep=True
         )
-        n_halo = MPDATAFactory.n_halo(opts)
         xh = np.linspace(
-            coord.x(r_min) - (n_halo - 1) * dx,
-            coord.x(r_max) + (n_halo - 1) * dx,
-            nr + 1 + 2 * (n_halo - 1)
+            coord.x(r_min),
+            coord.x(r_max),
+            nr + 1
         )
         rh = coord.r(xh)
         Gh = 1 / coord.dx_dr(rh)
         x = np.linspace(
-            xh[0] - dx / 2,
-            xh[-1] + dx / 2,
-            nr + 2 * n_halo
+            xh[0] + dx / 2,
+            xh[-1] - dx / 2,
+            nr
         )
         r = coord.r(x)
         G = 1 / coord.dx_dr(r)
@@ -74,6 +73,7 @@ class MPDATAFactory:
         GCh = Gh * C
 
         bcond = ((ExtrapolatedLeft, ExtrapolatedRight),)
+        n_halo = MPDATAFactory.n_halo(opts)
         g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond)
         state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond)
         GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
