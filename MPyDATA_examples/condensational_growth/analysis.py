@@ -9,14 +9,17 @@ from joblib import Parallel, delayed
 def analysis():
     si = pint.UnitRegistry()
     setup = Setup(si)
-    simulation = Simulation(x_id(), setup, Options(nug=True))
+    options = Options(nug=True) # , dfl=True, #iga=True, fct=True, tot=True)
+    simulation = Simulation(x_id(), setup, options)
 
-    result = {'r':None, "n":[]}
+    result = {'r': None, "n": []}
     last_step = 0
     for n_steps in setup.nt:
         for _ in range(n_steps - last_step):
-            simulation.step(n_iters=2) #TODO
+            simulation.step(n_iters=2)  # TODO
         last_step += n_steps
         result['n'].append(simulation.n.copy())
     result['r'] = simulation.r.copy()
+    result['rh'] = simulation.rh.copy()
     return result, setup
+

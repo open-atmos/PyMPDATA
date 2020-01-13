@@ -9,16 +9,17 @@ class Plotter:
             r_max.magnitude,
             512, retstep=True
         )
-        self.xunit = r_min.units
-        self.yunit = None
-        self.fig, self.axs = pyplot.subplots(2, 1, figsize=(8, 8))
+        self.cdfarg *= r_min.units
+        self.dcdfarg *= r_max.units
 
+        self.fig, self.axs = pyplot.subplots(2, 1, figsize=(8, 8))
         self.style_dict = {}
         self.style_palette = ['dotted', '--', '-', '-.']
         self.axs[0].set_title(title)
+
+        si.setup_matplotlib()
         self.si = si
 
-    def done(self):
         self.axs[0].xaxis.set_units(self.si.micrometre)
         self.axs[0].yaxis.set_units(1 / self.si.micrometre / self.si.centimetre ** 3)
 
@@ -28,11 +29,12 @@ class Plotter:
         self.axs[0].grid()
         self.axs[1].grid()
 
+    def done(self):
         pyplot.legend()
         pyplot.show()
 
     def analytical_pdf(self, pdf, mnorm):
-        x = self.cdfarg * self.xunit
+        x = self.cdfarg
 
         # number distribution
         y = pdf(x)
@@ -44,9 +46,9 @@ class Plotter:
         rho_a = 1 * self.si.kilogram / self.si.metre ** 3
 
         y_mass = y * x**3 * 4 / 3 * np.pi * rho_w / rho_a / mnorm
-        self.axs[1].plot(x, y_mass.to_base_units(), color='blue')
+        self.axs[1].plot(x, y_mass, color='blue')
 
-    def numerical_pdf(self, x, y, label):
+    def numerical_pdf(self, x, y, bin_boundaries, label, mnorm):
         lbl = label
         if label not in self.style_dict:
             self.style_dict[label] = self.style_palette[len(self.style_dict)]
@@ -61,14 +63,14 @@ class Plotter:
         )
 
         # normalised mass distribution
-        # r1 = xy["rb"][:-1] * self.xunit
-        # r2 = xy["rb"][1:] * self.xunit
-        #
-        # rho_w = 1 * self.si.kilogram / self.si.decimetre ** 3
-        # rho_a = 1 * self.si.kilogram / self.si.metre ** 3
-        #
-        # self.axs[1].step(
-        #     xy["r"] * self.xunit,
-        #     xy["n"] * self.yunit * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi * rho_w / rho_a / mnorm,
-        #     where='mid', label=lbl, linestyle=self.style_dict[label], color='black'
-        # )
+        r1 = bin_boundaries[:-1]
+        r2 = bin_boundaries[1:]
+
+        rho_w = 1 * self.si.kilogram / self.si.decimetre ** 3
+        rho_a = 1 * self.si.kilogram / self.si.metre ** 3
+
+        self.axs[1].step(
+            x,
+            y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi * rho_w / rho_a / mnorm,
+            where='mid', label=lbl, linestyle=self.style_dict[label], color='black'
+        )
