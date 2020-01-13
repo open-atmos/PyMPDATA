@@ -1,5 +1,5 @@
 from MPyDATA_examples.condensational_growth.simulation import Simulation
-from MPyDATA_examples.condensational_growth.setups import east_1957_fig3
+from MPyDATA_examples.condensational_growth.setup import Setup
 from MPyDATA_examples.condensational_growth.coord import x_id, x_ln, x_p2
 from MPyDATA.options import Options
 import pint, pytest
@@ -10,7 +10,7 @@ import numpy as np
 def test_init(coord):
     # Arrange
     si = pint.UnitRegistry()
-    setup = east_1957_fig3.East1957Fig3(si)
+    setup = Setup(si)
     opts = Options(nug=True)
 
     # Act

@@ -1,17 +1,18 @@
 import numpy as np
 
 
-class Rogers_drdt:
+class DrDt:
+    """ eq. 7.20 in Rogers and Yau 1989 """
     def __init__(self, ksi_1, S):
-        # Rogers and Yau p. 104
         self.ksi = (S - 1) * ksi_1
 
     def __call__(self, r):
         return self.ksi / r
 
 
-class Rogers_pdf:
-    def __init__(self, pdf, drdt: Rogers_drdt, t):
+class PdfEvolver:
+    """ eq. 7.32 in Rogers and Yau 1989 """
+    def __init__(self, pdf, drdt: DrDt, t):
         self.t = t
         self.pdf = pdf
         self.drdt = drdt

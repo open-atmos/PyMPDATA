@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import special
 
 
 class SizeDistribution:
@@ -8,7 +9,7 @@ class SizeDistribution:
     def cdf(self, r):
         return (
                 175 * np.sqrt(2 * np.pi / 11) *
-                np.erf(np.sqrt(22) * np.log(r / (7 * self.si.micrometre)) / np.log(10)) *
+                special.erf(np.sqrt(22) * np.log(r / (7 * self.si.micrometre)) / np.log(10)) *
                 np.log(10) *
                 (1 / self.si.centimetre ** 3)
         )
