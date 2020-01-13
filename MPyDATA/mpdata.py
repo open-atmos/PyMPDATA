@@ -71,10 +71,14 @@ class MPDATA:
                 self.arrays.GC_phys.swap_memory(self.arrays.GC_curr)
 
     @numba.jit()
-    def upwind(self, i: int, flux: VectorField):
+    def upwind(self, i: int, flux: VectorField, check_conservativeness=False):
+        if check_conservativeness:
+            pass
         flux.nd_sum(self.opts.formulae["flux"][0 if i == 0 else 1], (self.arrays.prev, self.arrays.GC_curr))
         self.arrays.curr.nd_sum(self.opts.formulae["upwind"], (flux, self.arrays.G))
         self.arrays.curr.add(self.arrays.prev)
+        if check_conservativeness:
+            pass
 
     @numba.jit()
     def fct_init(self, psi: ScalarField, n_iters: int):
