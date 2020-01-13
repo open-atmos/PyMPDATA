@@ -79,7 +79,8 @@ class MPDATAFactory:
         GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
         return (
             MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
-            r[1:-1]
+            r[n_halo:-n_halo],
+            rh[(n_halo-1):nr+1-(n_halo-1)]
         )
 
 
