@@ -12,6 +12,7 @@ from .formulae import fct_utils as fct
 from .options import Options
 from .arrays import Arrays
 from .utils import debug_flag
+import numpy as np
 
 if debug_flag.VALUE:
     import MPyDATA.utils.fake_numba as numba
@@ -38,7 +39,7 @@ class MPDATA:
         )
 
     @numba.jit()
-    def step(self, n_iters, mu=0.):
+    def step(self, n_iters, mu=0., debug=False):
         assert n_iters > 0
         assert mu == 0 or self.opts.nzm
 
@@ -65,20 +66,30 @@ class MPDATA:
             else:
                 self.arrays.GC_curr.swap_memory(self.arrays.GC_prev)
 
-            self.upwind(i, flux=self.arrays.GC_prev)
+            self.upwind(i, flux=self.arrays.GC_prev,
+                        check_conservativeness=debug,
+                        check_CFL=debug
+                        )
 
             if i == 0 and not self.opts.nzm:
                 self.arrays.GC_phys.swap_memory(self.arrays.GC_curr)
 
     @numba.jit()
-    def upwind(self, i: int, flux: VectorField, check_conservativeness=False):
-        if check_conservativeness:
-            pass
+    def upwind(self, i: int, flux: VectorField, check_conservativeness, check_CFL):
+        if check_CFL:
+            # TODO: 2D, 3D, ...
+            assert (np.abs(self.arrays.GC_curr.get_component(0)) <= 1).all()
+
         flux.nd_sum(self.opts.formulae["flux"][0 if i == 0 else 1], (self.arrays.prev, self.arrays.GC_curr))
         self.arrays.curr.nd_sum(self.opts.formulae["upwind"], (flux, self.arrays.G))
         self.arrays.curr.add(self.arrays.prev)
+
         if check_conservativeness:
-            pass
+            # TODO: 2D, 3D, ...
+            sum_0 = np.sum(self.arrays.prev.get() * self.arrays.G.get())
+            sum_1 = np.sum(self.arrays.curr.get() * self.arrays.G.get())
+            bcflux = flux._impl.get_item(0, -.5) - flux._impl.get_item(-1, +.5)
+            np.testing.assert_approx_equal(sum_0, sum_1 + bcflux, significant=13)
 
     @numba.jit()
     def fct_init(self, psi: ScalarField, n_iters: int):

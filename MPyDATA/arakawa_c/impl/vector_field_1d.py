@@ -59,6 +59,10 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 raise ValueError()
             return self._i + int(item + .5)
 
+        def get_item(self, focus: int, relative: float):
+            self.focus(focus if focus >= 0 else shape_0 + focus)
+            return self.at(relative, -1)
+
         def get_component(self, _):
             return self._data_0[halo - 1: self._data_0.shape[0] - halo + 1]
 

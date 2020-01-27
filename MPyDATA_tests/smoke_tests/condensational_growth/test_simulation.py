@@ -34,29 +34,11 @@ def test_step(coord, n_iters=1):
     setup = Setup(si)
     opts = Options(nug=True)
     simulation = Simulation(coord, setup, opts)
-    G = simulation.solver.arrays.G.get()
 
     # Act
     # for step in range(setup.nt[-1]):
     for step in range(100):
-        psi = simulation.solver.arrays.curr.get()
-        Gpsi_sum0 = np.sum(G * psi)
-        simulation.step(n_iters=n_iters, check_conservativeness=True)
-        psi = simulation.solver.arrays.curr.get()
-
-        bcflux = 0
-        flux = simulation.solver.arrays.GC_prev  # TODO...
-        flux._impl.focus(setup.nr-1)
-        bcflux += flux._impl.at(+.5, 0)
-        flux._impl.focus(0)
-        bcflux += flux._impl.at(-.5, 0)
-        print(bcflux)
-        Gpsi_sum1 = np.sum(G * psi)
-        np.testing.assert_approx_equal(
-            desired=Gpsi_sum0,
-            actual=(Gpsi_sum1 + bcflux),
-            significant=13
-        )
+        simulation.step(n_iters=n_iters, debug=True)
 
     # Assert
     assert np.isfinite(simulation.n).all()

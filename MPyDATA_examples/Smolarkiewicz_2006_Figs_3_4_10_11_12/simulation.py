@@ -6,7 +6,7 @@ from MPyDATA.options import Options
 
 
 class Simulation:
-    def __init__(self, setup: Setup, opts: Options, n_iters: int):
+    def __init__(self, setup: Setup, opts: Options, n_iters: int, debug=False):
         dx = (setup.x_max - setup.x_min) / setup.nx
         x = np.linspace(setup.x_min+dx/2, setup.x_max-dx/2, setup.nx)
         xh = np.linspace(setup.x_min, setup.x_max, setup.nx+1)
@@ -24,6 +24,7 @@ class Simulation:
         )
         self.nt = setup.nt
         self.n_iters = n_iters
+        self.debug = debug
 
     @property
     def state(self):
@@ -31,4 +32,4 @@ class Simulation:
 
     def run(self):
         for _ in range(self.nt):
-            self.stepper.step(self.n_iters)
+            self.stepper.step(self.n_iters, debug=self.debug)
