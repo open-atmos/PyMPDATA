@@ -23,8 +23,8 @@ class Simulation:
             opts
         )
 
-    def step(self, n_iters: int):
-        self.solver.step(n_iters=n_iters)
+    def step(self, n_iters: int, debug=False):
+        self.solver.step(n_iters=n_iters, debug=debug)
 
     @property
     def r(self):
