@@ -105,7 +105,10 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts):
+    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict,
+                     g_factor: np.ndarray, opts):
+        assert opts.nug
+
         # TODO
         bcond = (
             (CyclicLeft(), CyclicRight()),

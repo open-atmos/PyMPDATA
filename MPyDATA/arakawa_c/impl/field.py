@@ -27,20 +27,36 @@ class Field:
     def dimension(self):
         return self._impl.dimension
 
-    def nd_sum(self, function, args, ext=0):
+    # TODO: nd_min, nd_max
+
+    def apply(self, function, args, operator='sum', ext=0):
         assert ext < self.halo
 
         for arg in args:
             arg.fill_halos()
 
         if len(args) == 1:
-            self._impl.apply_1arg(function, args[0]._impl, ext)
+            if operator == 'min':
+                self._impl.min_1arg(function, args[0]._impl, ext)
+            elif operator == 'max':
+                self._impl.max_1arg(function, args[0]._impl, ext)
+            else:
+                raise NotImplementedError()
         elif len(args) == 2:
-            self._impl.apply_2arg(function, args[0]._impl, args[1]._impl, ext)
+            if operator == 'sum':
+                self._impl.sum_2arg(function, args[0]._impl, args[1]._impl, ext)
+            else:
+                raise NotImplementedError()
         elif len(args) == 3:
-            self._impl.apply_3arg(function, args[0]._impl, args[1]._impl, args[2]._impl, ext)
+            if operator == 'sum':
+                self._impl.sum_3arg(function, args[0]._impl, args[1]._impl, args[2]._impl, ext)
+            else:
+                raise NotImplementedError()
         elif len(args) == 4:
-            self._impl.apply_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            if operator == 'sum':
+                self._impl.sum_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            else:
+                raise NotImplementedError()
         else:
             raise NotImplementedError()
 

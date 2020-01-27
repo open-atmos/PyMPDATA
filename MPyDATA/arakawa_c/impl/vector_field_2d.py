@@ -122,7 +122,7 @@ def make_vector_field_2d(arg_data, arg_halo: int):
             )
             return self.data(i)[domain]
 
-        def apply_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
+        def sum_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
             for i in range(-1-ext, shape[0]+ext):
                 for j in range(-1-ext, shape[1]+ext):
                     self.focus(i, j)
@@ -141,7 +141,7 @@ def make_vector_field_2d(arg_data, arg_halo: int):
 
                         self.data(d)[idx_i, idx_j] += function(arg_1, arg_2)
 
-        def apply_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
+        def sum_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
             for i in range(-1-ext, shape[0]+ext):
                 for j in range(-1-ext, shape[1]+ext):
                     self.focus(i, j)

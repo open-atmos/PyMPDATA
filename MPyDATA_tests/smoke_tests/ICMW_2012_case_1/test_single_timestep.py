@@ -1,9 +1,21 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
 import numpy as np
+import pytest
 
-
-def test_single_timestep():
+@pytest.mark.parametrize(
+    "opts", [
+        Options(nug=True),
+        Options(nug=True, fct=True),
+        Options(nug=True, fct=True, iga=True),
+        Options(nug=True, fct=True, tot=True),
+        Options(nug=True, fct=True, iga=True, tot=True),
+        Options(nug=True, fct=False, iga=True),
+        Options(nug=True, fct=False, tot=True),
+        Options(nug=True, fct=False, iga=True, tot=True)
+    ]
+)
+def test_single_timestep(opts):
     # Arrange
     grid = (75, 75)
     size = (1500, 1500)
@@ -28,10 +40,10 @@ def test_single_timestep():
         stream_function=stream_function,
         field_values={'th': 300, 'qv': .001},
         g_factor=rhod,
-        opts = Options()
+        opts=opts
     )
 
     # Plot
 
     # Act
-    eulerian_fields.step(n_iters=1)
+    eulerian_fields.step(n_iters=2, debug=False) # TODO: debug=True

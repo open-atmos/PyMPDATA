@@ -66,7 +66,7 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
         def get_component(self, _):
             return self._data_0[halo - 1: self._data_0.shape[0] - halo + 1]
 
-        def apply_1arg(self, function: callable, arg_1: Field.Impl, ext: int):
+        def sum_1arg(self, function: callable, arg_1: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)
@@ -74,7 +74,7 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 idx = self.__idx(+.5)
                 self._data_0[idx] = function(arg_1)
 
-        def apply_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
+        def sum_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)
@@ -83,7 +83,7 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 idx = self.__idx(+.5)
                 self._data_0[idx] = function(arg_1, arg_2)
 
-        def apply_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
+        def sum_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)

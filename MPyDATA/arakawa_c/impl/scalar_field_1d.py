@@ -40,20 +40,22 @@ def make_scalar_field_1d(arg_data, arg_halo):
         def at(self, item, _):
             return self.data[self._i + item]
 
-        def apply_1arg(self, function, arg1, ext):
+        def min_1arg(self, function, arg1, ext): self.set_1arg(function, arg1, ext)
+        def max_1arg(self, function, arg1, ext): self.set_1arg(function, arg1, ext)
+        def set_1arg(self, function, arg1, ext):
             for i in range(-ext, shape - 2 * halo + ext):
                 self.focus(i)
                 arg1.focus(i)
                 self.data[self._i] = function(arg1)
 
-        def apply_2arg(self, function, arg1, arg2, ext):
+        def sum_2arg(self, function, arg1, arg2, ext):
             for i in range(-ext, shape - 2 * halo + ext):
                 self.focus(i)
                 arg1.focus(i)
                 arg2.focus(i)
                 self.data[self._i] = function(arg1, arg2)
 
-        def apply_4arg(self, function, arg1, arg2, arg3, arg4, ext):
+        def sum_4arg(self, function, arg1, arg2, arg3, arg4, ext):
             for i in range(-ext, shape - 2 * halo + ext):
                 self.focus(i)
                 arg1.focus(i)
