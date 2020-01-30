@@ -14,11 +14,6 @@ from .arrays import Arrays
 from .utils import debug_flag
 import numpy as np
 
-if debug_flag.VALUE:
-    import MPyDATA.utils.fake_numba as numba
-else:
-    import numba
-
 
 class MPDATA:
     def __init__(self,
@@ -38,7 +33,6 @@ class MPDATA:
             self.arrays.GC_phys.clone(),
         )
 
-    @numba.jit()
     def step(self, n_iters, mu=0., debug=False):
         assert n_iters > 0
         assert mu == 0 or self.opts.nzm
@@ -75,7 +69,6 @@ class MPDATA:
             if i == 0 and not self.opts.nzm:
                 self.arrays.GC_phys.swap_memory(self.arrays.GC_curr)
 
-    @numba.jit()
     def upwind(self, i: int, flux: VectorField, check_conservativeness, check_CFL):
         if check_CFL:
             # TODO: 2D, 3D, ...
@@ -100,7 +93,6 @@ class MPDATA:
             bcflux = flux._impl.get_item(0, -.5) - flux._impl.get_item(-1, +.5)
             np.testing.assert_approx_equal(sum_0, sum_1 + bcflux, significant=13)
 
-    @numba.jit()
     def fct_init(self, psi: ScalarField, n_iters: int):
         if n_iters == 1 or not self.opts.fct:
             return
@@ -117,7 +109,6 @@ class MPDATA:
             operator='max'
         )
 
-    @numba.jit()
     def fct_adjust_antidiff(self, GC: VectorField, it: int, flux: VectorField, n_iters: int):
         if n_iters == 1 or not self.opts.fct:
             return

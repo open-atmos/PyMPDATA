@@ -27,6 +27,7 @@ def test_init(coord, fct):
     assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) < 0).all()
 
 
+@pytest.mark.skip # TODO: work in progress
 @pytest.mark.parametrize("coord", [x_id(), x_p2(), x_ln()])
 def test_step(coord, n_iters=1):
     # Arrange

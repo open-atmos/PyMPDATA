@@ -11,6 +11,7 @@ from ..arakawa_c.vector_field import VectorField
 
 import numpy as np
 from ..utils import debug_flag
+from .jit_flags import jit_flags
 
 if debug_flag.VALUE:
     import MPyDATA.utils.fake_numba as numba
@@ -20,17 +21,17 @@ else:
 eps = 1e-7
 
 
-@numba.njit
+@numba.njit(**jit_flags)
 def extremum_3arg(extremum: callable, a1: float, a2: float, a3: float):
     return extremum(extremum(a1, a2), a3)
 
 
-@numba.njit
+@numba.njit(**jit_flags)
 def extremum_4arg(extremum: callable, a1: float, a2: float, a3: float, a4: float):
     return extremum(extremum(extremum(a1, a2), a3), a4)
 
 
-@numba.njit
+@numba.njit(**jit_flags)
 def psi_max(psi: ScalarField.Impl):
     a1 = psi.at(-1, 0)
     a2 = psi.at(0, 0)
@@ -38,7 +39,7 @@ def psi_max(psi: ScalarField.Impl):
     return extremum_3arg(np.maximum, a1, a2, a3)
 
 
-@numba.njit
+@numba.njit(**jit_flags)
 def psi_min(psi: ScalarField.Impl):
     a1 = psi.at(-1, 0)
     a2 = psi.at(0, 0)
@@ -46,7 +47,7 @@ def psi_min(psi: ScalarField.Impl):
     return extremum_3arg(np.minimum, a1, a2, a3)
 
 
-@numba.njit
+@numba.njit(**jit_flags)
 def beta_up(
         psi: ScalarField.Impl,
         psi_max: ScalarField.Impl,
@@ -67,7 +68,7 @@ def beta_up(
     )
 
 
-@numba.njit
+@numba.njit(**jit_flags)
 def beta_dn(
         psi: ScalarField.Impl,
         psi_min: ScalarField.Impl,
@@ -89,7 +90,7 @@ def beta_dn(
 
 
 def make_GC_mono():
-    @numba.njit
+    @numba.njit(**jit_flags)
     def fct_GC_mono(
         GC: VectorField.Impl,
         beta_up: ScalarField.Impl,

@@ -11,6 +11,7 @@ from ..arakawa_c.vector_field import VectorField
 import numpy as np
 
 from ..utils import debug_flag
+from .jit_flags import jit_flags
 
 if debug_flag.VALUE:
     import MPyDATA.utils.fake_numba as numba
@@ -26,7 +27,7 @@ def make_antidiff(opts):
     tot = opts.tot
     nug = opts.nug
 
-    @numba.njit
+    @numba.njit(**jit_flags)
     def antidiff(psi: ScalarField.Impl, GC: VectorField.Impl, G: ScalarField.Impl):
         # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
         def A(psi):
