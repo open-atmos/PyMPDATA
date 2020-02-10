@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-@pytest.mark.skip # TODO: work in progress
+# @pytest.mark.skip # TODO: work in progress
 @pytest.mark.parametrize(
     "opts", [
         Options(nug=True),

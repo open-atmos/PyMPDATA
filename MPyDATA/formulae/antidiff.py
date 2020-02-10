@@ -65,15 +65,19 @@ def make_antidiff(opts):
                     B(psi)
             )
 
+        G_bar = (G.at(1, 0) + G.at(0, 0)) / 2
+
         # third-order terms
         if tot:
-            assert psi.dimension == 1  # TODO!
-            # TODO: if nug
-            tmp = 2 * (psi.at(2, 0) - psi.at(1, 0) - psi.at(0, 0) + psi.at(-1, 0)) * (
-                     3 * GC.at(.5, 0) * np.abs(GC.at(.5, 0)) / ((G.at(1, 0) + G.at(0, 0)) / 2)
-                     - 2 * GC.at(.5, 0) ** 3 / ((G.at(1, 0) + G.at(0, 0)) / 2) ** 2
+            assert psi.dimension < 3  # TODO
+            # TODO: if nug (i.e., optimise for nug=False)
+            tmp = (
+                     3 * GC.at(.5, 0) * np.abs(GC.at(.5, 0)) / G_bar
+                     - 2 * GC.at(.5, 0) ** 3 / G_bar ** 2
                      - GC.at(.5, 0)
              ) / 6
+
+            tmp *= 2 * (psi.at(2, 0) - psi.at(1, 0) - psi.at(0, 0) + psi.at(-1, 0))
 
             if iga:
                 tmp /= (1 + 1 + 1 + 1)
@@ -82,16 +86,37 @@ def make_antidiff(opts):
 
             result += tmp
 
+            if psi.dimension > 1:
+                GC1_bar= (
+                    GC.at(1, .5) +
+                    GC.at(0, .5) +
+                    GC.at(1, -.5) +
+                    GC.at(0, -.5)
+                ) / 4
+                tmp = GC1_bar / (2 * G_bar) * (
+                    np.abs(GC.at(.5,0))-2 * GC.at(.5, 0)**2 / G_bar
+                )
+
+                tmp *= 2 * (psi.at(1, 1) - psi.at(0, 1) - psi.at(1, -1) + psi.at(0, -1))
+
+                if iga:
+                    tmp /= (1 + 1 + 1 + 1)
+                else:
+                    tmp /= (psi.at(1, 1) + psi.at(0, 1) + psi.at(1, -1) + psi.at(0, -1))
+
+                result += tmp
+
         # divergent flow option
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if dfl:
             assert psi.dimension == 1  # TODO!
             tmp = -.5 * GC.at(.5, 0) * (GC.at(1.5, 0) - GC.at(-.5, 0))
             if nug:
-                tmp /= (G.at(1, 0) + G.at(0, 0))
+                tmp /= 2 * G_bar
             if iga:
                 tmp *= .5 * (psi.at(1, 0) + psi.at(0, 0))
             result += tmp
+
         return result
     return antidiff
 

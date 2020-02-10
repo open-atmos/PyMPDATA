@@ -66,7 +66,8 @@ def beta_up(
         - np.minimum(flx.at(+.5, 0), 0)
         + eps
     )
-
+    if psi.dimension == 2:
+        return
 
 @numba.njit(**jit_flags)
 def beta_dn(
