@@ -39,13 +39,14 @@ def test_SizeDistribution(plot=True):
     ).all()
 
 
-def test_domain_length():
-    # Arrange
-    si = pint.UnitRegistry()
-    from MPyDATA_examples.condensational_growth.analysis import analysis
-    from MPyDATA_examples.condensational_growth.physics.equilibrium_drop_growth import PdfEvolver
-
-    result, setup = analysis()
-
-    # Act
-    PdfEvolver(setup.pdf, setup.drdt, t)
+# TODO
+# def test_domain_length():
+#     # Arrange
+#     si = pint.UnitRegistry()
+#     from MPyDATA_examples.condensational_growth.analysis import analysis
+#     from MPyDATA_examples.condensational_growth.physics.equilibrium_drop_growth import PdfEvolver
+#
+#     result, setup = analysis()
+#
+#     # Act
+#     PdfEvolver(setup.pdf, setup.drdt, t)

@@ -10,6 +10,7 @@ from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
 
 from ..utils import debug_flag
+from .jit_flags import jit_flags
 
 if debug_flag.VALUE:
     import MPyDATA.utils.fake_numba as numba
@@ -20,7 +21,7 @@ else:
 def make_upwind(opts):
     nug = opts.nug
 
-    @numba.njit
+    @numba.njit(**jit_flags)
     def upwind(flx: VectorField.Impl, G: ScalarField.Impl):
         result = -1 * (
                 flx.at(+.5, 0) -
