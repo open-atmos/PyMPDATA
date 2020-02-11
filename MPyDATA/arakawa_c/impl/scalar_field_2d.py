@@ -50,23 +50,23 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
             else:
                 return self.data[self._i + arg1, self._j + arg2]
 
-        # def sum_1arg(self, function: callable, arg1: Field.Impl, ext: int):
-        #     for i in range(-ext, shape[0] - 2 * halo + ext):
-        #         for j in range(-ext, shape[1] - 2 * halo + ext):
-        #             self.focus(i, j)
-        #             arg1.focus(i, j)
-        #             self.data[self._i, self._j] = 0
-        #             for dim in range(2):
-        #                 self.set_axis(dim)
-        #                 arg1.set_axis(dim)
-        #                 self.data[self._i, self._j] += function(arg1)
+        def sum_1arg(self, function: callable, arg1: Field.Impl, ext: int):
+            for i in range(-ext, shape[0] - 2 * halo + ext):
+                for j in range(-ext, shape[1] - 2 * halo + ext):
+                    self.focus(i, j)
+                    arg1.focus(i, j)
+                    self.data[self._i, self._j] = 0
+                    for dim in range(2):
+                        self.set_axis(dim)
+                        arg1.set_axis(dim)
+                        self.data[self._i, self._j] += function(arg1)
 
         def min_1arg(self, function: callable, arg1: Field.Impl, ext: int):
             for i in range(-ext, shape[0] - 2 * halo + ext):
                 for j in range(-ext, shape[1] - 2 * halo + ext):
                     self.focus(i, j)
                     arg1.focus(i, j)
-                    self.data[self._i, self._j] = 0
+                    self.data[self._i, self._j] = np.inf
                     for dim in range(2):
                         self.set_axis(dim)
                         arg1.set_axis(dim)
@@ -80,7 +80,7 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
                 for j in range(-ext, shape[1] - 2 * halo + ext):
                     self.focus(i, j)
                     arg1.focus(i, j)
-                    self.data[self._i, self._j] = 0
+                    self.data[self._i, self._j] = -np.inf
                     for dim in range(2):
                         self.set_axis(dim)
                         arg1.set_axis(dim)
@@ -102,6 +102,14 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
                         arg2.set_axis(dim)
                         self.data[self._i, self._j] += function(arg1, arg2)
 
+        def set_2arg(self, function: callable, arg1: Field.Impl, arg2: Field.Impl, ext: int):
+            for i in range(-ext, shape[0] - 2 * halo + ext):
+                for j in range(-ext, shape[1] - 2 * halo + ext):
+                    self.focus(i, j)
+                    arg1.focus(i, j)
+                    arg2.focus(i, j)
+                    self.data[self._i, self._j] = function(arg1, arg2)
+
         def sum_4arg(self, function: callable, arg1: Field.Impl, arg2: Field.Impl, arg3: Field.Impl, arg4: Field.Impl, ext: int):
             for i in range(-ext, shape[0] - 2 * halo + ext):
                 for j in range(-ext, shape[1] - 2 * halo + ext):
@@ -118,6 +126,16 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
                         arg3.set_axis(dim)
                         arg4.set_axis(dim)
                         self.data[self._i, self._j] += function(arg1, arg2, arg3, arg4)
+
+        def set_4arg(self, function: callable, arg1: Field.Impl, arg2: Field.Impl, arg3: Field.Impl, arg4: Field.Impl, ext: int):
+            for i in range(-ext, shape[0] - 2 * halo + ext):
+                for j in range(-ext, shape[1] - 2 * halo + ext):
+                    self.focus(i, j)
+                    arg1.focus(i, j)
+                    arg2.focus(i, j)
+                    arg3.focus(i, j)
+                    arg4.focus(i, j)
+                    self.data[self._i, self._j] = function(arg1, arg2, arg3, arg4)
 
         @property
         def dimension(self) -> int:

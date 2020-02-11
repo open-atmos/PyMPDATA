@@ -1,3 +1,6 @@
+from ..traversal import Traversal
+
+
 class Field:
     class Impl:
         dimension: int
@@ -27,40 +30,42 @@ class Field:
     def dimension(self):
         return self._impl.dimension
 
-    def apply(self, function, args, operator='sum', ext=0):
+    def apply(self, traversal: Traversal, args, ext=0):
         assert ext < self.halo
 
         for arg in args:
             arg.fill_halos()
 
         if len(args) == 1:
-            if operator == 'min':
-                self._impl.min_1arg(function, args[0]._impl, ext)
-            elif operator == 'max':
-                self._impl.max_1arg(function, args[0]._impl, ext)
-            elif operator == 'set':
-                self._impl.set_1arg(function, args[0]._impl, ext)
-            elif operator == 'sum':
-                self._impl.sum_1arg(function, args[0]._impl, ext)
+            if traversal.operator == 'min':
+                self._impl.min_1arg(traversal.logic, args[0]._impl, ext)
+            elif traversal.operator == 'max':
+                self._impl.max_1arg(traversal.logic, args[0]._impl, ext)
+            elif traversal.operator == 'set':
+                self._impl.set_1arg(traversal.logic, args[0]._impl, ext)
+            elif traversal.operator == 'sum':
+                self._impl.sum_1arg(traversal.logic, args[0]._impl, ext)
             else:
                 raise NotImplementedError()
         elif len(args) == 2:
-            if operator == 'sum':
-                self._impl.sum_2arg(function, args[0]._impl, args[1]._impl, ext)
-            elif operator == 'set':
-                self._impl.set_2arg(function, args[0]._impl, args[1]._impl, ext)
+            if traversal.operator == 'sum':
+                self._impl.sum_2arg(traversal.logic, args[0]._impl, args[1]._impl, ext)
+            elif traversal.operator == 'set':
+                self._impl.set_2arg(traversal.logic, args[0]._impl, args[1]._impl, ext)
             else:
                 raise NotImplementedError()
         elif len(args) == 3:
-            if operator == 'sum':
-                self._impl.sum_3arg(function, args[0]._impl, args[1]._impl, args[2]._impl, ext)
+            if traversal.operator == 'sum':
+                self._impl.sum_3arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, ext)
+            elif traversal.operator == 'set':
+                self._impl.set_3arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, ext)
             else:
                 raise NotImplementedError()
         elif len(args) == 4:
-            if operator == 'set':
-                self._impl.set_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
-            elif operator == 'sum':
-                self._impl.sum_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            if traversal.operator == 'set':
+                self._impl.set_4arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            elif traversal.operator == 'sum':
+                self._impl.sum_4arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
             else:
                 raise NotImplementedError()
         else:

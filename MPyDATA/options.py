@@ -28,10 +28,13 @@ class Options:
         self._formulae = {
             "antidiff": make_antidiff(self),
             "flux": make_fluxes(self),
-            "upwind": make_upwind(self),
-            "GC_mono": make_GC_mono(),
-            "laplacian": make_laplacian(self)
+            "upwind": make_upwind(self)
         }
+        if fct:
+            self._formulae["GC_mono"] = make_GC_mono(self)
+        if nzm:
+            self._formulae["laplacian"] = make_laplacian(self)
+
 
     def clone(self):
         return self

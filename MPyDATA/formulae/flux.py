@@ -8,6 +8,7 @@ Created at 11.10.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
+from ..arakawa_c.traversal import Traversal
 import numpy as np
 from ..utils import debug_flag
 from .jit_flags import jit_flags
@@ -33,7 +34,7 @@ def make_flux(opts, it: int):
         else:
             result = GC.at(+.5, 0)
         return result
-    return flux
+    return Traversal(logic=flux, operator='set')
 
 
 def make_fluxes(opts):

@@ -8,6 +8,7 @@ Created at 17.12.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
+from ..arakawa_c.traversal import Traversal
 import numpy as np
 
 from ..utils import debug_flag
@@ -118,7 +119,7 @@ def make_antidiff(opts):
             result += tmp
 
         return result
-    return antidiff
+    return Traversal(logic=antidiff, operator='set')
 
 
 

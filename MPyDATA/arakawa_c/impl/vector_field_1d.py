@@ -84,6 +84,8 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 self._data_0[idx] = function(arg_1, arg_2)
 
         def sum_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
+            self.set_3arg(function, arg_1, arg_2, arg_3, ext)
+        def set_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)

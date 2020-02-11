@@ -1,3 +1,4 @@
+from ..arakawa_c.traversal import Traversal
 from ..utils import debug_flag
 from .jit_flags import jit_flags
 
@@ -21,4 +22,4 @@ def make_laplacian(opts):
                 psi.at(1, 0) + psi.at(0, 0) + eps
         )
         return result
-    return A
+    return Traversal(logic=A, operator='sum')

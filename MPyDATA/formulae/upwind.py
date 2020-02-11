@@ -8,7 +8,7 @@ Created at 11.10.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
-
+from ..arakawa_c.traversal import Traversal
 from ..utils import debug_flag
 from .jit_flags import jit_flags
 
@@ -30,4 +30,4 @@ def make_upwind(opts):
         if not nug:
             result /= G.at(0, 0)
         return result
-    return upwind
+    return Traversal(logic=upwind, operator='sum')
