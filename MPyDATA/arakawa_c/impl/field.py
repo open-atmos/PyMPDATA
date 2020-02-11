@@ -27,8 +27,6 @@ class Field:
     def dimension(self):
         return self._impl.dimension
 
-    # TODO: nd_min, nd_max
-
     def apply(self, function, args, operator='sum', ext=0):
         assert ext < self.halo
 
@@ -40,11 +38,17 @@ class Field:
                 self._impl.min_1arg(function, args[0]._impl, ext)
             elif operator == 'max':
                 self._impl.max_1arg(function, args[0]._impl, ext)
+            elif operator == 'set':
+                self._impl.set_1arg(function, args[0]._impl, ext)
+            elif operator == 'sum':
+                self._impl.sum_1arg(function, args[0]._impl, ext)
             else:
                 raise NotImplementedError()
         elif len(args) == 2:
             if operator == 'sum':
                 self._impl.sum_2arg(function, args[0]._impl, args[1]._impl, ext)
+            elif operator == 'set':
+                self._impl.set_2arg(function, args[0]._impl, args[1]._impl, ext)
             else:
                 raise NotImplementedError()
         elif len(args) == 3:
@@ -53,7 +57,9 @@ class Field:
             else:
                 raise NotImplementedError()
         elif len(args) == 4:
-            if operator == 'sum':
+            if operator == 'set':
+                self._impl.set_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            elif operator == 'sum':
                 self._impl.sum_4arg(function, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
             else:
                 raise NotImplementedError()

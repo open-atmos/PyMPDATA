@@ -96,23 +96,27 @@ class MPDATA:
     def fct_init(self, psi: ScalarField, n_iters: int):
         if n_iters == 1 or not self.opts.fct:
             return
-        self.arrays.psi_min.apply(
-            function=fct.psi_min,
-            args=(psi,),
-            operator='min',
-            ext=1
-        )
-        self.arrays.psi_max.apply(
-            function=fct.psi_max,
-            args=(psi,),
-            ext=1,
-            operator='max'
-        )
+
+        tmp = self.arrays.psi_min
+        tmp.apply(function=fct.psi_min_1, args=(psi,), operator='min', ext=1)
+        self.arrays.psi_min.apply(function=fct.psi_min_2, args=(psi, tmp), operator='set', ext=1)
+
+        tmp = self.arrays.psi_max
+        tmp.apply(function=fct.psi_max_1, args=(psi,), operator='max', ext=1)
+        self.arrays.psi_max.apply(function=fct.psi_max_2, args=(psi, tmp), operator='set', ext=1)
+
 
     def fct_adjust_antidiff(self, GC: VectorField, it: int, flux: VectorField, n_iters: int):
         if n_iters == 1 or not self.opts.fct:
             return
         flux.apply(function=self.opts.formulae["flux"][0 if it == 0 else 1], args=(self.arrays.prev, GC), ext=1, operator='sum')
-        self.arrays.beta_up.apply(function=fct.beta_up, args=(self.arrays.prev, self.arrays.psi_max, flux, self.arrays.G), ext=1, operator='sum')
-        self.arrays.beta_dn.apply(function=fct.beta_dn, args=(self.arrays.prev, self.arrays.psi_min, flux, self.arrays.G), ext=1, operator='sum')
+
+        beta_up_nom = self.arrays.beta_up
+        beta_up_den = self.arrays.tmp
+        beta_up_nom.apply(function=fct.beta_up_nom_1, args=(self.arrays.prev,), ext=1, operator='max')
+        beta_up_nom.apply(function=fct.beta_up_nom_2, args=(self.arrays.prev, self.arrays.psi_max, self.arrays.beta_up, self.arrays.G), ext=1, operator='set')
+        beta_up_den.apply(function=fct.beta_up_den, args=(flux,), ext=1, operator='sum')
+        self.arrays.beta_up.apply(function=fct.frac, args=(beta_up_nom, beta_up_den), ext=1, operator='set')
+
+        self.arrays.beta_dn.apply(function=fct.beta_dn, args=(self.arrays.prev, self.arrays.psi_min, flux, self.arrays.G), ext=1, operator='set')
         GC.apply(function=self.opts.formulae["GC_mono"], args=(GC, self.arrays.beta_up, self.arrays.beta_dn), operator='sum')

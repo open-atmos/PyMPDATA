@@ -30,44 +30,48 @@ def extremum_3arg(extremum: callable, a1: float, a2: float, a3: float):
 def extremum_4arg(extremum: callable, a1: float, a2: float, a3: float, a4: float):
     return extremum(extremum(extremum(a1, a2), a3), a4)
 
+@numba.njit(**jit_flags)
+def psi_max_1(psi: ScalarField.Impl):
+    return np.maximum(psi.at(-1, 0), psi.at(1, 0))
 
 @numba.njit(**jit_flags)
-def psi_max(psi: ScalarField.Impl):
-    a1 = psi.at(-1, 0)
-    a2 = psi.at(0, 0)
-    a3 = psi.at(1, 0)
-    return extremum_3arg(np.maximum, a1, a2, a3)
-
+def psi_max_2(psi: ScalarField.Impl, psi_tmp: ScalarField.Impl):
+    return np.maximum(psi.at(0, 0), psi_tmp.at(0, 0))
 
 @numba.njit(**jit_flags)
-def psi_min(psi: ScalarField.Impl):
-    a1 = psi.at(-1, 0)
-    a2 = psi.at(0, 0)
-    a3 = psi.at(1, 0)
-    return extremum_3arg(np.minimum, a1, a2, a3)
-
+def psi_min_1(psi: ScalarField.Impl):
+    return np.minimum(psi.at(-1, 0), psi.at(1, 0))
 
 @numba.njit(**jit_flags)
-def beta_up(
-        psi: ScalarField.Impl,
-        psi_max: ScalarField.Impl,
-        flx: VectorField.Impl,
-        G: ScalarField.Impl
-):
-    # TODO: loops over dimensions
-    assert psi.dimension == 1
+def psi_min_2(psi: ScalarField.Impl, psi_tmp: ScalarField.Impl):
+    return np.minimum(psi.at(0, 0), psi_tmp.at(0, 0))
+
+
+# set - TODO: function knows the op!!!
+@numba.njit(**jit_flags)
+def frac(nom: ScalarField.Impl, den: ScalarField.Impl):
+    return nom.at(0, 0) / (den.at(0, 0) + eps)
+
+# max - TODO
+@numba.njit(**jit_flags)
+def beta_up_nom_1(psi: ScalarField.Impl):
+    return np.maximum(psi.at(-1, 0), psi.at(1, 0))
+
+# set - TODO
+@numba.njit(**jit_flags)
+def beta_up_nom_2(psi: ScalarField.Impl, psi_max: ScalarField.Impl, psi_tmp: ScalarField.Impl, G: ScalarField.Impl):
+    return G.at(0, 0) * (
+        extremum_3arg(np.maximum, psi_max.at(0, 0), psi_tmp.at(0, 0), psi.at(0, 0)) - psi.at(0, 0)
+    )
+
+# sum
+@numba.njit(**jit_flags)
+def beta_up_den(flx: VectorField.Impl):
     return (
-        (
-            extremum_4arg(np.maximum, psi_max.at(0, 0), psi.at(-1, 0), psi.at(0, 0), psi.at(1, 0))
-            - psi.at(0, 0)
-        ) * G.at(0, 0)
-    ) / (
         np.maximum(flx.at(-.5, 0), 0)
         - np.minimum(flx.at(+.5, 0), 0)
-        + eps
     )
-    if psi.dimension == 2:
-        return
+
 
 @numba.njit(**jit_flags)
 def beta_dn(
