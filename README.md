@@ -28,3 +28,5 @@ tutorials licence: CC-BY
   https://github.com/apc-llc/mpdata
 - libmpdata++ (C++):
   https://github.com/igfuw/libmpdataxx
+- AtmosFOAM:
+  https://github.com/AtmosFOAM/AtmosFOAM/blob/MPDATA/applications/solvers/advection/MPDATAadvectionFoam/MPDATAadvectionFoam.C
