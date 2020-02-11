@@ -25,7 +25,7 @@ def make_flux(opts, it: int):
     iga = opts.iga
 
     @numba.njit(**jit_flags)
-    def flux(psi: ScalarField.Impl, GC: VectorField.Impl):
+    def flux(_, psi: ScalarField.Impl, GC: VectorField.Impl):
         if it == 0 or not iga:
             result = (
                 np.maximum(0, GC.at(+.5, 0)) * psi.at(0, 0) +
@@ -34,7 +34,7 @@ def make_flux(opts, it: int):
         else:
             result = GC.at(+.5, 0)
         return result
-    return Traversal(logic=flux, operator='set')
+    return Traversal(body=flux, init=np.nan, loop=True)
 
 
 def make_fluxes(opts):

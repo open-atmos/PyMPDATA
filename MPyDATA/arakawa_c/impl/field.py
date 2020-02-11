@@ -37,37 +37,17 @@ class Field:
             arg.fill_halos()
 
         if len(args) == 1:
-            if traversal.operator == 'min':
-                self._impl.min_1arg(traversal.logic, args[0]._impl, ext)
-            elif traversal.operator == 'max':
-                self._impl.max_1arg(traversal.logic, args[0]._impl, ext)
-            elif traversal.operator == 'set':
-                self._impl.set_1arg(traversal.logic, args[0]._impl, ext)
-            elif traversal.operator == 'sum':
-                self._impl.sum_1arg(traversal.logic, args[0]._impl, ext)
-            else:
-                raise NotImplementedError()
+            self._impl.apply_1arg(traversal.body, traversal.init, traversal.loop,
+                                  args[0]._impl, ext)
         elif len(args) == 2:
-            if traversal.operator == 'sum':
-                self._impl.sum_2arg(traversal.logic, args[0]._impl, args[1]._impl, ext)
-            elif traversal.operator == 'set':
-                self._impl.set_2arg(traversal.logic, args[0]._impl, args[1]._impl, ext)
-            else:
-                raise NotImplementedError()
+            self._impl.apply_2arg(traversal.body, traversal.init, traversal.loop,
+                                  args[0]._impl, args[1]._impl, ext)
         elif len(args) == 3:
-            if traversal.operator == 'sum':
-                self._impl.sum_3arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, ext)
-            elif traversal.operator == 'set':
-                self._impl.set_3arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, ext)
-            else:
-                raise NotImplementedError()
+            self._impl.apply_3arg(traversal.body, traversal.init, traversal.loop,
+                                  args[0]._impl, args[1]._impl, args[2]._impl, ext)
         elif len(args) == 4:
-            if traversal.operator == 'set':
-                self._impl.set_4arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
-            elif traversal.operator == 'sum':
-                self._impl.sum_4arg(traversal.logic, args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
-            else:
-                raise NotImplementedError()
+            self._impl.apply_4arg(traversal.body, traversal.init, traversal.loop,
+                                  args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
         else:
             raise NotImplementedError()
 

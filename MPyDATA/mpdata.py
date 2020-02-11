@@ -95,12 +95,12 @@ class MPDATA:
             return
 
         tmp = self.arrays.psi_min
-        tmp.apply(traversal=Traversal(fct.psi_min_1, 'min'), args=(psi,), ext=1)
-        self.arrays.psi_min.apply(traversal=Traversal(fct.psi_min_2, 'set'), args=(psi, tmp), ext=1)
+        tmp.apply(traversal=Traversal(body=fct.psi_min_1, init=np.inf, loop=True), args=(psi,), ext=1)
+        self.arrays.psi_min.apply(traversal=Traversal(body=fct.psi_min_2, init=np.nan, loop=False), args=(psi, tmp), ext=1)
 
         tmp = self.arrays.psi_max
-        tmp.apply(traversal=Traversal(fct.psi_max_1, 'max'), args=(psi,), ext=1)
-        self.arrays.psi_max.apply(traversal=Traversal(fct.psi_max_2,'set'), args=(psi, tmp), ext=1)
+        tmp.apply(traversal=Traversal(body=fct.psi_max_1, init=-np.inf, loop=True), args=(psi,), ext=1)
+        self.arrays.psi_max.apply(traversal=Traversal(body=fct.psi_max_2, init=np.nan, loop=False), args=(psi, tmp), ext=1)
 
     def fct_adjust_antidiff(self, GC: VectorField, it: int, flux: VectorField, n_iters: int):
         if n_iters == 1 or not self.opts.fct:
@@ -109,16 +109,16 @@ class MPDATA:
 
         beta_up_nom = self.arrays.beta_up
         beta_up_den = self.arrays.tmp
-        beta_up_nom.apply(traversal=Traversal(fct.beta_up_nom_1, 'max'), args=(self.arrays.prev,), ext=1)
-        beta_up_nom.apply(traversal=Traversal(fct.beta_up_nom_2, 'set'), args=(self.arrays.prev, self.arrays.psi_max, self.arrays.beta_up, self.arrays.G), ext=1)
-        beta_up_den.apply(traversal=Traversal(fct.beta_up_den, 'sum'), args=(flux,), ext=1)
-        self.arrays.beta_up.apply(traversal=Traversal(fct.frac, 'set'), args=(beta_up_nom, beta_up_den), ext=1)
+        beta_up_nom.apply(traversal=Traversal(body=fct.beta_up_nom_1, init=-np.inf, loop=True), args=(self.arrays.prev,), ext=1)
+        beta_up_nom.apply(traversal=Traversal(body=fct.beta_up_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_max, self.arrays.beta_up, self.arrays.G), ext=1)
+        beta_up_den.apply(traversal=Traversal(body=fct.beta_up_den, init=0, loop=True), args=(flux,), ext=1)
+        self.arrays.beta_up.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(beta_up_nom, beta_up_den), ext=1)
 
         beta_dn_nom = self.arrays.beta_dn
         beta_dn_den = self.arrays.tmp
-        beta_dn_nom.apply(traversal=Traversal(fct.beta_dn_nom_1, 'min'), args=(self.arrays.prev,), ext=1)
-        beta_dn_nom.apply(traversal=Traversal(fct.beta_dn_nom_2, 'set'), args=(self.arrays.prev, self.arrays.psi_min, self.arrays.beta_dn, self.arrays.G), ext=1)
-        beta_dn_den.apply(traversal=Traversal(fct.beta_dn_den, 'sum'), args=(flux,), ext=1)
-        self.arrays.beta_dn.apply(traversal=Traversal(fct.frac, 'set'), args=(beta_dn_nom, beta_dn_den), ext=1)
+        beta_dn_nom.apply(traversal=Traversal(body=fct.beta_dn_nom_1, init=np.inf, loop=True), args=(self.arrays.prev,), ext=1)
+        beta_dn_nom.apply(traversal=Traversal(body=fct.beta_dn_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_min, self.arrays.beta_dn, self.arrays.G), ext=1)
+        beta_dn_den.apply(traversal=Traversal(body=fct.beta_dn_den, init=0, loop=True), args=(flux,), ext=1)
+        self.arrays.beta_dn.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(beta_dn_nom, beta_dn_den), ext=1)
 
         GC.apply(traversal=self.opts.formulae["GC_mono"], args=(GC, self.arrays.beta_up, self.arrays.beta_dn))

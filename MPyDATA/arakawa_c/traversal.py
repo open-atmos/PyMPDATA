@@ -1,4 +1,5 @@
 class Traversal:
-    def __init__(self, logic, operator):
-        self.logic = logic
-        self.operator = operator
+    def __init__(self, body, init, loop):
+        self.body = body
+        self.init = init
+        self.loop = loop

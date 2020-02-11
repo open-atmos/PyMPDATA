@@ -29,62 +29,62 @@ def extremum_3arg(extremum: callable, a1: float, a2: float, a3: float):
 
 # max
 @numba.njit(**jit_flags)
-def psi_max_1(psi: ScalarField.Impl):
-    return np.maximum(psi.at(-1, 0), psi.at(1, 0))
+def psi_max_1(init: float, psi: ScalarField.Impl):
+    return extremum_3arg(np.maximum, init, psi.at(-1, 0), psi.at(1, 0))
 
 
 # set
 @numba.njit(**jit_flags)
-def psi_max_2(psi: ScalarField.Impl, psi_tmp: ScalarField.Impl):
+def psi_max_2(_, psi: ScalarField.Impl, psi_tmp: ScalarField.Impl):
     return np.maximum(psi.at(0, 0), psi_tmp.at(0, 0))
 
 
 # min
 @numba.njit(**jit_flags)
-def psi_min_1(psi: ScalarField.Impl):
-    return np.minimum(psi.at(-1, 0), psi.at(1, 0))
+def psi_min_1(init: float, psi: ScalarField.Impl):
+    return extremum_3arg(np.minimum, init, psi.at(-1, 0), psi.at(1, 0))
+
 
 # set
 @numba.njit(**jit_flags)
-def psi_min_2(psi: ScalarField.Impl, psi_tmp: ScalarField.Impl):
+def psi_min_2(_, psi: ScalarField.Impl, psi_tmp: ScalarField.Impl):
     return np.minimum(psi.at(0, 0), psi_tmp.at(0, 0))
 
 
 # set
 @numba.njit(**jit_flags)
-def frac(nom: ScalarField.Impl, den: ScalarField.Impl):
+def frac(_, nom: ScalarField.Impl, den: ScalarField.Impl):
     return nom.at(0, 0) / (den.at(0, 0) + eps)
 
 
 # max
 @numba.njit(**jit_flags)
-def beta_up_nom_1(psi: ScalarField.Impl):
-    return np.maximum(psi.at(-1, 0), psi.at(1, 0))
+def beta_up_nom_1(init: float, psi: ScalarField.Impl):
+    return extremum_3arg(np.maximum, init, psi.at(-1, 0), psi.at(1, 0))
 
 
 # set
 @numba.njit(**jit_flags)
-def beta_up_nom_2(psi: ScalarField.Impl, psi_max: ScalarField.Impl, psi_tmp: ScalarField.Impl, G: ScalarField.Impl):
+def beta_up_nom_2(_, psi: ScalarField.Impl, psi_max: ScalarField.Impl, psi_tmp: ScalarField.Impl, G: ScalarField.Impl):
     return G.at(0, 0) * (
         extremum_3arg(np.maximum, psi_max.at(0, 0), psi_tmp.at(0, 0), psi.at(0, 0)) - psi.at(0, 0)
     )
 
 # sum
 @numba.njit(**jit_flags)
-def beta_up_den(flx: VectorField.Impl):
-    return np.maximum(flx.at(-.5, 0), 0) - np.minimum(flx.at(+.5, 0), 0)
-
+def beta_up_den(init: float, flx: VectorField.Impl):
+    return init + np.maximum(flx.at(-.5, 0), 0) - np.minimum(flx.at(+.5, 0), 0)
 
 
 # min
 @numba.njit(**jit_flags)
-def beta_dn_nom_1(psi: ScalarField.Impl):
-    return np.minimum(psi.at(-1, 0), psi.at(1, 0))
+def beta_dn_nom_1(init: float, psi: ScalarField.Impl):
+    return extremum_3arg(np.minimum, init, psi.at(-1, 0), psi.at(1, 0))
 
 
 # set
 @numba.njit(**jit_flags)
-def beta_dn_nom_2(psi: ScalarField.Impl, psi_min: ScalarField.Impl, psi_tmp: ScalarField.Impl, G: ScalarField.Impl):
+def beta_dn_nom_2(_, psi: ScalarField.Impl, psi_min: ScalarField.Impl, psi_tmp: ScalarField.Impl, G: ScalarField.Impl):
     return G.at(0, 0) * (
         psi.at(0, 0)
         - extremum_3arg(np.minimum, psi_min.at(0, 0), psi_tmp.at(0, 0), psi.at(0, 0))
@@ -92,13 +92,14 @@ def beta_dn_nom_2(psi: ScalarField.Impl, psi_min: ScalarField.Impl, psi_tmp: Sca
 
 
 @numba.njit(**jit_flags)
-def beta_dn_den(flx: VectorField.Impl):
-    return np.maximum(flx.at(+.5, 0), 0) - np.minimum(flx.at(-.5, 0), 0)
+def beta_dn_den(init: float, flx: VectorField.Impl):
+    return init + np.maximum(flx.at(+.5, 0), 0) - np.minimum(flx.at(-.5, 0), 0)
 
 
 def make_GC_mono(opts):
     @numba.njit(**jit_flags)
     def fct_GC_mono(
+        _,
         GC: VectorField.Impl,
         beta_up: ScalarField.Impl,
         beta_dn: ScalarField.Impl
@@ -113,4 +114,4 @@ def make_GC_mono(opts):
             extremum_3arg(np.minimum, 1, beta_up.at(0, 0), beta_dn.at(1, 0))
         )
         return result
-    return Traversal(logic=fct_GC_mono, operator='set')
+    return Traversal(body=fct_GC_mono, init=np.nan, loop=True)

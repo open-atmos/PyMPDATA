@@ -22,12 +22,12 @@ def make_upwind(opts):
     nug = opts.nug
 
     @numba.njit(**jit_flags)
-    def upwind(flx: VectorField.Impl, G: ScalarField.Impl):
+    def upwind(init: float, flx: VectorField.Impl, G: ScalarField.Impl):
         result = -1 * (
                 flx.at(+.5, 0) -
                 flx.at(-.5, 0)
         )
         if not nug:
             result /= G.at(0, 0)
-        return result
-    return Traversal(logic=upwind, operator='sum')
+        return init + result
+    return Traversal(body=upwind, init=0, loop=True)

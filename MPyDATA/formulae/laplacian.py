@@ -15,11 +15,11 @@ def make_laplacian(opts):
     eps = opts.eps
 
     @numba.njit(**jit_flags)
-    def A(psi, mu):
+    def A(init: float, psi, mu):
         result = -2 * mu.value * (
                 psi.at(1, 0) - psi.at(0, 0)
         ) / (
                 psi.at(1, 0) + psi.at(0, 0) + eps
         )
-        return result
-    return Traversal(logic=A, operator='sum')
+        return init + result
+    return Traversal(body=A, init=0, loop=True)
