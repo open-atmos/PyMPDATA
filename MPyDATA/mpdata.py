@@ -9,6 +9,7 @@ Created at 25.09.2019
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.traversal import Traversal
+from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .formulae import fct_utils as fct
 from .options import Options
 from .arrays import Arrays
@@ -63,6 +64,7 @@ class MPDATA:
             self.upwind(i, flux=self.arrays.GC_prev,
                         check_conservativeness=debug,
                         check_CFL=debug
+                        # TODO: check monotonicity
                         )
 
             if i == 0 and not self.opts.nzm:
@@ -70,8 +72,10 @@ class MPDATA:
 
     def upwind(self, i: int, flux: VectorField, check_conservativeness, check_CFL):
         if check_CFL:
-            # TODO: 2D, 3D, ...
-            assert (np.abs(self.arrays.GC_curr.get_component(0)) <= 1).all()
+            # TODO: more correct measure for 2D, 3D, ...?
+            for d in range(self.arrays.GC_curr.dimension):
+                assert np.isfinite(self.arrays.GC_curr.get_component(d)).all()
+                assert (np.abs(self.arrays.GC_curr.get_component(d)) <= 1).all()
 
         flux.apply(
             traversal=self.opts.formulae["flux"][0 if i == 0 else 1],
@@ -84,10 +88,19 @@ class MPDATA:
         self.arrays.curr.add(self.arrays.prev)
 
         if check_conservativeness:
-            # TODO: 2D, 3D, ...
             sum_0 = np.sum(self.arrays.prev.get() * self.arrays.G.get())
             sum_1 = np.sum(self.arrays.curr.get() * self.arrays.G.get())
-            bcflux = flux._impl.get_item(0, -.5) - flux._impl.get_item(-1, +.5)
+
+            all_cyclic = True
+            for bc_dim in flux.boundary_conditions:
+                for bc_side in bc_dim:
+                    if bc_side.__class__ not in [CyclicRight, CyclicLeft]:
+                        all_cyclic = False
+            if all_cyclic:
+                bcflux = 0
+            else:
+                # TODO: 2D, 3D, ...
+                bcflux = flux._impl.get_item(0, -.5) - flux._impl.get_item(-1, +.5)
             np.testing.assert_approx_equal(sum_0, sum_1 + bcflux, significant=13)
 
     def fct_init(self, psi: ScalarField, n_iters: int):
@@ -107,18 +120,14 @@ class MPDATA:
             return
         flux.apply(traversal=self.opts.formulae["flux"][0 if it == 0 else 1], args=(self.arrays.prev, GC), ext=1)
 
-        beta_up_nom = self.arrays.beta_up
-        beta_up_den = self.arrays.tmp
-        beta_up_nom.apply(traversal=Traversal(body=fct.beta_up_nom_1, init=-np.inf, loop=True), args=(self.arrays.prev,), ext=1)
-        beta_up_nom.apply(traversal=Traversal(body=fct.beta_up_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_max, self.arrays.beta_up, self.arrays.G), ext=1)
-        beta_up_den.apply(traversal=Traversal(body=fct.beta_up_den, init=0, loop=True), args=(flux,), ext=1)
-        self.arrays.beta_up.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(beta_up_nom, beta_up_den), ext=1)
+        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_up_nom_1, init=-np.inf, loop=True), args=(self.arrays.prev,), ext=1)
+        self.arrays.beta_up.apply(traversal=Traversal(body=fct.beta_up_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_max, self.arrays.tmp, self.arrays.G), ext=1)
+        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_up_den, init=0, loop=True), args=(flux,), ext=1)
+        self.arrays.beta_up.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(self.arrays.beta_up, self.arrays.tmp), ext=1)
 
-        beta_dn_nom = self.arrays.beta_dn
-        beta_dn_den = self.arrays.tmp
-        beta_dn_nom.apply(traversal=Traversal(body=fct.beta_dn_nom_1, init=np.inf, loop=True), args=(self.arrays.prev,), ext=1)
-        beta_dn_nom.apply(traversal=Traversal(body=fct.beta_dn_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_min, self.arrays.beta_dn, self.arrays.G), ext=1)
-        beta_dn_den.apply(traversal=Traversal(body=fct.beta_dn_den, init=0, loop=True), args=(flux,), ext=1)
-        self.arrays.beta_dn.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(beta_dn_nom, beta_dn_den), ext=1)
+        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_dn_nom_1, init=np.inf, loop=True), args=(self.arrays.prev,), ext=1)
+        self.arrays.beta_dn.apply(traversal=Traversal(body=fct.beta_dn_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_min, self.arrays.tmp, self.arrays.G), ext=1)
+        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_dn_den, init=0, loop=True), args=(flux,), ext=1)
+        self.arrays.beta_dn.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(self.arrays.beta_dn, self.arrays.tmp), ext=1)
 
         GC.apply(traversal=self.opts.formulae["GC_mono"], args=(GC, self.arrays.beta_up, self.arrays.beta_dn))

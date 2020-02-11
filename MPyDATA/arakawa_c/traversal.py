@@ -3,3 +3,7 @@ class Traversal:
         self.body = body
         self.init = init
         self.loop = loop
+
+# TODO: ext
+# TODO: halo
+# TODO: MinTraversal, MaxTraversal, SumTraversal, ...

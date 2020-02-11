@@ -69,7 +69,8 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
                     self.focus(i, j)
                     arg1.focus(i, j)
                     arg2.focus(i, j)
-                    self.data[self._i, self._j] = init
+                    if loop:  # TODO
+                        self.data[self._i, self._j] = init
                     for dim in dims:
                         self.set_axis(dim)
                         arg1.set_axis(dim)
@@ -85,7 +86,8 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
                     arg2.focus(i, j)
                     arg3.focus(i, j)
                     arg4.focus(i, j)
-                    self.data[self._i, self._j] = init
+                    if loop:  # TODO
+                        self.data[self._i, self._j] = init
                     for dim in dims:
                         self.set_axis(dim)
                         arg1.set_axis(dim)
