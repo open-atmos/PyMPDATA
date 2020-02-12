@@ -1,9 +1,23 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
 import numpy as np
+import pytest
 
 
-def test_single_timestep():
+# @pytest.mark.skip # TODO: work in progress
+@pytest.mark.parametrize(
+    "opts", [
+        Options(nug=True),
+        Options(nug=True, fct=True),
+        Options(nug=True, fct=True, iga=True),
+        Options(nug=True, fct=True, tot=True),
+        Options(nug=True, fct=True, iga=True, tot=True),
+        Options(nug=True, fct=False, iga=True),
+        Options(nug=True, fct=False, tot=True),
+        Options(nug=True, fct=False, iga=True, tot=True)
+    ]
+)
+def test_single_timestep(opts):
     # Arrange
     grid = (75, 75)
     size = (1500, 1500)
@@ -26,12 +40,12 @@ def test_single_timestep():
     GC, eulerian_fields = MPDATAFactory.kinematic_2d(
         grid=grid, size=size, dt=dt,
         stream_function=stream_function,
-        field_values={'th': 300, 'qv': .001},
+        field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
         g_factor=rhod,
-        opts = Options()
+        opts=opts
     )
 
     # Plot
 
     # Act
-    eulerian_fields.step(n_iters=1)
+    eulerian_fields.step(n_iters=2, debug=True)

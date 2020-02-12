@@ -59,27 +59,31 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 raise ValueError()
             return self._i + int(item + .5)
 
+        def get_item(self, focus: int, relative: float):
+            self.focus(focus if focus >= 0 else shape_0 + focus)
+            return self.at(relative, -1)
+
         def get_component(self, _):
             return self._data_0[halo - 1: self._data_0.shape[0] - halo + 1]
 
-        def apply_1arg(self, function: callable, arg_1: Field.Impl, ext: int):
+        def apply_1arg(self, function: callable, init: float, loop: bool, arg_1: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)
 
                 idx = self.__idx(+.5)
-                self._data_0[idx] = function(arg_1)
+                self._data_0[idx] = function(init, arg_1)
 
-        def apply_2arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
+        def apply_2arg(self, function: callable, init: float, loop: bool, arg_1: Field.Impl, arg_2: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)
                 arg_2.focus(i)
 
                 idx = self.__idx(+.5)
-                self._data_0[idx] = function(arg_1, arg_2)
+                self._data_0[idx] = function(init, arg_1, arg_2)
 
-        def apply_3arg(self, function: callable, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
+        def apply_3arg(self, function: callable, init: float, loop: bool, arg_1: Field.Impl, arg_2: Field.Impl, arg_3: Field.Impl, ext: int):
             for i in range(-1 - ext, shape_0 + ext):
                 self.focus(i)
                 arg_1.focus(i)
@@ -87,7 +91,7 @@ def make_vector_field_1d(arg_data_0: np.ndarray, arg_halo: int):
                 arg_3.focus(i)
 
                 idx = self.__idx(+.5)
-                self._data_0[idx] = function(arg_1, arg_2, arg_3)
+                self._data_0[idx] = function(init, arg_1, arg_2, arg_3)
 
         def left_halo(self, _, __):
             return slice(0, halo - 1)

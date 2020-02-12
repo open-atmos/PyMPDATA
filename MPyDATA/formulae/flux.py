@@ -8,8 +8,10 @@ Created at 11.10.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
+from ..arakawa_c.traversal import Traversal
 import numpy as np
 from ..utils import debug_flag
+from .jit_flags import jit_flags
 
 if debug_flag.VALUE:
     import MPyDATA.utils.fake_numba as numba
@@ -22,8 +24,8 @@ else:
 def make_flux(opts, it: int):
     iga = opts.iga
 
-    @numba.njit()
-    def flux(psi: ScalarField.Impl, GC: VectorField.Impl):
+    @numba.njit(**jit_flags)
+    def flux(_, psi: ScalarField.Impl, GC: VectorField.Impl):
         if it == 0 or not iga:
             result = (
                 np.maximum(0, GC.at(+.5, 0)) * psi.at(0, 0) +
@@ -32,7 +34,7 @@ def make_flux(opts, it: int):
         else:
             result = GC.at(+.5, 0)
         return result
-    return flux
+    return Traversal(body=flux, init=np.nan, loop=True)
 
 
 def make_fluxes(opts):

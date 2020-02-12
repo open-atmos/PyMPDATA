@@ -50,20 +50,51 @@ def make_scalar_field_2d(arg_data: np.ndarray, arg_halo: int):
             else:
                 return self.data[self._i + arg1, self._j + arg2]
 
-        def apply_2arg(self, function: callable, arg1: Field.Impl, arg2: Field.Impl, ext: int):
+        def apply_1arg(self, function: callable, init: float, loop: bool, arg1: Field.Impl, ext: int):
+            dims = range(2 if loop else 1)
+            for i in range(-ext, shape[0] - 2 * halo + ext):
+                for j in range(-ext, shape[1] - 2 * halo + ext):
+                    self.focus(i, j)
+                    arg1.focus(i, j)
+                    self.data[self._i, self._j] = init
+                    for dim in dims:
+                        self.set_axis(dim)
+                        arg1.set_axis(dim)
+                        self.data[self._i, self._j] = function(self.data[self._i, self._j], arg1)
+
+        def apply_2arg(self, function: callable, init: float, loop: bool, arg1: Field.Impl, arg2: Field.Impl, ext: int):
+            dims = range(2 if loop else 1)
             for i in range(-ext, shape[0] - 2 * halo + ext):
                 for j in range(-ext, shape[1] - 2 * halo + ext):
                     self.focus(i, j)
                     arg1.focus(i, j)
                     arg2.focus(i, j)
-
-                    self.data[self._i, self._j] = 0
-                    for dim in range(2):
+                    if loop:  # TODO
+                        self.data[self._i, self._j] = init
+                    for dim in dims:
                         self.set_axis(dim)
                         arg1.set_axis(dim)
                         arg2.set_axis(dim)
+                        self.data[self._i, self._j] = function(self.data[self._i, self._j], arg1, arg2)
 
-                        self.data[self._i, self._j] += function(arg1, arg2)
+        def apply_4arg(self, function: callable, init: float, loop: bool, arg1: Field.Impl, arg2: Field.Impl, arg3: Field.Impl, arg4: Field.Impl, ext: int):
+            dims = range(2 if loop else 1)
+            for i in range(-ext, shape[0] - 2 * halo + ext):
+                for j in range(-ext, shape[1] - 2 * halo + ext):
+                    self.focus(i, j)
+                    arg1.focus(i, j)
+                    arg2.focus(i, j)
+                    arg3.focus(i, j)
+                    arg4.focus(i, j)
+                    if loop:  # TODO
+                        self.data[self._i, self._j] = init
+                    for dim in dims:
+                        self.set_axis(dim)
+                        arg1.set_axis(dim)
+                        arg2.set_axis(dim)
+                        arg3.set_axis(dim)
+                        arg4.set_axis(dim)
+                        self.data[self._i, self._j] = function(self.data[self._i, self._j], arg1, arg2, arg3, arg4)
 
         @property
         def dimension(self) -> int:

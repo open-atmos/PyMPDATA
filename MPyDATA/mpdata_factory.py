@@ -10,6 +10,7 @@ import numpy as np
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
+from .arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
 from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
@@ -35,6 +36,55 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
+    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, coord, cdf, drdt, opts: Options):
+        # TODO
+        assert opts.nug
+
+        _, dx = np.linspace(
+            coord.x(r_min),
+            coord.x(r_max),
+            nr + 1,
+            retstep=True
+        )
+        xh = np.linspace(
+            coord.x(r_min),
+            coord.x(r_max),
+            nr + 1
+        )
+        rh = coord.r(xh)
+        Gh = 1 / coord.dx_dr(rh)
+        x = np.linspace(
+            xh[0] + dx / 2,
+            xh[-1] - dx / 2,
+            nr
+        )
+        r = coord.r(x)
+        G = 1 / coord.dx_dr(r)
+
+        psi = (
+            np.diff(cdf(rh))
+            /
+            np.diff(rh)
+        )
+
+        # C = drdt * dxdr * dt / dx
+        # G = 1 / dxdr
+        C = drdt(rh) / Gh * dt / dx
+        GCh = Gh * C
+
+        bcond = ((ExtrapolatedLeft, ExtrapolatedRight),)
+        n_halo = MPDATAFactory.n_halo(opts)
+        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond)
+        state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond)
+        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
+        return (
+            MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
+            r,
+            rh
+        )
+
+
+    @staticmethod
     def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
         # TODO
         bcond = (
@@ -55,7 +105,10 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, g_factor: np.ndarray, opts):
+    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict,
+                     g_factor: np.ndarray, opts):
+        assert opts.nug
+
         # TODO
         bcond = (
             (CyclicLeft(), CyclicRight()),
@@ -67,17 +120,20 @@ class MPDATAFactory:
         G = ScalarField(g_factor, halo=halo, boundary_conditions=bcond)
 
         mpdatas = {}
-        for key, value in field_values.items():
-            state = _uniform_scalar_field(grid, value, halo, boundary_conditions=bcond)
+        for key, data in field_values.items():
+            state = ScalarField(data=data, halo=halo, boundary_conditions=bcond)
             mpdatas[key] = MPDATA(opts=opts, state=state, GC_field=GC, g_factor=G)
 
         eulerian_fields = EulerianFields(mpdatas)
         return GC, eulerian_fields
 
-
-def _uniform_scalar_field(grid, value: float, halo: int, boundary_conditions):
-    data = np.full(grid, value)
-    return ScalarField(data=data, halo=halo, boundary_conditions=boundary_conditions)
+    @staticmethod
+    def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
+        dx = (x_max - x_min) / nx
+        x = np.linspace(x_min + dx / 2, x_max - dx / 2, nx)
+        xh = np.linspace(x_min, x_max, nx + 1)
+        y = np.diff(cdf(xh)) / dx
+        return x, y
 
 
 # TODO: move asserts to a unit test
@@ -135,3 +191,6 @@ def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callabl
     assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9
 
     return result
+
+
+

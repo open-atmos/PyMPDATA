@@ -36,8 +36,9 @@ class Arrays:
             self.psi_max = ScalarField.clone(state)
             self.beta_up = ScalarField.clone(state)
             self.beta_dn = ScalarField.clone(state)
-        else:
-            self.psi_min = None
-            self.psi_max = None
-            self.beta_up = None
-            self.beta_dn = None
+            self.tmp = ScalarField.clone(state)
+        # else:
+        #     self.psi_min = None
+        #     self.psi_max = None
+        #     self.beta_up = None
+        #     self.beta_dn = None
