@@ -12,7 +12,7 @@ def analysis():
     options = Options(nug=True) # , dfl=True, #iga=True, fct=True, tot=True)
     simulation = Simulation(x_id(), setup, options)
 
-    result = {'r': None, "n": []}
+    result = {"n": []}
     last_step = 0
     for n_steps in setup.nt:
         for _ in range(n_steps - last_step):
