@@ -5,7 +5,7 @@ install:
   - pip install -U -r requirements.txt
 
 script:
-  - travis_wait python -m pytest --ignore=prototype --cov-report term --cov=MPyDATA
+  - travis_wait 45 python -m pytest --ignore=prototype --cov-report term --cov=MPyDATA
   - |
     python -m ipykernel install --user
     for i in MPyDATA_examples/*/demo*.ipynb; do 
