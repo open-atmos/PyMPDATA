@@ -48,4 +48,4 @@ def test_single_timestep(opts):
     # Plot
 
     # Act
-    eulerian_fields.step(n_iters=2, debug=False) # TODO: debug=True
+    eulerian_fields.step(n_iters=2, debug=True)

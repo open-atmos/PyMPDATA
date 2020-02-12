@@ -8,7 +8,7 @@ Created at 11.10.2019
 
 from ..arakawa_c.scalar_field import ScalarField
 from ..arakawa_c.vector_field import VectorField
-
+from ..arakawa_c.traversal import Traversal
 from ..utils import debug_flag
 from .jit_flags import jit_flags
 
@@ -22,12 +22,12 @@ def make_upwind(opts):
     nug = opts.nug
 
     @numba.njit(**jit_flags)
-    def upwind(flx: VectorField.Impl, G: ScalarField.Impl):
+    def upwind(init: float, flx: VectorField.Impl, G: ScalarField.Impl):
         result = -1 * (
                 flx.at(+.5, 0) -
                 flx.at(-.5, 0)
         )
         if not nug:
             result /= G.at(0, 0)
-        return result
-    return upwind
+        return init + result
+    return Traversal(body=upwind, init=0, loop=True)

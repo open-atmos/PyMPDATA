@@ -1,3 +1,4 @@
+from ..arakawa_c.traversal import Traversal
 from ..utils import debug_flag
 from .jit_flags import jit_flags
 
@@ -14,11 +15,11 @@ def make_laplacian(opts):
     eps = opts.eps
 
     @numba.njit(**jit_flags)
-    def A(psi, mu):
+    def A(init: float, psi, mu):
         result = -2 * mu.value * (
                 psi.at(1, 0) - psi.at(0, 0)
         ) / (
                 psi.at(1, 0) + psi.at(0, 0) + eps
         )
-        return result
-    return A
+        return init + result
+    return Traversal(body=A, init=0, loop=True)

@@ -15,12 +15,12 @@ class TestDisabledNumba:
         fun = lambda: make_antidiff(Options())
 
         # Act & Assert
-        assert hasattr(fun(), "py_func")
+        assert hasattr(fun().body, "py_func")
         with sut:
             from MPyDATA.utils.debug_flag import VALUE
             assert VALUE
-            assert not hasattr(fun(), "py_func")
-        assert hasattr(fun(), "py_func")
+            assert not hasattr(fun().body, "py_func")
+        assert hasattr(fun().body, "py_func")
 
     @staticmethod
     def test_class():
