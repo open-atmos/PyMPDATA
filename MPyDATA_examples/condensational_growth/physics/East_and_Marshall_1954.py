@@ -7,9 +7,10 @@ class SizeDistribution:
         self.si = si
         
     def cdf(self, r):
+        erf_arg = np.sqrt(22) * np.log(r / (7 * self.si.micrometre)) / np.log(10)
         return (
                 175 * np.sqrt(2 * np.pi / 11) *
-                special.erf(np.sqrt(22) * np.log(r / (7 * self.si.micrometre)) / np.log(10)) *
+                special.erf(erf_arg.magnitude) *
                 np.log(10) *
                 (1 / self.si.centimetre ** 3)
         )

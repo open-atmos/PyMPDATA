@@ -40,7 +40,7 @@ def test_single_timestep(opts):
     GC, eulerian_fields = MPDATAFactory.kinematic_2d(
         grid=grid, size=size, dt=dt,
         stream_function=stream_function,
-        field_values={'th': 300, 'qv': .001},
+        field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
         g_factor=rhod,
         opts=opts
     )

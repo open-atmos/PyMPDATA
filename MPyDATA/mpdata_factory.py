@@ -79,8 +79,8 @@ class MPDATAFactory:
         GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
         return (
             MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
-            r[n_halo:-n_halo],
-            rh[(n_halo-1):nr+1-(n_halo-1)]
+            r,
+            rh
         )
 
 
@@ -120,17 +120,20 @@ class MPDATAFactory:
         G = ScalarField(g_factor, halo=halo, boundary_conditions=bcond)
 
         mpdatas = {}
-        for key, value in field_values.items():
-            state = _uniform_scalar_field(grid, value, halo, boundary_conditions=bcond)
+        for key, data in field_values.items():
+            state = ScalarField(data=data, halo=halo, boundary_conditions=bcond)
             mpdatas[key] = MPDATA(opts=opts, state=state, GC_field=GC, g_factor=G)
 
         eulerian_fields = EulerianFields(mpdatas)
         return GC, eulerian_fields
 
-
-def _uniform_scalar_field(grid, value: float, halo: int, boundary_conditions):
-    data = np.full(grid, value)
-    return ScalarField(data=data, halo=halo, boundary_conditions=boundary_conditions)
+    @staticmethod
+    def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
+        dx = (x_max - x_min) / nx
+        x = np.linspace(x_min + dx / 2, x_max - dx / 2, nx)
+        xh = np.linspace(x_min, x_max, nx + 1)
+        y = np.diff(cdf(xh)) / dx
+        return x, y
 
 
 # TODO: move asserts to a unit test
@@ -188,3 +191,6 @@ def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callabl
     assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9
 
     return result
+
+
+
