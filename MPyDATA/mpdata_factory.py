@@ -9,11 +9,13 @@ Created at 21.10.2019
 import numpy as np
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
+from .arakawa_c.scalar_constant import ScalarConstant
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
 from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
+from scipy import integrate
 
 
 class MPDATAFactory:
@@ -105,10 +107,8 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict,
-                     g_factor: np.ndarray, opts):
-        assert opts.nug
-
+    def kinematic_2d(grid, size, dt, stream_function: callable, field_values: dict, opts: Options,
+                     g_factor: [np.ndarray, None] = None):
         # TODO
         bcond = (
             (CyclicLeft(), CyclicRight()),
@@ -117,7 +117,13 @@ class MPDATAFactory:
 
         halo = MPDATAFactory.n_halo(opts)
         GC = _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function, boundary_conditions=bcond)
-        G = ScalarField(g_factor, halo=halo, boundary_conditions=bcond)
+
+        if g_factor is not None:
+            assert opts.nug
+            G = ScalarField(g_factor, halo=halo, boundary_conditions=bcond)
+        else:
+            assert not opts.nug
+            G = ScalarConstant(1)
 
         mpdatas = {}
         for key, data in field_values.items():
@@ -135,6 +141,20 @@ class MPDATAFactory:
         y = np.diff(cdf(xh)) / dx
         return x, y
 
+
+    @staticmethod
+    def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
+        z = np.empty(gridsize)
+        dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
+        for i in range(gridsize[0]):
+            for j in range(gridsize[1]):
+                z[i, j] = integrate.nquad(pdf, ranges=(
+                    (xrange[0] + dx*i, xrange[0] + dx*(i+1)),
+                    (yrange[0] + dy*j, yrange[0] + dy*(j+1))
+                ))[0] / dx / dy
+        x = np.linspace(xrange[0] + dx / 2, xrange[1] - dx / 2, gridsize[0])
+        y = np.linspace(yrange[0] + dy / 2, yrange[1] - dy / 2, gridsize[1])
+        return x, y, z
 
 # TODO: move asserts to a unit test
 def x_vec_coord(grid, size):
@@ -167,7 +187,6 @@ def z_vec_coord(grid, size):
 
 
 def _nondivergent_vector_field_2d(grid, size, halo, dt, stream_function: callable, boundary_conditions):
-    # TODO: density!
     dx = size[0] / grid[0]
     dz = size[1] / grid[1]
     dxX = 1 / grid[0]
