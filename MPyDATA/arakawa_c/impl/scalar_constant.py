@@ -14,8 +14,13 @@ def make_scalar_constant(arg_value: float):
         def __init__(self, value):
             self.value = value
 
-        # TODO: works only for 1D
-        def focus(self, _):
+        def focus(self, _, __=-1):
             pass
+
+        def set_axis(self, _):
+            pass
+
+        def at(self, _, __=-1):
+            return self.value
 
     return ScalarConstant(arg_value)

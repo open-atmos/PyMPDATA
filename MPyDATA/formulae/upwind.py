@@ -27,7 +27,7 @@ def make_upwind(opts):
                 flx.at(+.5, 0) -
                 flx.at(-.5, 0)
         )
-        if not nug:
+        if nug:
             result /= G.at(0, 0)
         return init + result
     return Traversal(body=upwind, init=0, loop=True)

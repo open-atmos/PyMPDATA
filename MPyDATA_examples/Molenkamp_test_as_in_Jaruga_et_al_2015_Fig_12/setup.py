@@ -18,6 +18,20 @@ yc = .5 * grid[1] * dy
 
 
 class Setup:
+    def __init__(self, n_rotations=6):
+        self.n_rotations = n_rotations
+
+    @property
+    def dt(self):
+        return dt
+
+    @property
+    def nt(self):
+        return int(628 * self.n_rotations)
+
+    @property
+    def size(self):
+        return self.xrange[1], self.yrange[1]
 
     @property
     def xrange(self):
@@ -43,3 +57,9 @@ class Setup:
             # else
             0.
         )
+
+    @staticmethod
+    def stream_function(xX, yY):
+        x = xX * grid[0] * dx
+        y = yY * grid[1] * dy
+        return 1 / 2 * omega * ((x - xc)**2 + (y - yc)**2)
