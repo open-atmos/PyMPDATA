@@ -34,7 +34,7 @@ class MPDATAFactory:
 
         state = ScalarField(psi, halo, boundary_conditions=boundary_conditions)
         GC = VectorField(data=[np.full((nx + 1,), C)], halo=halo, boundary_conditions=boundary_conditions)
-        g_factor = ScalarField(np.ones((nx,)), halo=halo, boundary_conditions=boundary_conditions)  # TODO: nug:False?
+        g_factor = ScalarConstant(1)
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod

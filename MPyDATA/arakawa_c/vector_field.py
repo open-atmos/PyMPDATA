@@ -28,6 +28,11 @@ class VectorField(Field):
             self.get_component(d)[:] += rhs.get_component(d)[:]
         self._halo_valid = False
 
+    def set(self, value):
+        for d in range(self.dimension):
+            self.get_component(d)[:] = value
+        self._halo_valid = False
+
     def div(self, grid_step: tuple) -> ScalarField:
         diffsum = None
         for d in range(self.dimension):
