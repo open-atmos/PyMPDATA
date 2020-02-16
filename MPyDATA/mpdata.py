@@ -8,6 +8,7 @@ Created at 25.09.2019
 
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
+from .arakawa_c.scalar_constant import ScalarConstant
 from .arakawa_c.traversal import Traversal
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .formulae import fct_utils as fct
@@ -20,7 +21,7 @@ class MPDATA:
     def __init__(self,
         opts: Options,
         state: ScalarField,
-        g_factor: ScalarField,
+        g_factor: [ScalarField, ScalarConstant],
         GC_field: VectorField,
     ):
         self.arrays = Arrays(state, g_factor, GC_field, opts)
@@ -34,9 +35,9 @@ class MPDATA:
             self.arrays.GC_phys.clone(),
         )
 
-    def step(self, n_iters, mu=0., debug=False):
+    def step(self, n_iters, mu=ScalarConstant(0), debug=False):
         assert n_iters > 0
-        assert mu == 0 or self.opts.nzm
+        assert mu.value == 0 or self.opts.nzm
 
         self.fct_init(psi=self.arrays.curr, n_iters=n_iters)
         if self.opts.nzm:
@@ -44,9 +45,9 @@ class MPDATA:
             assert self.opts.nug is False
 
             self.arrays.GC_curr.apply(self.opts.formulae["laplacian"], args=(self.arrays.curr, mu))
-            self.arrays.GC_curr.add(self.arrays.GC_phys)
         else:
-            self.arrays.GC_curr.swap_memory(self.arrays.GC_phys)
+            self.arrays.GC_curr.set(0)
+        self.arrays.GC_curr.add(self.arrays.GC_phys)
 
         for i in range(n_iters):
             self.arrays.prev.swap_memory(self.arrays.curr)
@@ -67,9 +68,6 @@ class MPDATA:
                         # TODO: check monotonicity
                         )
 
-            if i == 0 and not self.opts.nzm:
-                self.arrays.GC_phys.swap_memory(self.arrays.GC_curr)
-
     def upwind(self, i: int, flux: VectorField, check_conservativeness, check_CFL):
         if check_CFL:
             # TODO: more correct measure for 2D, 3D, ...?
@@ -88,8 +86,9 @@ class MPDATA:
         self.arrays.curr.add(self.arrays.prev)
 
         if check_conservativeness:
-            sum_0 = np.sum(self.arrays.prev.get() * self.arrays.G.get())
-            sum_1 = np.sum(self.arrays.curr.get() * self.arrays.G.get())
+            G = self.arrays.G.value if isinstance(self.arrays.G, ScalarConstant) else self.arrays.G.get()
+            sum_0 = np.sum(self.arrays.prev.get() * G)
+            sum_1 = np.sum(self.arrays.curr.get() * G)
 
             all_cyclic = True
             for bc_dim in flux.boundary_conditions:
