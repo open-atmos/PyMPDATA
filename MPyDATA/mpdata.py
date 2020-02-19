@@ -99,7 +99,7 @@ class MPDATA:
                 bcflux = 0
             else:
                 # TODO: 2D, 3D, ...
-                bcflux = flux._impl.get_item(0, -.5) - flux._impl.get_item(-1, +.5)
+                bcflux = -flux._impl.get_item(0, -.5) + flux._impl.get_item(-1, +.5)
             np.testing.assert_approx_equal(sum_0, sum_1 + bcflux, significant=13)
 
     def fct_init(self, psi: ScalarField, n_iters: int):
