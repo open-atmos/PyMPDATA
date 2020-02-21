@@ -18,7 +18,6 @@ class Arrays:
             assert GC_field._impl._data_0.shape[0] == GC_field._impl._data_1.shape[0] - 1
             assert GC_field._impl._data_0.shape[1] == GC_field._impl._data_1.shape[1] + 1
         # TODO: assert G.data.shape == state.data.shape (but halo...)
-        # TODO assert halo
 
         self.G = g_factor
 
@@ -37,8 +36,4 @@ class Arrays:
             self.beta_up = ScalarField.clone(state)
             self.beta_dn = ScalarField.clone(state)
             self.tmp = ScalarField.clone(state)
-        # else:
-        #     self.psi_min = None
-        #     self.psi_max = None
-        #     self.beta_up = None
-        #     self.beta_dn = None
+

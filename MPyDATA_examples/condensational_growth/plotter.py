@@ -1,9 +1,10 @@
 from matplotlib import pyplot
 import numpy as np
+from .setup import setup
 
 
 class Plotter:
-    def __init__(self, r_min, r_max, title, si):
+    def __init__(self, r_min, r_max, title):
         self.cdfarg, self.dcdfarg = np.linspace(
             r_min.magnitude,
             r_max.magnitude,
@@ -17,14 +18,13 @@ class Plotter:
         self.style_palette = ['dotted', '--', '-', '-.']
         self.axs[0].set_title(title)
 
-        si.setup_matplotlib()
-        self.si = si
+        setup.si.setup_matplotlib()
 
-        self.axs[0].xaxis.set_units(self.si.micrometre)
-        self.axs[0].yaxis.set_units(1 / self.si.micrometre / self.si.centimetre ** 3)
+        self.axs[0].xaxis.set_units(setup.si.micrometre)
+        self.axs[0].yaxis.set_units(1 / setup.si.micrometre / setup.si.centimetre ** 3)
 
-        self.axs[1].xaxis.set_units(self.si.micrometre)
-        self.axs[1].yaxis.set_units(1 / self.si.micrometre)
+        self.axs[1].xaxis.set_units(setup.si.micrometre)
+        self.axs[1].yaxis.set_units(1 / setup.si.micrometre)
 
         self.axs[0].grid()
         self.axs[1].grid()
@@ -41,11 +41,7 @@ class Plotter:
         self.axs[0].plot(x, y, color='red')
 
         # normalised mass distribution
-        # TODO!!!
-        rho_w = 1 * self.si.kilogram / self.si.decimetre ** 3
-        rho_a = 1 * self.si.kilogram / self.si.metre ** 3
-
-        y_mass = y * x**3 * 4 / 3 * np.pi * rho_w / rho_a / mnorm
+        y_mass = y * x**3 * 4 / 3 * np.pi * setup.rho_w / setup.rho_a / mnorm
         self.axs[1].plot(x, y_mass, color='blue')
 
     def numerical_pdf(self, x, y, bin_boundaries, label, mnorm):
@@ -66,11 +62,8 @@ class Plotter:
         r1 = bin_boundaries[:-1]
         r2 = bin_boundaries[1:]
 
-        rho_w = 1 * self.si.kilogram / self.si.decimetre ** 3
-        rho_a = 1 * self.si.kilogram / self.si.metre ** 3
-
         self.axs[1].step(
             x,
-            y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi * rho_w / rho_a / mnorm,
+            y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi * setup.rho_w / setup.rho_a / mnorm,
             where='mid', label=lbl, linestyle=self.style_dict[label], color='black'
         )

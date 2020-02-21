@@ -12,6 +12,7 @@ from .arakawa_c.vector_field import VectorField
 from .arakawa_c.scalar_constant import ScalarConstant
 from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from .arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
+from .arakawa_c.boundary_conditions.zero import ZeroLeft, ZeroRight
 from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
@@ -74,21 +75,21 @@ class MPDATAFactory:
         C = drdt(rh) / Gh * dt / dx
         GCh = Gh * C
 
-        bcond = ((ExtrapolatedLeft, ExtrapolatedRight),)
+        bcond_extrapol = ((ExtrapolatedLeft, ExtrapolatedRight),)
+        bcond_zero = ((ZeroLeft, ZeroRight),)
         n_halo = MPDATAFactory.n_halo(opts)
-        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond)
-        state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond)
-        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond)
+        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=bcond_extrapol)
+        state = ScalarField(psi, halo=n_halo, boundary_conditions=bcond_zero)
+        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=bcond_zero)
         return (
             MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
             r,
             rh
         )
 
-
+    # TODO: only used in tests -> move to tests
     @staticmethod
     def uniform_C_2d(psi: np.ndarray, C: iter, opts: Options):
-        # TODO
         bcond = (
             (CyclicLeft(), CyclicRight()),
             (CyclicLeft(), CyclicRight())
@@ -103,7 +104,7 @@ class MPDATAFactory:
             np.full((nx + 1, ny), C[0]),
             np.full((nx, ny+1), C[1])
         ], halo=halo, boundary_conditions=bcond)
-        g_factor = ScalarField(np.ones((nx, ny)), halo=halo, boundary_conditions=bcond)  # TODO
+        g_factor = ScalarField(np.ones((nx, ny)), halo=halo, boundary_conditions=bcond)
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod

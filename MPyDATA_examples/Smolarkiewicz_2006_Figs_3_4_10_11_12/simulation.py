@@ -9,10 +9,6 @@ class Simulation:
 
         x, state = MPDATAFactory.from_cdf_1d(setup.cdf, setup.x_min, setup.x_max, setup.nx)
 
-        # TODO: move to smoke tests
-        assert x.shape == state.shape
-        assert (state >= 0).all()
-
         self.stepper = MPDATAFactory.uniform_C_1d(
             state,
             setup.C,

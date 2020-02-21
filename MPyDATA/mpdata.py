@@ -65,6 +65,7 @@ class MPDATA:
             self.upwind(i, flux=self.arrays.GC_prev,
                         check_conservativeness=debug,
                         check_CFL=debug
+                        # TODO: check_positive_definite
                         # TODO: check monotonicity
                         )
 
@@ -73,6 +74,8 @@ class MPDATA:
             # TODO: more correct measure for 2D, 3D, ...?
             for d in range(self.arrays.GC_curr.dimension):
                 assert np.isfinite(self.arrays.GC_curr.get_component(d)).all()
+                if not (np.abs(self.arrays.GC_curr.get_component(d)) <= 1).all():
+                    print("AQQ")
                 assert (np.abs(self.arrays.GC_curr.get_component(d)) <= 1).all()
 
         flux.apply(
