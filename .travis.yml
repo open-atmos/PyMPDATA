@@ -1,24 +1,26 @@
-language: shell
+# just defaults
+language: python
+os: linux
 
 jobs:
   include:
-    - name: "Python 3.8 build with newest packages on Linux"
-      language: python
+    - name: "Linux, Python 3.8, newest packages"
       python: "3.8"
       before_install:
         - sudo `which pip` install --upgrade pip
       before_script:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
-    - name: "Python 3.7 on Linux"
-      language: python
+    - name: "Linux, Python 3.7, required packages"
       python: 3.7
       after_success:
         - codecov
-    - name: "Python 3.7 on OSX"
+    - name: "OSX, Python 3.7, required packages"
+      language: shell
       os: osx
       before_install:
         - export PY_SFX=3
-    - name: "Python 3.7 on Windows"
+    - name: "Windows, Python 3.7, required packages"
+      language: shell
       os: windows
       before_install:
         - choco install python --version 3.7
@@ -29,7 +31,7 @@ install:
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
-  - travis_wait 45 python$PY_SFX -m pytest --ignore=prototype --cov-report term --cov=MPyDATA
+  - python$PY_SFX -m pytest --cov-report term --cov=MPyDATA
   - |
     python$PY_SFX -m ipykernel install --user
     for i in MPyDATA_examples/*/demo.ipynb; do 
