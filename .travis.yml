@@ -31,7 +31,7 @@ install:
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
-  - python$PY_SFX -m pytest --cov-report term --cov=MPyDATA
+  - travis_wait 100 python$PY_SFX -m pytest --cov-report term --cov=MPyDATA
   - |
     python$PY_SFX -m ipykernel install --user
     for i in MPyDATA_examples/*/demo.ipynb; do 
