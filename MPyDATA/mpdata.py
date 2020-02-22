@@ -65,6 +65,7 @@ class MPDATA:
             self.upwind(i, flux=self.arrays.GC_prev,
                         check_conservativeness=debug,
                         check_CFL=debug
+                        # TODO: check_positive_definite
                         # TODO: check monotonicity
                         )
 
@@ -73,6 +74,8 @@ class MPDATA:
             # TODO: more correct measure for 2D, 3D, ...?
             for d in range(self.arrays.GC_curr.dimension):
                 assert np.isfinite(self.arrays.GC_curr.get_component(d)).all()
+                if not (np.abs(self.arrays.GC_curr.get_component(d)) <= 1).all():
+                    print("AQQ")
                 assert (np.abs(self.arrays.GC_curr.get_component(d)) <= 1).all()
 
         flux.apply(
@@ -99,7 +102,7 @@ class MPDATA:
                 bcflux = 0
             else:
                 # TODO: 2D, 3D, ...
-                bcflux = flux._impl.get_item(0, -.5) - flux._impl.get_item(-1, +.5)
+                bcflux = -flux._impl.get_item(0, -.5) + flux._impl.get_item(-1, +.5)
             np.testing.assert_approx_equal(sum_0, sum_1 + bcflux, significant=13)
 
     def fct_init(self, psi: ScalarField, n_iters: int):

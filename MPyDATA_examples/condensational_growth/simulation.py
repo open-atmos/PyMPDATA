@@ -1,4 +1,5 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
+from .setup import setup
 
 
 class Simulation:
@@ -6,11 +7,13 @@ class Simulation:
     def __mgn(quantity, unit):
         return quantity.to(unit).magnitude
 
-    def __init__(self, coord, setup, opts):
+    def __init__(self, coord, opts):
         # units of calculation
         self.__t_unit = setup.si.seconds
-        self.__r_unit = setup.si.metres
-        self.__n_unit = setup.si.metres ** -3 / self.__r_unit
+        self.__r_unit = setup.si.micrometre
+
+        self.__cdf_unit = setup.si.centimetres**-3
+        self.__pdf_unit = self.__cdf_unit / setup.si.micrometre
 
         self.solver, self.__r, self.__rh, = MPDATAFactory.equilibrium_growth_C_1d(
             setup.nr,
@@ -18,7 +21,7 @@ class Simulation:
             self.__mgn(setup.r_max, self.__r_unit),
             self.__mgn(setup.dt, self.__t_unit),
             coord,
-            lambda r: self.__mgn(setup.cdf(r * self.__r_unit), self.__n_unit * self.__r_unit),
+            lambda r: self.__mgn(setup.cdf(r * self.__r_unit), self.__cdf_unit),
             lambda r: self.__mgn(setup.drdt(r * self.__r_unit), self.__r_unit / self.__t_unit),
             opts
         )
@@ -36,4 +39,4 @@ class Simulation:
 
     @property
     def n(self):
-        return self.solver.arrays.curr.get() * self.__n_unit
+        return self.solver.arrays.curr.get() * self.__pdf_unit

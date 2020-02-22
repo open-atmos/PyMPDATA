@@ -10,6 +10,7 @@ eps = 1e-10
 
 
 class ExtrapolatedLeft:
+
     @staticmethod
     @numba.njit
     def scalar(impl, d):
@@ -22,7 +23,8 @@ class ExtrapolatedLeft:
         cnst = nom/den if abs(den) > eps else 0
 
         for i in range(impl.left_halo(d).stop-1, impl.left_halo(d).start-1, -1):
-            a[i] = max(a[i+1] - (a[i+2] - a[i+1]) * cnst, 0)
+            value = max(a[i+1] - (a[i+2] - a[i+1]) * cnst, 0)
+            a[i] = value
 
     @staticmethod
     @numba.njit
@@ -31,6 +33,7 @@ class ExtrapolatedLeft:
         le = impl.left_edge(axis, comp)
         for i in range(lh.start, lh.stop):
             impl.data(comp)[i] = impl.data(comp)[le.start]
+
 
 class ExtrapolatedRight:
     @staticmethod
@@ -45,7 +48,8 @@ class ExtrapolatedRight:
         cnst = nom/den if abs(den) > eps else 0
 
         for i in range(impl.right_halo(d).start, impl.right_halo(d).stop):
-             a[i] = max(a[i - 1] + (a[i - 1] - a[i - 2]) * cnst, 0)
+            value = max(a[i - 1] + (a[i - 1] - a[i - 2]) * cnst, 0)
+            a[i] = value
 
     @staticmethod
     @numba.njit
