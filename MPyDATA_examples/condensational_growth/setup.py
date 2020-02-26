@@ -6,11 +6,11 @@ import pint
 
 
 class Setup:
-    def __init__(self):
+    def __init__(self, nr = 64, dt = .5):
         si = pint.UnitRegistry()
         self.si = si
-        self.nr = 64
-        self.dt = .5 * si.second
+        self.nr = nr
+        self.dt = dt * si.second
         self.r_min = 1 * si.micrometre
         self.r_max = 25 * si.micrometre
         self.rho_w = 1 * si.kilogram / si.decimetre ** 3
@@ -58,4 +58,3 @@ class Setup:
         return self.C * self.size_distribution.cdf(r)
 
 
-setup = Setup()  # TODO: go back to non-singleton setup as we want to pass grid size, etc

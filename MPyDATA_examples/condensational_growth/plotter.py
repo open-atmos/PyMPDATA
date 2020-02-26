@@ -1,30 +1,31 @@
 from matplotlib import pyplot
 import numpy as np
-from .setup import setup
+from .setup import Setup
 
 
 class Plotter:
-    def __init__(self, r_min, r_max, title):
+    def __init__(self, setup, title):
+        self.setup = setup
         self.cdfarg, self.dcdfarg = np.linspace(
-            r_min.magnitude,
-            r_max.magnitude,
+            setup.r_min.magnitude,
+            setup.r_max.magnitude,
             512, retstep=True
         )
-        self.cdfarg *= r_min.units
-        self.dcdfarg *= r_max.units
+        self.cdfarg *= setup.r_min.units
+        self.dcdfarg *= setup.r_max.units
 
         self.fig, self.axs = pyplot.subplots(2, 1, figsize=(8, 8))
         self.style_dict = {}
         self.style_palette = ['dotted', '--', '-', '-.']
         self.axs[0].set_title(title)
 
-        setup.si.setup_matplotlib()
+        self.setup.si.setup_matplotlib()
 
-        self.axs[0].xaxis.set_units(setup.si.micrometre)
-        self.axs[0].yaxis.set_units(1 / setup.si.micrometre / setup.si.centimetre ** 3)
+        self.axs[0].xaxis.set_units(self.setup.si.micrometre)
+        self.axs[0].yaxis.set_units(1 / self.setup.si.micrometre / self.setup.si.centimetre ** 3)
 
-        self.axs[1].xaxis.set_units(setup.si.micrometre)
-        self.axs[1].yaxis.set_units(1 / setup.si.micrometre)
+        self.axs[1].xaxis.set_units(self.setup.si.micrometre)
+        self.axs[1].yaxis.set_units(1 / self.setup.si.micrometre)
 
         self.axs[0].grid()
         self.axs[1].grid()
@@ -41,7 +42,7 @@ class Plotter:
         self.axs[0].plot(x, y, color='red')
 
         # normalised mass distribution
-        y_mass = y * x**3 * 4 / 3 * np.pi * setup.rho_w / setup.rho_a / mnorm
+        y_mass = y * x**3 * 4 / 3 * np.pi * self.setup.rho_w / self.setup.rho_a / mnorm
         self.axs[1].plot(x, y_mass, color='blue')
 
     def numerical_pdf(self, x, y, bin_boundaries, label, mnorm):
@@ -64,6 +65,6 @@ class Plotter:
 
         self.axs[1].step(
             x,
-            y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi * setup.rho_w / setup.rho_a / mnorm,
+            y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi * self.setup.rho_w / self.setup.rho_a / mnorm,
             where='mid', label=lbl, linestyle=self.style_dict[label], color='black'
         )

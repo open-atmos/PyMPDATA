@@ -20,4 +20,12 @@ class PdfEvolver:
     def __call__(self, r):
         with np.errstate(invalid='ignore'):
             arg = np.sqrt(r ** 2 - 2 * self.drdt.ksi * self.t)
-        return r / arg * self.pdf(arg)
+        result = r / arg * self.pdf(arg)
+
+        if isinstance(result.magnitude, np.ndarray):
+            result = np.where(np.isfinite(result), result, 0 * result.units)
+        else:
+            if not np.isfinite(result):
+                result = 0 * result.units
+
+        return result

@@ -72,7 +72,3 @@ class Simulation:
     def terminal_value(self):
         return self.solvers[1].arrays.curr.get()
 
-    # TODO: move out!!!
-    def error_L2_norm(self, n_iters: int):
-        err2 = np.log(np.sqrt(sum(pow(self.solvers[n_iters].arrays.curr.get() - self.setup.analytical_solution(self.S), 2)) / self.nt / self.nx)) / np.log(2)
-        return err2

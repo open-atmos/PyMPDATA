@@ -1,16 +1,32 @@
 from MPyDATA_examples.condensational_growth.coord import x_id, x_ln, x_p2
-from MPyDATA_examples.condensational_growth.setup import setup
+from MPyDATA_examples.condensational_growth.setup import Setup
 from MPyDATA.options import Options
 from MPyDATA_examples.condensational_growth.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
+from MPyDATA_examples.condensational_growth.physics.equilibrium_drop_growth import PdfEvolver
+from MPyDATA_examples.utils.error_norms import L2
 
 
-def analysis(debug, coord, options_dict):
+# <TODO> move
+from scipy import integrate
+import numpy as np
+
+
+def discretised_analytical_solution(rh, pdf_t):
+    output = np.empty(rh.shape[0]-1)
+    for i in range(output.shape[0]):
+        dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i+1]) # TODO: handle other output values
+        output[i] = dcdf / (rh[i+1] - rh[i])
+    return output
+# </TODO>
+
+
+def analysis(debug, setup, coord, options_dict):
     options_str = str(options_dict)
     n_iters = options_dict.pop("n_iters")
     options = Options(nug=True, **options_dict)
-    simulation = Simulation(coord, options)
-    result = {"n": []}
+    simulation = Simulation(setup, coord, options)
+    result = {"n": [], "n_analytical": [], "error_norm_L2": []}
     last_step = 0
     for n_steps in setup.nt:
         steps = n_steps - last_step
@@ -24,9 +40,10 @@ def analysis(debug, coord, options_dict):
 
 
 def figure_data(debug=False):
+    setup = Setup()
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
-            delayed(analysis)(debug, coord, options)
+            delayed(analysis)(debug, setup, coord, options)
             for coord in [x_id(), x_p2(), x_ln()]
             for options in (
                 {'n_iters': 1},
@@ -44,10 +61,37 @@ def figure_data(debug=False):
 
     output = {}
     for coord in coords:
-        output[coord] = {}
+        output[coord] = {"numerical": {}}
         for result in results:
             if coord == result[0]:
-                output[coord][result[1]] = result[2]
+                opts = result[1]
+                data = result[2]
+                rh = data.pop("rh")
+                r = data.pop('r')
+                if 'grid' not in output[coord]:
+                    output[coord]["grid"] = {'rh': rh, 'r': r}
+                output[coord]["numerical"][opts] = data['n']
 
-    return output
+    for coord in coords:
+        analytical = []
+        for t in [setup.dt * nt for nt in setup.nt]:
+            pdf_t = PdfEvolver(setup.pdf, setup.drdt, t)
+            rh = output[coord]["grid"]['rh']
+            analytical.append(discretised_analytical_solution(
+                rh.magnitude,
+                lambda r: pdf_t(r * rh.units).magnitude
+            ) * pdf_t(rh[0]).units)
+        output[coord]["analytical"] = analytical
+
+    for coord in coords:
+        error_L2 = {}
+        analytical = output[coord]["analytical"]
+        for opts in output[coord]["numerical"]:
+            numerical = output[coord]["numerical"][opts]
+            error_L2[opts] = L2(numerical[-1].magnitude, analytical[-1].magnitude, setup.nt[-1], setup.nr)
+        output[coord]["error_L2"] = error_L2
+
+        # # TODO: calculate norms for mass and number
+
+    return output, setup
 
