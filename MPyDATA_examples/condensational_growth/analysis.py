@@ -1,5 +1,5 @@
 from MPyDATA_examples.condensational_growth.coord import x_id, x_ln, x_p2
-from MPyDATA_examples.condensational_growth.setup import Setup
+from MPyDATA_examples.condensational_growth.setup import Setup, default_nr, default_dt
 from MPyDATA.options import Options
 from MPyDATA_examples.condensational_growth.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
@@ -39,17 +39,17 @@ def analysis(debug, setup, coord, options_dict):
     return coord.__class__.__name__, options_str, result
 
 
-def figure_data(debug=False):
-    setup = Setup()
+def figure_data(debug=False, nr=default_nr, dt=default_dt):
+    setup = Setup(nr=nr, dt=dt)
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
             delayed(analysis)(debug, setup, coord, options)
             for coord in [x_id(), x_p2(), x_ln()]
             for options in (
                 {'n_iters': 1},
-                {'n_iters': 2, 'fct': True},
-                {'n_iters': 3, 'dfl': True},
-                {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
+                # {'n_iters': 2, 'fct': True},
+                # {'n_iters': 3, 'dfl': True},
+                # {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
             )
         )
 

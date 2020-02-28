@@ -1,6 +1,5 @@
 from matplotlib import pyplot
 import numpy as np
-from .setup import Setup
 
 
 class Plotter:
@@ -16,7 +15,7 @@ class Plotter:
 
         self.fig, self.axs = pyplot.subplots(2, 1, figsize=(8, 8))
         self.style_dict = {}
-        self.style_palette = ['dotted', '--', '-', '-.']
+        self.style_palette = [':',':', '--', '-', '-.']
         self.axs[0].set_title(title)
 
         self.setup.si.setup_matplotlib()

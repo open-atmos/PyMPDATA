@@ -23,7 +23,7 @@ class PdfEvolver:
         result = r / arg * self.pdf(arg)
 
         if isinstance(result.magnitude, np.ndarray):
-            result = np.where(np.isfinite(result), result, 0 * result.units)
+            result = np.where(np.isfinite(result.magnitude), result.magnitude, 0) * result.units
         else:
             if not np.isfinite(result):
                 result = 0 * result.units

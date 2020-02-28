@@ -4,9 +4,12 @@ from scipy import integrate
 import numpy as np
 import pint
 
+default_nr = 64
+default_dt = .5
 
+# based on Fig. 3 from East 1957
 class Setup:
-    def __init__(self, nr = 64, dt = .5):
+    def __init__(self, nr=default_nr, dt=default_dt):
         si = pint.UnitRegistry()
         self.si = si
         self.nr = nr
