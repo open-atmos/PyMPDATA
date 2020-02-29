@@ -47,9 +47,9 @@ def figure_data(debug=False, nr=default_nr, dt=default_dt):
             for coord in [x_id(), x_p2(), x_ln()]
             for options in (
                 {'n_iters': 1},
-                # {'n_iters': 2, 'fct': True},
-                # {'n_iters': 3, 'dfl': True},
-                # {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
+                {'n_iters': 2, 'fct': True},
+                {'n_iters': 3, 'dfl': True},
+                {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
             )
         )
 
