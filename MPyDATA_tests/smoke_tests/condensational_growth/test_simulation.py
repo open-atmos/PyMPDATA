@@ -1,7 +1,7 @@
-from MPyDATA_examples.condensational_growth.simulation import Simulation
-from MPyDATA_examples.condensational_growth.setup import Setup
-from MPyDATA_examples.condensational_growth.coord import x_id, x_ln, x_p2
-from MPyDATA_examples.condensational_growth.analysis import figure_data
+from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
+from MPyDATA_examples.Olesik_et_al_2020.setup import Setup
+from MPyDATA_examples.Olesik_et_al_2020.coord import x_id, x_ln, x_p2
+from MPyDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from MPyDATA.options import Options
 import pytest
 import numpy as np
@@ -9,7 +9,7 @@ import numpy as np
 
 @pytest.fixture(scope='module')
 def data():
-    return figure_data(debug=False)[0]  # TODO!
+    return compute_figure_data(debug=False)[0]  # TODO!
 
 
 @pytest.mark.parametrize("coord", [x_id(), x_p2(), x_ln()])

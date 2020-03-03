@@ -1,9 +1,9 @@
-from MPyDATA_examples.condensational_growth.coord import x_id, x_ln, x_p2
-from MPyDATA_examples.condensational_growth.setup import Setup, default_nr, default_dt
+from MPyDATA_examples.Olesik_et_al_2020.coord import x_id, x_ln, x_p2
+from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_dt
 from MPyDATA.options import Options
-from MPyDATA_examples.condensational_growth.simulation import Simulation
+from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
-from MPyDATA_examples.condensational_growth.physics.equilibrium_drop_growth import PdfEvolver
+from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver
 from MPyDATA_examples.utils.error_norms import L2
 
 
@@ -36,10 +36,11 @@ def analysis(debug, setup, coord, options_dict):
         result['n'].append(simulation.n.copy())
     result['r'] = simulation.r.copy()
     result['rh'] = simulation.rh.copy()
+    result['dx'] = simulation.dx
     return coord.__class__.__name__, options_str, result
 
 
-def figure_data(debug=False, nr=default_nr, dt=default_dt):
+def compute_figure_data(debug=False, nr=default_nr, dt=default_dt):
     setup = Setup(nr=nr, dt=dt)
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
@@ -47,9 +48,9 @@ def figure_data(debug=False, nr=default_nr, dt=default_dt):
             for coord in [x_id(), x_p2(), x_ln()]
             for options in (
                 {'n_iters': 1},
-                {'n_iters': 2, 'fct': True},
-                {'n_iters': 3, 'dfl': True},
-                {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
+               {'n_iters': 2, 'fct': True},
+               {'n_iters': 3, 'dfl': True},
+               {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
             )
         )
 
@@ -68,8 +69,9 @@ def figure_data(debug=False, nr=default_nr, dt=default_dt):
                 data = result[2]
                 rh = data.pop("rh")
                 r = data.pop('r')
+                dx = data.pop('dx')
                 if 'grid' not in output[coord]:
-                    output[coord]["grid"] = {'rh': rh, 'r': r}
+                    output[coord]["grid"] = {'rh': rh, 'r': r, 'dx': dx}
                 output[coord]["numerical"][opts] = data['n']
 
     for coord in coords:

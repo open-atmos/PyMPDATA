@@ -17,7 +17,7 @@ class Simulation:
         self.__cdf_unit = self.setup.si.centimetres**-3
         self.__pdf_unit = self.__cdf_unit / self.setup.si.micrometre
 
-        self.solver, self.__r, self.__rh, = MPDATAFactory.equilibrium_growth_C_1d(
+        self.solver, self.__r, self.__rh, self.dx = MPDATAFactory.equilibrium_growth_C_1d(
             self.setup.nr,
             self.__mgn(self.setup.r_min, self.__r_unit),
             self.__mgn(self.setup.r_max, self.__r_unit),
@@ -42,3 +42,4 @@ class Simulation:
     @property
     def n(self):
         return self.solver.arrays.curr.get() * self.__pdf_unit
+

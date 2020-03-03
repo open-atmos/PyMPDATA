@@ -84,7 +84,8 @@ class MPDATAFactory:
         return (
             MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
             r,
-            rh
+            rh,
+            dx
         )
 
     # TODO: only used in tests -> move to tests
