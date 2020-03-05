@@ -7,7 +7,7 @@ class Simulation:
     def __mgn(quantity, unit):
         return quantity.to(unit).magnitude
 
-    def __init__(self, setup, coord, opts):
+    def __init__(self, setup, grid_coord, psi_coord, opts):
         self.setup = setup
 
         # units of calculation
@@ -22,8 +22,9 @@ class Simulation:
             self.__mgn(self.setup.r_min, self.__r_unit),
             self.__mgn(self.setup.r_max, self.__r_unit),
             self.__mgn(self.setup.dt, self.__t_unit),
-            coord,
-            lambda r: self.__mgn(self.setup.cdf(r * self.__r_unit), self.__cdf_unit),
+            grid_coord,
+            psi_coord,
+            lambda r: self.__mgn(self.setup.pdf(r * self.__r_unit), self.__pdf_unit),
             lambda r: self.__mgn(self.setup.drdt(r * self.__r_unit), self.__r_unit / self.__t_unit),
             opts
         )

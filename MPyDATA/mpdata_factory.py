@@ -17,6 +17,7 @@ from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
 from scipy import integrate
+from .utils.pdf_integrator import discretised_analytical_solution
 
 
 class MPDATAFactory:
@@ -39,40 +40,41 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, coord, cdf, drdt, opts: Options):
-        # TODO
-        assert opts.nug
+    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, grid_coord, psi_coord, pdf, drdt, opts: Options):
+        # if not isinstance(grid_coord, x_id):
+        #     assert opts.nug
+        # else:
+        #     assert not opts.nug
 
-        _, dx = np.linspace(
-            coord.x(r_min),
-            coord.x(r_max),
+        xh, dx = np.linspace(
+            grid_coord.x(r_min),
+            grid_coord.x(r_max),
             nr + 1,
             retstep=True
         )
-        xh = np.linspace(
-            coord.x(r_min),
-            coord.x(r_max),
-            nr + 1
-        )
-        rh = coord.r(xh)
-        Gh = 1 / coord.dx_dr(rh)
+        rh = grid_coord.r(xh)
+
         x = np.linspace(
             xh[0] + dx / 2,
             xh[-1] - dx / 2,
             nr
         )
-        r = coord.r(x)
-        G = 1 / coord.dx_dr(r)
+        r = grid_coord.r(x)
 
-        psi = (
-            np.diff(cdf(rh))
-            /
-            np.diff(rh)
-        )
+        Gh = 1 / grid_coord.dx_dr(rh)
+        G = 1 / grid_coord.dx_dr(r)
+
+        # psi = (
+        #     np.diff(cdf(rh))
+        #     /
+        #     np.diff(rh)
+        # )
+
+        psi = discretised_analytical_solution(rh, lambda r: psi_coord.x(r) * pdf(r))
 
         # C = drdt * dxdr * dt / dx
         # G = 1 / dxdr
-        C = drdt(rh) / Gh * dt / dx
+        C = psi_coord.dx_dr(rh) * drdt(rh) / Gh * dt / dx
         GCh = Gh * C
 
         bcond_extrapol = ((ExtrapolatedLeft, ExtrapolatedRight),)

@@ -9,6 +9,9 @@ class DrDt:
     def __call__(self, r):
         return self.ksi / r
 
+    def mean(self, r1, r2):
+        return self.ksi * np.log(r2/r1) / (r2 - r1)
+
 
 class PdfEvolver:
     """ eq. 7.32 in Rogers and Yau 1989 """

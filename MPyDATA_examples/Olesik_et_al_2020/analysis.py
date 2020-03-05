@@ -5,27 +5,15 @@ from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
 from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver
 from MPyDATA_examples.utils.error_norms import L2
+from MPyDATA.utils.pdf_integrator import discretised_analytical_solution
 
 
-# <TODO> move
-from scipy import integrate
-import numpy as np
-
-
-def discretised_analytical_solution(rh, pdf_t):
-    output = np.empty(rh.shape[0]-1)
-    for i in range(output.shape[0]):
-        dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i+1]) # TODO: handle other output values
-        output[i] = dcdf / (rh[i+1] - rh[i])
-    return output
-# </TODO>
-
-
-def analysis(debug, setup, coord, options_dict):
+def analysis(debug, setup, grid_coord, options_dict):
+    psi_coord = x_p2() # TODO!!!
     options_str = str(options_dict)
     n_iters = options_dict.pop("n_iters")
     options = Options(nug=True, **options_dict)
-    simulation = Simulation(setup, coord, options)
+    simulation = Simulation(setup, grid_coord, psi_coord, options)
     result = {"n": [], "n_analytical": [], "error_norm_L2": []}
     last_step = 0
     for n_steps in setup.nt:
@@ -37,7 +25,7 @@ def analysis(debug, setup, coord, options_dict):
     result['r'] = simulation.r.copy()
     result['rh'] = simulation.rh.copy()
     result['dx'] = simulation.dx
-    return coord.__class__.__name__, options_str, result
+    return grid_coord.__class__.__name__, options_str, result
 
 
 def compute_figure_data(debug=False, nr=default_nr, dt=default_dt):
@@ -48,9 +36,9 @@ def compute_figure_data(debug=False, nr=default_nr, dt=default_dt):
             for coord in [x_id(), x_p2(), x_ln()]
             for options in (
                 {'n_iters': 1},
-               {'n_iters': 2, 'fct': True},
-               {'n_iters': 3, 'dfl': True},
-               {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
+               # {'n_iters': 2, 'fct': True},
+               # {'n_iters': 3, 'dfl': True},
+               # {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
             )
         )
 
