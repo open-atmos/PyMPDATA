@@ -41,6 +41,7 @@ class MPDATAFactory:
 
     @staticmethod
     def equilibrium_growth_C_1d(nr, r_min, r_max, dt, grid_coord, psi_coord, pdf, drdt, opts: Options):
+        # TODO !!!!!!!!!!!!!!!!!!!!!!1
         # if not isinstance(grid_coord, x_id):
         #     assert opts.nug
         # else:
@@ -60,22 +61,15 @@ class MPDATAFactory:
             nr
         )
         r = grid_coord.r(x)
-
-        Gh = 1 / grid_coord.dx_dr(rh)
         G = 1 / grid_coord.dx_dr(r)
-
-        # psi = (
-        #     np.diff(cdf(rh))
-        #     /
-        #     np.diff(rh)
-        # )
-
-        psi = discretised_analytical_solution(rh, lambda r: psi_coord.x(r) * pdf(r))
+        psi = discretised_analytical_solution(rh, lambda r: psi_coord.from_n_n(pdf(r), r))
 
         # C = drdt * dxdr * dt / dx
         # G = 1 / dxdr
-        C = psi_coord.dx_dr(rh) * drdt(rh) / Gh * dt / dx
-        GCh = Gh * C
+        GCh = psi_coord.dx_dr(rh) * drdt(rh) * dt / dx
+
+        # CFL condition
+        np.testing.assert_array_less(np.abs(GCh), 1)
 
         bcond_extrapol = ((ExtrapolatedLeft, ExtrapolatedRight),)
         bcond_zero = ((ZeroLeft, ZeroRight),)

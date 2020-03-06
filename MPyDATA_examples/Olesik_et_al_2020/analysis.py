@@ -1,4 +1,4 @@
-from MPyDATA_examples.Olesik_et_al_2020.coord import x_id, x_ln, x_p2
+from MPyDATA_examples.Olesik_et_al_2020.coord import x_id, x_ln, x_p2, n_n, n_s
 from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_dt
 from MPyDATA.options import Options
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
@@ -9,11 +9,10 @@ from MPyDATA.utils.pdf_integrator import discretised_analytical_solution
 
 
 def analysis(debug, setup, grid_coord, options_dict):
-    psi_coord = x_p2() # TODO!!!
     options_str = str(options_dict)
     n_iters = options_dict.pop("n_iters")
     options = Options(nug=True, **options_dict)
-    simulation = Simulation(setup, grid_coord, psi_coord, options)
+    simulation = Simulation(setup, grid_coord, setup.psi_coord, options)
     result = {"n": [], "n_analytical": [], "error_norm_L2": []}
     last_step = 0
     for n_steps in setup.nt:
@@ -70,7 +69,7 @@ def compute_figure_data(debug=False, nr=default_nr, dt=default_dt):
             analytical.append(discretised_analytical_solution(
                 rh.magnitude,
                 lambda r: pdf_t(r * rh.units).magnitude
-            ) * pdf_t(rh[0]).units)
+            ) * pdf_t(rh[0]).units)   # TODO ? * coord.x (r * rh.units)
         output[coord]["analytical"] = analytical
 
     for coord in coords:
