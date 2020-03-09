@@ -96,29 +96,21 @@ def make_step(ni, nj, halo, n_dims=2):
     @numba.njit(**jit_flags)
     def at_2d(focus, arr, i, j):
         if focus[f_d] == 1:
-            _i = j
-            _j = i
-        else:
-            _i = i
-            _j = j
-        return arr[focus[f_i] + _i, focus[f_j] + _j]
+            i, j = j, i
+        return arr[focus[f_i] + i, focus[f_j] + j]
 
     @numba.njit(**jit_flags)
     def atv_2d(focus, arrs, i, j):
         if focus[f_d] == 1:
-            _i = j
-            _j = i
-        else:
-            _i = i
-            _j = j
-        if _is_integral(i) and _is_fractional(j):
+            i, j = j, i
+        if _is_integral(i):  # TODO!!!
             d = 1
-            ii = int(_i)
-            jj = int(_j - .5)
+            ii = int(i)
+            jj = int(j - .5)
         else:  # _is_integral(j) and _is_fractional(i):
             d = 0
-            ii = int(_i - .5)
-            jj = int(_j)
+            ii = int(i - .5)
+            jj = int(j)
         return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
     if n_dims == 1:
