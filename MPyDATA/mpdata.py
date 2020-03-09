@@ -6,61 +6,32 @@ Created at 25.09.2019
 @author: Sylwester Arabas
 """
 
-from .arakawa_c.scalar_field import ScalarField
-from .arakawa_c.vector_field import VectorField
 from .formulae.flux import make_flux
 from .formulae.upwind import make_upwind
 from .arrays import Arrays
 from MPyDATA.clock import time
 import numba
 from .formulae.jit_flags import jit_flags
-import numpy as np
 
-
-class MPDATA_old:
-    def __init__(self,
-                 state: ScalarField,
-                 GC_field: VectorField,
-                 ):
-        self.arrays = Arrays(state, GC_field)
-        self.formulae = {
-            "flux": make_flux(),
-            "upwind": make_upwind()
-        }
-
-    def step(self, nt):
-        # t0 = time()
-
-        self.arrays._prev.swap_memory(self.arrays.curr)
-        # print(time() - t0, "step()")
-        self.arrays._flux.apply(
-            args=(self.arrays._prev, self.arrays._GC_phys)
-        )
-        self.arrays.curr.apply(
-            args=(self.arrays._flux,),
-        )
-        self.arrays.curr.add(self.arrays._prev)
+from .formulae.halo import halo
 
 
 class MPDATA:
-
     def __init__(self,
-                 state: ScalarField,
-                 GC_field: VectorField,
+                 state,
+                 GC_field,
                  ):
         self.arrays = Arrays(state, GC_field)
-        halo = 1
         ni = state.get().shape[0]
         nj = state.get().shape[1]
         self.step_impl = make_step(ni, nj, halo)
 
     def step(self, nt):
-        psi = self.arrays._curr._impl.data
-        prev = self.arrays._prev._impl.data
-        flux_0 = self.arrays._flux._impl._data_0
-        flux_1 = self.arrays._flux._impl._data_1
-        GC_phys_0 = self.arrays._GC_phys._impl._data_0
-        GC_phys_1 = self.arrays._GC_phys._impl._data_1
+        psi = self.arrays.curr.data
+        flux_0 = self.arrays.flux.data_0
+        flux_1 = self.arrays.flux.data_1
+        GC_phys_0 = self.arrays.GC.data_0
+        GC_phys_1 = self.arrays.GC.data_1
 
         for n in [0, nt]:
 
@@ -139,28 +110,12 @@ def make_step(ni, nj, halo, n_dims=2):
                     focus = (1, i, j)
                     out[i, j] = fun(focus, flux_tpl, init=out[i, j])
 
-    @numba.njit(**jit_flags)
-    def flux(focus, prev, GC_phys_tpl):
-        return \
-            maximum_0(atv(focus, GC_phys_tpl, +.5, 0)) * at(focus, prev, 0, 0) + \
-            minimum_0(atv(focus, GC_phys_tpl, +.5, 0)) * at(focus, prev, 1, 0)
-
-    @numba.njit(**jit_flags)
-    def minimum_0(c):
-        return (c - np.abs(c)) / 2
-
-    @numba.njit(**jit_flags)
-    def maximum_0(c):
-        return (c + np.abs(c)) / 2
-
-    @numba.njit(**jit_flags)
-    def upwind(focus, flux_tpl, init):
-        return init \
-             + atv(focus, flux_tpl, -.5, 0) \
-             - atv(focus, flux_tpl, .5, 0)
+    flux = make_flux(atv, at)
+    upwind = make_upwind(atv)
 
     @numba.njit(**jit_flags)
     def boundary_cond(prev):
+        # TODO: d-dimensions
         prev[0, :] = prev[-2, :]
         prev[:, 0] = prev[:, -2]
         prev[-1, :] = prev[1, :]

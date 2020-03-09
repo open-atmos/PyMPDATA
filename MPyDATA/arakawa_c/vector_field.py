@@ -1,63 +1,47 @@
-from .impl.field import Field
-from .scalar_field import ScalarField
-from .impl.vector_field_2d import make_vector_field_2d
 import numpy as np
+from ..formulae.halo import halo
 
 
-class VectorField(Field):
-    def __init__(self, data, halo, boundary_conditions, impl=None):
-        if impl is None:
-            dimension = len(data)
-            if dimension == 2:
-                self._impl = make_vector_field_2d(data, halo) if impl is None else impl
-            elif dimension == 3:
-                raise NotImplementedError()
-            else:
-                raise ValueError()
-        else:
-            self._impl = impl
+class VectorField:
+    def __init__(self, data_0, data_1):
+        self.shape = (data_1.shape[0], data_0.shape[1])
 
-        self.boundary_conditions = boundary_conditions
-        super().__init__(halo)
+        self.data_0 = np.full((
+            data_0.shape[0] + 2 * (halo - 1),
+            data_0.shape[1] + 2 * halo
+        ), np.nan, dtype=np.float64)
+        self.data_1 = np.full((
+            data_1.shape[0] + 2 * halo,
+            data_1.shape[1] + 2 * (halo - 1)
+        ), np.nan, dtype=np.float64)
+        self.get_component(0)[:, :] = data_0[:, :]
+        self.get_component(1)[:, :] = data_1[:, :]
 
-    def add(self, rhs):
-        for d in range(self.dimension):
-            self.get_component(d)[:] += rhs.get_component(d)[:]
-        self._halo_valid = False
-
-    def set(self, value):
-        for d in range(self.dimension):
-            self.get_component(d)[:] = value
-        self._halo_valid = False
-
-    def div(self, grid_step: tuple) -> ScalarField:
-        diffsum = None
-        for d in range(self.dimension):
-            tmp = np.diff(self.get_component(d), axis=d) / grid_step[d]
-            if diffsum is None:
-                diffsum = tmp
-            else:
-                diffsum += tmp
-        result = ScalarField(diffsum, halo=0, boundary_conditions=None)
-        return result
+    @staticmethod
+    def clone(field):
+        return VectorField(field.get_component(0), field.get_component(1))
 
     def get_component(self, i: int) -> np.ndarray:
-        return self._impl.get_component(i)
-
-    def clone(self):
-        return VectorField(
-            data=None,
-            halo=self.halo,
-            boundary_conditions=self.boundary_conditions,
-            impl=self._impl.clone()
+        domain = (
+            slice(
+                halo - 1,
+                halo - 1 + self.shape[0] + 1
+            ),
+            slice(
+                halo,
+                halo + self.shape[1]
+            )
+        ) if i == 0 else (
+            slice(
+                halo,
+                halo + self.shape[0]
+            ),
+            slice(
+                halo - 1,
+                halo - 1 + self.shape[1] + 1
+            )
         )
-
-    def _fill_halos_impl(self):
-        if self.dimension == 1 and self.halo == 1:
-            return
-        for axis in range(self.dimension):
-            for comp in range(self.dimension):
-                if self.dimension == 2 and self.halo < 2 and comp == axis:
-                    continue
-                for side in (0, 1):
-                    self.boundary_conditions[comp][side].vector(self._impl, axis, comp)
+        if i == 0:
+            return self.data_0[domain]
+        elif i == 1:
+            return self.data_1[domain]
