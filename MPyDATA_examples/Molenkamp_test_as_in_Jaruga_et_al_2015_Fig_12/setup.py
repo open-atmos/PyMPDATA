@@ -1,7 +1,8 @@
 import numpy as np
 import numba
 
-grid = (100, 100)
+grid = (502, 401)
+# grid = (5,7)
 
 dt = .1
 dx = 1
@@ -10,9 +11,11 @@ omega = .1
 h = 4.
 h0 = 1
 
-r = 15. * dx
-x0 = 50 * dx
-y0 = 75 * dy
+# TODO: function of grid! (100x100 assumed)
+r = 75. * dx
+x0 = 250 * dx
+y0 = 100 * dy
+
 xc = .5 * grid[0] * dx
 yc = .5 * grid[1] * dy
 
@@ -27,7 +30,7 @@ class Setup:
 
     @property
     def nt(self):
-        return int(628 * self.n_rotations)
+        return int(300 * self.n_rotations)
 
     @property
     def size(self):
@@ -57,9 +60,3 @@ class Setup:
             # else
             0.
         )
-
-    @staticmethod
-    def stream_function(xX, yY):
-        x = xX * grid[0] * dx
-        y = yY * grid[1] * dy
-        return 1 / 2 * omega * ((x - xc)**2 + (y - yc)**2)

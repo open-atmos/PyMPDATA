@@ -1,7 +1,6 @@
 from .impl.field import Field
 from .scalar_field import ScalarField
 from .impl.vector_field_2d import make_vector_field_2d
-from .impl.vector_field_1d import make_vector_field_1d
 import numpy as np
 
 
@@ -9,9 +8,7 @@ class VectorField(Field):
     def __init__(self, data, halo, boundary_conditions, impl=None):
         if impl is None:
             dimension = len(data)
-            if dimension == 1:
-                self._impl = make_vector_field_1d(data[0], halo) if impl is None else impl
-            elif dimension == 2:
+            if dimension == 2:
                 self._impl = make_vector_field_2d(data, halo) if impl is None else impl
             elif dimension == 3:
                 raise NotImplementedError()

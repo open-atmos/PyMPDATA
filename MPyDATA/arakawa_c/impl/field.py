@@ -1,4 +1,5 @@
-from ..traversal import Traversal
+import numba
+from MPyDATA.clock import time
 
 
 class Field:
@@ -30,28 +31,23 @@ class Field:
     def dimension(self):
         return self._impl.dimension
 
-    def apply(self, traversal: Traversal, args, ext=0):
+    def apply(self, args, ext=0):
         assert ext < self.halo
+
+        # t0 = time()
 
         for arg in args:
             arg.fill_halos()
 
         if len(args) == 1:
-            self._impl.apply_1arg(traversal.body, traversal.init, traversal.loop,
-                                  args[0]._impl, ext)
+            self._impl.apply_1arg(args[0]._impl, ext)
         elif len(args) == 2:
-            self._impl.apply_2arg(traversal.body, traversal.init, traversal.loop,
-                                  args[0]._impl, args[1]._impl, ext)
-        elif len(args) == 3:
-            self._impl.apply_3arg(traversal.body, traversal.init, traversal.loop,
-                                  args[0]._impl, args[1]._impl, args[2]._impl, ext)
-        elif len(args) == 4:
-            self._impl.apply_4arg(traversal.body, traversal.init, traversal.loop,
-                                  args[0]._impl, args[1]._impl, args[2]._impl, args[3]._impl, ext)
+            self._impl.apply_2arg(args[0]._impl, args[1]._impl, ext)
         else:
             raise NotImplementedError()
 
         self._halo_valid = False
+        # print(time()-t0, "     apply()", body.py_func.__name__)
 
     def swap_memory(self, other):
         self._impl, other._impl = other._impl, self._impl

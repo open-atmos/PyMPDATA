@@ -10,7 +10,9 @@ class CyclicLeft:
     @staticmethod
     @numba.njit
     def scalar(impl, d):
-        impl.data[impl.left_halo(d)][:] = impl.data[impl.right_edge(d)][:]
+        a,b,c,e = impl.left_halo(d)
+        f,g,h,j = impl.right_edge(d)
+        impl.data[a:b, c:e][:] = impl.data[f:g, h:j][:]
 
     @staticmethod
     @numba.njit
@@ -23,7 +25,9 @@ class CyclicRight:
     @staticmethod
     @numba.njit
     def scalar(impl, d):
-        impl.data[impl.right_halo(d)][:] = impl.data[impl.left_edge(d)][:]
+        a, b, c, e = impl.right_halo(d)
+        f, g, h, j = impl.left_edge(d)
+        impl.data[a:b, c:e][:] = impl.data[f:g, h:j][:]
 
     @staticmethod
     @numba.njit

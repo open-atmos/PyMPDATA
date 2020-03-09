@@ -1,5 +1,4 @@
 from .impl.field import Field
-from .impl.scalar_field_1d import make_scalar_field_1d
 from .impl.scalar_field_2d import make_scalar_field_2d
 import numpy as np
 
@@ -8,9 +7,7 @@ class ScalarField(Field):
     def __init__(self, data, halo, boundary_conditions, impl=None):
         if impl is None:
             dimension = len(data.shape)
-            if dimension == 1:
-                self._impl = make_scalar_field_1d(data, halo)
-            elif dimension == 2:
+            if dimension == 2:
                 self._impl = make_scalar_field_2d(data, halo)
             elif dimension == 3:
                 raise NotImplementedError()

@@ -8,125 +8,176 @@ Created at 25.09.2019
 
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
-from .arakawa_c.scalar_constant import ScalarConstant
-from .arakawa_c.traversal import Traversal
-from .arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
-from .formulae import fct_utils as fct
-from .options import Options
+from .formulae.flux import make_flux
+from .formulae.upwind import make_upwind
 from .arrays import Arrays
+from MPyDATA.clock import time
+import numba
+from .formulae.jit_flags import jit_flags
 import numpy as np
 
 
-class MPDATA:
+class MPDATA_old:
     def __init__(self,
-        opts: Options,
-        state: ScalarField,
-        g_factor: [ScalarField, ScalarConstant],
-        GC_field: VectorField,
-    ):
-        self.arrays = Arrays(state, g_factor, GC_field, opts)
-        self.opts = opts
+                 state: ScalarField,
+                 GC_field: VectorField,
+                 ):
+        self.arrays = Arrays(state, GC_field)
+        self.formulae = {
+            "flux": make_flux(),
+            "upwind": make_upwind()
+        }
 
-    def clone(self):
-        return MPDATA(
-            self.opts.clone(),
-            self.arrays.curr.clone(),
-            self.arrays.G.clone(),
-            self.arrays.GC_phys.clone(),
-        )
+    def step(self, nt):
+        # t0 = time()
 
-    def step(self, n_iters, mu=ScalarConstant(0), debug=False):
-        assert n_iters > 0
-        assert mu.value == 0 or self.opts.nzm
-
-        self.fct_init(psi=self.arrays.curr, n_iters=n_iters)
-        if self.opts.nzm:
-            assert self.arrays.curr.dimension == 1  # TODO
-            assert self.opts.nug is False
-
-            self.arrays.GC_curr.apply(self.opts.formulae["laplacian"], args=(self.arrays.curr, mu))
-        else:
-            self.arrays.GC_curr.set(0)
-        self.arrays.GC_curr.add(self.arrays.GC_phys)
-
-        for i in range(n_iters):
-            self.arrays.prev.swap_memory(self.arrays.curr)
-            self.arrays.GC_prev.swap_memory(self.arrays.GC_curr)
-
-            if i > 0:
-                self.arrays.GC_curr.apply(
-                    self.opts.formulae["antidiff"],
-                    args=(self.arrays.prev, self.arrays.GC_prev, self.arrays.G)
-                )
-                self.fct_adjust_antidiff(self.arrays.GC_curr, i, flux=self.arrays.GC_prev, n_iters=n_iters)
-            else:
-                self.arrays.GC_curr.swap_memory(self.arrays.GC_prev)
-
-            self.upwind(i, flux=self.arrays.GC_prev,
-                        check_conservativeness=debug,
-                        check_CFL=debug
-                        # TODO: check monotonicity
-                        )
-
-    def upwind(self, i: int, flux: VectorField, check_conservativeness, check_CFL):
-        if check_CFL:
-            # TODO: more correct measure for 2D, 3D, ...?
-            for d in range(self.arrays.GC_curr.dimension):
-                assert np.isfinite(self.arrays.GC_curr.get_component(d)).all()
-                assert (np.abs(self.arrays.GC_curr.get_component(d)) <= 1).all()
-
-        flux.apply(
-            traversal=self.opts.formulae["flux"][0 if i == 0 else 1],
-            args=(self.arrays.prev, self.arrays.GC_curr)
+        self.arrays._prev.swap_memory(self.arrays.curr)
+        # print(time() - t0, "step()")
+        self.arrays._flux.apply(
+            args=(self.arrays._prev, self.arrays._GC_phys)
         )
         self.arrays.curr.apply(
-            traversal=self.opts.formulae["upwind"],
-            args=(flux, self.arrays.G),
+            args=(self.arrays._flux,),
         )
-        self.arrays.curr.add(self.arrays.prev)
+        self.arrays.curr.add(self.arrays._prev)
 
-        if check_conservativeness:
-            G = self.arrays.G.value if isinstance(self.arrays.G, ScalarConstant) else self.arrays.G.get()
-            sum_0 = np.sum(self.arrays.prev.get() * G)
-            sum_1 = np.sum(self.arrays.curr.get() * G)
 
-            all_cyclic = True
-            for bc_dim in flux.boundary_conditions:
-                for bc_side in bc_dim:
-                    if bc_side.__class__ not in [CyclicRight, CyclicLeft]:
-                        all_cyclic = False
-            if all_cyclic:
-                bcflux = 0
-            else:
-                # TODO: 2D, 3D, ...
-                bcflux = -flux._impl.get_item(0, -.5) + flux._impl.get_item(-1, +.5)
-            np.testing.assert_approx_equal(sum_0, sum_1 + bcflux, significant=13)
+class MPDATA:
 
-    def fct_init(self, psi: ScalarField, n_iters: int):
-        if n_iters == 1 or not self.opts.fct:
-            return
+    def __init__(self,
+                 state: ScalarField,
+                 GC_field: VectorField,
+                 ):
+        self.arrays = Arrays(state, GC_field)
+        halo = 1
+        ni = state.get().shape[0]
+        nj = state.get().shape[1]
+        self.step_impl = make_step(ni, nj, halo)
 
-        tmp = self.arrays.psi_min
-        tmp.apply(traversal=Traversal(body=fct.psi_min_1, init=np.inf, loop=True), args=(psi,), ext=1)
-        self.arrays.psi_min.apply(traversal=Traversal(body=fct.psi_min_2, init=np.nan, loop=False), args=(psi, tmp), ext=1)
+    def step(self, nt):
+        curr = self.arrays._curr._impl.data
+        prev = self.arrays._prev._impl.data
+        flux_0 = self.arrays._flux._impl._data_0
+        flux_1 = self.arrays._flux._impl._data_1
+        GC_phys_0 = self.arrays._GC_phys._impl._data_0
+        GC_phys_1 = self.arrays._GC_phys._impl._data_1
+        print(np.amax(prev), np.amax(GC_phys_0), np.amax(GC_phys_1))
 
-        tmp = self.arrays.psi_max
-        tmp.apply(traversal=Traversal(body=fct.psi_max_1, init=-np.inf, loop=True), args=(psi,), ext=1)
-        self.arrays.psi_max.apply(traversal=Traversal(body=fct.psi_max_2, init=np.nan, loop=False), args=(psi, tmp), ext=1)
+        for n in [0, nt]:
 
-    def fct_adjust_antidiff(self, GC: VectorField, it: int, flux: VectorField, n_iters: int):
-        if n_iters == 1 or not self.opts.fct:
-            return
-        flux.apply(traversal=self.opts.formulae["flux"][0 if it == 0 else 1], args=(self.arrays.prev, GC), ext=1)
+            t0 = time()
+            self.step_impl(n, curr, prev, flux_0, flux_1, GC_phys_0, GC_phys_1)
+            t1 = time()
 
-        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_up_nom_1, init=-np.inf, loop=True), args=(self.arrays.prev,), ext=1)
-        self.arrays.beta_up.apply(traversal=Traversal(body=fct.beta_up_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_max, self.arrays.tmp, self.arrays.G), ext=1)
-        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_up_den, init=0, loop=True), args=(flux,), ext=1)
-        self.arrays.beta_up.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(self.arrays.beta_up, self.arrays.tmp), ext=1)
+            print(f"{'compilation' if n == 0 else 'runtime'}: {t1 - t0} ms")
+        if nt % 2 == 1:
+            self.arrays.swaped = not self.arrays.swaped
 
-        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_dn_nom_1, init=np.inf, loop=True), args=(self.arrays.prev,), ext=1)
-        self.arrays.beta_dn.apply(traversal=Traversal(body=fct.beta_dn_nom_2, init=np.nan, loop=False), args=(self.arrays.prev, self.arrays.psi_min, self.arrays.tmp, self.arrays.G), ext=1)
-        self.arrays.tmp.apply(traversal=Traversal(body=fct.beta_dn_den, init=0, loop=True), args=(flux,), ext=1)
-        self.arrays.beta_dn.apply(traversal=Traversal(body=fct.frac, init=np.nan, loop=False), args=(self.arrays.beta_dn, self.arrays.tmp), ext=1)
 
-        GC.apply(traversal=self.opts.formulae["GC_mono"], args=(GC, self.arrays.beta_up, self.arrays.beta_dn))
+def make_step(ni, nj, halo, n_dims=2):
+    @numba.njit([numba.boolean(numba.float64),
+                 numba.boolean(numba.int64)])
+    def _is_integral(n):
+        return int(n * 2.) % 2 == 0
+
+    @numba.njit([numba.boolean(numba.float64),
+                 numba.boolean(numba.int64)])
+    def _is_fractional(n):
+        return int(n * 2.) % 2 == 1
+
+    @numba.njit(**jit_flags)
+    def at_1d():
+        pass
+
+    @numba.njit(**jit_flags)
+    def at_2d(ij, arr, i, j):
+        return arr[ij[0] + halo + i, ij[1] + halo + j]
+
+    @numba.njit(**jit_flags)
+    def atv_2d(d, ij, arrs, i, j):
+        if _is_integral(i) and _is_fractional(j):
+            d = 1
+            ii = int(i + 1)
+            jj = int(j + .5)
+        else:  # _is_integral(j) and _is_fractional(i):
+            d = 0
+            ii = int(i + .5)
+            jj = int(j + 1)
+        return arrs[d][ij[0] + ii, ij[1] + jj]
+
+    if n_dims == 1:
+        at = at_1d
+    elif n_dims == 2:
+        at = at_2d
+        atv = atv_2d
+    else:
+        assert False
+
+    @numba.njit(**jit_flags)
+    def apply_vector(fun, rng_i, rng_j, out_0, out_1, prev, GC_phys_0, GC_phys_1):
+        GC_phys_tpl = (GC_phys_0, GC_phys_1)
+        out_tpl = (out_0, out_1)
+        for i in range(-1, rng_i):
+            for j in range(rng_j):
+                ij = (i, j)
+                d = -1
+                # for d in range(n_dims):
+                out_tpl[0][i+1, j+1], _ = fun(d, ij, prev, GC_phys_tpl)
+        for i in range(rng_i):
+            for j in range(-1, rng_j):
+                ij = (i, j)
+                d = -1
+                # for d in range(n_dims):
+                _, out_tpl[1][i+1, j+1] = fun(d, ij, prev, GC_phys_tpl)
+
+    @numba.njit(**jit_flags)
+    def apply_scalar(fun, rng_i, rng_j, out, prev, flux_0, flux_1):
+        flux_tpl = (flux_0, flux_1)
+        for i in rng_i:
+            for j in rng_j:
+                ij = (i, j)
+                out[i+1, j+1] = fun(ij, prev, flux_tpl)
+
+    @numba.njit(**jit_flags)
+    def flux(d, ij, prev, GC_phys_tpl):
+        return \
+            maximum_0(atv(d, ij, GC_phys_tpl, +.5, 0)) * at(ij, prev, 0, 0) + \
+            minimum_0(atv(d, ij, GC_phys_tpl, +.5, 0)) * at(ij, prev, 1, 0) \
+            , \
+            maximum_0(atv(d, ij, GC_phys_tpl, 0, +.5)) * at(ij, prev, 0, 0) + \
+            minimum_0(atv(d, ij, GC_phys_tpl, 0, +.5)) * at(ij, prev, 0, 1)
+
+    @numba.njit(**jit_flags)
+    def minimum_0(c):
+        return (np.abs(c) - c) / 2
+
+    @numba.njit(**jit_flags)
+    def maximum_0(c):
+        return (np.abs(c) + c) / 2
+
+    @numba.njit(**jit_flags)
+    def upwind(ij, prev, flux_tpl):
+        return at(ij, prev, 0, 0) \
+                     + atv(-1, ij, flux_tpl, -.5,  0) \
+                     - atv(-1, ij, flux_tpl,  .5,  0) \
+                     + atv(-1, ij, flux_tpl,  0, -.5) \
+                     - atv(-1, ij, flux_tpl,  0,  .5)
+
+    @numba.njit(**jit_flags)
+    def boundary_cond(prev):
+        prev[0, :] = prev[-2, :]
+        prev[:, 0] = prev[:, -2]
+        prev[-1, :] = prev[1, :]
+        prev[:, -1] = prev[:, 1]
+
+    @numba.njit(**jit_flags)
+    def step(nt, curr, prev, flux_0, flux_1, GC_phys_0, GC_phys_1):
+        for _ in range(nt):
+            curr, prev = prev, curr
+            boundary_cond(prev)
+            apply_vector(flux, ni, nj,
+                  flux_0, flux_1, prev, GC_phys_0, GC_phys_1)
+            apply_scalar(upwind, range(ni), range(nj),
+                  curr, prev, flux_0, flux_1)
+    return step
+

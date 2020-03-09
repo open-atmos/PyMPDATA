@@ -6,9 +6,8 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from ..arakawa_c.scalar_field import ScalarField
-from ..arakawa_c.vector_field import VectorField
-from ..arakawa_c.traversal import Traversal
+from ..arakawa_c.impl import vector_field_2d
+from ..arakawa_c.impl import scalar_field_2d
 import numpy as np
 from ..utils import debug_flag
 from .jit_flags import jit_flags
@@ -18,27 +17,15 @@ if debug_flag.VALUE:
 else:
     import numba
 
-# TODO: check if (abs(c)-C)/2 is not faster - or as an option like in libmpdata
 
-
-def make_flux(opts, it: int):
-    iga = opts.iga
-
+def make_flux():
     @numba.njit(**jit_flags)
-    def flux(_, psi: ScalarField.Impl, GC: VectorField.Impl):
-        if it == 0 or not iga:
-            result = (
-                np.maximum(0, GC.at(+.5, 0)) * psi.at(0, 0) +
-                np.minimum(0, GC.at(+.5, 0)) * psi.at(1, 0)
-            )
-        else:
-            result = GC.at(+.5, 0)
+    def flux(_, arg_1_data, arg_1_i, arg_1_j, arg_2_data_0, arg_2_data_1, arg_2_i, arg_2_j, dd):
+        result = (
+                np.maximum(0, vector_field_2d.at(arg_2_data_0, arg_2_data_1, arg_2_i, arg_2_j, dd, +.5, 0)) *
+                scalar_field_2d.at(arg_1_data, arg_1_i, arg_1_j, dd, 0, 0) +
+                np.minimum(0, vector_field_2d.at(arg_2_data_0, arg_2_data_1, arg_2_i, arg_2_j, dd, +.5, 0)) *
+                scalar_field_2d.at(arg_1_data, arg_1_i, arg_1_j, dd, 1, 0)
+        )
         return result
-    return Traversal(body=flux, init=np.nan, loop=True)
-
-
-def make_fluxes(opts):
-    fluxes = []
-    for it in (0, 1):
-        fluxes.append(make_flux(opts, it))
-    return fluxes
+    return flux
