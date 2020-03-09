@@ -49,7 +49,7 @@ class MPDATAFactory:
 def _nondivergent_vector_field_2d(grid, halo, dt, boundary_conditions):
 
     GC = [
-        np.full((grid[0]+1, grid[1]), .5),
+        np.full((grid[0]+1, grid[1]), -.5),
         np.full((grid[0], grid[1]+1), .25)
     ]
 

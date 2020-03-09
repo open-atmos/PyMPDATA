@@ -84,14 +84,9 @@ def make_step(ni, nj, halo, n_dims=2):
     def _is_integral(n):
         return int(n * 2.) % 2 == 0
 
-    @numba.njit([numba.boolean(numba.float64),
-                 numba.boolean(numba.int64)])
-    def _is_fractional(n):
-        return int(n * 2.) % 2 == 1
-
     @numba.njit(**jit_flags)
     def at_1d():
-        pass
+        pass # TODO!!
 
     @numba.njit(**jit_flags)
     def at_2d(focus, arr, i, j):
@@ -103,11 +98,11 @@ def make_step(ni, nj, halo, n_dims=2):
     def atv_2d(focus, arrs, i, j):
         if focus[f_d] == 1:
             i, j = j, i
-        if _is_integral(i):  # TODO!!!
+        if _is_integral(i):
             d = 1
             ii = int(i)
             jj = int(j - .5)
-        else:  # _is_integral(j) and _is_fractional(i):
+        else:
             d = 0
             ii = int(i - .5)
             jj = int(j)
@@ -128,44 +123,42 @@ def make_step(ni, nj, halo, n_dims=2):
         # -1, -1
         for i in rng_i:
             for j in rng_j:
-                for d in range(1):
-                    focus = (d, i, j)
-                    out_tpl[0][i, j], out_tpl[1][i, j] = fun(focus, prev, GC_phys_tpl)
+                focus = (0, i, j)
+                out_tpl[0][i, j] = fun(focus, prev, GC_phys_tpl)
+                if n_dims > 1:
+                    focus = (1, i, j)
+                    out_tpl[1][i, j] = fun(focus, prev, GC_phys_tpl)
 
     @numba.njit(**jit_flags)
-    def apply_scalar(fun, rng_i, rng_j, out, prev, flux_0, flux_1):
+    def apply_scalar(fun, rng_i, rng_j, out, flux_0, flux_1):
         flux_tpl = (flux_0, flux_1)
         for i in rng_i:
             for j in rng_j:
-                out[i, j] = 0  # TODO
-                for d in range(1):
-                    focus = (d, i, j)
-                    out[i, j] += fun(focus, prev, flux_tpl)
+                focus = (0, i, j)
+                out[i, j] = fun(focus, flux_tpl, init=out[i, j])
+                if n_dims > 1:
+                    focus = (1, i, j)
+                    out[i, j] = fun(focus, flux_tpl, init=out[i, j])
 
     @numba.njit(**jit_flags)
     def flux(focus, prev, GC_phys_tpl):
         return \
             maximum_0(atv(focus, GC_phys_tpl, +.5, 0)) * at(focus, prev, 0, 0) + \
-            minimum_0(atv(focus, GC_phys_tpl, +.5, 0)) * at(focus, prev, 1, 0) \
-            , \
-            maximum_0(atv(focus, GC_phys_tpl, 0, +.5)) * at(focus, prev, 0, 0) + \
-            minimum_0(atv(focus, GC_phys_tpl, 0, +.5)) * at(focus, prev, 0, 1)
+            minimum_0(atv(focus, GC_phys_tpl, +.5, 0)) * at(focus, prev, 1, 0)
 
     @numba.njit(**jit_flags)
     def minimum_0(c):
-        return (np.abs(c) - c) / 2
+        return (c - np.abs(c)) / 2
 
     @numba.njit(**jit_flags)
     def maximum_0(c):
-        return (np.abs(c) + c) / 2
+        return (c + np.abs(c)) / 2
 
     @numba.njit(**jit_flags)
-    def upwind(focus, prev, flux_tpl):
-        return at(focus, prev, 0, 0) \
-                     + atv(focus, flux_tpl, -.5, 0) \
-                     - atv(focus, flux_tpl, .5, 0) \
-                     + atv(focus, flux_tpl, 0, -.5) \
-                     - atv(focus, flux_tpl, 0, .5)
+    def upwind(focus, flux_tpl, init):
+        return init \
+             + atv(focus, flux_tpl, -.5, 0) \
+             - atv(focus, flux_tpl, .5, 0)
 
     @numba.njit(**jit_flags)
     def boundary_cond(prev):
@@ -181,7 +174,8 @@ def make_step(ni, nj, halo, n_dims=2):
             boundary_cond(prev)
             apply_vector(flux, range(ni+1), range(nj+1),
                   flux_0, flux_1, prev, GC_phys_0, GC_phys_1)
+            curr[:, :] = prev[:, :]
             apply_scalar(upwind, range(1, ni+1), range(1, nj+1),
-                  curr, prev, flux_0, flux_1)
+                  curr, flux_0, flux_1)
     return step
 

@@ -18,7 +18,7 @@ def compute_panel():
     print(np.amin(state), np.amax(state))
 
     assert np.amin(state) >= h0
-    # assert 3.609 < np.amax(state) < 3.610
+    # np.testing.assert_almost_equal(np.amax(state), 3.7059, decimal=4)
 
     if True:
         from matplotlib import pyplot

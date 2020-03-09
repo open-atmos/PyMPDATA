@@ -12,9 +12,9 @@ h = 4.
 h0 = 1
 
 # TODO: function of grid! (100x100 assumed)
-r = 75. * dx
-x0 = 250 * dx
-y0 = 100 * dy
+r = .15 * grid[0] * dx
+x0 = int(.5 * grid[0]) * dx
+y0 = int(.2 * grid[0]) * dy
 
 xc = .5 * grid[0] * dx
 yc = .5 * grid[1] * dy
