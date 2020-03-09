@@ -95,6 +95,7 @@ def make_step(ni, nj, halo, n_dims=2):
 
     @numba.njit(**jit_flags)
     def atv_2d(d, ij, arrs, i, j):
+        # d = 1 => swap(i, j)
         if _is_integral(i) and _is_fractional(j):
             d = 1
             ii = int(i + 1)
@@ -117,18 +118,13 @@ def make_step(ni, nj, halo, n_dims=2):
     def apply_vector(fun, rng_i, rng_j, out_0, out_1, prev, GC_phys_0, GC_phys_1):
         GC_phys_tpl = (GC_phys_0, GC_phys_1)
         out_tpl = (out_0, out_1)
+        # -1, -1
         for i in range(-1, rng_i):
-            for j in range(rng_j):
-                ij = (i, j)
-                d = -1
-                # for d in range(n_dims):
-                out_tpl[0][i+1, j+1], _ = fun(d, ij, prev, GC_phys_tpl)
-        for i in range(rng_i):
             for j in range(-1, rng_j):
                 ij = (i, j)
                 d = -1
                 # for d in range(n_dims):
-                _, out_tpl[1][i+1, j+1] = fun(d, ij, prev, GC_phys_tpl)
+                out_tpl[0][i+1, j+1], out_tpl[1][i+1, j+1] = fun(d, ij, prev, GC_phys_tpl)
 
     @numba.njit(**jit_flags)
     def apply_scalar(fun, rng_i, rng_j, out, prev, flux_0, flux_1):

@@ -20,14 +20,11 @@ def compute_panel():
     assert np.amin(state) >= h0
     # assert 3.609 < np.amax(state) < 3.610
 
-
     if True:
         from matplotlib import pyplot
         pyplot.imshow(state)
         pyplot.colorbar()
         pyplot.show()
-
-
 
     return state
 
