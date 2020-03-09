@@ -55,18 +55,17 @@ class MPDATA:
         self.step_impl = make_step(ni, nj, halo)
 
     def step(self, nt):
-        curr = self.arrays._curr._impl.data
+        psi = self.arrays._curr._impl.data
         prev = self.arrays._prev._impl.data
         flux_0 = self.arrays._flux._impl._data_0
         flux_1 = self.arrays._flux._impl._data_1
         GC_phys_0 = self.arrays._GC_phys._impl._data_0
         GC_phys_1 = self.arrays._GC_phys._impl._data_1
-        print(np.amax(prev), np.amax(GC_phys_0), np.amax(GC_phys_1))
 
         for n in [0, nt]:
 
             t0 = time()
-            self.step_impl(n, curr, prev, flux_0, flux_1, GC_phys_0, GC_phys_1)
+            self.step_impl(n, psi, flux_0, flux_1, GC_phys_0, GC_phys_1)
             t1 = time()
 
             print(f"{'compilation' if n == 0 else 'runtime'}: {t1 - t0} ms")
@@ -168,14 +167,12 @@ def make_step(ni, nj, halo, n_dims=2):
         prev[:, -1] = prev[:, 1]
 
     @numba.njit(**jit_flags)
-    def step(nt, curr, prev, flux_0, flux_1, GC_phys_0, GC_phys_1):
+    def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1):
         for _ in range(nt):
-            curr, prev = prev, curr
-            boundary_cond(prev)
+            boundary_cond(psi)
             apply_vector(flux, range(ni+1), range(nj+1),
-                  flux_0, flux_1, prev, GC_phys_0, GC_phys_1)
-            curr[:, :] = prev[:, :]
+                  flux_0, flux_1, psi, GC_phys_0, GC_phys_1)
             apply_scalar(upwind, range(1, ni+1), range(1, nj+1),
-                  curr, flux_0, flux_1)
+                  psi, flux_0, flux_1)
     return step
 
