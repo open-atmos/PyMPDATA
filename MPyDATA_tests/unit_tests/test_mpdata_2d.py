@@ -8,10 +8,8 @@ Created at 11.10.2019
 
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
 from MPyDATA.mpdata import MPDATA
 from MPyDATA.mpdata_factory import MPDATAFactory
-from MPyDATA.options import Options
 
 import numpy as np
 import pytest
@@ -26,6 +24,7 @@ def options():
 
 
 class TestMPDATA2D:
+    @pytest.mark.skip()
     @pytest.mark.parametrize("shape, ij0, out, C, n_steps", [
         pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.), 1),
         pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.), 1),
@@ -58,6 +57,7 @@ class TestMPDATA2D:
             out
         )
 
+    @pytest.mark.skip()
     def test_Arabas_et_al_2014_sanity(self, case, options):
         case = {
             "nx": case[0],
