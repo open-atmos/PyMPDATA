@@ -6,9 +6,7 @@ Created at 25.09.2019
 @author: Sylwester Arabas
 """
 
-
 from .arrays import Arrays
-from MPyDATA.clock import time
 
 
 class MPDATA:
@@ -29,10 +27,4 @@ class MPDATA:
         GC_phys_1 = self.arrays.GC.data_1
         g_factor = self.arrays.g_factor.data
 
-        for n in [0, nt]:
-            t0 = time()
-            self.step_impl(n, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)
-            t1 = time()
-            if debug:
-                print(f"{'compilation' if n == 0 else 'runtime'}: {t1 - t0} ms")
-
+        self.step_impl(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)

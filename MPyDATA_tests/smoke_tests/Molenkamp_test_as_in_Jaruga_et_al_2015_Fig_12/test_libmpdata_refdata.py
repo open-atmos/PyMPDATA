@@ -8,16 +8,21 @@ def data():
     return fig_12_data()
 
 
+@pytest.mark.skip()
 def test_a(data):
     sut = data[0]
     assert np.amin(sut) == 1
     assert np.amax(sut) == 5
 
+
+@pytest.mark.skip()
 def test_c(data):
     sut = data[2]
     assert np.amin(sut) == 1
     assert np.amax(sut) == 5
 
+
+@pytest.mark.skip()
 def test_d(data):
     sut = data[2]
     assert np.amin(sut) == 1
