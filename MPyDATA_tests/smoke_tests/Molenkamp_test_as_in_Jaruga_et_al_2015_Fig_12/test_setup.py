@@ -3,7 +3,7 @@ from matplotlib import pyplot
 from MPyDATA.mpdata_factory import from_pdf_2d
 
 
-def test_pdf(plot=True):
+def test_pdf(plot=False):
     # Arrange
     setup = Setup()
 

@@ -3,6 +3,7 @@ numba
 matplotlib
 pytest
 pytest-cov
+pytest-benchmark
 codecov
 nbconvert
 jupyter_client
