@@ -49,7 +49,7 @@ class TestMPDATA2D:
         GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo, boundary_conditions=bcond)
 
         G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
-        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=options)
+        mpdata = MPDATA(advector=GC_field, advectee=state, g_factor=G, opts=options)
         for _ in range(n_steps):
             mpdata.step(n_iters=1)
 

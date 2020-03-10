@@ -18,33 +18,33 @@ from .formulae.halo import halo
 
 class MPDATA:
     def __init__(self,
-                 state,
-                 GC_field,
+                 advectee,
+                 advector,
+                 g_factor=None
                  ):
-        self.arrays = Arrays(state, GC_field)
-        ni = state.get().shape[0]
-        nj = state.get().shape[1]
-        self.step_impl = make_step(ni, nj)
 
-    def step(self, nt):
+        self.arrays = Arrays(advectee, advector, g_factor)
+        ni = advectee.get().shape[0]
+        nj = advectee.get().shape[1]
+        non_unit_g_factor = g_factor is not None
+        self.step_impl = make_step(ni, nj, non_unit_g_factor)
+
+    def step(self, nt, debug: bool=False):
         psi = self.arrays.curr.data
         flux_0 = self.arrays.flux.data_0
         flux_1 = self.arrays.flux.data_1
         GC_phys_0 = self.arrays.GC.data_0
         GC_phys_1 = self.arrays.GC.data_1
+        g_factor = self.arrays.g_factor
 
         for n in [0, nt]:
-
             t0 = time()
-            self.step_impl(n, psi, flux_0, flux_1, GC_phys_0, GC_phys_1)
+            self.step_impl(n, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)
             t1 = time()
-
             print(f"{'compilation' if n == 0 else 'runtime'}: {t1 - t0} ms")
-        if nt % 2 == 1:
-            self.arrays.swaped = not self.arrays.swaped
 
 
-def make_step(ni, nj, n_dims=2):
+def make_step(ni, nj, non_unit_g_factor, n_dims=2):
     f_d = 0
     f_i = f_d + 1
     f_j = f_i + 1
@@ -80,19 +80,20 @@ def make_step(ni, nj, n_dims=2):
 
     if n_dims == 1:
         at = at_1d
+        atv = None
     elif n_dims == 2:
         at = at_2d
         atv = atv_2d
     else:
-        assert False
+        raise NotImplementedError
 
     @numba.njit(**jit_flags)
     def apply_vector(fun, out_0, out_1, prev, GC_phys_0, GC_phys_1):
         GC_phys_tpl = (GC_phys_0, GC_phys_1)
         out_tpl = (out_0, out_1)
         # -1, -1
-        for i in range(ni+1):
-            for j in range(nj+1):
+        for i in range(halo-1, ni+1+halo-1):
+            for j in range(halo-1, nj+1+halo-1):
                 focus = (0, i, j)
                 out_tpl[0][i, j] = fun(focus, prev, GC_phys_tpl)
                 if n_dims > 1:
@@ -102,19 +103,19 @@ def make_step(ni, nj, n_dims=2):
     @numba.njit(**jit_flags)
     def apply_scalar(fun, out,
                      flux_0, flux_1,
+                     g_factor
                      ):
         flux_tpl = (flux_0, flux_1)
-        for i in range(1, ni+1):
-            for j in range(1, nj+1):
+        for i in range(halo, ni+halo):
+            for j in range(halo, nj+halo):
                 focus = (0, i, j)
-                out[i, j] = fun(focus, flux_tpl, init=out[i, j])
+                out[i, j] = fun(focus, out[i, j], flux_tpl, g_factor)
                 if n_dims > 1:
                     focus = (1, i, j)
-                    out[i, j] = fun(focus, flux_tpl, init=out[i, j])
-                # TODO: n_dims > 2
+                    out[i, j] = fun(focus, out[i, j], flux_tpl, g_factor)
 
     flux = make_flux(atv, at)
-    upwind = make_upwind(atv)
+    upwind = make_upwind(atv, at, non_unit_g_factor)
 
     @numba.njit(**jit_flags)
     def boundary_cond(prev):
@@ -125,13 +126,13 @@ def make_step(ni, nj, n_dims=2):
         prev[:, -1] = prev[:, 1]
 
     @numba.njit(**jit_flags)
-    def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1):
+    def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor):
         flux_tpl = (flux_0, flux_1)
         GC_phys = (GC_phys_0, GC_phys_1)
 
         for _ in range(nt):
             boundary_cond(psi)
             apply_vector(flux, *flux_tpl, psi, *GC_phys)
-            apply_scalar(upwind, psi, *flux_tpl)
+            apply_scalar(upwind, psi, *flux_tpl, g_factor)
     return step
 

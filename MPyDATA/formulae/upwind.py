@@ -10,10 +10,14 @@ from .jit_flags import jit_flags
 import numba
 
 
-def make_upwind(atv):
+def make_upwind(atv, at, nug):
     @numba.njit(**jit_flags)
-    def upwind(focus, flux_tpl, init):
-        return init \
-               + atv(focus, flux_tpl, -.5, 0) \
-               - atv(focus, flux_tpl, .5, 0)
+    def upwind(focus, init,
+               flux, g_factor):
+        result = \
+               + atv(focus, flux, -.5, 0) \
+               - atv(focus, flux, .5, 0)
+        if nug:
+            result /= at(focus, g_factor, 0, 0)
+        return init + result
     return upwind

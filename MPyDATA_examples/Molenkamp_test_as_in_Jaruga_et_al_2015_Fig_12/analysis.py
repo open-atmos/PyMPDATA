@@ -18,9 +18,9 @@ def compute_panel():
     print(np.amin(state), np.amax(state))
 
     assert np.amin(state) >= h0
-    # np.testing.assert_almost_equal(np.amax(state), 3.7059, decimal=4)
+    np.testing.assert_almost_equal(np.amax(state), 3.7111, decimal=4)
 
-    if True:
+    if False:
         from matplotlib import pyplot
         pyplot.imshow(state)
         pyplot.colorbar()

@@ -22,7 +22,7 @@ class Simulation:
     def __init__(self, setup: Setup):
 
         x, y, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-        self.mpdata = MPDATAFactory.kinematic_2d(setup.grid, dt=setup.dt, data=z)
+        self.mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25))
         self.nt = setup.nt
 
     @property
