@@ -1,6 +1,7 @@
 from .arakawa_c.vector_field import VectorField
 import numpy as np
 
+
 class Arrays:
     def __init__(self,
                  advectee,
