@@ -24,7 +24,7 @@ class MPDATA:
         self.arrays = Arrays(state, GC_field)
         ni = state.get().shape[0]
         nj = state.get().shape[1]
-        self.step_impl = make_step(ni, nj, halo)
+        self.step_impl = make_step(ni, nj)
 
     def step(self, nt):
         psi = self.arrays.curr.data
@@ -44,7 +44,7 @@ class MPDATA:
             self.arrays.swaped = not self.arrays.swaped
 
 
-def make_step(ni, nj, halo, n_dims=2):
+def make_step(ni, nj, n_dims=2):
     f_d = 0
     f_i = f_d + 1
     f_j = f_i + 1
@@ -87,12 +87,12 @@ def make_step(ni, nj, halo, n_dims=2):
         assert False
 
     @numba.njit(**jit_flags)
-    def apply_vector(fun, rng_i, rng_j, out_0, out_1, prev, GC_phys_0, GC_phys_1):
+    def apply_vector(fun, out_0, out_1, prev, GC_phys_0, GC_phys_1):
         GC_phys_tpl = (GC_phys_0, GC_phys_1)
         out_tpl = (out_0, out_1)
         # -1, -1
-        for i in rng_i:
-            for j in rng_j:
+        for i in range(ni+1):
+            for j in range(nj+1):
                 focus = (0, i, j)
                 out_tpl[0][i, j] = fun(focus, prev, GC_phys_tpl)
                 if n_dims > 1:
@@ -100,15 +100,18 @@ def make_step(ni, nj, halo, n_dims=2):
                     out_tpl[1][i, j] = fun(focus, prev, GC_phys_tpl)
 
     @numba.njit(**jit_flags)
-    def apply_scalar(fun, rng_i, rng_j, out, flux_0, flux_1):
+    def apply_scalar(fun, out,
+                     flux_0, flux_1,
+                     ):
         flux_tpl = (flux_0, flux_1)
-        for i in rng_i:
-            for j in rng_j:
+        for i in range(1, ni+1):
+            for j in range(1, nj+1):
                 focus = (0, i, j)
                 out[i, j] = fun(focus, flux_tpl, init=out[i, j])
                 if n_dims > 1:
                     focus = (1, i, j)
                     out[i, j] = fun(focus, flux_tpl, init=out[i, j])
+                # TODO: n_dims > 2
 
     flux = make_flux(atv, at)
     upwind = make_upwind(atv)
@@ -123,11 +126,12 @@ def make_step(ni, nj, halo, n_dims=2):
 
     @numba.njit(**jit_flags)
     def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1):
+        flux_tpl = (flux_0, flux_1)
+        GC_phys = (GC_phys_0, GC_phys_1)
+
         for _ in range(nt):
             boundary_cond(psi)
-            apply_vector(flux, range(ni+1), range(nj+1),
-                  flux_0, flux_1, psi, GC_phys_0, GC_phys_1)
-            apply_scalar(upwind, range(1, ni+1), range(1, nj+1),
-                  psi, flux_0, flux_1)
+            apply_vector(flux, *flux_tpl, psi, *GC_phys)
+            apply_scalar(upwind, psi, *flux_tpl)
     return step
 
