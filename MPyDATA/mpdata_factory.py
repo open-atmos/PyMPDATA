@@ -5,13 +5,15 @@ Created at 21.10.2019
 @author: Michael Olesik
 @author: Sylwester Arabas
 """
+import numpy as np
+import numba
+from scipy import integrate
+
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.scalar_field import ScalarField
 from .eulerian_fields import EulerianFields
-import numpy as np
 from .mpdata import MPDATA
 from .formulae.halo import halo
-import numba
 from .formulae.jit_flags import jit_flags
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux
@@ -32,6 +34,13 @@ class MPDATAFactory:
         return mpdata
 
     @staticmethod
+    def stream_function_2d_basic(grid, size, dt, stream_function, field):
+        step = make_step(*grid, non_unit_g_factor=False)
+        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function)
+        advectee = ScalarField(field, halo=halo)
+        return MPDATA(step, advectee=advectee, advector=GC)
+
+    @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor):
         step = make_step(*grid, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function)
@@ -41,6 +50,20 @@ class MPDATAFactory:
             advectee = ScalarField(np.full(grid, v), halo=halo)
             mpdatas[k] = MPDATA(step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, EulerianFields(mpdatas)
+
+
+def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
+    z = np.empty(gridsize)
+    dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
+    for i in range(gridsize[0]):
+        for j in range(gridsize[1]):
+            z[i, j] = integrate.nquad(pdf, ranges=(
+                (xrange[0] + dx*i, xrange[0] + dx*(i+1)),
+                (yrange[0] + dy*j, yrange[0] + dy*(j+1))
+            ))[0] / dx / dy
+    x = np.linspace(xrange[0] + dx / 2, xrange[1] - dx / 2, gridsize[0])
+    y = np.linspace(yrange[0] + dy / 2, yrange[1] - dy / 2, gridsize[1])
+    return x, y, z
 
 
 def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable):
