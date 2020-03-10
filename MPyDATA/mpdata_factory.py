@@ -35,6 +35,7 @@ class MPDATAFactory:
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor):
         step = make_step(*grid, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function)
+        g_factor = ScalarField(g_factor, halo=halo)
         mpdatas = {}
         for k, v in field_values.items():
             advectee = ScalarField(np.full(grid, v), halo=halo)
@@ -96,7 +97,6 @@ def z_vec_coord(grid):
     assert np.amax(zZ) == 1
     assert zZ.shape == (nx, nz)
     return xX, zZ
-
 
 
 def make_step(ni, nj, non_unit_g_factor, n_dims=2):

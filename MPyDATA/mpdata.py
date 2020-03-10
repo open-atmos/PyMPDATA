@@ -32,7 +32,7 @@ class MPDATA:
         flux_1 = self.arrays.flux.data_1
         GC_phys_0 = self.arrays.GC.data_0
         GC_phys_1 = self.arrays.GC.data_1
-        g_factor = self.arrays.g_factor
+        g_factor = self.arrays.g_factor.data
 
         for n in [0, nt]:
             t0 = time()

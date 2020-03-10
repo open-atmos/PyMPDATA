@@ -48,3 +48,7 @@ def test_single_timestep():
 
     # Act
     eulerian_fields.step(nt=1, debug=True)
+
+    # Assert
+    for k, v in eulerian_fields.mpdatas.items():
+        assert np.isfinite(v.arrays.curr.get()).all()
