@@ -1,19 +1,43 @@
+# just defaults
 language: python
-python: "3.7"
-  
+os: linux
+
+jobs:
+  include:
+    - name: "Linux, Python 3.8, newest packages"
+      python: "3.8"
+      before_install:
+        - sudo `which pip` install --upgrade pip
+      before_script:
+        - pip install -U $(pip freeze | cut -d '=' -f 1)
+    - name: "Linux, Python 3.7, required packages"
+      python: 3.7
+      after_success:
+        - codecov
+    - name: "OSX, Python 3.7, required packages"
+      language: shell
+      os: osx
+      before_install:
+        - export PY_SFX=3
+    - name: "Windows, Python 3.7, required packages"
+      language: shell
+      os: windows
+      before_install:
+        - choco install python --version 3.7
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+
 install:
-  - pip install -U -r requirements.txt
+  - pip$PY_SFX install -U -r requirements.txt
 
 script:
-  - travis_wait 45 python -m pytest --ignore=prototype --cov-report term --cov=MPyDATA
+  - travis_wait 100 python$PY_SFX -m pytest --cov-report term --cov=MPyDATA
   - |
-    python -m ipykernel install --user
-    for i in MPyDATA_examples/*/demo*.ipynb; do 
+    python$PY_SFX -m ipykernel install --user
+    for i in MPyDATA_examples/*/demo.ipynb; do 
       jupyter nbconvert --to markdown --stdout $i > $i.md.repo; 
       jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i > $i.md.travis; 
       # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
       # diff $i.md.repo $i.md.travis
     done;
 
-after_success:
-  - codecov

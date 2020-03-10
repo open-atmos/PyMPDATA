@@ -11,3 +11,4 @@ ipywidgets
 scipy
 pint
 joblib
+cffi
