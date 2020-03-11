@@ -28,9 +28,6 @@ class TestMPDATA2D:
     ])
     # TODO: rename test_upwind!
     def test_44(self, shape, ij0, out, C, halo):
-        import os
-        os.environ['NUMBA_DISABLE_JIT'] = '1'
-
         value = 44
         scalar_field_init = np.zeros(shape)
         scalar_field_init[ij0] = value
