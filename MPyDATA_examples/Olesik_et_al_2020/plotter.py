@@ -1,6 +1,6 @@
 from matplotlib import pyplot
 import numpy as np
-from .coord import x_id
+from .distributions import n_n
 
 
 class Plotter:
@@ -28,9 +28,9 @@ class Plotter:
             self.axs[i].xaxis.set_units(self.setup.si.micrometre)
             self.axs[i].grid()
 
-        self.axs[0].set_title('$n(r)$')
-        self.axs[1].set_title('$s(r)$')
-        self.axs[2].set_title('$m(r)/m_0$')
+        self.axs[0].set_title('$dN/dr$')
+        self.axs[1].set_title('$dS/dr$') # TODO: norm
+        self.axs[2].set_title('$(dM/dr)/M_0$')
 
     def pdf_curve(self, pdf, mnorm, color='red'):
         x = self.cdfarg
@@ -47,7 +47,7 @@ class Plotter:
         y_mass = y * x**3 * 4 / 3 * np.pi * self.setup.rho_w / self.setup.rho_a / mnorm
         self.axs[2].plot(x, y_mass, color=color)
 
-    def pdf_histogram(self, x, y, bin_boundaries, label, mnorm, psi_coord, color='black'):
+    def pdf_histogram(self, x, y, bin_boundaries, label, mnorm, color='black'):
         lbl = label
         if label not in self.style_dict:
             self.style_dict[label] = self.style_palette[len(self.style_dict)]
@@ -58,24 +58,22 @@ class Plotter:
         r2 = bin_boundaries[1:]
 
         # number distribution
-        # TODO: truth only if advection of n_n
         self.axs[0].step(
             x,
-            psi_coord.to_n_n(y, r1, r2),
+            n_n.to_n_n(y, r1, r2),
             where='mid', label=lbl, linestyle=self.style_dict[label], color=color
         )
 
-        # normalised surface distribution
+        # normalised surface distribution # TODO: norm
         self.axs[1].step(
             x,
-            psi_coord.to_n_s(y, r1, r2),
+            n_n.to_n_s(y, r1, r2),
             where='mid', label=lbl, linestyle=self.style_dict[label], color=color
         )
 
         # normalised mass distribution
-        # TODO: truth only if advection of n_n
         self.axs[2].step(
             x,
-            psi_coord.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm,
+            n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm,
             where='mid', label=lbl, linestyle=self.style_dict[label], color=color
         )

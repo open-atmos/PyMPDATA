@@ -40,33 +40,41 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, grid_coord, psi_coord, pdf, drdt, opts: Options):
-        # TODO !!!!!!!!!!!!!!!!!!!!!!1
-        # if not isinstance(grid_coord, x_id):
-        #     assert opts.nug
-        # else:
-        #     assert not opts.nug
+    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, grid_layout, psi_coord, pdf_of_r, drdt_of_r, opts: Options):
+        assert opts.nug
+
+        # psi = psi(p)
+        dp_dr = psi_coord.dx_dr
+        dx_dr = grid_layout.dx_dr
 
         xh, dx = np.linspace(
-            grid_coord.x(r_min),
-            grid_coord.x(r_max),
+            grid_layout.x(r_min),
+            grid_layout.x(r_max),
             nr + 1,
             retstep=True
         )
-        rh = grid_coord.r(xh)
+        rh = grid_layout.r(xh)
 
         x = np.linspace(
             xh[0] + dx / 2,
             xh[-1] - dx / 2,
             nr
         )
-        r = grid_coord.r(x)
-        G = 1 / grid_coord.dx_dr(r)
-        psi = discretised_analytical_solution(rh, lambda r: psi_coord.from_n_n(pdf(r), r))
+        r = grid_layout.r(x)
 
-        # C = drdt * dxdr * dt / dx
-        # G = 1 / dxdr
-        GCh = psi_coord.dx_dr(rh) * drdt(rh) * dt / dx
+        psi = discretised_analytical_solution(rh, lambda r: pdf_of_r(r) / psi_coord.dx_dr(r))
+
+        dp_dt = drdt_of_r(rh) * dp_dr(rh)
+        G = dp_dr(r) / dx_dr(r)
+
+        # C = dr_dt * dt / dr
+        # GC = dp_dr / dx_dr * dr_dt * dt / dr =
+        #        \       \_____ / _..____/
+        #         \_____.._____/    \_ dt/dx
+        #               |
+        #             dp_dt
+
+        GCh = dp_dt * dt / dx
 
         # CFL condition
         np.testing.assert_array_less(np.abs(GCh), 1)
