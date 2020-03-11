@@ -9,7 +9,7 @@ Created at 11.10.2019
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.mpdata import MPDATA
-from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.mpdata_factory import MPDATAFactory, make_step
 
 import numpy as np
 import pytest
@@ -18,39 +18,30 @@ import pytest
 from MPyDATA_tests.unit_tests.__parametrisation__ import halo, case
 
 
-@pytest.fixture(scope="module")
-def options():
-    return Options()
-
-
 class TestMPDATA2D:
-    @pytest.mark.skip()
-    @pytest.mark.parametrize("shape, ij0, out, C, n_steps", [
-        pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.), 1),
-        pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.), 1),
-        pytest.param((1, 3), (0, 1), np.array([[44., 0., 0.]]), (0., -1.), 1),
-        pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5), 1),
-        pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5), 1),
+    @pytest.mark.parametrize("shape, ij0, out, C", [
+        pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.)),
+        pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.)),
+        pytest.param((1, 3), (0, 1), np.array([[44., 0., 0.]]), (0., -1.)),
+        pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5)),
+        pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5)),
     ])
-    def test_44(self, shape, ij0, out, C, n_steps, halo, options):
+    # TODO: rename test_upwind!
+    def test_44(self, shape, ij0, out, C, halo):
+        import os
+        os.environ['NUMBA_DISABLE_JIT'] = '1'
+
         value = 44
         scalar_field_init = np.zeros(shape)
         scalar_field_init[ij0] = value
 
-        bcond = (
-            (CyclicLeft(), CyclicRight()),
-            (CyclicLeft(), CyclicRight()),
-        )
-
         vector_field_init_x = np.full((shape[0] + 1, shape[1]), C[0])
         vector_field_init_y = np.full((shape[0], shape[1] + 1), C[1])
-        state = ScalarField(scalar_field_init, halo=halo, boundary_conditions=bcond)
-        GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo, boundary_conditions=bcond)
+        state = ScalarField(scalar_field_init, halo=halo)
+        GC_field = VectorField(vector_field_init_x, vector_field_init_y, halo=halo)
 
-        G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
-        mpdata = MPDATA(advector=GC_field, advectee=state, g_factor=G, opts=options)
-        for _ in range(n_steps):
-            mpdata.step(n_iters=1)
+        mpdata = MPDATA(step_impl=make_step(*shape, False), advector=GC_field, advectee=state)
+        mpdata.step(1)
 
         np.testing.assert_array_equal(
             mpdata.arrays.curr.get(),
