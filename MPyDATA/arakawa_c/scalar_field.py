@@ -7,9 +7,9 @@ class ScalarField:
         shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
         self.data = np.zeros(shape_with_halo, dtype=np.float64)
         self.halo = halo
-        self.inside = [slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)]
+        self.domain = [slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)]
         self.get()[:] = data[:]
 
     def get(self) -> np.ndarray:
-        results = self.data[self.inside]
+        results = self.data[self.domain]
         return results

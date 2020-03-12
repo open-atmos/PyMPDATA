@@ -32,10 +32,12 @@ class TestMPDATA2D:
         scalar_field_init = np.zeros(shape)
         scalar_field_init[ij0] = value
 
-        vector_field_init_x = np.full((shape[0] + 1, shape[1]), C[0])
-        vector_field_init_y = np.full((shape[0], shape[1] + 1), C[1])
+        vector_field_init = (
+            np.full((shape[0] + 1, shape[1]), C[0]),
+            np.full((shape[0], shape[1] + 1), C[1])
+        )
         state = ScalarField(scalar_field_init, halo=halo)
-        GC_field = VectorField(vector_field_init_x, vector_field_init_y, halo=halo)
+        GC_field = VectorField(vector_field_init, halo=halo)
 
         mpdata = MPDATA(step_impl=make_step(*shape, halo, False), advector=GC_field, advectee=state)
         mpdata.step(1)

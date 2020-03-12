@@ -19,6 +19,17 @@ from .formulae.flux import make_flux
 
 
 class MPDATAFactory:
+    # @staticmethod
+    # def constant_1d(data, C):
+    #     halo = 1  # TODO
+    #
+    #     mpdata = MPDATA(
+    #         step_impl=,
+    #         advectee=ScalarField(),
+    #         advector=VectorField()
+    #     )
+    #     return mpdata
+
     @staticmethod
     def constant_2d(data, C):
         halo = 1 # TODO
@@ -27,7 +38,7 @@ class MPDATAFactory:
             np.full((grid[0] + 1, grid[1]), C[0]),
             np.full((grid[0], grid[1] + 1), C[1])
         ]
-        GC = VectorField(GC_data[0], GC_data[1], halo=halo)
+        GC = VectorField(GC_data, halo=halo)
         state = ScalarField(data=data, halo=halo)
         step = make_step(*grid, halo, non_unit_g_factor=False)
         mpdata = MPDATA(step_impl=step, advectee=state, advector=GC)
@@ -93,7 +104,7 @@ def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo
     for d in range(len(GC)):
         np.testing.assert_array_less(np.abs(GC[d]), 1)
 
-    result = VectorField(GC[0], GC[1], halo=halo)
+    result = VectorField(GC, halo=halo)
 
     # nondivergence (of velocity field, hence dt)
     assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9

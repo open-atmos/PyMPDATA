@@ -21,10 +21,10 @@ class MPDATA:
 
     def step(self, nt, debug: bool=False):
         psi = self.arrays.curr.data
-        flux_0 = self.arrays.flux.data_0
-        flux_1 = self.arrays.flux.data_1
-        GC_phys_0 = self.arrays.GC.data_0
-        GC_phys_1 = self.arrays.GC.data_1
+        flux_0 = self.arrays.flux.data[0]
+        flux_1 = self.arrays.flux.data[1]
+        GC_phys_0 = self.arrays.GC.data[0]
+        GC_phys_1 = self.arrays.GC.data[1]
         g_factor = self.arrays.g_factor.data
 
         self.step_impl(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)
