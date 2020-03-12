@@ -13,7 +13,6 @@ from .arakawa_c.vector_field import VectorField
 from .arakawa_c.scalar_field import ScalarField
 from .eulerian_fields import EulerianFields
 from .mpdata import MPDATA
-from .formulae.halo import halo
 from .formulae.jit_flags import jit_flags
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux
@@ -22,6 +21,7 @@ from .formulae.flux import make_flux
 class MPDATAFactory:
     @staticmethod
     def constant_2d(data, C):
+        halo = 1 # TODO
         grid = data.shape
         GC_data = [
             np.full((grid[0] + 1, grid[1]), C[0]),
@@ -29,27 +29,33 @@ class MPDATAFactory:
         ]
         GC = VectorField(GC_data[0], GC_data[1], halo=halo)
         state = ScalarField(data=data, halo=halo)
-        step = make_step(*grid, non_unit_g_factor=False)
+        step = make_step(*grid, halo, non_unit_g_factor=False)
         mpdata = MPDATA(step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field):
-        step = make_step(*grid, non_unit_g_factor=False)
+        halo = 1 # TODO
+        step = make_step(*grid, halo, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function)
         advectee = ScalarField(field, halo=halo)
         return MPDATA(step, advectee=advectee, advector=GC)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor):
-        step = make_step(*grid, non_unit_g_factor=True)
-        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function)
+        halo = 1 # TODO
+        step = make_step(*grid, halo, non_unit_g_factor=True)
+        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         g_factor = ScalarField(g_factor, halo=halo)
         mpdatas = {}
         for k, v in field_values.items():
             advectee = ScalarField(np.full(grid, v), halo=halo)
             mpdatas[k] = MPDATA(step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, EulerianFields(mpdatas)
+
+
+
+# TODO: new file
 
 
 def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
@@ -66,7 +72,10 @@ def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
     return x, y, z
 
 
-def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable):
+
+
+
+def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo):
     dx = size[0] / grid[0]
     dz = size[1] / grid[1]
     dxX = 1 / grid[0]
@@ -122,7 +131,7 @@ def z_vec_coord(grid):
     return xX, zZ
 
 
-def make_step(ni, nj, non_unit_g_factor, n_dims=2):
+def make_step(ni, nj, halo, non_unit_g_factor, n_dims=2):
     f_d = 0
     f_i = f_d + 1
     f_j = f_i + 1
@@ -198,10 +207,10 @@ def make_step(ni, nj, non_unit_g_factor, n_dims=2):
     @numba.njit(**jit_flags)
     def boundary_cond(prev):
         # TODO: d-dimensions
-        prev[0, :] = prev[-2, :]
-        prev[:, 0] = prev[:, -2]
-        prev[-1, :] = prev[1, :]
-        prev[:, -1] = prev[:, 1]
+        prev[0:halo, :] = prev[-2*halo:-halo, :]
+        prev[:, 0:halo] = prev[:, -2*halo:-halo]
+        prev[-halo:, :] = prev[halo:2*halo, :]
+        prev[:, -halo:] = prev[:, halo:2*halo]
 
     @numba.njit(**jit_flags)
     def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor):

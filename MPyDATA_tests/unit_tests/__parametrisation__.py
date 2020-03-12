@@ -11,7 +11,7 @@ from .params import params
 
 
 @pytest.fixture(params=[
-    1 # TODO: ,2,3
+    1, 2 # TODO: ,2,3
 ])
 def halo(request):
     return request.param
