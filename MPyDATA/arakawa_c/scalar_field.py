@@ -3,14 +3,13 @@ import numpy as np
 
 class ScalarField:
     def __init__(self, data, halo):
-        self.shape = (data.shape[0] + 2 * halo, data.shape[1] + 2 * halo)
+        self.n_dims = len(data.shape)
+        shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
+        self.data = np.zeros(shape_with_halo, dtype=np.float64)
         self.halo = halo
-        self.data = np.zeros((self.shape[0], self.shape[1]), dtype=np.float64)
-        self.get()[:, :] = data[:, :]
+        self.inside = [slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)]
+        self.get()[:] = data[:]
 
     def get(self) -> np.ndarray:
-        results = self.data[
-                  self.halo: self.data.shape[0] - self.halo,
-                  self.halo: self.data.shape[1] - self.halo
-                  ]
+        results = self.data[self.inside]
         return results
