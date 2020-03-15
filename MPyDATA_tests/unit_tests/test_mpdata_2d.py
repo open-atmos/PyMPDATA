@@ -39,7 +39,7 @@ class TestMPDATA2D:
         state = ScalarField(scalar_field_init, halo=halo)
         GC_field = VectorField(vector_field_init, halo=halo)
 
-        mpdata = MPDATA(step_impl=make_step(*shape, halo, False), advector=GC_field, advectee=state)
+        mpdata = MPDATA(step_impl=make_step(shape, halo, False), advector=GC_field, advectee=state)
         mpdata.step(1)
 
         np.testing.assert_array_equal(

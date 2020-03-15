@@ -16,19 +16,20 @@ from .mpdata import MPDATA
 from .formulae.jit_flags import jit_flags
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux
+from .arakawa_c.utils import at_1d, at_2d, atv_1d, atv_2d, set_2d, set_1d, get_2d, get_1d
 
 
 class MPDATAFactory:
-    # @staticmethod
-    # def constant_1d(data, C):
-    #     halo = 1  # TODO
-    #
-    #     mpdata = MPDATA(
-    #         step_impl=,
-    #         advectee=ScalarField(),
-    #         advector=VectorField()
-    #     )
-    #     return mpdata
+    @staticmethod
+    def constant_1d(data, C):
+        halo = 1  # TODO
+
+        mpdata = MPDATA(
+            step_impl=make_step(data.shape, halo=halo, non_unit_g_factor=False),
+            advectee=ScalarField(data, halo=halo),
+            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo)
+        )
+        return mpdata
 
     @staticmethod
     def constant_2d(data, C):
@@ -40,22 +41,22 @@ class MPDATAFactory:
         ]
         GC = VectorField(GC_data, halo=halo)
         state = ScalarField(data=data, halo=halo)
-        step = make_step(*grid, halo, non_unit_g_factor=False)
+        step = make_step(grid, halo, non_unit_g_factor=False)
         mpdata = MPDATA(step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field):
         halo = 1 # TODO
-        step = make_step(*grid, halo, non_unit_g_factor=False)
-        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function)
+        step = make_step(grid, halo, non_unit_g_factor=False)
+        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         advectee = ScalarField(field, halo=halo)
         return MPDATA(step, advectee=advectee, advector=GC)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor):
         halo = 1 # TODO
-        step = make_step(*grid, halo, non_unit_g_factor=True)
+        step = make_step(grid, halo, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         g_factor = ScalarField(g_factor, halo=halo)
         mpdatas = {}
@@ -142,46 +143,24 @@ def z_vec_coord(grid):
     return xX, zZ
 
 
-def make_step(ni, nj, halo, non_unit_g_factor, n_dims=2):
-    f_d = 0
-    f_i = f_d + 1
-    f_j = f_i + 1
+def make_step(grid, halo, non_unit_g_factor):
 
-    @numba.njit([numba.boolean(numba.float64),
-                 numba.boolean(numba.int64)])
-    def _is_integral(n):
-        return int(n * 2.) % 2 == 0
 
-    @numba.njit(**jit_flags)
-    def at_1d():
-        pass # TODO!!
+    n_dims = len(grid)
+    ni = grid[0]
+    nj = grid[1] if n_dims > 1 else 0
 
-    @numba.njit(**jit_flags)
-    def at_2d(focus, arr, i, j):
-        if focus[f_d] == 1:
-            i, j = j, i
-        return arr[focus[f_i] + i, focus[f_j] + j]
-
-    @numba.njit(**jit_flags)
-    def atv_2d(focus, arrs, i, j):
-        if focus[f_d] == 1:
-            i, j = j, i
-        if _is_integral(i):
-            d = 1
-            ii = int(i)
-            jj = int(j - .5)
-        else:
-            d = 0
-            ii = int(i - .5)
-            jj = int(j)
-        return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
     if n_dims == 1:
         at = at_1d
-        atv = None
+        atv = atv_1d
+        set = set_1d
+        get = get_1d
     elif n_dims == 2:
         at = at_2d
         atv = atv_2d
+        set = set_2d
+        get = get_2d
     else:
         raise NotImplementedError
 
@@ -191,12 +170,12 @@ def make_step(ni, nj, halo, non_unit_g_factor, n_dims=2):
         out_tpl = (out_0, out_1)
         # -1, -1
         for i in range(halo-1, ni+1+halo-1):
-            for j in range(halo-1, nj+1+halo-1):
+            for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                out_tpl[0][i, j] = fun(focus, prev, GC_phys_tpl)
+                set(out_tpl[0], i, j, fun(focus, prev, GC_phys_tpl))
                 if n_dims > 1:
                     focus = (1, i, j)
-                    out_tpl[1][i, j] = fun(focus, prev, GC_phys_tpl)
+                    set(out_tpl[1], i, j, fun(focus, prev, GC_phys_tpl))
 
     @numba.njit(**jit_flags)
     def apply_scalar(fun, out,
@@ -205,23 +184,45 @@ def make_step(ni, nj, halo, non_unit_g_factor, n_dims=2):
                      ):
         flux_tpl = (flux_0, flux_1)
         for i in range(halo, ni+halo):
-            for j in range(halo, nj+halo):
+            for j in range(halo, nj+halo) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                out[i, j] = fun(focus, out[i, j], flux_tpl, g_factor)
+                set(out, i, j, fun(focus, get(out, i, j), flux_tpl, g_factor))
                 if n_dims > 1:
                     focus = (1, i, j)
-                    out[i, j] = fun(focus, out[i, j], flux_tpl, g_factor)
+                    set(out, i, j, fun(focus, get(out, i, j), flux_tpl, g_factor))
 
     flux = make_flux(atv, at)
     upwind = make_upwind(atv, at, non_unit_g_factor)
 
     @numba.njit(**jit_flags)
-    def boundary_cond(prev):
+    def boundary_cond(psi, fun):
         # TODO: d-dimensions
-        prev[0:halo, :] = prev[-2*halo:-halo, :]
-        prev[:, 0:halo] = prev[:, -2*halo:-halo]
-        prev[-halo:, :] = prev[halo:2*halo, :]
-        prev[:, -halo:] = prev[:, halo:2*halo]
+        # psi[0:halo, :] = psi[-2 * halo:-halo, :]
+        # psi[:, 0:halo] = psi[:, -2 * halo:-halo]
+        # psi[-halo:, :] = psi[halo:2 * halo, :]
+        # psi[:, -halo:] = psi[:, halo:2 * halo]
+        for i in range(0, halo):
+            for j in range(0, nj+2*halo) if n_dims > 1 else [-1]:
+                focus = (0, i, j)
+                set(psi, i, j, fun(focus, psi, ni, 1))
+        for i in range(ni+halo, ni+2*halo):
+            for j in range(0, nj+2*halo) if n_dims > 1 else [-1]:
+                focus = (0, i, j)
+                set(psi, i, j, fun(focus, psi, ni, -1))
+        if n_dims > 1:
+            for j in range(0, halo):
+                for i in range(0, ni + 2 * halo):
+                    focus = (1, i, j)
+                    set(psi, i, j, fun(focus, psi, nj, 1))
+            for j in range(nj+halo, nj+2*halo):
+                for i in range(0, ni + 2 * halo):
+                    focus = (1, i, j)
+                    set(psi, i, j, fun(focus, psi, nj, -1))
+        pass
+
+    @numba.njit(**jit_flags)
+    def cyclic(focus, psi, n, sign):
+        return at(focus, psi, sign*n, 0)
 
     @numba.njit(**jit_flags)
     def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor):
@@ -229,7 +230,7 @@ def make_step(ni, nj, halo, non_unit_g_factor, n_dims=2):
         GC_phys = (GC_phys_0, GC_phys_1)
 
         for _ in range(nt):
-            boundary_cond(psi)
+            boundary_cond(psi, cyclic)
             apply_vector(flux, *flux_tpl, psi, *GC_phys)
             apply_scalar(upwind, psi, *flux_tpl, g_factor)
     return step

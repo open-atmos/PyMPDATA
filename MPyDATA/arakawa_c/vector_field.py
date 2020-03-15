@@ -11,7 +11,7 @@ class VectorField:
         halos = [[(halo - (d == c)) for c in dims] for d in dims]
         shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
         self.data = [np.full(shape_with_halo[d], np.nan, dtype=np.float64) for d in dims]
-        self.domain = [[slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims] for d in dims]
+        self.domain = tuple([[slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims] for d in dims])
         for d in dims:
             self.get_component(d)[:] = data[d][:]
 
