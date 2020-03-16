@@ -43,7 +43,7 @@ class TestMPDATA2D:
         mpdata.step(1)
 
         np.testing.assert_array_equal(
-            mpdata.arrays.curr.get(),
+            mpdata.curr.get(),
             out
         )
 

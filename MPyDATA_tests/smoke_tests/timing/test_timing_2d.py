@@ -83,10 +83,10 @@ def test_timing_2d(benchmark):
     mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25))
 
     def set_z():
-        mpdata.arrays.curr.get()[:] = z
+        mpdata.curr.get()[:] = z
 
     benchmark.pedantic(mpdata.step, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=10)
-    state = mpdata.arrays.curr.get()
+    state = mpdata.curr.get()
 
     print(np.amin(state), np.amax(state))
     assert np.amin(state) >= h0

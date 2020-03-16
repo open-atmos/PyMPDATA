@@ -30,7 +30,7 @@ class TestMPDATA1D:
         mpdata = MPDATAFactory.constant_1d(state, C)
         nt = 5
 
-        conserved = np.sum(mpdata.arrays.curr.get())
+        conserved = np.sum(mpdata.curr.get())
         mpdata.step(nt)
 
-        assert np.sum(mpdata.arrays.curr.get()) == conserved
+        assert np.sum(mpdata.curr.get()) == conserved
