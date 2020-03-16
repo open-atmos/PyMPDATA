@@ -3,55 +3,28 @@ from .scalar_field import ScalarField
 
 
 class VectorField:
-    def __init__(self, data_0, data_1, halo):
+    def __init__(self, data, halo):
         self.halo = halo
-        self.shape = (data_1.shape[0], data_0.shape[1])
-        self.dimension = len(self.shape)
+        self.n_dims = len(data)
 
-        self.data_0 = np.full((
-            data_0.shape[0] + 2 * (halo - 1),
-            data_0.shape[1] + 2 * halo
-        ), np.nan, dtype=np.float64)
-        self.data_1 = np.full((
-            data_1.shape[0] + 2 * halo,
-            data_1.shape[1] + 2 * (halo - 1)
-        ), np.nan, dtype=np.float64)
-
-        self.get_component(0)[:, :] = data_0[:, :]
-        self.get_component(1)[:, :] = data_1[:, :]
+        dims = range(self.n_dims)
+        halos = [[(halo - (d == c)) for c in dims] for d in dims]
+        shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
+        self.data = [np.full(shape_with_halo[d], np.nan, dtype=np.float64) for d in dims]
+        self.domain = tuple([[slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims] for d in dims])
+        for d in dims:
+            self.get_component(d)[:] = data[d][:]
 
     @staticmethod
     def clone(field):
-        return VectorField(field.get_component(0), field.get_component(1), field.halo)
+        return VectorField([field.get_component(d) for d in range(field.n_dims)], field.halo)
 
     def get_component(self, i: int) -> np.ndarray:
-        domain = (
-            slice(
-                self.halo - 1,
-                self.halo - 1 + self.shape[0] + 1
-            ),
-            slice(
-                self.halo,
-                self.halo + self.shape[1]
-            )
-        ) if i == 0 else (
-            slice(
-                self.halo,
-                self.halo + self.shape[0]
-            ),
-            slice(
-                self.halo - 1,
-                self.halo - 1 + self.shape[1] + 1
-            )
-        )
-        if i == 0:
-            return self.data_0[domain]
-        elif i == 1:
-            return self.data_1[domain]
+        return self.data[i][self.domain[i]]
 
     def div(self, grid_step: tuple) -> ScalarField:
         diff_sum = None
-        for d in range(self.dimension):
+        for d in range(self.n_dims):
             tmp = np.diff(self.get_component(d), axis=d) / grid_step[d]
             if diff_sum is None:
                 diff_sum = tmp

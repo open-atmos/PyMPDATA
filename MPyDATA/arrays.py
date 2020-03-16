@@ -11,4 +11,4 @@ class Arrays:
         self.curr = advectee
         self.flux = VectorField.clone(advector)
         self.GC = advector
-        self.g_factor = g_factor if g_factor is not None else np.empty((0, 0))
+        self.g_factor = g_factor if g_factor is not None else np.empty([0] * advector.n_dims)

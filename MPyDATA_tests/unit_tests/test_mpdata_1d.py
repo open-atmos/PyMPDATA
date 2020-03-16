@@ -23,16 +23,14 @@ class TestMPDATA1D:
         np.testing.assert_equal(np.array([3]*5), sut.arrays.psi_max._impl.data[1:-1])
         np.testing.assert_equal(np.array([1]*5), sut.arrays.psi_min._impl.data[1:-1])
 
-    @pytest.mark.skip()
     def test_TODO(self):
         state = np.array([0, 1, 0])
         C = 1
 
-        mpdata = MPDATAFactory.uniform_C_1d(state, C, Options(), ((CyclicLeft, CyclicRight),))
-        nt = 3
+        mpdata = MPDATAFactory.constant_1d(state, C)
+        nt = 5
 
         conserved = np.sum(mpdata.arrays.curr.get())
-        for _ in range(nt):
-            mpdata.step(n_iters=2)
+        mpdata.step(nt)
 
         assert np.sum(mpdata.arrays.curr.get()) == conserved
