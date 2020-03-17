@@ -26,11 +26,11 @@ class MPDATA:
     def step(self, nt, debug: bool=False):
         n_dims = self.GC.n_dims
 
-        psi = self.curr.data
+        curr = (np.full(1, False), self.curr.data)
         flux_0 = self.flux.data[0]
         flux_1 = self.flux.data[1] if n_dims > 1 else np.empty(0, dtype=flux_0.dtype)
         GC_phys_0 = self.GC.data[0]
         GC_phys_1 = self.GC.data[1] if n_dims > 1 else np.empty(0, dtype=flux_1.dtype)
         g_factor = self.g_factor.data
 
-        self.step_impl(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)
+        self.step_impl(nt, curr, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)

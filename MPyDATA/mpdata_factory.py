@@ -170,7 +170,9 @@ def make_step(grid, halo, non_unit_g_factor):
         raise NotImplementedError
 
     @numba.njit(**jit_flags)
-    def apply_vector(fun, out_0, out_1, prev, GC_phys_0, GC_phys_1):
+    def apply_vector(fun, out_0, out_1, prev_flag, prev, GC_phys_0, GC_phys_1):
+        boundary_cond(prev_flag, prev, cyclic)
+
         GC_phys_tpl = (GC_phys_0, GC_phys_1)
         out_tpl = (out_0, out_1)
         # -1, -1
@@ -183,10 +185,12 @@ def make_step(grid, halo, non_unit_g_factor):
                     set(out_tpl[1], i, j, fun((focus, prev), (focus, GC_phys_tpl)))
 
     @numba.njit(**jit_flags)
-    def apply_scalar(fun, out,
+    def apply_scalar(fun, out_flag, out,
                      flux_0, flux_1,
                      g_factor
                      ):
+        out_flag[0] = False
+
         flux_tpl = (flux_0, flux_1)
         for i in range(halo, ni+halo):
             for j in range(halo, nj+halo) if n_dims > 1 else [-1]:
@@ -200,7 +204,10 @@ def make_step(grid, halo, non_unit_g_factor):
     upwind = make_upwind(atv, at, non_unit_g_factor)
 
     @numba.njit(**jit_flags)
-    def boundary_cond(psi, fun):
+    def boundary_cond(halo_valid, psi, fun):
+        if halo_valid[0]:
+            return
+
         # TODO: d-dimensions
         # psi[0:halo, :] = psi[-2 * halo:-halo, :]
         # psi[:, 0:halo] = psi[:, -2 * halo:-halo]
@@ -223,7 +230,8 @@ def make_step(grid, halo, non_unit_g_factor):
                 for i in range(0, ni + 2 * halo):
                     focus = (1, i, j)
                     set(psi, i, j, fun(focus, psi, nj, -1))
-        pass
+
+        halo_valid[0] = True
 
     @numba.njit(**jit_flags)
     def cyclic(focus, psi, n, sign):
@@ -235,8 +243,7 @@ def make_step(grid, halo, non_unit_g_factor):
         GC_phys = (GC_phys_0, GC_phys_1)
 
         for _ in range(nt):
-            boundary_cond(psi, cyclic)
-            apply_vector(flux, *flux_tpl, psi, *GC_phys)
-            apply_scalar(upwind, psi, *flux_tpl, g_factor)
+            apply_vector(flux, *flux_tpl, *psi, *GC_phys)
+            apply_scalar(upwind, *psi, *flux_tpl, g_factor)
     return step
 
