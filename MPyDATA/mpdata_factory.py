@@ -177,10 +177,10 @@ def make_step(grid, halo, non_unit_g_factor):
         for i in range(halo-1, ni+1+halo-1):
             for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                set(out_tpl[0], i, j, fun(focus, prev, GC_phys_tpl))
+                set(out_tpl[0], i, j, fun((focus, prev), (focus, GC_phys_tpl)))
                 if n_dims > 1:
                     focus = (1, i, j)
-                    set(out_tpl[1], i, j, fun(focus, prev, GC_phys_tpl))
+                    set(out_tpl[1], i, j, fun((focus, prev), (focus, GC_phys_tpl)))
 
     @numba.njit(**jit_flags)
     def apply_scalar(fun, out,
@@ -191,10 +191,10 @@ def make_step(grid, halo, non_unit_g_factor):
         for i in range(halo, ni+halo):
             for j in range(halo, nj+halo) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                set(out, i, j, fun(focus, get(out, i, j), flux_tpl, g_factor))
+                set(out, i, j, fun(get(out, i, j), (focus, flux_tpl), (focus, g_factor)))
                 if n_dims > 1:
                     focus = (1, i, j)
-                    set(out, i, j, fun(focus, get(out, i, j), flux_tpl, g_factor))
+                    set(out, i, j, fun(get(out, i, j), (focus, flux_tpl), (focus, g_factor)))
 
     flux = make_flux(atv, at)
     upwind = make_upwind(atv, at, non_unit_g_factor)

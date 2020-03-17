@@ -23,8 +23,8 @@ def maximum_0(c):
 
 def make_flux(atv, at):
     @numba.njit(**jit_flags)
-    def flux(focus, psi, GC):
+    def flux(psi, GC):
         return \
-            maximum_0(atv(focus, GC, +.5, 0)) * at(focus, psi, 0, 0) + \
-            minimum_0(atv(focus, GC, +.5, 0)) * at(focus, psi, 1, 0)
+            maximum_0(atv(*GC, +.5, 0)) * at(*psi, 0, 0) + \
+            minimum_0(atv(*GC, +.5, 0)) * at(*psi, 1, 0)
     return flux
