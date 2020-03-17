@@ -11,7 +11,7 @@ class Simulation:
 
     @property
     def state(self):
-        return self.mpdata.arrays.curr.get().copy()
+        return self.mpdata.curr.get().copy()
 
     def run(self):
         self.mpdata.step(self.nt)
