@@ -84,7 +84,12 @@ def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
     return x, y, z
 
 
-
+def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
+    dx = (x_max - x_min) / nx
+    x = np.linspace(x_min + dx / 2, x_max - dx / 2, nx)
+    xh = np.linspace(x_min, x_max, nx + 1)
+    y = np.diff(cdf(xh)) / dx
+    return x, y
 
 
 def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo):

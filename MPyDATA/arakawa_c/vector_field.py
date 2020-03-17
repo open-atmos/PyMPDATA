@@ -20,7 +20,7 @@ class VectorField:
         return VectorField([field.get_component(d) for d in range(field.n_dims)], field.halo)
 
     def get_component(self, i: int) -> np.ndarray:
-        return self.data[i][self.domain[i]]
+        return self.data[i][self.domain[i] if len(self.domain[i]) > 1 else self.domain[i][0]]
 
     def div(self, grid_step: tuple) -> ScalarField:
         diff_sum = None
