@@ -243,7 +243,8 @@ def make_step(grid, halo, non_unit_g_factor, options):
                     focus = (1, i, j)
                     set(out, i, j, fun(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
 
-    formula_flux = make_flux(atv, at, infinite_gauge=options.infinite_gauge)
+    formula_flux_first_pass = make_flux(atv, at, infinite_gauge=options.infinite_gauge, first_pass=True)
+    formula_flux_subsequent = make_flux(atv, at, infinite_gauge=options.infinite_gauge, first_pass=False)
     formula_upwind = make_upwind(atv, at, non_unit_g_factor)
     formula_antidiff = make_antidiff(atv, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims)
 
@@ -291,11 +292,11 @@ def make_step(grid, halo, non_unit_g_factor, options):
         for _ in range(nt):
             for it in range(n_iters):
                 if it == 0:
-                    apply_vector(False, formula_flux, *flux, *psi, *GC_phys)
+                    apply_vector(False, formula_flux_first_pass, *flux, *psi, *GC_phys)
                 else:
                     # TODO: merge into one formula?
                     apply_vector(True, formula_antidiff, *flux, *psi, *GC_phys)
-                    apply_vector(False, formula_flux, *flux, *psi, *flux)
+                    apply_vector(False, formula_flux_subsequent, *flux, *psi, *flux)
                 apply_scalar(formula_upwind, *psi, *flux, g_factor)
     return step
 

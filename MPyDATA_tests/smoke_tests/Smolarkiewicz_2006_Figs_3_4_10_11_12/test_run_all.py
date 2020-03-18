@@ -2,7 +2,6 @@ from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.simulation import Sim
 from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
 from MPyDATA.options import Options
 import numpy as np
-import pytest
 
 
 class TestSmolarkiewicz2006:
@@ -41,7 +40,6 @@ class TestSmolarkiewicz2006:
         assert 1.3 < np.amax(psiT) < 1.4
 
     @staticmethod
-    @pytest.mark.skip()
     def test_fig10():
         # Arrange
         simulation = Simulation(Setup("cosine"), Options(infinite_gauge=True, n_iters=2))
@@ -55,21 +53,21 @@ class TestSmolarkiewicz2006:
         assert 1.75 < np.amax(psiT) < 1.9
 
 
+    @staticmethod
+    def test_fig11():
+        # Arrange
+        simulation = Simulation(Setup("rect"), Options(infinite_gauge=True, n_iters=2))
+
+        # Act
+        simulation.run()
+        psiT = simulation.state
+
+        # Assert
+        assert -1.9 < np.amin(psiT) < 2
+        assert 4 < np.amax(psiT) < 4.2
+
+
     # TODO
-    # @staticmethod
-    # def test_fig11():
-    #     # Arrange
-    #     simulation = Simulation(Setup("rect"), Options(iga=True), n_iters=2, debug=True)
-    #
-    #     # Act
-    #     simulation.run()
-    #     psiT = simulation.state
-    #
-    #     # Assert
-    #     assert -1.9 < np.amin(psiT) < 2
-    #     assert 4 < np.amax(psiT) < 4.2
-    #
-    #
     # @staticmethod
     # def test_fig12():
     #     # Arrange
