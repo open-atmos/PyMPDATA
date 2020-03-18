@@ -252,11 +252,29 @@ def make_step(grid, halo, non_unit_g_factor, options):
     def boundary_cond_vector(halo_valid, comp_0, comp_1, fun):
         if halo_valid[0]:
             return
+        # TODO comp_0[i, :] and comp_1[:, j] not filled
+        for j in range(0, halo) if n_dims > 1 else [-1]:
+            for i in range(0, ni + 1 + 2 * (halo - 1)):
+                focus = (1, i, j)
+                set(comp_0, i, j, fun((focus, comp_0), nj, 1))
+        for j in range(nj + halo, nj + 2 * halo) if n_dims > 1 else [-1]:
+            for i in range(0, ni + 1 + 2 * (halo - 1)):
+                focus = (1, i, j)
+                set(comp_0, i, j, fun((focus, comp_0), nj, -1))
+        if n_dims > 1:
+            # comp_1[0:halo, :] = comp_1[-2*halo:-halo, :]
+            for i in range(0, halo):
+                for j in range(0, nj + 1 + 2 * (halo - 1)):
+                    focus = (0, i, j)
+                    set(comp_1, i, j, fun((focus, comp_1), ni, 1))
+            # comp_1[-halo:, :] = comp_1[halo:2*halo, :]
+            for i in range(ni+halo, ni+2*halo):
+                for j in range(0, nj + 1 + 2 * (halo - 1)):
+                    focus = (0, i, j)
+                    set(comp_1, i, j, fun((focus, comp_1), ni, -1))
 
-        comp_0[:, 0:halo] = comp_0[:, -2*halo:-halo]
-        comp_1[0:halo, :] = comp_1[-2*halo:-halo, :]
-        comp_0[:, -halo:] = comp_0[:, halo:2*halo]
-        comp_1[-halo:, :] = comp_1[halo:2*halo, :]
+
+
 
         halo_valid[0] = True
 
