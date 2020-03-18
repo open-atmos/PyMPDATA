@@ -1,4 +1,5 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.options import Options
 import numpy as np
 import numba
 from matplotlib import pyplot
@@ -80,7 +81,8 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
 def test_timing_2d(benchmark):
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-    mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25))
+    options = Options(n_iters=1)
+    mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25), options=options)
 
     def set_z():
         mpdata.curr.get()[:] = z

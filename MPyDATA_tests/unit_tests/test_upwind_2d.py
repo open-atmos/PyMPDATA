@@ -1,6 +1,7 @@
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.mpdata_factory import make_step
+from MPyDATA.options import Options
 from MPyDATA.mpdata import MPDATA
 import pytest
 import numpy as np
@@ -32,7 +33,7 @@ def test_upwind(shape, ij0, out, C, halo):
     state = ScalarField(scalar_field_init, halo=halo)
     GC_field = VectorField(vector_field_init, halo=halo)
 
-    mpdata = MPDATA(step_impl=make_step(shape, halo, False), advector=GC_field, advectee=state)
+    mpdata = MPDATA(step_impl=make_step(shape, halo, False, Options(n_iters=1)), advector=GC_field, advectee=state)
     mpdata.step(1)
 
     np.testing.assert_array_equal(

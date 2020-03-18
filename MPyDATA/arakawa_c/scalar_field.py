@@ -1,4 +1,5 @@
 import numpy as np
+from .utils import make_flag
 
 
 class ScalarField:
@@ -13,3 +14,7 @@ class ScalarField:
     def get(self) -> np.ndarray:
         results = self.data[self.domain]
         return results
+
+    @property
+    def impl(self):
+        return make_flag(False), self.data

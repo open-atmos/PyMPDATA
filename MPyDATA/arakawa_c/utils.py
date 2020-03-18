@@ -5,6 +5,7 @@ Created at 12.03.2020
 """
 
 import numba
+import numpy as np
 from ..formulae.jit_flags import jit_flags  # TODO: move
 
 f_d = 0
@@ -68,3 +69,10 @@ def get_1d(arr, i, _):
 def get_2d(arr, i, j):
     return arr[i, j]
 
+
+def make_flag(value: bool = False):
+    return np.full(1, value)
+
+
+def make_null():
+    return np.empty(0, dtype=np.float64)

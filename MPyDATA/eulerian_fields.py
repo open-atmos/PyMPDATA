@@ -10,6 +10,6 @@ class EulerianFields:
     def __init__(self, mpdatas: dict):
         self.mpdatas = mpdatas
 
-    def step(self, nt: int, debug=False):
+    def step(self, nt: int):
         for mpdata in self.mpdatas.values():
-            mpdata.step(nt, debug=debug)
+            mpdata.step(nt)

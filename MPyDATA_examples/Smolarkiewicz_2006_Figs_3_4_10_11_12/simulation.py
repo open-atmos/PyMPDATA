@@ -1,15 +1,17 @@
 from MPyDATA.mpdata_factory import MPDATAFactory, from_cdf_1d
 from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
+from MPyDATA.options import Options
 
 
 class Simulation:
-    def __init__(self, setup: Setup):
+    def __init__(self, setup: Setup, options: Options):
 
         x, state = from_cdf_1d(setup.cdf, setup.x_min, setup.x_max, setup.nx)
 
         self.stepper = MPDATAFactory.constant_1d(
             state,
-            setup.C
+            setup.C,
+            options
         )
         self.nt = setup.nt
 

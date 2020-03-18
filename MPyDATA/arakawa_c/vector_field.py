@@ -1,4 +1,5 @@
 import numpy as np
+from .utils import make_null, make_flag
 from .scalar_field import ScalarField
 
 
@@ -11,7 +12,7 @@ class VectorField:
         halos = [[(halo - (d == c)) for c in dims] for d in dims]
         shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
         self.data = [np.full(shape_with_halo[d], np.nan, dtype=np.float64) for d in dims]
-        self.domain = tuple([[slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims] for d in dims])
+        self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
         for d in dims:
             self.get_component(d)[:] = data[d][:]
 
@@ -20,7 +21,7 @@ class VectorField:
         return VectorField([field.get_component(d) for d in range(field.n_dims)], field.halo)
 
     def get_component(self, i: int) -> np.ndarray:
-        return self.data[i][self.domain[i] if len(self.domain[i]) > 1 else self.domain[i][0]]
+        return self.data[i][self.domain[i]]
 
     def div(self, grid_step: tuple) -> ScalarField:
         diff_sum = None
@@ -32,3 +33,9 @@ class VectorField:
                 diff_sum += tmp
         result = ScalarField(diff_sum, halo=0)
         return result
+
+    @property
+    def impl(self):
+        comp_0 = self.data[0]
+        comp_1 = self.data[1] if self.n_dims > 1 else make_null()
+        return make_flag(False), comp_0, comp_1

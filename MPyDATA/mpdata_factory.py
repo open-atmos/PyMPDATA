@@ -16,23 +16,25 @@ from .mpdata import MPDATA
 from .formulae.jit_flags import jit_flags
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux
+from .formulae.antidiff import make_antidiff
+from .options import Options
 from .arakawa_c.utils import at_1d, at_2d, atv_1d, atv_2d, set_2d, set_1d, get_2d, get_1d
 
 
 class MPDATAFactory:
     @staticmethod
-    def constant_1d(data, C):
+    def constant_1d(data, C, options: Options):
         halo = 1  # TODO
 
         mpdata = MPDATA(
-            step_impl=make_step(data.shape, halo=halo, non_unit_g_factor=False),
+            step_impl=make_step(data.shape, halo=halo, non_unit_g_factor=False, options=options),
             advectee=ScalarField(data, halo=halo),
             advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo)
         )
         return mpdata
 
     @staticmethod
-    def constant_2d(data, C):
+    def constant_2d(data: np.ndarray, C, options: Options):
         halo = 1 # TODO
         grid = data.shape
         GC_data = [
@@ -41,22 +43,22 @@ class MPDATAFactory:
         ]
         GC = VectorField(GC_data, halo=halo)
         state = ScalarField(data=data, halo=halo)
-        step = make_step(grid, halo, non_unit_g_factor=False)
+        step = make_step(grid, halo, non_unit_g_factor=False, options=options)
         mpdata = MPDATA(step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
-    def stream_function_2d_basic(grid, size, dt, stream_function, field):
+    def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
         halo = 1 # TODO
-        step = make_step(grid, halo, non_unit_g_factor=False)
+        step = make_step(grid, halo, non_unit_g_factor=False, options=options)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         advectee = ScalarField(field, halo=halo)
         return MPDATA(step, advectee=advectee, advector=GC)
 
     @staticmethod
-    def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor):
+    def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
         halo = 1 # TODO
-        step = make_step(grid, halo, non_unit_g_factor=True)
+        step = make_step(grid, halo, non_unit_g_factor=True, options=options)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         g_factor = ScalarField(g_factor, halo=halo)
         mpdatas = {}
@@ -148,12 +150,13 @@ def z_vec_coord(grid):
     return xX, zZ
 
 
-def make_step(grid, halo, non_unit_g_factor):
+def make_step(grid, halo, non_unit_g_factor, options):
 
 
     n_dims = len(grid)
     ni = grid[0]
     nj = grid[1] if n_dims > 1 else 0
+    n_iters = options.n_iters
 
 
     if n_dims == 1:
@@ -170,38 +173,84 @@ def make_step(grid, halo, non_unit_g_factor):
         raise NotImplementedError
 
     @numba.njit(**jit_flags)
-    def apply_vector(fun, out_0, out_1, prev_flag, prev, GC_phys_0, GC_phys_1):
-        boundary_cond(prev_flag, prev, cyclic)
+    def apply_vector(
+            loop, fun,
+            out_flag, out_0, out_1,
+            arg1_flag, arg1,
+            arg2_flag, arg2_0, arg2_1
+        ):
+        boundary_cond(arg1_flag, arg1, cyclic)
+        boundary_cond_vector(arg2_flag, arg2_0, arg2_1, cyclic)
 
-        GC_phys_tpl = (GC_phys_0, GC_phys_1)
-        out_tpl = (out_0, out_1)
-        # -1, -1
-        for i in range(halo-1, ni+1+halo-1):
-            for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
-                focus = (0, i, j)
-                set(out_tpl[0], i, j, fun((focus, prev), (focus, GC_phys_tpl)))
-                if n_dims > 1:
-                    focus = (1, i, j)
-                    set(out_tpl[1], i, j, fun((focus, prev), (focus, GC_phys_tpl)))
-
-    @numba.njit(**jit_flags)
-    def apply_scalar(fun, out_flag, out,
-                     flux_0, flux_1,
-                     g_factor
-                     ):
+        apply_vector_impl(
+            loop, fun,
+            out_0, out_1,
+            arg1,
+            arg2_0, arg2_1
+        )
         out_flag[0] = False
 
-        flux_tpl = (flux_0, flux_1)
+    @numba.njit(**jit_flags)
+    def apply_vector_impl(loop, fun,
+                          out_0, out_1,
+                          arg1,
+                          arg2_0, arg2_1
+                          ):
+        out_tpl = (out_0, out_1)
+        arg2 = (arg2_0, arg2_1)
+
+        # -1, -1
+        if not loop:
+            for i in range(halo-1, ni+1+halo-1):
+                for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
+                    focus = (0, i, j)
+                    set(out_tpl[0], i, j, fun(-1, (focus, arg1), (focus, arg2)))
+                    if n_dims > 1:
+                        focus = (1, i, j)
+                        set(out_tpl[1], i, j, fun(-1, (focus, arg1), (focus, arg2)))
+        else:
+            for i in range(halo-1, ni+1+halo-1):
+                for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
+                    focus = (0, i, j)
+                    for axis in range(n_dims):  # TODO: check if loop does not slow down
+                        set(out_tpl[0], i, j, fun(axis, (focus, arg1), (focus, arg2)))
+                    if n_dims > 1:
+                        focus = (1, i, j)
+                        for axis in range(n_dims):  # TODO: check if loop does not slow down
+                            set(out_tpl[1], i, j, fun(axis, (focus, arg1), (focus, arg2)))
+
+    @numba.njit(**jit_flags)
+    def apply_scalar(fun,
+                     out_flag, out,
+                     arg1_flag, arg1_0, arg1_1,
+                     g_factor):
+        boundary_cond_vector(arg1_flag, arg1_0, arg1_1, cyclic)
+        apply_scalar_impl(fun, out, arg1_0, arg1_1, g_factor)
+        out_flag[0] = False
+
+    @numba.njit(**jit_flags)
+    def apply_scalar_impl(fun,
+                     out,
+                     arg1_0, arg1_1,
+                     g_factor
+                     ):
+        arg1_tpl = (arg1_0, arg1_1)
         for i in range(halo, ni+halo):
             for j in range(halo, nj+halo) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                set(out, i, j, fun(get(out, i, j), (focus, flux_tpl), (focus, g_factor)))
+                set(out, i, j, fun(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
                 if n_dims > 1:
                     focus = (1, i, j)
-                    set(out, i, j, fun(get(out, i, j), (focus, flux_tpl), (focus, g_factor)))
+                    set(out, i, j, fun(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
 
-    flux = make_flux(atv, at)
-    upwind = make_upwind(atv, at, non_unit_g_factor)
+    formula_flux = make_flux(atv, at, infinite_gauge=options.infinite_gauge)
+    formula_upwind = make_upwind(atv, at, non_unit_g_factor)
+    formula_antidiff = make_antidiff(atv, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims)
+
+    @numba.njit(**jit_flags)
+    def boundary_cond_vector(halo_valid, comp_0, comp_1, fun):
+        if halo_valid[0]:
+            return
 
     @numba.njit(**jit_flags)
     def boundary_cond(halo_valid, psi, fun):
@@ -238,12 +287,15 @@ def make_step(grid, halo, non_unit_g_factor):
         return at(focus, psi, sign*n, 0)
 
     @numba.njit(**jit_flags)
-    def step(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor):
-        flux_tpl = (flux_0, flux_1)
-        GC_phys = (GC_phys_0, GC_phys_1)
-
+    def step(nt, psi, flux, GC_phys, g_factor):
         for _ in range(nt):
-            apply_vector(flux, *flux_tpl, *psi, *GC_phys)
-            apply_scalar(upwind, *psi, *flux_tpl, g_factor)
+            for it in range(n_iters):
+                if it == 0:
+                    apply_vector(False, formula_flux, *flux, *psi, *GC_phys)
+                else:
+                    # TODO: merge into one formula?
+                    apply_vector(True, formula_antidiff, *flux, *psi, *GC_phys)
+                    apply_vector(False, formula_flux, *flux, *psi, *flux)
+                apply_scalar(formula_upwind, *psi, *flux, g_factor)
     return step
 
