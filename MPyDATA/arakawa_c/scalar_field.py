@@ -1,43 +1,15 @@
-from .impl.field import Field
-from .impl.scalar_field_1d import make_scalar_field_1d
-from .impl.scalar_field_2d import make_scalar_field_2d
 import numpy as np
 
 
-class ScalarField(Field):
-    def __init__(self, data, halo, boundary_conditions, impl=None):
-        if impl is None:
-            dimension = len(data.shape)
-            if dimension == 1:
-                self._impl = make_scalar_field_1d(data, halo)
-            elif dimension == 2:
-                self._impl = make_scalar_field_2d(data, halo)
-            elif dimension == 3:
-                raise NotImplementedError()
-            else:
-                raise ValueError()
-        else:
-            self._impl = impl
-
-        self.boundary_conditions = boundary_conditions
-        super().__init__(halo)
-
-    def add(self, rhs):
-        self.get()[:] += rhs.get()[:]
-        self._halo_valid = False
+class ScalarField:
+    def __init__(self, data, halo):
+        self.n_dims = len(data.shape)
+        shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
+        self.data = np.zeros(shape_with_halo, dtype=np.float64)
+        self.halo = halo
+        self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
+        self.get()[:] = data[:]
 
     def get(self) -> np.ndarray:
-        return self._impl.get()
-
-    def clone(self):
-        return ScalarField(
-            data=None,
-            halo=self.halo,
-            boundary_conditions=self.boundary_conditions,
-            impl=self._impl.clone()
-        )
-
-    def _fill_halos_impl(self):
-        for d in range(self.dimension):
-            for side in (0, 1):
-                self.boundary_conditions[d][side].scalar(self._impl, d)
+        results = self.data[self.domain]
+        return results

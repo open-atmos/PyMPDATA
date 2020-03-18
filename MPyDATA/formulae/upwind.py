@@ -6,28 +6,18 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from ..arakawa_c.scalar_field import ScalarField
-from ..arakawa_c.vector_field import VectorField
-from ..arakawa_c.traversal import Traversal
-from ..utils import debug_flag
 from .jit_flags import jit_flags
-
-if debug_flag.VALUE:
-    import MPyDATA.utils.fake_numba as numba
-else:
-    import numba
+import numba
 
 
-def make_upwind(opts):
-    nug = opts.nug
-
+def make_upwind(atv, at, nug):
     @numba.njit(**jit_flags)
-    def upwind(init: float, flx: VectorField.Impl, G: ScalarField.Impl):
-        result = -1 * (
-                flx.at(+.5, 0) -
-                flx.at(-.5, 0)
-        )
+    def upwind(focus, init,
+               flux, g_factor):
+        result = \
+               + atv(focus, flux, -.5, 0) \
+               - atv(focus, flux, .5, 0)
         if nug:
-            result /= G.at(0, 0)
+            result /= at(focus, g_factor, 0, 0)
         return init + result
-    return Traversal(body=upwind, init=0, loop=True)
+    return upwind
