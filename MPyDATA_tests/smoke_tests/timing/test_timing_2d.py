@@ -3,7 +3,7 @@ from MPyDATA.options import Options
 import numpy as np
 import numba
 from matplotlib import pyplot
-
+import pytest
 
 grid = (502, 401)
 
@@ -78,10 +78,10 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
-def test_timing_2d(benchmark):
+@pytest.mark.parametrize("options", [Options(n_iters=1)]) #, Options()])
+def test_timing_2d(benchmark, options):
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-    options = Options(n_iters=1)
     mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25), options=options)
 
     def set_z():

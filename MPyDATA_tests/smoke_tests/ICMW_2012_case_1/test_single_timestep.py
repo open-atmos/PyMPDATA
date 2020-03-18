@@ -7,7 +7,8 @@ import pytest
 # TODO: work in progress
 @pytest.mark.parametrize(
     "options", [
-        Options(n_iters=1)
+        Options(n_iters=1),
+        Options(n_iters=2),
         # Options(nug=True),
         # Options(nug=True, fct=True),
         # Options(nug=True, fct=True, iga=True),

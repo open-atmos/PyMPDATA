@@ -253,6 +253,13 @@ def make_step(grid, halo, non_unit_g_factor, options):
         if halo_valid[0]:
             return
 
+        comp_0[:, 0:halo] = comp_0[:, -2*halo:-halo]
+        comp_1[0:halo, :] = comp_1[-2*halo:-halo, :]
+        comp_0[:, -halo:] = comp_0[:, halo:2*halo]
+        comp_1[-halo:, :] = comp_1[halo:2*halo, :]
+
+        halo_valid[0] = True
+
     @numba.njit(**jit_flags)
     def boundary_cond(halo_valid, psi, fun):
         if halo_valid[0]:
@@ -266,26 +273,26 @@ def make_step(grid, halo, non_unit_g_factor, options):
         for i in range(0, halo):
             for j in range(0, nj+2*halo) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                set(psi, i, j, fun(focus, psi, ni, 1))
+                set(psi, i, j, fun((focus, psi), ni, 1))
         for i in range(ni+halo, ni+2*halo):
             for j in range(0, nj+2*halo) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                set(psi, i, j, fun(focus, psi, ni, -1))
+                set(psi, i, j, fun((focus, psi), ni, -1))
         if n_dims > 1:
             for j in range(0, halo):
                 for i in range(0, ni + 2 * halo):
                     focus = (1, i, j)
-                    set(psi, i, j, fun(focus, psi, nj, 1))
+                    set(psi, i, j, fun((focus, psi), nj, 1))
             for j in range(nj+halo, nj+2*halo):
                 for i in range(0, ni + 2 * halo):
                     focus = (1, i, j)
-                    set(psi, i, j, fun(focus, psi, nj, -1))
+                    set(psi, i, j, fun((focus, psi), nj, -1))
 
         halo_valid[0] = True
 
     @numba.njit(**jit_flags)
-    def cyclic(focus, psi, n, sign):
-        return at(focus, psi, sign*n, 0)
+    def cyclic(psi, n, sign):
+        return at(*psi, sign*n, 0)
 
     @numba.njit(**jit_flags)
     def step(nt, psi, flux, GC_phys, g_factor):
@@ -294,8 +301,11 @@ def make_step(grid, halo, non_unit_g_factor, options):
                 if it == 0:
                     apply_vector(False, formula_flux_first_pass, *flux, *psi, *GC_phys)
                 else:
-                    # TODO: merge into one formula?
-                    apply_vector(True, formula_antidiff, *flux, *psi, *GC_phys)
+                    # TODO: merge formula_antidiff & flux_subsequent into one formula?
+                    if it == 1:
+                        apply_vector(True, formula_antidiff, *flux, *psi, *GC_phys)
+                    else:
+                        apply_vector(True, formula_antidiff, *flux, *psi, *flux) # TODO: will not work with options tht rely on neighbours
                     apply_vector(False, formula_flux_subsequent, *flux, *psi, *flux)
                 apply_scalar(formula_upwind, *psi, *flux, g_factor)
     return step
