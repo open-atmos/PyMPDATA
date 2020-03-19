@@ -21,7 +21,7 @@ def test_timing_1d(benchmark, options):
     def set_psi():
         simulation.stepper.curr.get()[:] = psi0
 
-    benchmark.pedantic(simulation.run, {}, setup=set_psi, warmup_rounds=1, rounds=5)
+    benchmark.pedantic(simulation.run, {}, setup=set_psi, warmup_rounds=1, rounds=3)
 
     print(np.amin(simulation.state), np.amax(simulation.state))
     if not options.infinite_gauge:

@@ -79,11 +79,13 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
-# TODO: n_iters=3, ...
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
-    Options(n_iters=2, infinite_gauge=True)
+    Options(n_iters=3),
+    Options(n_iters=4),
+    Options(n_iters=2, infinite_gauge=True),
+    Options(n_iters=3, infinite_gauge=True),
 ])
 def test_timing_2d(benchmark, options):
     setup = Setup(n_rotations=6)
@@ -93,7 +95,7 @@ def test_timing_2d(benchmark, options):
     def set_z():
         mpdata.curr.get()[:] = z
 
-    benchmark.pedantic(mpdata.step, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=5)
+    benchmark.pedantic(mpdata.step, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
     state = mpdata.curr.get()
 
     print(np.amin(state), np.amax(state))
