@@ -334,6 +334,6 @@ def make_step(grid, halo, non_unit_g_factor, options):
                     else:
                         apply_vector(True, formula_antidiff0_0, formula_antidiff0_1, formula_antidiff1_0, formula_antidiff1_1, *flux, *psi, *GC_anti)
                         apply_vector(False, formula_flux_subsequent_0, formula_flux_subsequent_1, formula_flux_subsequent_0, formula_flux_subsequent_1, *flux, *psi, *flux)
-                    apply_scalar(formula_upwind_0, formula_upwind_1, *psi, *flux, g_factor)
+                apply_scalar(formula_upwind_0, formula_upwind_1, *psi, *flux, g_factor)
     return step
 
