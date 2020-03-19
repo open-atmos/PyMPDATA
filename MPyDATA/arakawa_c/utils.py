@@ -36,9 +36,7 @@ def atv_1d(focus, arrs, i, _):
 
 
 @numba.njit(**jit_flags)
-def atv_2d(focus, arrs, i, j):
-    if focus[f_d] == 1:
-        i, j = j, i
+def atv_2d_0(focus, arrs, i, j):
     if _is_integral(i):
         d = 1
         ii = int(i)
@@ -47,6 +45,18 @@ def atv_2d(focus, arrs, i, j):
         d = 0
         ii = int(i - .5)
         jj = int(j)
+    return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
+
+@numba.njit(**jit_flags)
+def atv_2d_1(focus, arrs, i, j):
+    if _is_integral(j):
+        d = 1
+        ii = int(j)
+        jj = int(i - .5)
+    else:
+        d = 0
+        ii = int(j - .5)
+        jj = int(i)
     return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
 

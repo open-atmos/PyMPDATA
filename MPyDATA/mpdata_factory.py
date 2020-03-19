@@ -18,7 +18,7 @@ from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux_first_pass, make_flux_subsequent
 from .formulae.antidiff import make_antidiff
 from .options import Options
-from .arakawa_c.utils import at_1d, at_2d, atv_1d, atv_2d, set_2d, set_1d, get_2d, get_1d
+from .arakawa_c.utils import at_1d, at_2d, atv_1d, atv_2d_0, atv_2d_1, set_2d, set_1d, get_2d, get_1d
 
 
 class MPDATAFactory:
@@ -161,12 +161,14 @@ def make_step(grid, halo, non_unit_g_factor, options):
 
     if n_dims == 1:
         at = at_1d
-        atv = atv_1d
+        atv0 = atv_1d
+        atv1 = atv_1d
         set = set_1d
         get = get_1d
     elif n_dims == 2:
         at = at_2d
-        atv = atv_2d
+        atv0 = atv_2d_0
+        atv1 = atv_2d_1
         set = set_2d
         get = get_2d
     else:
@@ -174,7 +176,7 @@ def make_step(grid, halo, non_unit_g_factor, options):
 
     @numba.njit(**jit_flags)
     def apply_vector(
-            loop, fun0, fun1,
+            loop, fun0_0, fun0_1, fun1_0, fun1_1,
             out_flag, out_0, out_1,
             arg1_flag, arg1,
             arg2_flag, arg2_0, arg2_1
@@ -183,7 +185,7 @@ def make_step(grid, halo, non_unit_g_factor, options):
         boundary_cond_vector(arg2_flag, arg2_0, arg2_1, cyclic)
 
         apply_vector_impl(
-            loop, fun0, fun1,
+            loop, fun0_0, fun0_1, fun1_0, fun1_1,
             out_0, out_1,
             arg1,
             arg2_0, arg2_1
@@ -191,7 +193,7 @@ def make_step(grid, halo, non_unit_g_factor, options):
         out_flag[0] = False
 
     @numba.njit(**jit_flags)
-    def apply_vector_impl(loop, fun0, fun1,
+    def apply_vector_impl(loop, fun0_0, fun0_1, fun1_0, fun1_1,
                           out_0, out_1,
                           arg1,
                           arg2_0, arg2_1
@@ -204,36 +206,36 @@ def make_step(grid, halo, non_unit_g_factor, options):
             for i in range(halo-1, ni+1+halo-1):
                 for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
                     focus = (0, i, j)
-                    set(out_tpl[0], i, j, fun0((focus, arg1), (focus, arg2)))
+                    set(out_tpl[0], i, j, fun0_0((focus, arg1), (focus, arg2)))
                     if n_dims > 1:
                         focus = (1, i, j)
-                        set(out_tpl[1], i, j, fun0((focus, arg1), (focus, arg2)))
+                        set(out_tpl[1], i, j, fun0_1((focus, arg1), (focus, arg2)))
         else:
             for i in range(halo-1, ni+1+halo-1):
                 for j in range(halo-1, nj+1+halo-1) if n_dims > 1 else [-1]:
                     focus = (0, i, j)
                     # for axis in range(n_dims):  # TODO: check if loop does not slow down
-                    set(out_tpl[0], i, j, fun0((focus, arg1), (focus, arg2)))
+                    set(out_tpl[0], i, j, fun0_0((focus, arg1), (focus, arg2)))
                     if n_dims > 1:
-                        set(out_tpl[0], i, j, fun1((focus, arg1), (focus, arg2)))
+                        set(out_tpl[0], i, j, fun1_0((focus, arg1), (focus, arg2)))
                     if n_dims > 1:
                         focus = (1, i, j)
                         # for axis in range(n_dims):  # TODO: check if loop does not slow down
-                        set(out_tpl[1], i, j, fun0((focus, arg1), (focus, arg2)))
+                        set(out_tpl[1], i, j, fun0_1((focus, arg1), (focus, arg2)))
                         if n_dims > 1:
-                            set(out_tpl[1], i, j, fun1((focus, arg1), (focus, arg2)))
+                            set(out_tpl[1], i, j, fun1_1((focus, arg1), (focus, arg2)))
 
     @numba.njit(**jit_flags)
-    def apply_scalar(fun,
+    def apply_scalar(fun_0, fun_1,
                      out_flag, out,
                      arg1_flag, arg1_0, arg1_1,
                      g_factor):
         boundary_cond_vector(arg1_flag, arg1_0, arg1_1, cyclic)
-        apply_scalar_impl(fun, out, arg1_0, arg1_1, g_factor)
+        apply_scalar_impl(fun_0, fun_1, out, arg1_0, arg1_1, g_factor)
         out_flag[0] = False
 
     @numba.njit(**jit_flags)
-    def apply_scalar_impl(fun,
+    def apply_scalar_impl(fun_0, fun_1,
                      out,
                      arg1_0, arg1_1,
                      g_factor
@@ -242,16 +244,25 @@ def make_step(grid, halo, non_unit_g_factor, options):
         for i in range(halo, ni+halo):
             for j in range(halo, nj+halo) if n_dims > 1 else [-1]:
                 focus = (0, i, j)
-                set(out, i, j, fun(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
+                set(out, i, j, fun_0(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
                 if n_dims > 1:
                     focus = (1, i, j)
-                    set(out, i, j, fun(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
+                    set(out, i, j, fun_1(get(out, i, j), (focus, arg1_tpl), (focus, g_factor)))
 
-    formula_flux_first_pass = make_flux_first_pass(atv, at)
-    formula_flux_subsequent = make_flux_subsequent(atv, at, infinite_gauge=options.infinite_gauge)
-    formula_upwind = make_upwind(atv, at, non_unit_g_factor)
-    formula_antidiff0 = make_antidiff(atv, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0)
-    formula_antidiff1 = make_antidiff(atv, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1)
+    formula_flux_first_pass_0 = make_flux_first_pass(atv0, at)
+    formula_flux_subsequent_0 = make_flux_subsequent(atv0, at, infinite_gauge=options.infinite_gauge)
+    formula_upwind_0 = make_upwind(atv0, at, non_unit_g_factor)
+    formula_antidiff0_0 = make_antidiff(atv0, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0)
+    formula_antidiff1_0 = make_antidiff(atv0, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1)
+
+    formula_flux_first_pass_1 = make_flux_first_pass(atv1, at)
+    formula_flux_subsequent_1 = make_flux_subsequent(atv1, at, infinite_gauge=options.infinite_gauge)
+    formula_upwind_1 = make_upwind(atv1, at, non_unit_g_factor)
+    formula_antidiff0_1 = make_antidiff(atv1, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon,
+                                      n_dims=n_dims, axis=0)
+    formula_antidiff1_1 = make_antidiff(atv1, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon,
+                                      n_dims=n_dims, axis=1)
+
 
     @numba.njit(**jit_flags)
     def boundary_cond_vector(halo_valid, comp_0, comp_1, fun):
@@ -315,14 +326,14 @@ def make_step(grid, halo, non_unit_g_factor, options):
         for _ in range(nt):
             for it in range(n_iters):
                 if it == 0:
-                    apply_vector(False, formula_flux_first_pass, formula_flux_first_pass, *flux, *psi, *GC_phys)
+                    apply_vector(False, formula_flux_first_pass_0, formula_flux_first_pass_1, formula_flux_first_pass_0, formula_flux_first_pass_1, *flux, *psi, *GC_phys)
                 else:
                     # TODO: merge formula_antidiff & flux_subsequent into one formula?
                     if it == 1:
-                        apply_vector(True, formula_antidiff0, formula_antidiff1, *flux, *psi, *GC_phys)
+                        apply_vector(True, formula_antidiff0_0, formula_antidiff0_1, formula_antidiff1_0, formula_antidiff1_1, *flux, *psi, *GC_phys)
                     else:
-                        apply_vector(True, formula_antidiff0, formula_antidiff1, *flux, *psi, *flux) # TODO: will not work with options tht rely on neighbours
-                    apply_vector(False, formula_flux_subsequent, formula_flux_subsequent, *flux, *psi, *flux)
-                apply_scalar(formula_upwind, *psi, *flux, g_factor)
+                        apply_vector(True, formula_antidiff0_0, formula_antidiff0_1, formula_antidiff1_0, formula_antidiff1_1, *flux, *psi, *flux) # TODO: will not work with options tht rely on neighbours
+                    apply_vector(False, formula_flux_subsequent_0, formula_flux_subsequent_1, formula_flux_subsequent_0, formula_flux_subsequent_1, *flux, *psi, *flux)
+                apply_scalar(formula_upwind_0, formula_upwind_1, *psi, *flux, g_factor)
     return step
 
