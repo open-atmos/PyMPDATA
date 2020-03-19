@@ -311,18 +311,18 @@ def make_step(grid, halo, non_unit_g_factor, options):
         return at(*psi, sign*n, 0)
 
     @numba.njit(**jit_flags)
-    def step(nt, psi, flux, GC_phys, g_factor):
+    def step(nt, psi, flux, GC_phys, GC_anti, g_factor):
         for _ in range(nt):
             for it in range(n_iters):
                 if it == 0:
                     apply_vector(False, formula_flux_first_pass, formula_flux_first_pass, *flux, *psi, *GC_phys)
                 else:
-                    # TODO: merge formula_antidiff & flux_subsequent into one formula?
                     if it == 1:
-                        apply_vector(True, formula_antidiff0, formula_antidiff1, *flux, *psi, *GC_phys)
+                        apply_vector(True, formula_antidiff0, formula_antidiff1, *GC_anti, *psi, *GC_phys)
+                        apply_vector(False, formula_flux_subsequent, formula_flux_subsequent, *flux, *psi, *GC_anti)
                     else:
-                        apply_vector(True, formula_antidiff0, formula_antidiff1, *flux, *psi, *flux) # TODO: will not work with options tht rely on neighbours
-                    apply_vector(False, formula_flux_subsequent, formula_flux_subsequent, *flux, *psi, *flux)
+                        apply_vector(True, formula_antidiff0, formula_antidiff1, *flux, *psi, *GC_anti)
+                        apply_vector(False, formula_flux_subsequent, formula_flux_subsequent, *flux, *psi, *flux)
                 apply_scalar(formula_upwind, *psi, *flux, g_factor)
     return step
 
