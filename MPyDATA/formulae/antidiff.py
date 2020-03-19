@@ -42,25 +42,32 @@ def make_antidiff(atv, at, infinite_gauge, epsilon, n_dims, axis):
             )
             return result
 
-    if axis == 0:
+    @numba.njit(**jit_flags)
+    def A_term(psi, GC):
+        return (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * A(psi)
+
+    @numba.njit(**jit_flags)
+    def B_term(psi, GC):
+        return (0.5 * atv(*GC, +.5, 0) *
+                0.25 * (atv(*GC, 1, +.5) + atv(*GC, 0, +.5) + atv(*GC, 1, -.5) + atv(*GC, 0, -.5)) *
+                B(psi)
+                )
+
+    if n_dims > 2:
+        raise NotImplementedError()
+    if axis == 0 and n_dims == 1:
         @numba.njit(**jit_flags)
         def antidiff(psi, GC):
             # eq. 13 in Smolarkiewicz 1984
-            result = (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * A(psi)
-            if n_dims > 1:
-                result -= (
-                        0.5 * atv(*GC, +.5, 0) *
-                        0.25 * (atv(*GC, 1, +.5) + atv(*GC, 0, +.5) + atv(*GC, 1, -.5) + atv(*GC, 0, -.5)) *
-                        B(psi)
-                )
+            result = A_term(psi, GC)
             return result
     else:
         @numba.njit(**jit_flags)
         def antidiff(psi, GC):
             # eq. 13 in Smolarkiewicz 1984
-            result = (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * A(psi)
-            result -= (
-                    0.5 * atv(*GC, +.5, 0) *
+            gc50 = atv(*GC, .5, 0)
+            result = (np.abs(gc50) - gc50 ** 2) * A(psi) - (
+                    0.5 * gc50 *
                     0.25 * (atv(*GC, 1, +.5) + atv(*GC, 0, +.5) + atv(*GC, 1, -.5) + atv(*GC, 0, -.5)) *
                     B(psi)
             )
