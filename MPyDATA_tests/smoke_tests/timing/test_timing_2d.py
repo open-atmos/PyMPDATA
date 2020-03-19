@@ -79,7 +79,12 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
-@pytest.mark.parametrize("options", [Options(n_iters=1)])#, Options()])
+# TODO: n_iters=3, ...
+@pytest.mark.parametrize("options", [
+    Options(n_iters=1),
+    Options(n_iters=2),
+    Options(n_iters=2, infinite_gauge=True)
+])
 def test_timing_2d(benchmark, options):
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
