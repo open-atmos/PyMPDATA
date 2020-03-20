@@ -16,6 +16,7 @@ from .mpdata import MPDATA
 from .formulae.jit_flags import jit_flags
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux_first_pass, make_flux_subsequent
+from .formulae.laplacian import make_laplacian
 from .formulae.antidiff import make_antidiff
 from .options import Options
 from .arakawa_c.utils import at_1d, at_2d, atv_1d, atv_2d_0, atv_2d_1, set_2d, set_1d, get_2d, get_1d
@@ -27,7 +28,7 @@ class MPDATAFactory:
         halo = 1  # TODO
 
         mpdata = MPDATA(
-            step_impl=make_step(data.shape, halo=halo, non_unit_g_factor=False, options=options),
+            step_impl=make_step(options=options, grid=data.shape, halo=halo, non_unit_g_factor=False),
             advectee=ScalarField(data, halo=halo),
             advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo)
         )
@@ -43,14 +44,14 @@ class MPDATAFactory:
         ]
         GC = VectorField(GC_data, halo=halo)
         state = ScalarField(data=data, halo=halo)
-        step = make_step(grid, halo, non_unit_g_factor=False, options=options)
+        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
         mpdata = MPDATA(step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
         halo = 1 # TODO
-        step = make_step(grid, halo, non_unit_g_factor=False, options=options)
+        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         advectee = ScalarField(field, halo=halo)
         return MPDATA(step, advectee=advectee, advector=GC)
@@ -58,7 +59,7 @@ class MPDATAFactory:
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
         halo = 1 # TODO
-        step = make_step(grid, halo, non_unit_g_factor=True, options=options)
+        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         g_factor = ScalarField(g_factor, halo=halo)
         mpdatas = {}
@@ -150,7 +151,7 @@ def z_vec_coord(grid):
     return xX, zZ
 
 
-def make_step(grid, halo, non_unit_g_factor, options):
+def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0):
 
 
     n_dims = len(grid)
@@ -279,6 +280,9 @@ def make_step(grid, halo, non_unit_g_factor, options):
         make_antidiff(atv1, at, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1)
     )
 
+    laplacian = make_laplacian(at, mu_coeff, options.epsilon, non_unit_g_factor, n_dims),
+    formulae_laplacian = (laplacian, laplacian)
+
     @numba.njit(**jit_flags)
     def boundary_cond_vector(halo_valid, comp_0, comp_1, fun):
         if halo_valid[0]:
@@ -337,18 +341,31 @@ def make_step(grid, halo, non_unit_g_factor, options):
         return at(*psi, sign*n, 0)
 
     @numba.njit(**jit_flags)
-    def step(nt, psi, flux, GC_phys, GC_anti, g_factor):
+    def step(nt, psi, GC_phys, g_factor, vectmp_a, vectmp_b, vectmp_c):
+        flux = vectmp_a
+        GC_orig = vectmp_c # only for mu_coeff != 0
+
+        # TODO
+        null_vecfield = GC_phys
+
         for _ in range(nt):
+            if mu_coeff != 0:
+                for d in range(n_dims):
+                    GC_orig[d][:] = GC_phys[d][:]
             for it in range(n_iters):
                 if it == 0:
+                    if mu_coeff != 0:
+                        apply_vector(False, *formulae_laplacian, *GC_phys, *psi, *null_vecfield)
+                        for d in range(n_dims):
+                            GC_phys[d][:] += GC_orig[d][:]
                     apply_vector(False, *formulae_flux_first_pass, *flux, *psi, *GC_phys)
                 else:
                     if it == 1:
-                        apply_vector(True, *formulae_antidiff, *GC_anti, *psi, *GC_phys)
-                        apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *GC_anti)
+                        apply_vector(True, *formulae_antidiff, *vectmp_b, *psi, *GC_phys)
+                        apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *vectmp_b)
                     else:
-                        apply_vector(True, *formulae_antidiff, *flux, *psi, *GC_anti)
-                        apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *flux)
+                        apply_vector(True, *formulae_antidiff, *vectmp_a, *psi, *vectmp_b)
+                        apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *vectmp_a)
                 apply_scalar(*formulae_upwind, *psi, *flux, g_factor)
     return step
 

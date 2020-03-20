@@ -16,11 +16,20 @@ class MPDATA:
                  g_factor: [ScalarField, None] = None):
         self.step_impl = step_impl
         self.curr = advectee
-        self.flux = VectorField.clone(advector)
         self.GC_phys = advector
         self.g_factor_impl = g_factor.data if g_factor is not None else np.empty([0] * advector.n_dims)
-        self.GC_anti = VectorField.clone(advector)
+
+        self._vectmp_a = VectorField.clone(advector)
+        self._vectmp_b = VectorField.clone(advector)
+        self._vectmp_c = VectorField.clone(advector) # TODO: onlu for mu_coeff != 0
 
     def step(self, nt):
-        self.step_impl(nt, self.curr.impl, self.flux.impl, self.GC_phys.impl, self.GC_anti.impl, self.g_factor_impl)
+        self.step_impl(nt,
+                       self.curr.impl,
+                       self.GC_phys.impl,
+                       self.g_factor_impl,
+                       self._vectmp_a.impl,
+                       self._vectmp_b.impl,
+                       self._vectmp_c.impl
+                       )
 

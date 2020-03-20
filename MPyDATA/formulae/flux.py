@@ -33,7 +33,7 @@ def make_flux_first_pass(atv, at):
 def make_flux_subsequent(atv, at, infinite_gauge):
     if infinite_gauge:
         @numba.njit(**jit_flags)
-        def flux(psi, GC):
+        def flux(_, GC):
             return atv(*GC, +.5, 0)
     else:
         @numba.njit(**jit_flags)
