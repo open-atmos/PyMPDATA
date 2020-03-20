@@ -1,6 +1,6 @@
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.setup import Setup, h, h0
 from matplotlib import pyplot
-from MPyDATA.mpdata_factory import from_pdf_2d
+from MPyDATA.arakawa_c.discretisation import from_pdf_2d
 
 
 def test_pdf(plot=False):

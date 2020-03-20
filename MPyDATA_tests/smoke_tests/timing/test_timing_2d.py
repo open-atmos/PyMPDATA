@@ -5,8 +5,7 @@ import numba
 from matplotlib import pyplot
 import pytest
 
-grid = (502, 401)
-# grid = (75, 75)
+grid = (126, 101)
 
 dt = .1
 dx = 1
