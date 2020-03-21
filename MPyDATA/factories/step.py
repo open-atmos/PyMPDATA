@@ -61,8 +61,8 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
 
     formulae_antidiff = (
         make_antidiff(atv0, at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0),
-        make_antidiff(atv0, at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1),
         make_antidiff(atv1, at1, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0),
+        make_antidiff(atv0, at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1),
         make_antidiff(atv1, at1, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1)
     )
 
@@ -78,7 +78,6 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
 
     @numba.njit(**jit_flags)
     def step(nt, psi, GC_phys, g_factor, vectmp_a, vectmp_b, vectmp_c):
-        flux = vectmp_a
         GC_orig = vectmp_c  # only for mu_coeff != 0
 
         # TODO
@@ -94,13 +93,22 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
                         apply_vector(False, *formulae_laplacian, *GC_phys, *psi, *null_vecfield)
                         for d in range(n_dims):
                             GC_phys[d][:] += GC_orig[d][:]
-                    apply_vector(False, *formulae_flux_first_pass, *flux, *psi, *GC_phys)
+                    apply_vector(False, *formulae_flux_first_pass, *vectmp_a, *psi, *GC_phys)
+                    flux = vectmp_a
                 else:
                     if it == 1:
-                        apply_vector(True, *formulae_antidiff, *vectmp_b, *psi, *GC_phys)
-                        apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *vectmp_b)
+                        GC_unco = GC_phys
+                        GC_corr = vectmp_a
+                        flux = vectmp_b
+                    elif it % 2 == 0:
+                        GC_unco = vectmp_a
+                        GC_corr = vectmp_b
+                        flux = vectmp_a
                     else:
-                        apply_vector(True, *formulae_antidiff, *vectmp_a, *psi, *vectmp_b)
-                        apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *vectmp_a)
+                        GC_unco = vectmp_b
+                        GC_corr = vectmp_a
+                        flux = vectmp_b
+                    apply_vector(True, *formulae_antidiff, *GC_corr, *psi, *GC_unco)
+                    apply_vector(False, *formulae_flux_subsequent, *flux, *psi, *GC_corr)
                 apply_scalar(*formulae_upwind, *psi, *flux, g_factor)
     return step

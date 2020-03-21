@@ -83,7 +83,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=2),
     Options(n_iters=3),
     Options(n_iters=4),
-    Options(n_iters=2, infinite_gauge=True),
+    # Options(n_iters=2, infinite_gauge=True),  # TODO!
     Options(n_iters=3, infinite_gauge=True),
 ])
 def test_timing_2d(benchmark, options):
@@ -100,7 +100,7 @@ def test_timing_2d(benchmark, options):
     print(np.amin(state), np.amax(state))
     if options.n_iters == 1:
         assert np.amin(state) >= h0
-    # np.testing.assert_almost_equal(np.amax(state), 3.7111, decimal=4)
+    assert np.amax(state) < 10 * h
 
     if False:
         pyplot.imshow(state)
