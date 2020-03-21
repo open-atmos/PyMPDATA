@@ -15,7 +15,14 @@ from MPyDATA.arakawa_c.boundary_condition.cyclic import Cyclic
 from MPyDATA.arakawa_c.traversals import make_traversals
 
 
-def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary_condition=Cyclic):
+def make_step(*,
+              options,
+              grid,
+              halo,
+              non_unit_g_factor=False,
+              mu_coeff=0,
+              boundary_conditions=(Cyclic, Cyclic)
+              ):
 
     n_dims = len(grid)
     n_iters = options.n_iters
@@ -33,7 +40,10 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
     else:
         raise NotImplementedError()
 
-    fill_halos = (boundary_condition.make(at0), boundary_condition.make(at1))
+    fill_halos = (
+        boundary_conditions[0].make(at0, halo),
+        boundary_conditions[1].make(at1, halo) if n_dims > 1 else None
+    )
     apply_scalar, apply_vector = make_traversals(grid, n_dims, halo, fill_halos)
 
     @numba.njit(**jit_flags)
@@ -92,14 +102,13 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
 
     @numba.njit(**jit_flags)
     def step(nt, psi, GC_phys, g_factor, vectmp_a, vectmp_b, vectmp_c):
-        GC_orig = vectmp_c  # only for mu_coeff != 0
-
         # TODO
         null_vecfield = GC_phys
 
         for _ in range(nt):
             if mu_coeff != 0:
-                copy(*GC_phys, *GC_orig)
+                GC_orig = GC_phys
+                GC_phys = vectmp_c
             for it in range(n_iters):
                 if it == 0:
                     if mu_coeff != 0:

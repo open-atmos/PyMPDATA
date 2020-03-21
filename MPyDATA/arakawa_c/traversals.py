@@ -22,55 +22,60 @@ def make_traversals(grid, n_dims, halo, fill_halos):
     else:
         raise NotImplementedError()
 
-    fill_halos0, fill_halos1 = fill_halos[0], fill_halos[1]
+    fill_halos_0, fill_halos_1 = fill_halos[0], fill_halos[1]
+    fill_halos_scalar_0 = fill_halos_0[0]
+    fill_halos_vector_0 = fill_halos_0[1]
+    if n_dims > 1:
+        fill_halos_scalar_1 = fill_halos_1[0]
+        fill_halos_vector_1 = fill_halos_1[1]
 
     @numba.njit(**jit_flags)
     def boundary_cond_vector(halo_valid, comp_0, comp_1):
         if halo_valid[0]:
             return
         # TODO comp_0[i, :] and comp_1[:, j] not filled
-        for j in range(0, halo) if n_dims > 1 else [-1]:
-            for i in range(0, ni + 1 + 2 * (halo - 1)):
-                focus = (i, j)
-                set(comp_0, i, j, fill_halos1((focus, comp_0), nj, 1))
-        for j in range(nj + halo, nj + 2 * halo) if n_dims > 1 else [-1]:
-            for i in range(0, ni + 1 + 2 * (halo - 1)):
-                focus = (i, j)
-                set(comp_0, i, j, fill_halos1((focus, comp_0), nj, -1))
         if n_dims > 1:
+            for j in range(0, halo) if n_dims > 1 else [-1]:
+                for i in range(0, ni + 1 + 2 * (halo - 1)):
+                    focus = (i, j)
+                    set(comp_0, i, j, fill_halos_vector_1((focus, comp_0), nj, 1))
+            for j in range(nj + halo, nj + 2 * halo) if n_dims > 1 else [-1]:
+                for i in range(0, ni + 1 + 2 * (halo - 1)):
+                    focus = (i, j)
+                    set(comp_0, i, j, fill_halos_vector_1((focus, comp_0), nj, -1))
             for i in range(0, halo):
                 for j in range(0, nj + 1 + 2 * (halo - 1)):
                     focus = (i, j)
-                    set(comp_1, i, j, fill_halos0((focus, comp_1), ni, 1))
+                    set(comp_1, i, j, fill_halos_vector_0((focus, comp_1), ni, 1))
             for i in range(ni + halo, ni + 2 * halo):
                 for j in range(0, nj + 1 + 2 * (halo - 1)):
                     focus = (i, j)
-                    set(comp_1, i, j, fill_halos0((focus, comp_1), ni, -1))
+                    set(comp_1, i, j, fill_halos_vector_0((focus, comp_1), ni, -1))
 
         halo_valid[0] = True
 
     @numba.njit(**jit_flags)
-    def boundary_cond(halo_valid, psi):
+    def boundary_cond_scalar(halo_valid, psi):
         if halo_valid[0]:
             return
 
-        for i in range(0, halo):
+        for i in range(halo-1, 0-1, -1): # TODO: reverse order assumes in Extrapolated!
             for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
                 focus = (i, j)
-                set(psi, i, j, fill_halos0((focus, psi), ni, 1))
-        for i in range(ni + halo, ni + 2 * halo):
+                set(psi, i, j, fill_halos_scalar_0((focus, psi), ni, 1))
+        for i in range(ni + halo, ni + 2 * halo): # TODO: non-reverse order assumed in Extrapolated
             for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
                 focus = (i, j)
-                set(psi, i, j, fill_halos0((focus, psi), ni, -1))
+                set(psi, i, j, fill_halos_scalar_0((focus, psi), ni, -1))
         if n_dims > 1:
             for j in range(0, halo):
                 for i in range(0, ni + 2 * halo):
                     focus = (i, j)
-                    set(psi, i, j, fill_halos1((focus, psi), nj, 1))
+                    set(psi, i, j, fill_halos_scalar_1((focus, psi), nj, 1))
             for j in range(nj + halo, nj + 2 * halo):
                 for i in range(0, ni + 2 * halo):
                     focus = (i, j)
-                    set(psi, i, j, fill_halos1((focus, psi), nj, -1))
+                    set(psi, i, j, fill_halos_scalar_1((focus, psi), nj, -1))
 
         halo_valid[0] = True
 
@@ -81,7 +86,7 @@ def make_traversals(grid, n_dims, halo, fill_halos):
             arg1_flag, arg1,
             arg2_flag, arg2_0, arg2_1
     ):
-        boundary_cond(arg1_flag, arg1)
+        boundary_cond_scalar(arg1_flag, arg1)
         boundary_cond_vector(arg2_flag, arg2_0, arg2_1)
 
         apply_vector_impl(

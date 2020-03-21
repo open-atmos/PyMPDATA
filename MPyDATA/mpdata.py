@@ -21,7 +21,7 @@ class MPDATA:
 
         self._vectmp_a = VectorField.clone(advector)
         self._vectmp_b = VectorField.clone(advector)
-        self._vectmp_c = VectorField.clone(advector) # TODO: onlu for mu_coeff != 0
+        self._vectmp_c = VectorField.clone(advector) # TODO: only for mu_coeff != 0
 
     def step(self, nt):
         self.step_impl(nt,

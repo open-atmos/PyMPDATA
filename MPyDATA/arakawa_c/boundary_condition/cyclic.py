@@ -10,9 +10,9 @@ from MPyDATA.formulae.jit_flags import jit_flags
 
 class Cyclic:
     @staticmethod
-    def make(at):
+    def make(at, _):
         @numba.njit(**jit_flags)
-        def cyclic(psi, n, sign):
+        def fill_halos(psi, n, sign):
             return at(*psi, sign * n, 0)
 
-        return cyclic
+        return fill_halos, fill_halos

@@ -1,9 +1,9 @@
 from MPyDATA_examples.Arabas_and_Farhat_2019.options import OPTIONS
 from MPyDATA.mpdata_factory import MPDATAFactory
-# TODO
-#from MPyDATA.arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
+from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
 import numpy as np
 from MPyDATA.options import Options
+
 
 class Simulation:
     def __init__(self, setup):
@@ -48,21 +48,21 @@ class Simulation:
 
         self.solvers = {}
         self.solvers[1] = MPDATAFactory.advection_diffusion_1d(
-            psi=setup.payoff(self.S),
-            C=self.C,
-            options=OPTIONS,
-#            boundary_conditions=((ExtrapolatedLeft(), ExtrapolatedRight()),)
+            advectee=setup.payoff(self.S),
+            advector=self.C,
+            options=Options(n_iters=1),
+            boundary_conditions=Extrapolated,
             mu_coeff=mu_coeff
         )
         self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
-            psi=setup.payoff(self.S),
-            C=self.C,
-            options=Options(n_iters=1),
-#            boundary_conditions=((ExtrapolatedLeft(), ExtrapolatedRight()),)
+            advectee=setup.payoff(self.S),
+            advector=self.C,
+            options=OPTIONS,
+            boundary_conditions=Extrapolated,
             mu_coeff=mu_coeff
         )
 
-
+    # TODO: numba?
     def run(self, n_iters: int):
         psi = self.solvers[n_iters].curr.get()
         f_T = np.empty_like(psi)
