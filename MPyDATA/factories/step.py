@@ -67,14 +67,28 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
     )
 
     if mu_coeff == 0:
-        laplacian = (null_formula, null_formula)
+        formulae_laplacian = (null_formula, null_formula, null_formula, null_formula)
     else:
         formulae_laplacian = (
             make_laplacian(at0, mu_coeff, options.epsilon, non_unit_g_factor, n_dims),
-            make_laplacian(at1, mu_coeff, options.epsilon, non_unit_g_factor, n_dims)
+            make_laplacian(at1, mu_coeff, options.epsilon, non_unit_g_factor, n_dims),
+            null_formula,
+            null_formula
         )
 
-    formulae_laplacian = (laplacian, laplacian)
+    @numba.njit(**jit_flags)
+    def add(af, a0, a1, bf, b0, b1):
+        b0[:] += a0[:]
+        if n_dims > 1:
+            b1[:] += a1[:]
+        bf[0] = False
+
+    @numba.njit(**jit_flags)
+    def copy(af, a0, a1, bf, b0, b1):
+        b0[:] = a0[:]
+        if n_dims > 1:
+            b1[:] = a1[:]
+        bf[0] = False
 
     @numba.njit(**jit_flags)
     def step(nt, psi, GC_phys, g_factor, vectmp_a, vectmp_b, vectmp_c):
@@ -85,14 +99,12 @@ def make_step(options, grid, halo, non_unit_g_factor=False, mu_coeff=0, boundary
 
         for _ in range(nt):
             if mu_coeff != 0:
-                for d in range(n_dims):
-                    GC_orig[d][:] = GC_phys[d][:]
+                copy(*GC_phys, *GC_orig)
             for it in range(n_iters):
                 if it == 0:
                     if mu_coeff != 0:
                         apply_vector(False, *formulae_laplacian, *GC_phys, *psi, *null_vecfield)
-                        for d in range(n_dims):
-                            GC_phys[d][:] += GC_orig[d][:]
+                        add(*GC_orig, *GC_phys)
                     apply_vector(False, *formulae_flux_first_pass, *vectmp_a, *psi, *GC_phys)
                     flux = vectmp_a
                 else:

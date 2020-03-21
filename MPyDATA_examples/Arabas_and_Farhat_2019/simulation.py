@@ -3,7 +3,7 @@ from MPyDATA.mpdata_factory import MPDATAFactory
 # TODO
 #from MPyDATA.arakawa_c.boundary_conditions.extrapolated import ExtrapolatedLeft, ExtrapolatedRight
 import numpy as np
-
+from MPyDATA.options import Options
 
 class Simulation:
     def __init__(self, setup):
@@ -44,15 +44,24 @@ class Simulation:
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
 
+        mu_coeff = 0.5 / self.l2
+
         self.solvers = {}
         self.solvers[1] = MPDATAFactory.advection_diffusion_1d(
-            setup.payoff(self.S),
-            self.C,
+            psi=setup.payoff(self.S),
+            C=self.C,
             options=OPTIONS,
 #            boundary_conditions=((ExtrapolatedLeft(), ExtrapolatedRight()),)
-            mu = 0.5 / self.l2
+            mu_coeff=mu_coeff
         )
-        self.solvers[2] = self.solvers[1].clone()
+        self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
+            psi=setup.payoff(self.S),
+            C=self.C,
+            options=Options(n_iters=1),
+#            boundary_conditions=((ExtrapolatedLeft(), ExtrapolatedRight()),)
+            mu_coeff=mu_coeff
+        )
+
 
     def run(self, n_iters: int):
         psi = self.solvers[n_iters].curr.get()

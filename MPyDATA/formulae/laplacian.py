@@ -9,8 +9,8 @@ def make_laplacian(at, mu, epsilon, non_unit_g_factor, n_dims):
     @numba.njit(**jit_flags)
     def A(psi, _):
         return -2 * mu * (
-                psi.at(1, 0) - psi.at(0, 0)
+                at(*psi, 1, 0) - at(*psi, 0, 0)
         ) / (
-                psi.at(1, 0) + psi.at(0, 0) + epsilon
+                at(*psi, 1, 0) + at(*psi, 0, 0) + epsilon
         )
     return A

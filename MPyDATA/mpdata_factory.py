@@ -62,3 +62,14 @@ class MPDATAFactory:
             advectee = ScalarField(np.full(grid, v), halo=halo)
             mpdatas[k] = MPDATA(step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, EulerianFields(mpdatas)
+
+    @staticmethod
+    def advection_diffusion_1d(options: Options, psi: np.ndarray, C: float, mu_coeff: float):
+        assert psi.ndim == 1
+        halo = 1
+        grid = psi.shape
+        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False, mu_coeff=mu_coeff)
+        return MPDATA(stepper,
+                      advectee=ScalarField(psi, halo=halo),
+                      advector=VectorField((np.full(grid[0]+1, C),), halo=halo)
+                      )
