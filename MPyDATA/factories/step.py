@@ -44,19 +44,23 @@ def make_step(*,
         make_upwind(idx.atv1, idx.at1, non_unit_g_factor)
     )
 
-    formulae_flux_subsequent = (
-        make_flux_subsequent(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge),
-        make_flux_subsequent(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge),
-        null_formula,
-        null_formula
-    )
+    if n_iters > 1:
+        formulae_flux_subsequent = (
+            make_flux_subsequent(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge),
+            make_flux_subsequent(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge),
+            null_formula,
+            null_formula
+        )
 
-    formulae_antidiff = (
-        make_antidiff(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0),
-        make_antidiff(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0),
-        make_antidiff(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1),
-        make_antidiff(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1)
-    )
+        formulae_antidiff = (
+            make_antidiff(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0),
+            make_antidiff(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=0),
+            make_antidiff(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1),
+            make_antidiff(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge, epsilon=options.epsilon, n_dims=n_dims, axis=1)
+        )
+    else:
+        formulae_flux_subsequent = (null_formula, null_formula, null_formula, null_formula)
+        formulae_antidiff = (null_formula, null_formula, null_formula, null_formula)
 
     if mu_coeff == 0:
         formulae_laplacian = (null_formula, null_formula, null_formula, null_formula)
