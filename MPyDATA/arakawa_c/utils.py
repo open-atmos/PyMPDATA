@@ -84,9 +84,26 @@ def get_2d(arr, i, j):
     return arr[i, j]
 
 
-def make_flag(value: bool = False):
-    return np.full(1, value)
+def make_flag(value: bool):
+    return np.full(1, value, dtype=bool)
 
 
 def make_null():
     return np.empty(0, dtype=np.float64)
+
+
+class Indexers1d:
+    at0 = at_1d
+    at1 = at_1d  # TODO: redundant
+    atv0 = atv_1d
+    atv1 = atv_1d  # TODO: redundant
+
+
+class Indexers2d:
+    at0 = at_2d_axis0
+    at1 = at_2d_axis1
+    atv0 = atv_2d_axis0
+    atv1 = atv_2d_axis1
+
+
+indexers = {1: Indexers1d, 2: Indexers2d}

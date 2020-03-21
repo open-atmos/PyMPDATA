@@ -10,7 +10,7 @@ X=-1
 
 class Extrapolated:
     @staticmethod
-    def make(at, halo):
+    def make_scalar(at, halo):
         @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, n, sign):
             if sign > 0:  # left
@@ -27,9 +27,11 @@ class Extrapolated:
                 cnst = nom/den if abs(den) > eps else 0
                 # print("R: ", n, edg, psi[0][0], cnst)
                 return max(at(*psi, - 1, X) + (at(*psi, -1, X) - at(*psi, -2, X)) * cnst, 0)
+        return fill_halos_scalar
 
+    @staticmethod
+    def make_vector(at):
         @numba.njit(**jit_flags)
         def fill_halos_vector(psi, n, sign):
             return 0 # TODO
-
-        return fill_halos_scalar, fill_halos_vector
+        return fill_halos_vector

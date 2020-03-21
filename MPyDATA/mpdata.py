@@ -17,7 +17,7 @@ class MPDATA:
         self.step_impl = step_impl
         self.curr = advectee
         self.GC_phys = advector
-        self.g_factor_impl = g_factor.data if g_factor is not None else np.empty([0] * advector.n_dims)
+        self.g_factor = g_factor if g_factor is not None else ScalarField.make_null(advectee.n_dims)
 
         self._vectmp_a = VectorField.clone(advector)
         self._vectmp_b = VectorField.clone(advector)
@@ -25,11 +25,11 @@ class MPDATA:
 
     def step(self, nt):
         self.step_impl(nt,
-                       self.curr.impl,
-                       self.GC_phys.impl,
-                       self.g_factor_impl,
-                       self._vectmp_a.impl,
-                       self._vectmp_b.impl,
-                       self._vectmp_c.impl
+                       *self.curr.impl,
+                       *self.GC_phys.impl,
+                       *self.g_factor.impl,
+                       *self._vectmp_a.impl,
+                       *self._vectmp_b.impl,
+                       *self._vectmp_c.impl
                        )
 

@@ -85,3 +85,12 @@ def z_vec_coord(grid):
     assert np.amax(zZ) == 1
     assert zZ.shape == (nx, nz)
     return xX, zZ
+
+
+def discretised_analytical_solution(rh, pdf_t):
+    output = np.empty(rh.shape[0]-1)
+    for i in range(output.shape[0]):
+        dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i+1]) # TODO: handle other output values
+        output[i] = dcdf / (rh[i+1] - rh[i])
+    return output
+
