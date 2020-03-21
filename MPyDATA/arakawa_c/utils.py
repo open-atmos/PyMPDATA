@@ -106,4 +106,4 @@ class Indexers2d:
     atv1 = atv_2d_axis1
 
 
-indexers = {1: Indexers1d, 2: Indexers2d}
+indexers = (None, Indexers1d, Indexers2d)
