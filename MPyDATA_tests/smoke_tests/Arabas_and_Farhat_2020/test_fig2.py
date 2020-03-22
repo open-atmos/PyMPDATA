@@ -1,4 +1,4 @@
-from MPyDATA_examples.Arabas_and_Farhat_2019.analysis_figures_2_and_3 import convergence_in_space
+from MPyDATA_examples.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import convergence_in_space
 import pytest
 import numpy as np
 

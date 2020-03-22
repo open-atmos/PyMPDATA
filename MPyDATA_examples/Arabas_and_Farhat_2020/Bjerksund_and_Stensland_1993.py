@@ -1,4 +1,4 @@
-import MPyDATA_examples.Arabas_and_Farhat_2019.Black_Scholes_1973 as BS
+import MPyDATA_examples.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS
 import numpy as np
 
 

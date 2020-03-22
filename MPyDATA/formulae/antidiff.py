@@ -95,16 +95,18 @@ def make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         #
         #             result += tmp
         #
-        #     # divergent flow option
-        #     # eq.(30) in Smolarkiewicz_and_Margolin_1998
-        #     if divergent_flow:
-        #         assert psi.dimension == 1  # TODO!
-        #         tmp = -.5 * GC.at(.5, 0) * (GC.at(1.5, 0) - GC.at(-.5, 0))
-        #         if non_unit_g_factor:
-        #             tmp /= 2 * G_bar
-        #         if infinite_gauge:
-        #             tmp *= .5 * (psi.at(1, 0) + psi.at(0, 0))
+
+        # # divergent flow option
+        # # eq.(30) in Smolarkiewicz_and_Margolin_1998
+        # if divergent_flow:
+        #     # assert psi.dimension == 1  # TODO!
+        #     tmp = -.5 * atv(*GC, .5, 0) * (atv(*GC, 1.5, 0) - atv(GC, -.5, 0))
+        #     # TODO!
+        #     # if non_unit_g_factor:
+        #     #     tmp /= 2 * G_bar
+        #     if infinite_gauge:
+        #         tmp *= .5 * at(*psi, 1, 0) + at(psi, 0, 0)
         #
-        #         result += tmp
+        #     result += tmp
         return result
     return antidiff
