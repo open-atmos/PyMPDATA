@@ -22,13 +22,10 @@ from .arakawa_c.boundary_condition.zero import Zero
 class MPDATAFactory:
     @staticmethod
     def n_halo(opts: Options):
-        # TODO
-        # if opts.dfl or opts.fct or opts.tot:
-        #     n_halo = 2
-        # else:
-        #     n_halo = 1
-        # return n_halo
-        return 1
+        if opts.divergent_flow or opts.flux_corrected_transport or opts.third_order_terms:
+            return 2
+        else:
+            return 1
 
     @staticmethod
     def constant_1d(data, C, options: Options):

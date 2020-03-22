@@ -78,16 +78,19 @@ def make_traversals(grid, n_dims, halo):
             loop, fun0_0, fun0_1, fun1_0, fun1_1,
             out_flag, out_0, out_1,
             arg1_flag, arg1, arg1_bc0, arg1_bc1,
-            arg2_flag, arg2_0, arg2_1, arg2_bc0, arg2_bc1
+            arg2_flag, arg2_0, arg2_1, arg2_bc0, arg2_bc1,
+            arg3_flag, arg3, arg3_bc0, arg3_bc1,
     ):
         boundary_cond_scalar(arg1_flag, arg1, arg1_bc0, arg1_bc1)
         boundary_cond_vector(arg2_flag, arg2_0, arg2_1, arg2_bc0, arg2_bc1)
+        boundary_cond_scalar(arg3_flag, arg3, arg3_bc0, arg3_bc1)
 
         apply_vector_impl(
             loop, fun0_0, fun0_1, fun1_0, fun1_1,
             out_0, out_1,
             arg1,
-            arg2_0, arg2_1
+            arg2_0, arg2_1,
+            arg3
         )
         out_flag[0] = False
 
@@ -95,7 +98,8 @@ def make_traversals(grid, n_dims, halo):
     def apply_vector_impl(loop, fun0_0, fun0_1, fun1_0, fun1_1,
                           out_0, out_1,
                           arg1,
-                          arg2_0, arg2_1
+                          arg2_0, arg2_1,
+                          arg3
                           ):
         out_tpl = (out_0, out_1)
         arg2 = (arg2_0, arg2_1)
@@ -105,22 +109,22 @@ def make_traversals(grid, n_dims, halo):
             for i in range(halo - 1, ni + 1 + halo - 1):
                 for j in range(halo - 1, nj + 1 + halo - 1) if n_dims > 1 else [-1]:
                     focus = (i, j)
-                    set(out_tpl[0], i, j, fun0_0((focus, arg1), (focus, arg2)))
+                    set(out_tpl[0], i, j, fun0_0((focus, arg1), (focus, arg2), (focus, arg3)))
                     if n_dims > 1:
                         focus = (i, j)
-                        set(out_tpl[1], i, j, fun0_1((focus, arg1), (focus, arg2)))
+                        set(out_tpl[1], i, j, fun0_1((focus, arg1), (focus, arg2), (focus, arg3)))
         else:
             for i in range(halo - 1, ni + 1 + halo - 1):
                 for j in range(halo - 1, nj + 1 + halo - 1) if n_dims > 1 else [-1]:
                     focus = (i, j)
-                    set(out_tpl[0], i, j, fun0_0((focus, arg1), (focus, arg2)))
+                    set(out_tpl[0], i, j, fun0_0((focus, arg1), (focus, arg2), (focus, arg3)))
                     if n_dims > 1:
-                        set(out_tpl[0], i, j, fun1_0((focus, arg1), (focus, arg2)))
+                        set(out_tpl[0], i, j, fun1_0((focus, arg1), (focus, arg2), (focus, arg3)))
                     if n_dims > 1:
                         focus = (i, j)
-                        set(out_tpl[1], i, j, fun0_1((focus, arg1), (focus, arg2)))
+                        set(out_tpl[1], i, j, fun0_1((focus, arg1), (focus, arg2), (focus, arg3)))
                         if n_dims > 1:
-                            set(out_tpl[1], i, j, fun1_1((focus, arg1), (focus, arg2)))
+                            set(out_tpl[1], i, j, fun1_1((focus, arg1), (focus, arg2), (focus, arg3)))
 
     @numba.njit(**jit_flags)
     def apply_scalar(fun_0, fun_1,

@@ -7,7 +7,7 @@ def make_laplacian(at, mu, epsilon, non_unit_g_factor, n_dims):
         raise NotImplementedError()
 
     @numba.njit(**jit_flags)
-    def A(psi, _):
+    def A(psi, _, __):
         return -2 * mu * (
                 at(*psi, 1, 0) - at(*psi, 0, 0)
         ) / (
