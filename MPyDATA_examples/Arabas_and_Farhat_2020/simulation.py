@@ -9,9 +9,9 @@ class Simulation:
     def __init__(self, setup):
         self.setup = setup
 
-        sgma2 = pow(setup.sgma, 2)
-        dx_opt = abs(setup.C_opt / (.5 * sgma2 - setup.r) * setup.l2_opt * sgma2)
-        dt_opt = pow(dx_opt, 2) / sgma2 / setup.l2_opt
+        sigma2 = pow(setup.sigma, 2)
+        dx_opt = abs(setup.C_opt / (.5 * sigma2 - setup.r) * setup.l2_opt * sigma2)
+        dt_opt = pow(dx_opt, 2) / sigma2 / setup.l2_opt
     
         # adjusting dt so that nt is integer
         self.dt = setup.T
@@ -21,11 +21,11 @@ class Simulation:
             self.dt = setup.T / self.nt
     
         # adjusting dx to match requested l^2
-        dx = np.sqrt(setup.l2_opt * self.dt) * setup.sgma
+        dx = np.sqrt(setup.l2_opt * self.dt) * setup.sigma
 
         # calculating actual u number and lambda
-        self.C = - (.5 * sgma2 - setup.r) * (-self.dt) / dx
-        self.l2 = dx * dx / sgma2 / self.dt
+        self.C = - (.5 * sigma2 - setup.r) * (-self.dt) / dx
+        self.l2 = dx * dx / sigma2 / self.dt
     
         # adjusting nx and setting S_beg, S_end
         S_beg = setup.S_match
@@ -45,21 +45,18 @@ class Simulation:
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
 
         mu_coeff = 0.5 / self.l2
-
         self.solvers = {}
         self.solvers[1] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
-            options=Options(n_iters=1),
-            boundary_conditions=Extrapolated,
-            mu_coeff=mu_coeff
+            options=Options(n_iters=1, mu_coeff=mu_coeff),
+            boundary_conditions=Extrapolated
         )
         self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
-            options=OPTIONS,
-            boundary_conditions=Extrapolated,
-            mu_coeff=mu_coeff
+            options=Options(**OPTIONS, mu_coeff=mu_coeff),
+            boundary_conditions=Extrapolated
         )
 
     # TODO: numba?

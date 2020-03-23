@@ -5,7 +5,7 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.formulae.jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 from .utils import set_2d, set_1d, get_2d, get_1d
 
 

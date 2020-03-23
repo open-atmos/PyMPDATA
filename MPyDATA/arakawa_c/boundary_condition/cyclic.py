@@ -5,7 +5,7 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.formulae.jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 
 
 class Cyclic:

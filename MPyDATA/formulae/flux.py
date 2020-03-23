@@ -7,8 +7,9 @@ Created at 11.10.2019
 """
 
 import numpy as np
-from .jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 import numba
+from MPyDATA.arakawa_c.utils import indexers, null_formula
 
 
 @numba.njit(**jit_flags)
@@ -21,7 +22,27 @@ def maximum_0(c):
     return (c + np.abs(c)) / 2
 
 
-def make_flux_first_pass(atv, at):
+def make_flux_first_pass(n_dims, apply_vector):
+    idx = indexers[n_dims]
+
+    formulae_flux_first_pass = (
+        __make_flux_first_pass(idx.atv0, idx.at0),
+        __make_flux_first_pass(idx.atv1, idx.at1),
+        null_formula,
+        null_formula
+    )
+
+    @numba.njit(**jit_flags)
+    def apply(vectmp_a, GC_phys, psi, psi_bc, vec_bc):
+        null_scalarfield = psi
+        null_bc = vec_bc
+        return apply_vector(False, *formulae_flux_first_pass, *vectmp_a, *psi, *psi_bc, *GC_phys, *vec_bc,
+                            *null_scalarfield, *null_bc)
+
+    return apply
+
+
+def __make_flux_first_pass(atv, at):
     @numba.njit(**jit_flags)
     def flux(psi, GC, _):
         return \

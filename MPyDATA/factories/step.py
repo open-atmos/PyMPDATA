@@ -5,7 +5,7 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.formulae.jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 from MPyDATA.formulae.upwind import make_upwind
 from MPyDATA.formulae.flux import make_flux_first_pass, make_flux_subsequent
 from MPyDATA.formulae.laplacian import make_laplacian
@@ -32,17 +32,12 @@ def make_step(*,
     def null_formula(_, __, ___):
         return 44.
 
-    formulae_flux_first_pass = (
-        make_flux_first_pass(idx.atv0, idx.at0),
-        make_flux_first_pass(idx.atv1, idx.at1),
-        null_formula,
-        null_formula
-    )
-
     formulae_upwind = (
         make_upwind(idx.atv0, idx.at0, non_unit_g_factor),
         make_upwind(idx.atv1, idx.at1, non_unit_g_factor)
     )
+
+    flux_first_pass = make_flux_first_pass(n_dims, apply_vector)
 
     if n_iters > 1:
         formulae_flux_subsequent = (
@@ -104,7 +99,7 @@ def make_step(*,
                     if mu_coeff != 0:
                         apply_vector(False, *formulae_laplacian, *GC_phys, *psi, *psi_bc, *null_vecfield, *null_bc, *null_scalarfield, *null_bc)
                         add(*GC_orig, *GC_phys)
-                    apply_vector(False, *formulae_flux_first_pass, *vectmp_a, *psi, *psi_bc, *GC_phys, *vec_bc, *null_scalarfield, *null_bc)
+                    flux_first_pass(vectmp_a, GC_phys, psi, psi_bc, vec_bc)
                     flux = vectmp_a
                 else:
                     if it == 1:

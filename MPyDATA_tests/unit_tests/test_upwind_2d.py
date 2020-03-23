@@ -33,7 +33,8 @@ def test_upwind(shape, ij0, out, C, halo):
     state = ScalarField(scalar_field_init, halo=halo)
     GC_field = VectorField(vector_field_init, halo=halo)
 
-    mpdata = MPDATA(step_impl=make_step(options=Options(n_iters=1), grid=shape, halo=halo), advector=GC_field, advectee=state)
+    options = Options(n_iters=1)
+    mpdata = MPDATA(options=options, step_impl=make_step(options=options, grid=shape, halo=halo), advector=GC_field, advectee=state)
     mpdata.step(1)
 
     np.testing.assert_array_equal(

@@ -32,6 +32,7 @@ class MPDATAFactory:
         halo = MPDATAFactory.n_halo(options)
 
         mpdata = MPDATA(
+            options=options,
             step_impl=make_step(options=options, grid=data.shape, halo=halo, non_unit_g_factor=False),
             advectee=ScalarField(data, halo=halo),
             advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo)
@@ -49,7 +50,7 @@ class MPDATAFactory:
         GC = VectorField(GC_data, halo=halo)
         state = ScalarField(data=data, halo=halo)
         step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
-        mpdata = MPDATA(step_impl=step, advectee=state, advector=GC)
+        mpdata = MPDATA(options=options, step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
@@ -58,7 +59,7 @@ class MPDATAFactory:
         step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         advectee = ScalarField(field, halo=halo)
-        return MPDATA(step, advectee=advectee, advector=GC)
+        return MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
@@ -69,7 +70,7 @@ class MPDATAFactory:
         mpdatas = {}
         for k, v in field_values.items():
             advectee = ScalarField(np.full(grid, v), halo=halo)
-            mpdatas[k] = MPDATA(step, advectee=advectee, advector=GC, g_factor=g_factor)
+            mpdatas[k] = MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, EulerianFields(mpdatas)
 
     @staticmethod
@@ -77,14 +78,13 @@ class MPDATAFactory:
                                options: Options,
                                advectee: np.ndarray,
                                advector: float,
-                               mu_coeff: float,
                                boundary_conditions
                                ):
         assert advectee.ndim == 1
         halo = MPDATAFactory.n_halo(options)
         grid = advectee.shape
-        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False, mu_coeff=mu_coeff)
-        return MPDATA(stepper,
+        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False, mu_coeff=options.mu_coeff)
+        return MPDATA(options=options, step_impl=stepper,
                       advectee=ScalarField(advectee, halo=halo, boundary_conditions=(boundary_conditions, boundary_conditions)),
                       advector=VectorField((np.full(grid[0]+1, advector),), halo=halo, boundary_conditions=(boundary_conditions,boundary_conditions))
                       )
@@ -139,7 +139,7 @@ class MPDATAFactory:
             non_unit_g_factor=True
         )
         return (
-            MPDATA(step_impl=stepper, g_factor=g_factor, advectee=state, advector=GC_field),
+            MPDATA(options=opts, step_impl=stepper, g_factor=g_factor, advectee=state, advector=GC_field),
             r,
             rh,
             dx

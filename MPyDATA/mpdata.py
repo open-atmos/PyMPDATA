@@ -8,11 +8,10 @@ Created at 25.09.2019
 
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
-import numpy as np
 
 
 class MPDATA:
-    def __init__(self, step_impl, advectee: ScalarField, advector: VectorField,
+    def __init__(self, options, step_impl, advectee: ScalarField, advector: VectorField,
                  g_factor: [ScalarField, None] = None):
         self.step_impl = step_impl
         self.curr = advectee
@@ -21,7 +20,10 @@ class MPDATA:
 
         self._vectmp_a = VectorField.clone(advector)
         self._vectmp_b = VectorField.clone(advector)
-        self._vectmp_c = VectorField.clone(advector) # TODO: only for mu_coeff != 0
+        if options.mu_coeff != 0:
+            self._vectmp_c = VectorField.clone(advector)
+        else:
+            self._vectmp_c = VectorField.make_null(advector.n_dims)
 
     def step(self, nt):
         self.step_impl(nt,

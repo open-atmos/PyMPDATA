@@ -1,5 +1,5 @@
 import numba
-from .jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 
 
 def make_laplacian(at, mu, epsilon, non_unit_g_factor, n_dims):

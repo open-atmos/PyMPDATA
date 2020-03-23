@@ -1,5 +1,5 @@
 import numba
-from ...formulae.jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 
 # TODO: allow passing from caller scope
 eps = 1e-10

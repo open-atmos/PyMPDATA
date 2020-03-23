@@ -16,11 +16,8 @@ class VectorField:
         self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
         for d in dims:
             self.get_component(d)[:] = data[d][:]
-        self.boundary_conditions = (  # TODO: list comprehension?
-            boundary_conditions[0].make_vector(indexers[self.n_dims].at0),
-            boundary_conditions[1].make_vector(indexers[self.n_dims].at1),
-        )
-        self.flag = make_flag(False)
+        self.boundary_conditions = tuple([boundary_conditions[0].make_vector(indexers[self.n_dims].at[i]) for i in range(2)])
+        self.halo_valid = make_flag(False)
 
     @staticmethod
     def clone(field):
@@ -44,4 +41,10 @@ class VectorField:
     def impl(self):
         comp_0 = self.data[0]
         comp_1 = self.data[1] if self.n_dims > 1 else make_null()
-        return (self.flag, comp_0, comp_1), self.boundary_conditions
+        return (self.halo_valid, comp_0, comp_1), self.boundary_conditions
+
+    @staticmethod
+    def make_null(n_dims):
+        null = VectorField([np.empty([0]*n_dims)] * n_dims, halo=1)
+        null.halo_valid[0] = True
+        return null

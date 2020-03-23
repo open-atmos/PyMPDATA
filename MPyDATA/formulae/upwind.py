@@ -6,7 +6,7 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from .jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 import numba
 
 

@@ -8,7 +8,7 @@ class Setup:
     amer = False
     S_min = 10
     S_max = 2000
-    sgma = 0.6
+    sigma = 0.6
     r = 0.008
     K1 = 75
     K2 = 175
@@ -24,6 +24,6 @@ class Setup:
 
     def analytical_solution(self, S: np.ndarray):
         return (
-            BS73.p_euro(S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sgma) -
-            BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sgma)
+                BS73.p_euro(S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma) -
+                BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)
         )

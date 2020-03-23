@@ -10,7 +10,7 @@ class Setup:
     S_max = 500
     K = 100
     r = .08
-    sgma = .2
+    sigma = .2
     n_iters = 2
 
     def __init__(self, *, T, C_opt, S0):
@@ -24,5 +24,5 @@ class Setup:
 
     def analytical_solution(self, S: [np.ndarray, float], amer=True):
         if not amer:
-            return BS73.p_euro(S, K=self.K, T=self.T, r=self.r, b=self.r, sgma=self.sgma)
-        return BS93.p_amer(S, K=self.K, T=self.T, r=self.r, b=self.r, sgma=self.sgma)
+            return BS73.p_euro(S, K=self.K, T=self.T, r=self.r, b=self.r, sgma=self.sigma)
+        return BS93.p_amer(S, K=self.K, T=self.T, r=self.r, b=self.r, sgma=self.sigma)

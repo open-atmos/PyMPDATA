@@ -1,6 +1,6 @@
 import numba
 import numpy as np
-from .jit_flags import jit_flags
+from MPyDATA.jit_flags import jit_flags
 
 
 def make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
@@ -37,7 +37,7 @@ def make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         return result
 
     @numba.njit(**jit_flags)
-    def antidiff(psi, GC, G):
+    def antidiff_1(psi, GC, G):
         # eq. 13 in Smolarkiewicz 1984
         result = (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * A(psi)
         if axis == 0 and n_dims == 1:
@@ -48,13 +48,15 @@ def make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
                 0.25 * (atv(*GC, 1, +.5) + atv(*GC, 0, +.5) + atv(*GC, 1, -.5) + atv(*GC, 0, -.5)) *
                 B(psi)
             )
+        return result
 
-        if not third_order_terms and not divergent_flow:
-            return result
+    @numba.njit(**jit_flags)
+    def antidiff_2(psi, GC, G):
+        # eq. 13 in Smolarkiewicz 1984
+        result = antidiff_1(psi, GC, G)
 
         # G_bar = 1
-        # if non_unit_g_factor:
-        #     G_bar = (at(*G, 1, 0) + at(*G, 0, 0)) / 2
+        G_bar = (at(*G, 1, 0) + at(*G, 0, 0)) / 2
 
         #
         #     # third-order terms
@@ -109,4 +111,4 @@ def make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         #
         #     result += tmp
         return result
-    return antidiff
+    return antidiff_2 if non_unit_g_factor else antidiff_1
