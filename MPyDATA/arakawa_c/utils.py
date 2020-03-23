@@ -98,6 +98,7 @@ class Indexers1d:
     at = (at_1d, at_1d)
     atv0 = atv_1d
     atv1 = atv_1d  # TODO: redundant
+    atv = (atv_1d, atv_1d)
 
 
 class Indexers2d:
@@ -106,6 +107,7 @@ class Indexers2d:
     at = (at_2d_axis0, at_2d_axis1)
     atv0 = atv_2d_axis0
     atv1 = atv_2d_axis1
+    atv = (atv_2d_axis0, atv_2d_axis1)
 
 
 indexers = (None, Indexers1d, Indexers2d)

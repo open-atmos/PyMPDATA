@@ -1,9 +1,33 @@
 import numba
 import numpy as np
 from MPyDATA.jit_flags import jit_flags
+from MPyDATA.arakawa_c.utils import indexers
 
 
-def make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
+def make_antidiff(n_dims, non_unit_g_factor, options, apply_vector):
+    if options.n_iters <= 1:
+        @numba.njit(**jit_flags)
+        def apply(_GC_corr, _psi, _psi_bc, _GC_unco, _vec_bc, _g_factor, _g_factor_bc):
+            return
+    else:
+        idx = indexers[n_dims]
+
+        formulae_antidiff = tuple([
+            __make_antidiff(idx.atv[i], idx.at[i],
+                            non_unit_g_factor=non_unit_g_factor,
+                            options=options,
+                            n_dims=n_dims, axis=axis)
+            for i in range(2) for axis in range(2)])
+
+        @numba.njit(**jit_flags)
+        def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
+            return apply_vector(True, *formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
+                                *g_factor, *g_factor_bc)
+
+    return apply
+
+
+def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
     infinite_gauge = options.infinite_gauge
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms
