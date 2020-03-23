@@ -5,11 +5,12 @@ Created at 12.03.2020
 """
 
 import numba
+import numpy as np
 from ..formulae.jit_flags import jit_flags  # TODO: move
 
-f_d = 0
-f_i = f_d + 1
+f_i = 0
 f_j = f_i + 1
+f_d = f_j + 1
 
 @numba.njit([numba.boolean(numba.float64),
              numba.boolean(numba.int64)])
@@ -23,10 +24,13 @@ def at_1d(focus, arr, i, _):
 
 
 @numba.njit(**jit_flags)
-def at_2d(focus, arr, i, j):
-    if focus[f_d] == 1:
-        i, j = j, i
+def at_2d_axis0(focus, arr, i, j):
     return arr[focus[f_i] + i, focus[f_j] + j]
+
+
+@numba.njit(**jit_flags)
+def at_2d_axis1(focus, arr, i, j):
+    return arr[focus[f_i] + j, focus[f_j] + i]
 
 
 @numba.njit(**jit_flags)
@@ -35,9 +39,7 @@ def atv_1d(focus, arrs, i, _):
 
 
 @numba.njit(**jit_flags)
-def atv_2d(focus, arrs, i, j):
-    if focus[f_d] == 1:
-        i, j = j, i
+def atv_2d_axis0(focus, arrs, i, j):
     if _is_integral(i):
         d = 1
         ii = int(i)
@@ -46,6 +48,19 @@ def atv_2d(focus, arrs, i, j):
         d = 0
         ii = int(i - .5)
         jj = int(j)
+    return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
+
+
+@numba.njit(**jit_flags)
+def atv_2d_axis1(focus, arrs, i, j):
+    if _is_integral(j):
+        d = 1
+        ii = int(j)
+        jj = int(i - .5)
+    else:
+        d = 0
+        ii = int(j - .5)
+        jj = int(i)
     return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
 
@@ -68,3 +83,27 @@ def get_1d(arr, i, _):
 def get_2d(arr, i, j):
     return arr[i, j]
 
+
+def make_flag(value: bool):
+    return np.full(1, value, dtype=bool)
+
+
+def make_null():
+    return np.empty(0, dtype=np.float64)
+
+
+class Indexers1d:
+    at0 = at_1d
+    at1 = at_1d  # TODO: redundant
+    atv0 = atv_1d
+    atv1 = atv_1d  # TODO: redundant
+
+
+class Indexers2d:
+    at0 = at_2d_axis0
+    at1 = at_2d_axis1
+    atv0 = atv_2d_axis0
+    atv1 = atv_2d_axis1
+
+
+indexers = (None, Indexers1d, Indexers2d)

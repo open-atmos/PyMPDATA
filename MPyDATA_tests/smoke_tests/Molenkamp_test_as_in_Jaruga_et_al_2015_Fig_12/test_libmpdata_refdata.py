@@ -8,11 +8,10 @@ def data():
     return fig_12_data()
 
 
-@pytest.mark.skip()
 def test_a(data):
     sut = data[0]
     assert np.amin(sut) == 1
-    assert np.amax(sut) == 5
+    np.testing.assert_approx_equal(np.amax(sut), 4.796, significant=4)
 
 
 @pytest.mark.skip()

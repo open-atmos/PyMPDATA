@@ -6,28 +6,30 @@ Created at 25.09.2019
 @author: Sylwester Arabas
 """
 
-from .arrays import Arrays
+from .arakawa_c.scalar_field import ScalarField
+from .arakawa_c.vector_field import VectorField
 import numpy as np
 
 
 class MPDATA:
-    def __init__(self,
-                 step_impl,
-                 advectee,
-                 advector,
-                 g_factor=None
-                 ):
+    def __init__(self, step_impl, advectee: ScalarField, advector: VectorField,
+                 g_factor: [ScalarField, None] = None):
         self.step_impl = step_impl
-        self.arrays = Arrays(advectee, advector, g_factor)
+        self.curr = advectee
+        self.GC_phys = advector
+        self.g_factor = g_factor if g_factor is not None else ScalarField.make_null(advectee.n_dims)
 
-    def step(self, nt, debug: bool=False):
-        n_dims = self.arrays.GC.n_dims
+        self._vectmp_a = VectorField.clone(advector)
+        self._vectmp_b = VectorField.clone(advector)
+        self._vectmp_c = VectorField.clone(advector) # TODO: only for mu_coeff != 0
 
-        psi = self.arrays.curr.data
-        flux_0 = self.arrays.flux.data[0]
-        flux_1 = self.arrays.flux.data[1] if n_dims > 1 else np.empty(0, dtype=flux_0.dtype)
-        GC_phys_0 = self.arrays.GC.data[0]
-        GC_phys_1 = self.arrays.GC.data[1] if n_dims > 1 else np.empty(0, dtype=flux_1.dtype)
-        g_factor = self.arrays.g_factor.data
+    def step(self, nt):
+        self.step_impl(nt,
+                       *self.curr.impl,
+                       *self.GC_phys.impl,
+                       *self.g_factor.impl,
+                       *self._vectmp_a.impl,
+                       *self._vectmp_b.impl,
+                       *self._vectmp_c.impl
+                       )
 
-        self.step_impl(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)

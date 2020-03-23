@@ -21,10 +21,24 @@ def maximum_0(c):
     return (c + np.abs(c)) / 2
 
 
-def make_flux(atv, at):
+def make_flux_first_pass(atv, at):
     @numba.njit(**jit_flags)
-    def flux(focus, psi, GC):
+    def flux(psi, GC, _):
         return \
-            maximum_0(atv(focus, GC, +.5, 0)) * at(focus, psi, 0, 0) + \
-            minimum_0(atv(focus, GC, +.5, 0)) * at(focus, psi, 1, 0)
+            maximum_0(atv(*GC, +.5, 0)) * at(*psi, 0, 0) + \
+            minimum_0(atv(*GC, +.5, 0)) * at(*psi, 1, 0)
+    return flux
+
+
+def make_flux_subsequent(atv, at, infinite_gauge):
+    if infinite_gauge:
+        @numba.njit(**jit_flags)
+        def flux(_, GC, __):
+            return atv(*GC, +.5, 0)
+    else:
+        @numba.njit(**jit_flags)
+        def flux(psi, GC, __):
+            return \
+                maximum_0(atv(*GC, +.5, 0)) * at(*psi, 0, 0) + \
+                minimum_0(atv(*GC, +.5, 0)) * at(*psi, 1, 0)
     return flux
