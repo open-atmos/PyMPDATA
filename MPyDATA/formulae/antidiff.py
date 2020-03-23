@@ -17,7 +17,7 @@ def make_antidiff(n_dims, non_unit_g_factor, options, apply_vector):
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=n_dims, axis=axis)
-            for i in range(2) for axis in range(2)])
+            for axis in range(2) for i in range(2)])
 
         @numba.njit(**jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
