@@ -7,7 +7,7 @@ from MPyDATA.jit_flags import jit_flags
 from .utils import set_2d, set_1d, get_2d, get_1d
 
 
-def make_traversals(grid, n_dims, halo):
+def make_traversals(grid, n_dims, halo):  # TODO: n_dims = len(grid)
     ni = grid[0]
     nj = grid[1] if n_dims > 1 else 0
 

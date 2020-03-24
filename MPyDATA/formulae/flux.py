@@ -53,7 +53,7 @@ def __make_flux_first_pass(atv, at):
 
 
 def make_flux_subsequent(n_dims, options, apply_vector):
-    if options.n_iters <= 1:
+    if options.n_iters <= 1:  # TODO: this s handled by the above make_flux_first_pass???
         @numba.njit(**jit_flags)
         def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
             return

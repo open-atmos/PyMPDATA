@@ -92,6 +92,7 @@ def make_null():
     return np.empty(0, dtype=np.float64)
 
 
+# TODO: remove at0, at1, ... - use only at[0], at[1]
 class Indexers1d:
     at0 = at_1d
     at1 = at_1d  # TODO: redundant
@@ -101,6 +102,7 @@ class Indexers1d:
     atv = (atv_1d, atv_1d)
 
 
+# TODO: remove at0, at1, ... - use only at[0], at[1]
 class Indexers2d:
     at0 = at_2d_axis0
     at1 = at_2d_axis1
