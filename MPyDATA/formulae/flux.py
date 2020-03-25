@@ -26,8 +26,8 @@ def make_flux_first_pass(n_dims, apply_vector):
     idx = indexers[n_dims]
 
     formulae_flux_first_pass = (
-        __make_flux_first_pass(idx.atv0, idx.at0),
-        __make_flux_first_pass(idx.atv1, idx.at1),
+        __make_flux(idx.atv0, idx.at0, first_pass=True, infinite_gauge=False),
+        __make_flux(idx.atv1, idx.at1, first_pass=True, infinite_gauge=False),
         null_formula,
         null_formula
     )
@@ -42,16 +42,6 @@ def make_flux_first_pass(n_dims, apply_vector):
     return apply
 
 
-def __make_flux_first_pass(atv, at):
-
-    @numba.njit(**jit_flags)
-    def flux(psi, GC, _):
-        return \
-            maximum_0(atv(*GC, +.5, 0)) * at(*psi, 0, 0) + \
-            minimum_0(atv(*GC, +.5, 0)) * at(*psi, 1, 0)
-    return flux
-
-
 def make_flux_subsequent(n_dims, options, apply_vector):
     if options.n_iters <= 1:  # TODO: this s handled by the above make_flux_first_pass???
         @numba.njit(**jit_flags)
@@ -61,8 +51,8 @@ def make_flux_subsequent(n_dims, options, apply_vector):
         idx = indexers[n_dims]
 
         formulae_flux_subsequent = (
-            __make_flux_subsequent(idx.atv0, idx.at0, infinite_gauge=options.infinite_gauge),
-            __make_flux_subsequent(idx.atv1, idx.at1, infinite_gauge=options.infinite_gauge),
+            __make_flux(idx.atv0, idx.at0, first_pass=False, infinite_gauge=options.infinite_gauge),
+            __make_flux(idx.atv1, idx.at1, first_pass=False, infinite_gauge=options.infinite_gauge),
             null_formula,
             null_formula
         )
@@ -77,8 +67,8 @@ def make_flux_subsequent(n_dims, options, apply_vector):
     return apply
 
 
-def __make_flux_subsequent(atv, at, infinite_gauge):
-    if infinite_gauge:
+def __make_flux(atv, at, first_pass, infinite_gauge):
+    if not first_pass and infinite_gauge:
         @numba.njit(**jit_flags)
         def flux(_, GC, __):
             return atv(*GC, +.5, 0)
