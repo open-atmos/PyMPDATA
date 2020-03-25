@@ -83,7 +83,7 @@ class MPDATAFactory:
         assert advectee.ndim == 1
         halo = MPDATAFactory.n_halo(options)
         grid = advectee.shape
-        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False, mu_coeff=options.mu_coeff)
+        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
         return MPDATA(options=options, step_impl=stepper,
                       advectee=ScalarField(advectee, halo=halo, boundary_conditions=(boundary_conditions, boundary_conditions)),
                       advector=VectorField((np.full(grid[0]+1, advector),), halo=halo, boundary_conditions=(boundary_conditions,boundary_conditions))

@@ -8,6 +8,9 @@ import numba
 import numpy as np
 from MPyDATA.jit_flags import jit_flags
 
+MAX_DIM_NUM = 2
+
+
 f_i = 0
 f_j = f_i + 1
 f_d = f_j + 1
@@ -100,6 +103,8 @@ class Indexers1d:
     atv0 = atv_1d
     atv1 = atv_1d  # TODO: redundant
     atv = (atv_1d, atv_1d)
+    set = set_1d
+    get = get_1d
 
 
 # TODO: remove at0, at1, ... - use only at[0], at[1]
@@ -110,6 +115,8 @@ class Indexers2d:
     atv0 = atv_2d_axis0
     atv1 = atv_2d_axis1
     atv = (atv_2d_axis0, atv_2d_axis1)
+    set = set_2d
+    get = get_2d
 
 
 indexers = (None, Indexers1d, Indexers2d)

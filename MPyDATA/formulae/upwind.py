@@ -8,13 +8,14 @@ Created at 11.10.2019
 
 from MPyDATA.jit_flags import jit_flags
 import numba
-from MPyDATA.arakawa_c.utils import indexers
+from MPyDATA.arakawa_c.utils import indexers, MAX_DIM_NUM
 
 
-def make_upwind(n_dims, non_unit_g_factor, apply_scalar):
-    idx = indexers[n_dims]
+def make_upwind(non_unit_g_factor, traversals):
+    apply_scalar = traversals.apply_scalar(loop=True)
+    idx = indexers[traversals.n_dims]
 
-    formulae_upwind = tuple([__make_upwind(idx.atv[i], idx.at[i], non_unit_g_factor) for i in range(2)])
+    formulae_upwind = tuple([__make_upwind(idx.atv[i], idx.at[i], non_unit_g_factor) for i in range(MAX_DIM_NUM)])
 
     @numba.njit(**jit_flags)
     def apply(psi, flux, vec_bc, g_factor, g_factor_bc):

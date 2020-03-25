@@ -85,6 +85,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=4),
     # Options(n_iters=2, infinite_gauge=True),  # TODO!
     Options(n_iters=3, infinite_gauge=True),
+    Options(n_iters=2, flux_corrected_transport=True)
 ])
 def test_timing_2d(benchmark, options):
     setup = Setup(n_rotations=6)

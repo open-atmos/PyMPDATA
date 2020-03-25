@@ -11,11 +11,14 @@ class ScalarField:
         self.halo = halo
         self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
         self.get()[:] = data[:]
-        self.boundary_conditions = (  # TODO: list comprehension
-            boundary_conditions[0].make_scalar(indexers[self.n_dims].at0, halo),
-            boundary_conditions[1].make_scalar(indexers[self.n_dims].at1, halo),
-        )
+        self.fill_halos = tuple([
+            boundary_conditions[i].make_scalar(indexers[self.n_dims].at[i], halo) for i in range(2)])
+        self.boundary_conditions = boundary_conditions
         self.flag = make_flag(False)
+
+    @staticmethod
+    def clone(field):
+        return ScalarField(field.get(), field.halo, field.boundary_conditions)
 
     def get(self) -> np.ndarray:
         results = self.data[self.domain]
@@ -23,7 +26,7 @@ class ScalarField:
 
     @property
     def impl(self):
-        return (self.flag, self.data), self.boundary_conditions
+        return (self.flag, self.data), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):

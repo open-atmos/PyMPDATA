@@ -12,7 +12,8 @@ import numpy as np
     Options(n_iters=4),
     Options(n_iters=2, infinite_gauge=True),
     Options(n_iters=3, infinite_gauge=True),
-    Options(n_iters=4, infinite_gauge=True)
+    Options(n_iters=4, infinite_gauge=True),
+    Options(n_iters=2, divergent_flow=True)
 ])
 def test_timing_1d(benchmark, options):
     simulation = Simulation(Setup("cosine"), options)

@@ -4,24 +4,25 @@ from MPyDATA.jit_flags import jit_flags
 from MPyDATA.arakawa_c.utils import indexers
 
 
-def make_antidiff(n_dims, non_unit_g_factor, options, apply_vector):
+def make_antidiff(non_unit_g_factor, options, traversals):
     if options.n_iters <= 1:
         @numba.njit(**jit_flags)
         def apply(_GC_corr, _psi, _psi_bc, _GC_unco, _vec_bc, _g_factor, _g_factor_bc):
             return
     else:
-        idx = indexers[n_dims]
+        idx = indexers[traversals.n_dims]
+        apply_vector = traversals.apply_vector(loop=True)
 
         formulae_antidiff = tuple([
             __make_antidiff(idx.atv[i], idx.at[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
-                            n_dims=n_dims, axis=axis)
+                            n_dims=traversals.n_dims, axis=axis)
             for axis in range(2) for i in range(2)])
 
         @numba.njit(**jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
-            return apply_vector(True, *formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
+            return apply_vector(*formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
                                 *g_factor, *g_factor_bc)
 
     return apply
@@ -61,26 +62,25 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         return result
 
     @numba.njit(**jit_flags)
-    def antidiff_1(psi, GC, G):
+    def antidiff_basic(psi, GC, G):
         # eq. 13 in Smolarkiewicz 1984
-        result = (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * A(psi)
+        result = (np.abs(atv(*GC, .5, 0.)) - atv(*GC, +.5, 0.) ** 2) * A(psi)
         if axis == 0 and n_dims == 1:
             return result
         else:
             result -= (
-                0.5 * atv(*GC, .5, 0) *
-                0.25 * (atv(*GC, 1, +.5) + atv(*GC, 0, +.5) + atv(*GC, 1, -.5) + atv(*GC, 0, -.5)) *
+                0.5 * atv(*GC, .5, 0.) *
+                0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
                 B(psi)
             )
         return result
 
     @numba.njit(**jit_flags)
-    def antidiff_2(psi, GC, G):
+    def antidiff_variants(psi, GC, G):
         # eq. 13 in Smolarkiewicz 1984
-        result = antidiff_1(psi, GC, G)
+        result = antidiff_basic(psi, GC, G)
 
-        # G_bar = 1
-        G_bar = (at(*G, 1, 0) + at(*G, 0, 0)) / 2
+        G_bar = (at(*G, 1, 0) + at(*G, 0, 0)) / 2 if non_unit_g_factor else 1
 
         #
         #     # third-order terms
@@ -126,13 +126,12 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         # # eq.(30) in Smolarkiewicz_and_Margolin_1998
         # if divergent_flow:
         #     # assert psi.dimension == 1  # TODO!
-        #     tmp = -.5 * atv(*GC, .5, 0) * (atv(*GC, 1.5, 0) - atv(GC, -.5, 0))
-        #     # TODO!
-        #     # if non_unit_g_factor:
-        #     #     tmp /= 2 * G_bar
+        #     tmp = -.5 * atv(*GC, .5, 0.) * (atv(*GC, 1.5, 0.) - atv(*GC, -.5, 0.))
+        #     if non_unit_g_factor:
+        #         tmp /= 2 * G_bar
         #     if infinite_gauge:
-        #         tmp *= .5 * at(*psi, 1, 0) + at(psi, 0, 0)
+        #         tmp *= .5 * at(*psi, 1, 0) + at(*psi, 0, 0)
         #
         #     result += tmp
         return result
-    return antidiff_2 if non_unit_g_factor else antidiff_1
+    return antidiff_variants if divergent_flow or third_order_terms else antidiff_basic

@@ -24,6 +24,12 @@ class MPDATA:
             self._vectmp_c = VectorField.clone(advector)
         else:
             self._vectmp_c = VectorField.make_null(advector.n_dims)
+        if options.flux_corrected_transport:
+            self.advectee_min = ScalarField.clone(advectee)
+            self.advectee_max = ScalarField.clone(advectee)
+        else:
+            self.advectee_min = ScalarField.make_null(advectee.n_dims)
+            self.advectee_max = ScalarField.make_null(advectee.n_dims)
 
     def step(self, nt):
         self.step_impl(nt,
@@ -32,6 +38,8 @@ class MPDATA:
                        *self.g_factor.impl,
                        *self._vectmp_a.impl,
                        *self._vectmp_b.impl,
-                       *self._vectmp_c.impl
+                       *self._vectmp_c.impl,
+                       *self.advectee_min.impl,
+                       *self.advectee_max.impl
                        )
 
