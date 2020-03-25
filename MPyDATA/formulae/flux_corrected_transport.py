@@ -1,11 +1,8 @@
 """
 Created at 25.03.2020
-
-@author: Piotr Bartman
 """
 
 import numba
-import numpy as np
 from MPyDATA.arakawa_c.utils import indexers, null_formula
 from MPyDATA.jit_flags import jit_flags
 
@@ -26,12 +23,12 @@ def make_psi_extremum(extremum, traversals):
 def __make_psi_extremum(n_dims, at, extremum):
     if n_dims == 1:
         @numba.njit(**jit_flags)
-        def psi_min(_, __, psi):
+        def psi_extremum(_, __, psi):
             return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0))
     elif n_dims == 2:
         @numba.njit(**jit_flags)
-        def psi_min(_, __, psi):
+        def psi_extremum(_, __, psi):
             return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0), at(*psi, 0, -1), at(*psi, 0, 1))
     else:
         raise NotImplementedError()
-    return psi_min
+    return psi_extremum

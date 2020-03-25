@@ -1,3 +1,8 @@
+"""
+Created at 03.2020
+"""
+
+
 class Options:
     def __init__(self, *,
                  n_iters: int = 2,

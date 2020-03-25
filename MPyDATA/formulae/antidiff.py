@@ -1,3 +1,7 @@
+"""
+Created at 03.2020
+"""
+
 import numba
 import numpy as np
 from MPyDATA.jit_flags import jit_flags

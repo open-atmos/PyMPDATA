@@ -1,3 +1,7 @@
+"""
+Created at 20.03.2020
+"""
+
 import numba
 from MPyDATA.jit_flags import jit_flags
 from MPyDATA.arakawa_c.utils import indexers, null_formula

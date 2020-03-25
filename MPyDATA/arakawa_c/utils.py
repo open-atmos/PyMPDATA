@@ -1,7 +1,5 @@
 """
 Created at 12.03.2020
-
-@author: Piotr Bartman
 """
 
 import numba
