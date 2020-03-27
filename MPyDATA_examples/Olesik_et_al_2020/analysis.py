@@ -6,6 +6,7 @@ from joblib import Parallel, parallel_backend, delayed
 from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver
 from MPyDATA_examples.utils.error_norms import L2
 from MPyDATA.utils.pdf_integrator import discretised_analytical_solution
+from copy import deepcopy
 
 
 def analysis(debug, setup, grid_layout, psi_coord, options_dict):
@@ -26,16 +27,17 @@ def analysis(debug, setup, grid_layout, psi_coord, options_dict):
     result['dx'] = simulation.dx
     return grid_layout.__class__.__name__, options_str, result
 
-opt_set =  ({'n_iters': 1},{'n_iters':2},{'n_iters':3})
-def compute_figure_data(*, debug=False, nr=default_nr, dt=default_dt, psi_coord=x_id(), opt_set=opt_set):
+
+def compute_figure_data(*, debug=False, nr=default_nr, dt=default_dt, psi_coord=x_id(),
+                        grid_layouts=[x_id(), x_p2(), x_ln()],
+                        opt_set=({'n_iters': 1},)
+                        ):
     setup = Setup(nr=nr, dt=dt)
-    opt_set = opt_set
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
             delayed(analysis)(debug, setup, grid_layout, psi_coord, options)
-            for grid_layout in [x_id(), x_p2(), x_ln()]
-            for options in  opt_set
-
+            for grid_layout in grid_layouts
+            for options in deepcopy(opt_set)
         )
 
     coords = []
