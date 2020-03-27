@@ -3,6 +3,8 @@ from MPyDATA_examples.Arabas_and_Farhat_2019.setup1_european_corridor import Set
 from joblib import Parallel, delayed
 import numpy as np
 
+from MPyDATA_examples.utils.error_norms import L2
+
 
 def compute(log2_l2_opt: float, log2_C_opt: float):
     simulation = Simulation(Setup(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt))
@@ -15,7 +17,8 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
             "log2_C_opt": log2_C_opt,
             "log2_l2": np.log2(simulation.l2),
             "log2_l2_opt": log2_l2_opt,
-            "err2": simulation.error_L2_norm(n_iters)
+            "err2": error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, simulation.nx,
+                                  n_iters)
         })
     return output
 
@@ -54,3 +57,9 @@ def convergence_in_time(num=13):
             result[key][0].append(datum['log2_l2'])
             result[key][1].append(datum['err2'])
     return result
+
+
+def error_L2_norm(solvers, setup, S, nt, nx, n_iters: int):
+    numerical = solvers[n_iters].arrays.curr.get()
+    analytical = setup.analytical_solution(S)
+    return L2(numerical, analytical, nt, nx)

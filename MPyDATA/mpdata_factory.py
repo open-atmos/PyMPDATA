@@ -17,6 +17,7 @@ from .mpdata import MPDATA
 from .options import Options
 from .eulerian_fields import EulerianFields
 from scipy import integrate
+from .utils.pdf_integrator import discretised_analytical_solution
 
 
 class MPDATAFactory:
@@ -39,41 +40,44 @@ class MPDATAFactory:
         return MPDATA(state=state, GC_field=GC, g_factor=g_factor, opts=opts)
 
     @staticmethod
-    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, coord, cdf, drdt, opts: Options):
-        # TODO
+    def equilibrium_growth_C_1d(nr, r_min, r_max, dt, grid_layout, psi_coord, pdf_of_r, drdt_of_r, opts: Options):
         assert opts.nug
 
-        _, dx = np.linspace(
-            coord.x(r_min),
-            coord.x(r_max),
+        # psi = psi(p)
+        dp_dr = psi_coord.dx_dr
+        dx_dr = grid_layout.dx_dr
+
+        xh, dx = np.linspace(
+            grid_layout.x(r_min),
+            grid_layout.x(r_max),
             nr + 1,
             retstep=True
         )
-        xh = np.linspace(
-            coord.x(r_min),
-            coord.x(r_max),
-            nr + 1
-        )
-        rh = coord.r(xh)
-        Gh = 1 / coord.dx_dr(rh)
+        rh = grid_layout.r(xh)
+
         x = np.linspace(
             xh[0] + dx / 2,
             xh[-1] - dx / 2,
             nr
         )
-        r = coord.r(x)
-        G = 1 / coord.dx_dr(r)
+        r = grid_layout.r(x)
 
-        psi = (
-            np.diff(cdf(rh))
-            /
-            np.diff(rh)
-        )
+        psi = discretised_analytical_solution(rh, lambda r: pdf_of_r(r) / psi_coord.dx_dr(r))
 
-        # C = drdt * dxdr * dt / dx
-        # G = 1 / dxdr
-        C = drdt(rh) / Gh * dt / dx
-        GCh = Gh * C
+        dp_dt = drdt_of_r(rh) * dp_dr(rh)
+        G = dp_dr(r) / dx_dr(r)
+
+        # C = dr_dt * dt / dr
+        # GC = dp_dr / dx_dr * dr_dt * dt / dr =
+        #        \       \_____ / _..____/
+        #         \_____.._____/    \_ dt/dx
+        #               |
+        #             dp_dt
+
+        GCh = dp_dt * dt / dx
+
+        # CFL condition
+        np.testing.assert_array_less(np.abs(GCh), 1)
 
         bcond_extrapol = ((ExtrapolatedLeft, ExtrapolatedRight),)
         bcond_zero = ((ZeroLeft, ZeroRight),)
@@ -84,7 +88,8 @@ class MPDATAFactory:
         return (
             MPDATA(g_factor=g_factor, opts=opts, state=state, GC_field=GC_field),
             r,
-            rh
+            rh,
+            dx
         )
 
     # TODO: only used in tests -> move to tests

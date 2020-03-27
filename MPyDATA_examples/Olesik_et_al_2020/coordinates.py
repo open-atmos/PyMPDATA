@@ -6,8 +6,7 @@ Created at 22.07.2019
 @author: Sylwester Arabas
 """
 
-
-import numpy
+import numpy as np
 
 
 class x_id:
@@ -26,10 +25,10 @@ class x_ln:
         self.r0 = 1
 
     def x(self, r):
-        return numpy.log(r / self.r0)
+        return np.log(r / self.r0)
 
     def r(self, x):
-        return self.r0 * numpy.exp(x)
+        return self.r0 * np.exp(x)
 
     def dx_dr(self, r):
         return 1/r
@@ -40,7 +39,7 @@ class x_p2:
         return r**2
 
     def r(self, x):
-        return numpy.sqrt(numpy.where(x < 0, 1e10, x))
+        return np.sqrt(np.where(x < 0, 1e10, x))
 
     def dx_dr(self, r):
         return 2*r
