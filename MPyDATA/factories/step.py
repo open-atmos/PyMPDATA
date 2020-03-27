@@ -2,14 +2,13 @@
 Created at 20.03.2020
 """
 
-import numpy as np
 import numba
 from MPyDATA.jit_flags import jit_flags
 from MPyDATA.formulae.upwind import make_upwind
 from MPyDATA.formulae.flux import make_flux_first_pass, make_flux_subsequent
 from MPyDATA.formulae.laplacian import make_laplacian
 from MPyDATA.formulae.antidiff import make_antidiff
-from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum
+from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
 from MPyDATA.arakawa_c.traversals import Traversals
 
 
@@ -33,8 +32,11 @@ def make_step(*,
     flux_subsequent = make_flux_subsequent(options, traversals)
     antidiff = make_antidiff(non_unit_g_factor, options, traversals)
     laplacian = make_laplacian(non_unit_g_factor, options, traversals)
-    fct_psi_min = make_psi_extremum(min, traversals)
-    fct_psi_max = make_psi_extremum(max, traversals)
+    fct_psi_min = make_psi_extremum(min, options, traversals)
+    fct_psi_max = make_psi_extremum(max, options, traversals)
+    fct_beta_down = make_beta(min, non_unit_g_factor, options, traversals)
+    fct_beta_up = make_beta(max, non_unit_g_factor, options, traversals)
+    fct_correction = make_correction(options, traversals)
 
     @numba.njit(**jit_flags)
     def add(af, a0, a1, bf, b0, b1):
@@ -52,7 +54,9 @@ def make_step(*,
              vectmp_b, vectmp_b_bc,
              vectmp_c, vectmp_c_bc,
              psi_min, psi_min_bc,
-             psi_max, psi_max_bc
+             psi_max, psi_max_bc,
+             beta_up, beta_up_bc,
+             beta_down, beta_down_bc
              ):
         vec_bc = GC_phys_bc
         null_vecfield = GC_phys
@@ -87,5 +91,10 @@ def make_step(*,
                         flux = vectmp_b
                     antidiff(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc)
                     flux_subsequent(flux, psi, psi_bc, GC_corr, vec_bc)
+                    if flux_corrected_transport:
+                        fct_beta_down(beta_down, flux, vec_bc, psi, psi_bc, psi_min, psi_min_bc, g_factor, g_factor_bc)
+                        fct_beta_up(beta_up, flux, vec_bc, psi, psi_bc, psi_max, psi_max_bc, g_factor, g_factor_bc)
+                        fct_correction(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc)
+                        flux_subsequent(flux, psi, psi_bc, GC_corr, vec_bc)
                 upwind(psi, flux, vec_bc, g_factor, g_factor_bc)
     return step

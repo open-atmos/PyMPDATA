@@ -52,7 +52,6 @@ class TestSmolarkiewicz2006:
         assert -.1 < np.amin(psiT) < 0
         assert 1.75 < np.amax(psiT) < 1.9
 
-
     @staticmethod
     def test_fig11():
         # Arrange
@@ -66,17 +65,15 @@ class TestSmolarkiewicz2006:
         assert -1.9 < np.amin(psiT) < 2
         assert 4 < np.amax(psiT) < 4.2
 
+    @staticmethod
+    def test_fig12():
+        # Arrange
+        simulation = Simulation(Setup("rect"), Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True))
 
-    # TODO
-    # @staticmethod
-    # def test_fig12():
-    #     # Arrange
-    #     simulation = Simulation(Setup("rect"), Options(iga=True, fct=True), n_iters=2, debug=True)
-    #
-    #     # Act
-    #     simulation.run()
-    #     psiT = simulation.state
-    #
-    #     # Assert
-    #     assert np.amin(psiT) >= 2
-    #     assert np.amax(psiT) <= 4
+        # Act
+        simulation.run()
+        psiT = simulation.state
+
+        # Assert
+        assert np.amin(psiT) >= 2
+        assert np.amax(psiT) <= 4

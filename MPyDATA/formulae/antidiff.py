@@ -5,7 +5,7 @@ Created at 03.2020
 import numba
 import numpy as np
 from MPyDATA.jit_flags import jit_flags
-from MPyDATA.arakawa_c.utils import indexers
+from MPyDATA.arakawa_c.utils import indexers, MAX_DIM_NUM
 
 
 def make_antidiff(non_unit_g_factor, options, traversals):
@@ -22,7 +22,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims, axis=axis)
-            for axis in range(2) for i in range(2)])
+            for axis in range(MAX_DIM_NUM) for i in range(MAX_DIM_NUM)])
 
         @numba.njit(**jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
@@ -130,9 +130,9 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         # # eq.(30) in Smolarkiewicz_and_Margolin_1998
         # if divergent_flow:
         #     # assert psi.dimension == 1  # TODO!
-        #     tmp = -.5 * atv(*GC, .5, 0.) * (atv(*GC, 1.5, 0.) - atv(*GC, -.5, 0.))
+        #     tmp = -.25 * atv(*GC, .5, 0.) * (atv(*GC, 1.5, 0.) - atv(*GC, -.5, 0.))
         #     if non_unit_g_factor:
-        #         tmp /= 2 * G_bar
+        #         tmp /= G_bar
         #     if infinite_gauge:
         #         tmp *= .5 * at(*psi, 1, 0) + at(*psi, 0, 0)
         #

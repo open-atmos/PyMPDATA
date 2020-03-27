@@ -19,14 +19,17 @@ def make_upwind(non_unit_g_factor, traversals):
 
     @numba.njit(**jit_flags)
     def apply(psi, flux, vec_bc, g_factor, g_factor_bc):
-        return apply_scalar(*formulae_upwind, *psi, *flux, *vec_bc, *g_factor, *g_factor_bc)
+        null_scalfield = g_factor
+        null_scalfield_bc = g_factor_bc
+        return apply_scalar(*formulae_upwind, *psi, *flux, *vec_bc, *g_factor, *g_factor_bc,
+                            *null_scalfield, *null_scalfield_bc, *null_scalfield, *null_scalfield_bc)
 
     return apply
 
 
 def __make_upwind(atv, at, nug):
     @numba.njit(**jit_flags)
-    def upwind(init, flux, g_factor):
+    def upwind(init, flux, g_factor, _, __):
         result = \
                + atv(*flux, -.5, 0) \
                - atv(*flux, .5, 0)
