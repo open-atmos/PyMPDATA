@@ -5,7 +5,7 @@ from matplotlib import pyplot
 
 
 def show_plot():
-    pyplot.legend()
+    pyplot.legend(loc = 'best')
     tempfile_fd, tempfile_path = tempfile.mkstemp(
         dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output'),
         suffix='.pdf'

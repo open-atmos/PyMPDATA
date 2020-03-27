@@ -110,9 +110,9 @@ def make_antidiff(opts):
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if dfl:
             assert psi.dimension == 1  # TODO!
-            tmp = -.5 * GC.at(.5, 0) * (GC.at(1.5, 0) - GC.at(-.5, 0))
+            tmp = -.25 * GC.at(.5, 0) * (GC.at(1.5, 0) - GC.at(-.5, 0))
             if nug:
-                tmp /= 2 * G_bar
+                tmp /=  G_bar
             if iga:
                 tmp *= .5 * (psi.at(1, 0) + psi.at(0, 0))
             result += tmp

@@ -26,19 +26,16 @@ def analysis(debug, setup, grid_layout, psi_coord, options_dict):
     result['dx'] = simulation.dx
     return grid_layout.__class__.__name__, options_str, result
 
-
-def compute_figure_data(*, debug=False, nr=default_nr, dt=default_dt, psi_coord=x_id()):
+opt_set =  ({'n_iters': 1},{'n_iters':2},{'n_iters':3})
+def compute_figure_data(*, debug=False, nr=default_nr, dt=default_dt, psi_coord=x_id(), opt_set=opt_set):
     setup = Setup(nr=nr, dt=dt)
+    opt_set = opt_set
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
             delayed(analysis)(debug, setup, grid_layout, psi_coord, options)
             for grid_layout in [x_id(), x_p2(), x_ln()]
-            for options in (
-                {'n_iters': 1},
-               # {'n_iters': 2, 'fct': True},
-               # {'n_iters': 3, 'dfl': True},
-               # {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
-            )
+            for options in  opt_set
+
         )
 
     coords = []
