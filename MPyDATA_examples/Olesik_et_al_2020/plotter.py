@@ -15,7 +15,11 @@ class Plotter:
         self.cdfarg *= setup.r_min.units
         self.dcdfarg *= setup.r_max.units
 
-        self.fig, self.axs = pyplot.subplots(len(plots), 1, figsize=(9, 9))
+        if len(plots) == 1:
+            self.figsize = (14,9)
+        else:
+            self.figsize = (9,9)
+        self.fig, self.axs = pyplot.subplots(len(plots), 1, figsize=self.figsize)
         if len(plots) == 1:
             self.axs = (self.axs,)
         self.fig.tight_layout(pad=5.0)
