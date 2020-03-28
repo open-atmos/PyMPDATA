@@ -4,19 +4,17 @@ from scipy import integrate
 import numpy as np
 import pint
 
-default_nr = 64
-default_dt = .25 # TODO!!!
 
 
 # based on Fig. 3 from East 1957
 class Setup:
-    def __init__(self, nr=default_nr, dt=default_dt):
+    def __init__(self, nr, dt):
         si = pint.UnitRegistry()
         self.si = si
         self.nr = nr
         self.dt = dt * si.second
         self.r_min = 1 * si.micrometre
-        self.r_max = 25 * si.micrometre
+        self.r_max = 26 * si.micrometre
         self.rho_w = 1 * si.kilogram / si.decimetre ** 3
         self.rho_a = 1 * si.kilogram / si.metre ** 3
         self.mixing_ratios = np.array([1, 2, 4, 10]) * si.gram / si.kilogram

@@ -4,12 +4,16 @@ from ipywidgets import HTML, VBox, Output
 from matplotlib import pyplot
 
 
-def show_plot():
+def show_plot(filename=None):
     pyplot.legend(loc = 'best')
-    tempfile_fd, tempfile_path = tempfile.mkstemp(
-        dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output'),
-        suffix='.pdf'
-    )
+    outdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output')
+    if filename is None:
+        _, tempfile_path = tempfile.mkstemp(
+            dir=outdir,
+            suffix='.pdf'
+        )
+    else:
+        tempfile_path = os.path.join(outdir, filename)
     pyplot.savefig(tempfile_path, type='pdf')
 
     output = Output()

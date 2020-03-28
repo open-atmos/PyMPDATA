@@ -74,6 +74,7 @@ class MPDATAFactory:
         #               |
         #             dp_dt
 
+        # dt = dx/np.amax(dp_dt)/2
         GCh = dp_dt * dt / dx
 
         # CFL condition

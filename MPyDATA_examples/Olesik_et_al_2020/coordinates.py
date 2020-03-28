@@ -21,17 +21,18 @@ class x_id:
 
 
 class x_ln:
-    def __init__(self):
+    def __init__(self, base = np.e):
         self.r0 = 1
+        self.base = base
 
     def x(self, r):
-        return np.log(r / self.r0)
+        return np.log(r / self.r0) / np.log(self.base)
 
     def r(self, x):
-        return self.r0 * np.exp(x)
+        return self.r0 * self.base**x
 
     def dx_dr(self, r):
-        return 1/r
+        return 1/r / np.log(self.base)
 
 
 class x_p2:
@@ -43,6 +44,17 @@ class x_p2:
 
     def dx_dr(self, r):
         return 2*r
+
+class x_p3:
+    def x(self,r):
+        return r**3
+
+    def r(self, x):
+        return np.power(x, 1/3)
+
+    def dx_dr(self, r):
+        return 3*r**2
+
 
 
 
