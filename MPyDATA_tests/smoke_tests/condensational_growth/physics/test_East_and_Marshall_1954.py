@@ -1,4 +1,4 @@
-from MPyDATA_examples.condensational_growth.physics.East_and_Marshall_1954 import SizeDistribution
+from MPyDATA_examples.Olesik_et_al_2020.physics.East_and_Marshall_1954 import SizeDistribution
 import pint
 from matplotlib import pyplot
 import numpy as np

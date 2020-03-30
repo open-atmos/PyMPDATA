@@ -1,18 +1,20 @@
-from MPyDATA_examples.condensational_growth.physics import equilibrium_drop_growth
-from MPyDATA_examples.condensational_growth.physics import East_and_Marshall_1954
+from MPyDATA_examples.Olesik_et_al_2020.physics import equilibrium_drop_growth
+from MPyDATA_examples.Olesik_et_al_2020.physics import East_and_Marshall_1954
 from scipy import integrate
 import numpy as np
 import pint
 
 
+
+# based on Fig. 3 from East 1957
 class Setup:
-    def __init__(self):
+    def __init__(self, nr, dt):
         si = pint.UnitRegistry()
         self.si = si
-        self.nr = 64
-        self.dt = .5 * si.second
+        self.nr = nr
+        self.dt = dt * si.second
         self.r_min = 1 * si.micrometre
-        self.r_max = 25 * si.micrometre
+        self.r_max = 26 * si.micrometre
         self.rho_w = 1 * si.kilogram / si.decimetre ** 3
         self.rho_a = 1 * si.kilogram / si.metre ** 3
         self.mixing_ratios = np.array([1, 2, 4, 10]) * si.gram / si.kilogram
@@ -58,4 +60,3 @@ class Setup:
         return self.C * self.size_distribution.cdf(r)
 
 
-setup = Setup()  # TODO: go back to non-singleton setup as we want to pass grid size, etc
