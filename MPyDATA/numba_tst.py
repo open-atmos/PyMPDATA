@@ -1,29 +1,28 @@
 import numba
 
-MAX_DIM_NUM = 2
-
 
 @numba.njit()
-def apply_scalar(fun_0, fun_1):
+def apply(fun_0, fun_1):
     return 0
 
 
-def make_upwind():
+def make_bar():
 
-    formulae_upwind = (__make_upwind(), __make_upwind())
+    formulae_foo = (__make_foo(), __make_foo())
 
     @numba.njit()
-    def apply():
-        return apply_scalar(*formulae_upwind)
+    def bar():
+        return apply(*formulae_foo)
 
-    return apply
+    return bar
 
 
-def __make_upwind():
+def __make_foo():
     @numba.njit()
-    def upwind():
+    def foo():
         return 0
-    return upwind
+    return foo
 
-upwind = make_upwind()
-upwind()
+
+fun = make_bar()
+fun()
