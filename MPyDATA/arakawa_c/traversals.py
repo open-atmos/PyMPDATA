@@ -16,8 +16,7 @@ class Traversals:
         self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
         self._apply_scalar = self.make_apply_scalar(loop=False)
         self._apply_scalar_loop = self.make_apply_scalar(loop=True)
-        self._apply_vector = self.make_apply_vector(loop=False)
-        self._apply_vector_loop = self.make_apply_vector(loop=True)
+        self._apply_vector = self.make_apply_vector()
 
     def apply_scalar(self, *, loop):
         if loop:
@@ -25,11 +24,8 @@ class Traversals:
         else:
             return self._apply_scalar
 
-    def apply_vector(self, *, loop):
-        if loop:
-            return self._apply_vector_loop
-        else:
-            return self._apply_vector
+    def apply_vector(self):
+        return self._apply_vector
 
     def make_apply_scalar(self, loop):
         halo = self.halo
@@ -88,7 +84,7 @@ class Traversals:
 
         return apply_scalar
 
-    def make_apply_vector(self, loop):
+    def make_apply_vector(self):
         halo = self.halo
         n_dims = self.n_dims
         ni = self.grid[0]
@@ -97,52 +93,28 @@ class Traversals:
         boundary_cond_vector = self._boundary_cond_vector
         boundary_cond_scalar = self._boundary_cond_scalar
 
-        if loop:
-            @numba.njit(**jit_flags)
-            def apply_vector_impl(fun0_0, fun0_1, fun1_0, fun1_1,
-                                  out_0, out_1,
-                                  scal_arg1,
-                                  vec_arg2_0, vec_arg2_1,
-                                  scal_arg3
-                                  ):
-                out_tpl = (out_0, out_1)
-                arg2 = (vec_arg2_0, vec_arg2_1)
 
-                # -1, -1
-                for i in range(halo - 1, ni + 1 + halo - 1):
-                    for j in range(halo - 1, nj + 1 + halo - 1) if n_dims > 1 else [-1]:
-                        focus = (i, j)
-                        set(out_tpl[0], i, j, fun0_0((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
-                        if n_dims > 1:  # unrolled loop over ...  # TODO! overwrite
-                            set(out_tpl[0], i, j, fun1_0((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
-                        if n_dims > 1:
-                            focus = (i, j)
-                            set(out_tpl[1], i, j, fun0_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
-                            if n_dims > 1:  # unrolled loop over components  # TODO! overwrite
-                                set(out_tpl[1], i, j, fun1_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
-        else:
-            @numba.njit(**jit_flags)
-            def apply_vector_impl(fun0_0, fun0_1, fun1_0, fun1_1,
-                                  out_0, out_1,
-                                  scal_arg1,
-                                  vec_arg2_0, vec_arg2_1,
-                                  scal_arg3
-                                  ):
-                out_tpl = (out_0, out_1)
-                arg2 = (vec_arg2_0, vec_arg2_1)
+        @numba.njit(**jit_flags)
+        def apply_vector_impl(fun0_0, fun0_1,
+                              out_0, out_1,
+                              scal_arg1,
+                              vec_arg2_0, vec_arg2_1,
+                              scal_arg3
+                              ):
+            out_tpl = (out_0, out_1)
+            arg2 = (vec_arg2_0, vec_arg2_1)
 
-                # -1, -1
-                for i in range(halo - 1, ni + 1 + halo - 1):
-                    for j in range(halo - 1, nj + 1 + halo - 1) if n_dims > 1 else [-1]:
-                        focus = (i, j)
-                        set(out_tpl[0], i, j, fun0_0((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
-                        if n_dims > 1:
-                            focus = (i, j)
-                            set(out_tpl[1], i, j, fun0_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
+            # -1, -1
+            for i in range(halo - 1, ni + 1 + halo - 1):
+                for j in range(halo - 1, nj + 1 + halo - 1) if n_dims > 1 else [-1]:
+                    focus = (i, j)
+                    set(out_tpl[0], i, j, fun0_0((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
+                    if n_dims > 1:
+                        set(out_tpl[1], i, j, fun0_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
 
         @numba.njit(**jit_flags)
         def apply_vector(
-                fun0_0, fun0_1, fun1_0, fun1_1,
+                fun0_0, fun0_1,
                 out_flag, out_0, out_1,
                 scal_arg1_flag, scal_arg1, scal_arg1_bc0, scal_arg1_bc1,
                 vec_arg2_flag, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1,
@@ -153,7 +125,7 @@ class Traversals:
             boundary_cond_scalar(scal_arg3_flag, scal_arg3, scal_arg3_bc0, scal_arg3_bc1)
 
             apply_vector_impl(
-                fun0_0, fun0_1, fun1_0, fun1_1,
+                fun0_0, fun0_1,
                 out_0, out_1,
                 scal_arg1,
                 vec_arg2_0, vec_arg2_1,

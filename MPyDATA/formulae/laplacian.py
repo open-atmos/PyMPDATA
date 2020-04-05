@@ -14,13 +14,11 @@ def make_laplacian(non_unit_g_factor, options, traversals):
             return
     else:
         idx = indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector(loop=False)
+        apply_vector = traversals.apply_vector()
 
         formulae_laplacian = (*tuple([
             __make_laplacian(idx.at[i], options.mu_coeff, options.epsilon, non_unit_g_factor, traversals.n_dims)
             for i in range(2)]),
-            null_formula,
-            null_formula
         )
 
         @numba.njit(**jit_flags)

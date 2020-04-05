@@ -15,14 +15,14 @@ def make_antidiff(non_unit_g_factor, options, traversals):
             return
     else:
         idx = indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector(loop=True)
+        apply_vector = traversals.apply_vector()
 
         formulae_antidiff = tuple([
             __make_antidiff(idx.atv[i], idx.at[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
-                            n_dims=traversals.n_dims, axis=axis)
-            for axis in range(MAX_DIM_NUM) for i in range(MAX_DIM_NUM)])
+                            n_dims=traversals.n_dims, axis=i)
+            for i in range(MAX_DIM_NUM)])
 
         @numba.njit(**jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
@@ -33,6 +33,8 @@ def make_antidiff(non_unit_g_factor, options, traversals):
 
 
 def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
+    # TODO: optimise compile time for n_dim < MAX_DIMS
+
     infinite_gauge = options.infinite_gauge
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms
@@ -66,10 +68,10 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         return result
 
     @numba.njit(**jit_flags)
-    def antidiff_basic(psi, GC, G):
+    def antidiff_basic(psi, GC, _):
         # eq. 13 in Smolarkiewicz 1984
         result = (np.abs(atv(*GC, .5, 0.)) - atv(*GC, +.5, 0.) ** 2) * A(psi)
-        if axis == 0 and n_dims == 1:
+        if n_dims == 1:
             return result
         else:
             result -= (

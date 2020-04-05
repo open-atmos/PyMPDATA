@@ -24,13 +24,11 @@ def maximum_0(c):
 
 def make_flux_first_pass(traversals):
     idx = indexers[traversals.n_dims]
-    apply_vector = traversals.apply_vector(loop=False)
+    apply_vector = traversals.apply_vector()
 
     formulae_flux_first_pass = (
         __make_flux(idx.atv0, idx.at0, first_pass=True, infinite_gauge=False),
-        __make_flux(idx.atv1, idx.at1, first_pass=True, infinite_gauge=False),
-        null_formula,
-        null_formula
+        __make_flux(idx.atv1, idx.at1, first_pass=True, infinite_gauge=False)
     )
 
     @numba.njit(**jit_flags)
@@ -50,13 +48,11 @@ def make_flux_subsequent(options, traversals):
             return
     else:
         idx = indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector(loop=False)
+        apply_vector = traversals.apply_vector()
 
         formulae_flux_subsequent = (
             __make_flux(idx.atv0, idx.at0, first_pass=False, infinite_gauge=options.infinite_gauge),
-            __make_flux(idx.atv1, idx.at1, first_pass=False, infinite_gauge=options.infinite_gauge),
-            null_formula,
-            null_formula
+            __make_flux(idx.atv1, idx.at1, first_pass=False, infinite_gauge=options.infinite_gauge)
         )
 
         @numba.njit(**jit_flags)
