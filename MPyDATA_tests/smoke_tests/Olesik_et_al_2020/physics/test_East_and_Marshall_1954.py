@@ -16,7 +16,7 @@ def test_SizeDistribution(plot=True):
     # Act
     x = np.linspace(1, 18, 100) * si.micrometre
     numpdfx = x[1:] - diff(x) / 2
-    numpdfy = diff(sd.cdf(x)) / diff(x)
+    numpdfy = diff(sd.cdf_n(x)) / diff(x)
 
     # Plot
     if plot:
