@@ -18,7 +18,6 @@ class TestFig3:
                 np.testing.assert_almost_equal(slope, 1.3, 1)
 
     @staticmethod
-    @pytest.mark.skip() # TODO
     def test_mpdata_above_1st_order(l2err_vs_l2l2):
         for key, value in l2err_vs_l2l2.items():
             if key.startswith("MPDATA"):

@@ -1,5 +1,7 @@
-from MPyDATA.options import Options
-
-# TODO
-# OPTIONS = Options(nzm=True, iga=True, fct=True, dfl=True, tot=True)
-OPTIONS = {'n_iters': 2}
+OPTIONS = {
+    'n_iters': 2,
+    'infinite_gauge': True,
+    'flux_corrected_transport': True,
+    'divergent_flow': True,
+    'third_order_terms': True
+}
