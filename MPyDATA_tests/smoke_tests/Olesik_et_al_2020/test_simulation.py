@@ -10,9 +10,17 @@ import numpy as np
 default_nr = 64
 default_dt = .5
 
+opt_sets = [
+    {'n_iters': 1},
+    {'n_iters': 2, 'fct': True},
+    {'n_iters': 3, 'dfl': True},
+    {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
+]
+
 @pytest.fixture(scope='module')
 def data():
-    return compute_figure_data(debug=False, nr=default_nr, dt=default_dt)[0]  # TODO!
+    return compute_figure_data(debug=False, nr=default_nr, dt=default_dt,
+                               opt_set=opt_sets)[0]
 
 
 @pytest.mark.parametrize("coord", [x_id(), x_p2(), x_ln()])
@@ -36,15 +44,10 @@ def test_init(coord, fct):
 
 
 @pytest.mark.parametrize("coord", ['x_id', 'x_p2', 'x_ln'])
-@pytest.mark.parametrize("opts", [
-    "{'n_iters': 1}",
-    "{'n_iters': 2, 'fct': True}",
-    "{'n_iters': 3, 'dfl': True}",
-    "{'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}"
-])
+@pytest.mark.parametrize("opts", opt_sets)
 def test_n_finite(coord, opts, data):
     # Arrange
-    psi = data[coord]['numerical'][opts][-1].magnitude
+    psi = data[coord]['numerical'][str(opts)][-1].magnitude
 
     # Assert
     assert np.isfinite(psi).all()
@@ -52,15 +55,10 @@ def test_n_finite(coord, opts, data):
 
 
 @pytest.mark.parametrize("coord", ['x_id', 'x_p2', 'x_ln'])
-@pytest.mark.parametrize("opts", [
-    "{'n_iters': 1}",
-    "{'n_iters': 2, 'fct': True}",
-    "{'n_iters': 3, 'dfl': True}",
-    "{'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}"
-])
+@pytest.mark.parametrize("opts", opt_sets)
 def test_L2_finite(coord, opts, data):
     # Arrange
-    sut = data[coord]['error_L2'][opts]
+    sut = data[coord]['error_L2'][str(opts)]
 
     # Assert
     assert np.isfinite(sut).all()
