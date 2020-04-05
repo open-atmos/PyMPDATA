@@ -1,15 +1,18 @@
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA_examples.Olesik_et_al_2020.setup import Setup
-from MPyDATA_examples.Olesik_et_al_2020.coord import x_id, x_ln, x_p2
+from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_ln, x_p2
 from MPyDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from MPyDATA.options import Options
 import pytest
 import numpy as np
 
 
+default_nr = 64
+default_dt = .5
+
 @pytest.fixture(scope='module')
 def data():
-    return compute_figure_data(debug=False)[0]  # TODO!
+    return compute_figure_data(debug=False, nr=default_nr, dt=default_dt)[0]  # TODO!
 
 
 @pytest.mark.parametrize("coord", [x_id(), x_p2(), x_ln()])
@@ -17,9 +20,10 @@ def data():
 def test_init(coord, fct):
     # Arrange
     opts = Options(nug=True, fct=fct)
-    setup = Setup()
+    setup = Setup(nr=default_nr, dt=default_dt)
+    grid_layout = x_id()  # TODO
     # Act
-    simulation = Simulation(coord, opts)
+    simulation = Simulation(setup, grid_layout, coord, opts)
     simulation.solver.arrays.G.fill_halos()
 
     # Asserts for array shapes
