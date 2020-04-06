@@ -128,16 +128,16 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
         #             result += tmp
         #
 
-        # # divergent flow option
-        # # eq.(30) in Smolarkiewicz_and_Margolin_1998
-        # if divergent_flow:
-        #     # assert psi.dimension == 1  # TODO!
-        #     tmp = -.25 * atv(*GC, .5, 0.) * (atv(*GC, 1.5, 0.) - atv(*GC, -.5, 0.))
-        #     if non_unit_g_factor:
-        #         tmp /= G_bar
-        #     if infinite_gauge:
-        #         tmp *= .5 * at(*psi, 1, 0) + at(*psi, 0, 0)
-        #
-        #     result += tmp
+        # divergent flow option
+        # eq.(30) in Smolarkiewicz_and_Margolin_1998
+        if divergent_flow:
+            # assert psi.dimension == 1  # TODO!
+            tmp = -.25 * atv(*GC, .5, 0.) * (atv(*GC, 1.5, 0.) - atv(*GC, -.5, 0.))
+            if non_unit_g_factor:
+                tmp /= G_bar
+            if infinite_gauge:
+                tmp *= .5 * at(*psi, 1, 0) + at(*psi, 0, 0)
+
+            result += tmp
         return result
     return antidiff_variants if divergent_flow or third_order_terms else antidiff_basic
