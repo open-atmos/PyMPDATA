@@ -1,5 +1,5 @@
-import MPyDATA_examples.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS73
-import MPyDATA_examples.Arabas_and_Farhat_2020.Bjerksund_and_Stensland_1993 as BS93
+import MPyDATA_examples_off.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS73
+import MPyDATA_examples_off.Arabas_and_Farhat_2020.Bjerksund_and_Stensland_1993 as BS93
 import numpy as np
 
 

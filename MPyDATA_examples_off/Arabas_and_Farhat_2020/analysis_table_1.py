@@ -1,6 +1,6 @@
-from MPyDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
-from MPyDATA_examples.Arabas_and_Farhat_2020.setup2_american_put import Setup
-from MPyDATA_examples.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import error_L2_norm
+from MPyDATA_examples_off.Arabas_and_Farhat_2020.simulation import Simulation
+from MPyDATA_examples_off.Arabas_and_Farhat_2020.setup2_american_put import Setup
+from MPyDATA_examples_off.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import error_L2_norm
 import numpy as np
 from joblib import Parallel, delayed
 

@@ -1,5 +1,5 @@
-from MPyDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
-from MPyDATA_examples.Arabas_and_Farhat_2020.setup1_european_corridor import Setup
+from MPyDATA_examples_off.Arabas_and_Farhat_2020.simulation import Simulation
+from MPyDATA_examples_off.Arabas_and_Farhat_2020.setup1_european_corridor import Setup
 from joblib import Parallel, delayed
 import numpy as np
 
