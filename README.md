@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/atmos-cloud-sim-uj/MPyDATA.svg?branch=optimization)](https://travis-ci.org/atmos-cloud-sim-uj/MPyDATA)
-[![Coverage Status](https://img.shields.io/codecov/c/github/atmos-cloud-sim-uj/MPyDATA/optimization.svg)](https://codecov.io/github/atmos-cloud-sim-uj/MPyDATA?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/atmos-cloud-sim-uj/MPyDATA/optimization.svg)](https://codecov.io/github/atmos-cloud-sim-uj/MPyDATA?branch=optimization)
 
 # MPyDATA
 
@@ -43,7 +43,7 @@ The examples/demos reproduce results from several published
 ## Examples/Demos:
 - [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/optimization?filepath=MPyDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)
-- [Arabas & Farhat 2020](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1   
+- [Arabas & Farhat 2020](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1 
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/optimization?filepath=MPyDATA_examples%2FArabas_and_Farhat_2019/)
 
 ## Credits:
