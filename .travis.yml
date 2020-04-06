@@ -29,6 +29,7 @@ jobs:
 
 install:
   - pip$PY_SFX install -U -r requirements.txt
+  - pip$PY_SFX install --pre git+https://github.com/Quansight/numba.git@pearu/issue5470
 
 script:
   - travis_wait 60 python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests
