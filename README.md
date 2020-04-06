@@ -27,11 +27,10 @@ From developers' and maintainers' perspective, MPyDATA offers wide unit-test cov
 MPyDATA design features
   a custom-built multi-dimensional Arakawa-C grid layer allowing
   to concisely represent multi-dimensional stencil operations.
-The grid layer is built on top of NumPy's ndarrays using Numba's @jitclass
-  functionality.
+The grid layer is built on top of NumPy's ndarrays using Numba's @njit
+  functionality and has been carefully profiled for performance.
 It enables one to code once for multiple dimensions, and automatically
-  handles (and hides from the user) any halo-filling logic related with parallelism 
-  or boundary conditions.
+  handles (and hides from the user) any halo-filling logic related with boundary conditions.
 
 MPyDATA ships with a set of examples/demos offered as github-hosted Jupyer notebooks
   offering single-click deployment in the cloud using such platforms as
