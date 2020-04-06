@@ -2,7 +2,7 @@ from MPyDATA_examples_off.Arabas_and_Farhat_2020.simulation import Simulation
 from MPyDATA_examples_off.Arabas_and_Farhat_2020.setup2_american_put import Setup
 from MPyDATA_examples_off.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import error_L2_norm
 import numpy as np
-from joblib import Parallel, delayed
+from joblib import Parallel, delayed, parallel_backend
 
 
 def compute_row(T, S0):
@@ -21,10 +21,11 @@ def compute_row(T, S0):
 
 
 def table_1_data():
-    result = Parallel(n_jobs=-2)(
-        delayed(compute_row)(T, S0)
-        for T in (.25, .5, 3)
-        for S0 in (80, 90, 100, 110, 120)
-    )
-    return result
+    with parallel_backend('threading', n_jobs=-2):
+        result = Parallel()(
+            delayed(compute_row)(T, S0)
+            for T in (.25, .5, 3)
+            for S0 in (80, 90, 100, 110, 120)
+        )
+        return result
 
