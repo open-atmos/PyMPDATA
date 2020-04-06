@@ -1,23 +1,25 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-# from MPyDATA.options import Options
+from MPyDATA.options import Options
 import numpy as np
 import pytest
 
 
-# # @pytest.mark.skip # TODO: work in progress
-# @pytest.mark.parametrize(
-#     "opts", [
-#         Options(nug=True),
-#         Options(nug=True, fct=True),
-#         Options(nug=True, fct=True, iga=True),
-#         Options(nug=True, fct=True, tot=True),
-#         Options(nug=True, fct=True, iga=True, tot=True),
-#         Options(nug=True, fct=False, iga=True),
-#         Options(nug=True, fct=False, tot=True),
-#         Options(nug=True, fct=False, iga=True, tot=True)
-#     ]
-# )
-def test_single_timestep():
+# TODO: work in progress
+@pytest.mark.parametrize(
+    "options", [
+        Options(n_iters=1),
+        Options(n_iters=2),
+        # Options(nug=True),
+        # Options(nug=True, fct=True),
+        # Options(nug=True, fct=True, iga=True),
+        # Options(nug=True, fct=True, tot=True),
+        # Options(nug=True, fct=True, iga=True, tot=True),
+        # Options(nug=True, fct=False, iga=True),
+        # Options(nug=True, fct=False, tot=True),
+        # Options(nug=True, fct=False, iga=True, tot=True)
+    ]
+)
+def test_single_timestep(options):
     # Arrange
     grid = (75, 75)
     size = (1500, 1500)
@@ -41,14 +43,15 @@ def test_single_timestep():
         grid=grid, size=size, dt=dt,
         stream_function=stream_function,
         field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
-        g_factor=rhod
+        g_factor=rhod,
+        options=options
     )
 
     # Plot
 
     # Act
-    eulerian_fields.step(nt=1, debug=True)
+    eulerian_fields.step(nt=1)
 
     # Assert
     for k, v in eulerian_fields.mpdatas.items():
-        assert np.isfinite(v.arrays.curr.get()).all()
+        assert np.isfinite(v.curr.get()).all()

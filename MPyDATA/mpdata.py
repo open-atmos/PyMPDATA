@@ -6,28 +6,41 @@ Created at 25.09.2019
 @author: Sylwester Arabas
 """
 
-from .arrays import Arrays
-import numpy as np
+from .arakawa_c.scalar_field import ScalarField
+from .arakawa_c.vector_field import VectorField
 
 
 class MPDATA:
-    def __init__(self,
-                 step_impl,
-                 advectee,
-                 advector,
-                 g_factor=None
-                 ):
+    def __init__(self, options, step_impl, advectee: ScalarField, advector: VectorField,
+                 g_factor: [ScalarField, None] = None):
+        scalar_field = lambda: ScalarField.clone(advectee)
+        null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims)
+        vector_field = lambda: VectorField.clone(advector)
+        null_vector_field = lambda: VectorField.make_null(advector.n_dims)
+
         self.step_impl = step_impl
-        self.arrays = Arrays(advectee, advector, g_factor)
+        self.curr = advectee
+        self.GC_phys = advector
+        self.g_factor = g_factor or null_scalar_field()
+        self._vectmp_a = vector_field()
+        self._vectmp_b = vector_field()
+        self._vectmp_c = vector_field() if options.mu_coeff != 0 else null_vector_field()
+        fct = options.flux_corrected_transport
+        self.advectee_min = scalar_field() if fct else null_scalar_field()
+        self.advectee_max = scalar_field() if fct else null_scalar_field()
+        self.beta_up = scalar_field() if fct else null_scalar_field()
+        self.beta_down = scalar_field() if fct else null_scalar_field()
 
-    def step(self, nt, debug: bool=False):
-        n_dims = self.arrays.GC.n_dims
-
-        psi = self.arrays.curr.data
-        flux_0 = self.arrays.flux.data[0]
-        flux_1 = self.arrays.flux.data[1] if n_dims > 1 else np.empty(0, dtype=flux_0.dtype)
-        GC_phys_0 = self.arrays.GC.data[0]
-        GC_phys_1 = self.arrays.GC.data[1] if n_dims > 1 else np.empty(0, dtype=flux_1.dtype)
-        g_factor = self.arrays.g_factor.data
-
-        self.step_impl(nt, psi, flux_0, flux_1, GC_phys_0, GC_phys_1, g_factor)
+    def step(self, nt):
+        self.step_impl(nt,
+                       *self.curr.impl,
+                       *self.GC_phys.impl,
+                       *self.g_factor.impl,
+                       *self._vectmp_a.impl,
+                       *self._vectmp_b.impl,
+                       *self._vectmp_c.impl,
+                       *self.advectee_min.impl,
+                       *self.advectee_max.impl,
+                       *self.beta_up.impl,
+                       *self.beta_down.impl
+                       )

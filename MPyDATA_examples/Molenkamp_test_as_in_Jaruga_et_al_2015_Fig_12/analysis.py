@@ -1,19 +1,20 @@
 from joblib import Parallel, delayed
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation import Simulation
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.setup import Setup
+from MPyDATA.options import Options
 
 # TODO
-# opts = {
-#     'a': {'options': Options(), 'n_iters': -1},
-#     'b': {'options': Options(fct=True), 'n_iters': 2},
-#     'c': {'options': Options(fct=True), 'n_iters': 3},  # TODO: tot=True
-#     'd': {'options': Options(fct=True, iga=True), 'n_iters': 2}
-# }
+options = {
+    'a': Options(n_iters=-1),
+    'b': Options(n_iters=2, flux_corrected_transport=True),
+    'c': Options(n_iters=3, flux_corrected_transport=True),  # TODO: tot=True
+    'd': Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True)
+}
 
 
 def compute_panel(panel):
     setup = Setup(n_rotations=6)
-    simulation = Simulation(setup)
+    simulation = Simulation(setup, options[panel])
     if panel == 'a':
         return simulation.state
     simulation.run()
@@ -26,8 +27,3 @@ def fig_12_data():
         for panel in ['a', 'b', 'c', 'd']
     )
     return data
-
-
-if __name__ == '__main__':
-
-    compute_panel('b')

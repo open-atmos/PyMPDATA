@@ -1,10 +1,11 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.options import Options
 import numpy as np
 import numba
 from matplotlib import pyplot
+import pytest
 
-
-grid = (502, 401)
+grid = (126, 101)
 
 dt = .1
 dx = 1
@@ -77,20 +78,31 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
-def test_timing_2d(benchmark):
+@pytest.mark.parametrize("options", [
+    Options(n_iters=1),
+    Options(n_iters=2),
+    Options(n_iters=3),
+    Options(n_iters=4),
+    # Options(n_iters=2, infinite_gauge=True),  # TODO!
+    Options(n_iters=3, infinite_gauge=True),
+    Options(n_iters=2, flux_corrected_transport=True)
+    # Options(n_iters=2, divergent_flow=True)
+])
+def test_timing_2d(benchmark, options):
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-    mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25))
+    mpdata = MPDATAFactory.constant_2d(data=z, C=(-.5, .25), options=options)
 
     def set_z():
-        mpdata.arrays.curr.get()[:] = z
+        mpdata.curr.get()[:] = z
 
-    benchmark.pedantic(mpdata.step, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=10)
-    state = mpdata.arrays.curr.get()
+    benchmark.pedantic(mpdata.step, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
+    state = mpdata.curr.get()
 
     print(np.amin(state), np.amax(state))
-    assert np.amin(state) >= h0
-    np.testing.assert_almost_equal(np.amax(state), 3.7111, decimal=4)
+    if options.n_iters == 1:
+        assert np.amin(state) >= h0
+    assert np.amax(state) < 10 * h
 
     if False:
         pyplot.imshow(state)

@@ -6,6 +6,7 @@ import pytest
 
 
 class TestMPDATA1D:
+    # TODO
     @pytest.mark.skip()
     def test_fct_init(self):
         # Arrange
@@ -23,14 +24,3 @@ class TestMPDATA1D:
         np.testing.assert_equal(np.array([3]*5), sut.arrays.psi_max._impl.data[1:-1])
         np.testing.assert_equal(np.array([1]*5), sut.arrays.psi_min._impl.data[1:-1])
 
-    def test_TODO(self):
-        state = np.array([0, 1, 0])
-        C = 1
-
-        mpdata = MPDATAFactory.constant_1d(state, C)
-        nt = 5
-
-        conserved = np.sum(mpdata.arrays.curr.get())
-        mpdata.step(nt)
-
-        assert np.sum(mpdata.arrays.curr.get()) == conserved
