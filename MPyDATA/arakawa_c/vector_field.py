@@ -3,7 +3,7 @@ Created at 03.2020
 """
 
 import numpy as np
-from .utils import make_null, make_flag, indexers
+from .utils import make_null, make_flag, indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
 from ..arakawa_c.boundary_condition.cyclic import Cyclic
 
@@ -20,7 +20,8 @@ class VectorField:
         self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
         for d in dims:
             self.get_component(d)[:] = data[d][:]
-        self.boundary_conditions = tuple([boundary_conditions[0].make_vector(indexers[self.n_dims].at[i]) for i in range(2)])
+        self.boundary_conditions = \
+            tuple([boundary_conditions[0].make_vector(indexers[self.n_dims].at[i]) for i in range(MAX_DIM_NUM)])
         self.halo_valid = make_flag(False)
 
     @staticmethod
