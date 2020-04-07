@@ -8,7 +8,7 @@ def diff(x):
     return np.diff(x.magnitude) * x.units
 
 
-def test_size_distribution(plot=True):
+def test_size_distribution(plot=False):
     # Arrange
     si = pint.UnitRegistry()
     sd = SizeDistribution(si)

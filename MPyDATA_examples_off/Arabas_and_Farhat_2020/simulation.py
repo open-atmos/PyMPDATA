@@ -1,4 +1,4 @@
-from MPyDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
+from MPyDATA_examples_off.Arabas_and_Farhat_2020.options import OPTIONS
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
 import numpy as np

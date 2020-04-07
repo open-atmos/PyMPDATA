@@ -8,7 +8,7 @@ import numpy as np
 
 
 @pytest.fixture(params=[
-    1, 2,3
+    1, 2, 3
 ])
 def halo(request):
     return request.param

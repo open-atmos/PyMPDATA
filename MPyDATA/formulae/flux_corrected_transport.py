@@ -104,10 +104,9 @@ def make_correction(options, traversals):
             return
     else:
         idx = indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector(loop=False)
+        apply_vector = traversals.apply_vector()
 
-        formulae = (__make_correction(idx.at[0], idx.atv[0]), __make_correction(idx.at[1], idx.atv[1]),
-                    null_formula, null_formula)
+        formulae = (__make_correction(idx.at[0], idx.atv[0]), __make_correction(idx.at[1], idx.atv[1]))
 
         @numba.njit(**jit_flags)
         def apply(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc):

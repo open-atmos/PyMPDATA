@@ -6,9 +6,9 @@ from MPyDATA.options import Options
 # TODO
 options = {
     'a': Options(n_iters=-1),
-#     'b': {'options': Options(fct=True), 'n_iters': 2},
-#     'c': {'options': Options(fct=True), 'n_iters': 3},  # TODO: tot=True
-#     'd': {'options': Options(fct=True, iga=True), 'n_iters': 2}
+    'b': Options(n_iters=2, flux_corrected_transport=True),
+    'c': Options(n_iters=3, flux_corrected_transport=True),  # TODO: tot=True
+    'd': Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True)
 }
 
 
@@ -24,6 +24,6 @@ def compute_panel(panel):
 def fig_12_data():
     data = Parallel(n_jobs=-2)(
         delayed(compute_panel)(panel)
-        for panel in ['a']  # TODO: , 'b', 'c', 'd']
+        for panel in ['a', 'b', 'c', 'd']
     )
     return data
