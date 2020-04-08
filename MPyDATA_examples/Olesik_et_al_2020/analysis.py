@@ -6,7 +6,7 @@ from joblib import Parallel, parallel_backend, delayed
 from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver
 from MPyDATA_examples.utils.error_norms import L2
 from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
-
+from copy import deepcopy
 
 def analysis(setup, grid_layout, psi_coord, options_dict):
     options_str = str(options_dict)
@@ -25,19 +25,16 @@ def analysis(setup, grid_layout, psi_coord, options_dict):
     return grid_layout.__class__.__name__, options_str, result
 
 
-def compute_figure_data(*, nr=default_nr, dt=default_dt, psi_coord=x_id()):
+def compute_figure_data(*, nr, dt, psi_coord=x_id(),
+                        grid_layouts=(x_id(), x_p2(), x_ln()),
+                        opt_set=({'n_iters': 1},)
+                        ):
     setup = Setup(nr=nr, dt=dt)
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
-            delayed(analysis)(setup, grid_layout, psi_coord, options)
-            for grid_layout in [x_id(), x_p2(), x_ln()]
-            for options in (
-                {'n_iters': 1},
-                # TODO!
-               # {'n_iters': 2, 'fct': True},
-               # {'n_iters': 3, 'dfl': True},
-               # {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
-            )
+            delayed(analysis)( setup, grid_layout, psi_coord, options)
+            for grid_layout in grid_layouts
+            for options in deepcopy(opt_set)
         )
 
     coords = []
@@ -82,4 +79,3 @@ def compute_figure_data(*, nr=default_nr, dt=default_dt, psi_coord=x_id()):
         # # TODO: calculate norms for mass and number
 
     return output, setup
-
