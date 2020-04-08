@@ -42,7 +42,7 @@ def make_flux_first_pass(traversals):
 
 
 def make_flux_subsequent(options, traversals):
-    if options.n_iters <= 1:  # TODO: this s handled by the above make_flux_first_pass???
+    if options.n_iters <= 1:
         @numba.njit(**jit_flags)
         def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
             return

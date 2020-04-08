@@ -88,45 +88,43 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
 
         G_bar = (at(*G, 1, 0) + at(*G, 0, 0)) / 2 if non_unit_g_factor else 1
 
-        #
-        #     # third-order terms
-        #     if third_order_terms:
-        #         assert psi.dimension < 3  # TODO
-        #         tmp = (
-        #                       3 * GC.at(.5, 0) * np.abs(GC.at(.5, 0)) / G_bar
-        #                       - 2 * GC.at(.5, 0) ** 3 / G_bar ** 2
-        #                       - GC.at(.5, 0)
-        #               ) / 6
-        #
-        #         tmp *= 2 * (psi.at(2, 0) - psi.at(1, 0) - psi.at(0, 0) + psi.at(-1, 0))
-        #
-        #         if infinite_gauge:
-        #             tmp /= (1 + 1 + 1 + 1)
-        #         else:
-        #             tmp /= (psi.at(2, 0) + psi.at(1, 0) + psi.at(0, 0) + psi.at(-1, 0))
-        #
-        #         result += tmp
-        #
-        #         if psi.dimension > 1:
-        #             GC1_bar = (
-        #                               GC.at(1, .5) +
-        #                               GC.at(0, .5) +
-        #                               GC.at(1, -.5) +
-        #                               GC.at(0, -.5)
-        #                       ) / 4
-        #             tmp = GC1_bar / (2 * G_bar) * (
-        #                     np.abs(GC.at(.5, 0)) - 2 * GC.at(.5, 0) ** 2 / G_bar
-        #             )
-        #
-        #             tmp *= 2 * (psi.at(1, 1) - psi.at(0, 1) - psi.at(1, -1) + psi.at(0, -1))
-        #
-        #             if infinite_gauge:
-        #                 tmp /= (1 + 1 + 1 + 1)
-        #             else:
-        #                 tmp /= (psi.at(1, 1) + psi.at(0, 1) + psi.at(1, -1) + psi.at(0, -1))
-        #
-        #             result += tmp
-        #
+        # third-order terms
+        if third_order_terms:
+            # assert psi.dimension < 3  # TODO
+            tmp = (
+              3 * atv(*GC, .5, 0) * np.abs(atv(*GC, .5, 0)) / G_bar
+              - 2 * atv(*GC, .5, 0) ** 3 / G_bar ** 2
+              - atv(*GC, .5, 0)
+            ) / 6
+
+            tmp *= 2 * (at(*psi, 2, 0) - at(*psi, 1, 0) - at(*psi, 0, 0) + at(*psi, -1, 0))
+
+            if infinite_gauge:
+                tmp /= (1 + 1 + 1 + 1)
+            else:
+                tmp /= at(*psi, 2, 0) + at(*psi, 1, 0) + at(*psi, 0, 0) + at(*psi, -1, 0) + epsilon
+
+            result += tmp
+
+            # if psi.dimension > 1:
+            #     GC1_bar = (
+            #                       GC.at(1, .5) +
+            #                       GC.at(0, .5) +
+            #                       GC.at(1, -.5) +
+            #                       GC.at(0, -.5)
+            #               ) / 4
+            #     tmp = GC1_bar / (2 * G_bar) * (
+            #             np.abs(GC.at(.5, 0)) - 2 * GC.at(.5, 0) ** 2 / G_bar
+            #     )
+            #
+            #     tmp *= 2 * (psi.at(1, 1) - psi.at(0, 1) - psi.at(1, -1) + psi.at(0, -1))
+            #
+            #     if infinite_gauge:
+            #         tmp /= (1 + 1 + 1 + 1)
+            #     else:
+            #         tmp /= (psi.at(1, 1) + psi.at(0, 1) + psi.at(1, -1) + psi.at(0, -1))
+            #
+            #     result += tmp
 
         # divergent flow option
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
