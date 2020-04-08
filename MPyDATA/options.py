@@ -1,74 +1,52 @@
-from .formulae.antidiff import make_antidiff
-from .formulae.flux import make_fluxes
-from .formulae.upwind import make_upwind
-from .formulae.laplacian import make_laplacian
-from .formulae.fct_utils import make_GC_mono
+"""
+Created at 03.2020
+"""
 
 
-# TODO: rename (algorithms)
 class Options:
-    def __init__(self,
-                 nug: bool = False,  # non-unit g_factor
-                 iga: bool = False,  # infinite gauge
-                 fct: bool = False,  # flux-corrected transport
-                 dfl: bool = False,  # divergent flow
-                 tot: bool = False,  # third-order terms
-                 nzm: bool = False,  # non-zero mu
-                 eps: float = 1e-8,
+    def __init__(self, *,
+                 n_iters: int = 2,
+                 infinite_gauge: bool = False,
+                 divergent_flow: bool = False,
+                 flux_corrected_transport: bool = False,
+                 third_order_terms: bool = False,
+                 epsilon: float = 1e-15,
+                 mu_coeff: float = 0,
                  ):
-        self._nug = nug
-        self._iga = iga
-        self._fct = fct
-        self._dfl = dfl
-        self._tot = tot
-        self._eps = eps
-        self._nzm = nzm
-
-        # TODO: assert for numba decorators? (depending on value of utils.DEBUG)
-        self._formulae = {
-            "antidiff": make_antidiff(self),
-            "flux": make_fluxes(self),
-            "upwind": make_upwind(self)
-        }
-        if fct:
-            self._formulae["GC_mono"] = make_GC_mono(self)
-        if nzm:
-            self._formulae["laplacian"] = make_laplacian(self)
-
-
-    def clone(self):
-        return self
+        self._n_iters = n_iters
+        self._infinite_gauge = infinite_gauge
+        self._epsilon = epsilon
+        self._divergent_flow = divergent_flow
+        if flux_corrected_transport and n_iters < 2:
+            raise ValueError()
+        self._flux_corrected_transport = flux_corrected_transport
+        self._third_order_terms = third_order_terms
+        self._mu_coeff = mu_coeff
 
     @property
-    def formulae(self):
-        return self._formulae
+    def n_iters(self):
+        return self._n_iters
 
     @property
-    def nug(self) -> bool:
-        return self._nug
+    def infinite_gauge(self):
+        return self._infinite_gauge
 
     @property
-    def iga(self) -> bool:
-        return self._iga
+    def epsilon(self):
+        return self._epsilon
 
     @property
-    def fct(self) -> bool:
-        return self._fct
+    def divergent_flow(self):
+        return self._divergent_flow
 
     @property
-    def dfl(self) -> bool:
-        return self._dfl
+    def flux_corrected_transport(self):
+        return self._flux_corrected_transport
 
     @property
-    def tot(self) -> bool:
-        return self._tot
+    def third_order_terms(self):
+        return self._third_order_terms
 
     @property
-    def eps(self) -> float:
-        return self._eps
-
-    # for definition of mu (mesh Fourier number),
-    # see eq. 20 in Sousa 2009, doi:10.1002/fld.1984
-    @property
-    def nzm(self) -> float:
-        return self._nzm
+    def mu_coeff(self):
+        return self._mu_coeff

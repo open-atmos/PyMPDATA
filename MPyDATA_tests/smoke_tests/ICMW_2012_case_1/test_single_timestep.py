@@ -4,19 +4,22 @@ import numpy as np
 import pytest
 
 
+# TODO: work in progress
 @pytest.mark.parametrize(
-    "opts", [
-        Options(nug=True),
-        Options(nug=True, fct=True),
-        Options(nug=True, fct=True, iga=True),
-        Options(nug=True, fct=True, tot=True),
-        Options(nug=True, fct=True, iga=True, tot=True),
-        Options(nug=True, fct=False, iga=True),
-        Options(nug=True, fct=False, tot=True),
-        Options(nug=True, fct=False, iga=True, tot=True)
+    "options", [
+        Options(n_iters=1),
+        Options(n_iters=2),
+        # Options(nug=True),
+        # Options(nug=True, fct=True),
+        # Options(nug=True, fct=True, iga=True),
+        # Options(nug=True, fct=True, tot=True),
+        # Options(nug=True, fct=True, iga=True, tot=True),
+        # Options(nug=True, fct=False, iga=True),
+        # Options(nug=True, fct=False, tot=True),
+        # Options(nug=True, fct=False, iga=True, tot=True)
     ]
 )
-def test_single_timestep(opts):
+def test_single_timestep(options):
     # Arrange
     grid = (75, 75)
     size = (1500, 1500)
@@ -36,15 +39,19 @@ def test_single_timestep(opts):
         axis=0
     )
 
-    GC, eulerian_fields = MPDATAFactory.kinematic_2d(
+    GC, eulerian_fields = MPDATAFactory.stream_function_2d(
         grid=grid, size=size, dt=dt,
         stream_function=stream_function,
         field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
         g_factor=rhod,
-        opts=opts
+        options=options
     )
 
     # Plot
 
     # Act
-    eulerian_fields.step(n_iters=2, debug=True)
+    eulerian_fields.step(nt=1)
+
+    # Assert
+    for k, v in eulerian_fields.mpdatas.items():
+        assert np.isfinite(v.curr.get()).all()

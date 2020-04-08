@@ -8,7 +8,7 @@ class TestSmolarkiewicz2006:
     @staticmethod
     def test_fig3():
         # Arrange
-        simulation = Simulation(Setup("cosine"), Options(), n_iters=1, debug=True)
+        simulation = Simulation(Setup("cosine"), Options(n_iters=1))
         psi0 = simulation.state
 
         # Act
@@ -25,7 +25,7 @@ class TestSmolarkiewicz2006:
     @staticmethod
     def test_fig4():
         # Arrange
-        simulation = Simulation(Setup("cosine"), Options(), n_iters=2, debug=True)
+        simulation = Simulation(Setup("cosine"), Options(n_iters=2))
         psi0 = simulation.state
 
         # Act
@@ -42,8 +42,7 @@ class TestSmolarkiewicz2006:
     @staticmethod
     def test_fig10():
         # Arrange
-        simulation = Simulation(Setup("cosine"), Options(iga=True), n_iters=2, debug=True)
-        psi0 = simulation.state
+        simulation = Simulation(Setup("cosine"), Options(infinite_gauge=True, n_iters=2))
 
         # Act
         simulation.run()
@@ -56,7 +55,7 @@ class TestSmolarkiewicz2006:
     @staticmethod
     def test_fig11():
         # Arrange
-        simulation = Simulation(Setup("rect"), Options(iga=True), n_iters=2, debug=True)
+        simulation = Simulation(Setup("rect"), Options(infinite_gauge=True, n_iters=2))
 
         # Act
         simulation.run()
@@ -66,11 +65,10 @@ class TestSmolarkiewicz2006:
         assert -1.9 < np.amin(psiT) < 2
         assert 4 < np.amax(psiT) < 4.2
 
-
     @staticmethod
     def test_fig12():
         # Arrange
-        simulation = Simulation(Setup("rect"), Options(iga=True, fct=True), n_iters=2, debug=True)
+        simulation = Simulation(Setup("rect"), Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True))
 
         # Act
         simulation.run()

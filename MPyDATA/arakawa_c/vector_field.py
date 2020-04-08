@@ -1,66 +1,55 @@
-from .impl.field import Field
-from .scalar_field import ScalarField
-from .impl.vector_field_2d import make_vector_field_2d
-from .impl.vector_field_1d import make_vector_field_1d
+"""
+Created at 03.2020
+"""
+
 import numpy as np
+from .utils import make_null, make_flag, indexers, MAX_DIM_NUM
+from .scalar_field import ScalarField
+from ..arakawa_c.boundary_condition.cyclic import Cyclic
 
 
-class VectorField(Field):
-    def __init__(self, data, halo, boundary_conditions, impl=None):
-        if impl is None:
-            dimension = len(data)
-            if dimension == 1:
-                self._impl = make_vector_field_1d(data[0], halo) if impl is None else impl
-            elif dimension == 2:
-                self._impl = make_vector_field_2d(data, halo) if impl is None else impl
-            elif dimension == 3:
-                raise NotImplementedError()
-            else:
-                raise ValueError()
-        else:
-            self._impl = impl
+class VectorField:
+    def __init__(self, data, halo, boundary_conditions=(Cyclic, Cyclic)):
+        self.halo = halo
+        self.n_dims = len(data)
 
-        self.boundary_conditions = boundary_conditions
-        super().__init__(halo)
+        dims = range(self.n_dims)
+        halos = [[(halo - (d == c)) for c in dims] for d in dims]
+        shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
+        self.data = [np.full(shape_with_halo[d], np.nan, dtype=np.float64) for d in dims]
+        self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
+        for d in dims:
+            self.get_component(d)[:] = data[d][:]
+        self.boundary_conditions = \
+            tuple([boundary_conditions[0].make_vector(indexers[self.n_dims].at[i]) for i in range(MAX_DIM_NUM)])
+        self.halo_valid = make_flag(False)
 
-    def add(self, rhs):
-        for d in range(self.dimension):
-            self.get_component(d)[:] += rhs.get_component(d)[:]
-        self._halo_valid = False
-
-    def set(self, value):
-        for d in range(self.dimension):
-            self.get_component(d)[:] = value
-        self._halo_valid = False
-
-    def div(self, grid_step: tuple) -> ScalarField:
-        diffsum = None
-        for d in range(self.dimension):
-            tmp = np.diff(self.get_component(d), axis=d) / grid_step[d]
-            if diffsum is None:
-                diffsum = tmp
-            else:
-                diffsum += tmp
-        result = ScalarField(diffsum, halo=0, boundary_conditions=None)
-        return result
+    @staticmethod
+    def clone(field):
+        return VectorField([field.get_component(d) for d in range(field.n_dims)], field.halo)
 
     def get_component(self, i: int) -> np.ndarray:
-        return self._impl.get_component(i)
+        return self.data[i][self.domain[i]]
 
-    def clone(self):
-        return VectorField(
-            data=None,
-            halo=self.halo,
-            boundary_conditions=self.boundary_conditions,
-            impl=self._impl.clone()
-        )
+    def div(self, grid_step: tuple) -> ScalarField:
+        diff_sum = None
+        for d in range(self.n_dims):
+            tmp = np.diff(self.get_component(d), axis=d) / grid_step[d]
+            if diff_sum is None:
+                diff_sum = tmp
+            else:
+                diff_sum += tmp
+        result = ScalarField(diff_sum, halo=0)
+        return result
 
-    def _fill_halos_impl(self):
-        if self.dimension == 1 and self.halo == 1:
-            return
-        for axis in range(self.dimension):
-            for comp in range(self.dimension):
-                if self.dimension == 2 and self.halo < 2 and comp == axis:
-                    continue
-                for side in (0, 1):
-                    self.boundary_conditions[comp][side].vector(self._impl, axis, comp)
+    @property
+    def impl(self):
+        comp_0 = self.data[0]
+        comp_1 = self.data[1] if self.n_dims > 1 else make_null()
+        return (self.halo_valid, comp_0, comp_1), self.boundary_conditions
+
+    @staticmethod
+    def make_null(n_dims):
+        null = VectorField([np.empty([0]*n_dims)] * n_dims, halo=1)
+        null.halo_valid[0] = True
+        return null

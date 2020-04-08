@@ -40,4 +40,3 @@ class Setup:
             amplitude,
             0)
         return np.cumsum(pdf)
-

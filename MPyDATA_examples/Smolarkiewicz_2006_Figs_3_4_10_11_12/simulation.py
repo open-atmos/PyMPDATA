@@ -1,28 +1,24 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
+from MPyDATA.arakawa_c.discretisation import from_cdf_1d
 from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
 from MPyDATA.options import Options
 
 
 class Simulation:
-    def __init__(self, setup: Setup, opts: Options, n_iters: int, debug=False):
+    def __init__(self, setup: Setup, options: Options):
 
-        x, state = MPDATAFactory.from_cdf_1d(setup.cdf, setup.x_min, setup.x_max, setup.nx)
+        x, state = from_cdf_1d(setup.cdf, setup.x_min, setup.x_max, setup.nx)
 
-        self.stepper = MPDATAFactory.uniform_C_1d(
+        self.stepper = MPDATAFactory.constant_1d(
             state,
             setup.C,
-            opts=opts,
-            boundary_conditions=((CyclicLeft(), CyclicRight()),)
+            options
         )
         self.nt = setup.nt
-        self.n_iters = n_iters
-        self.debug = debug
 
     @property
     def state(self):
-        return self.stepper.arrays.curr.get().copy()
+        return self.stepper.curr.get().copy()
 
     def run(self):
-        for _ in range(self.nt):
-            self.stepper.step(self.n_iters, debug=self.debug)
+        self.stepper.step(self.nt)

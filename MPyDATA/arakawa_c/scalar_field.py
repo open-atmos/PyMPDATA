@@ -1,43 +1,39 @@
-from .impl.field import Field
-from .impl.scalar_field_1d import make_scalar_field_1d
-from .impl.scalar_field_2d import make_scalar_field_2d
+"""
+Created at 03.2020
+"""
+
 import numpy as np
+from .utils import make_flag, indexers
+from ..arakawa_c.boundary_condition.cyclic import Cyclic
 
 
-class ScalarField(Field):
-    def __init__(self, data, halo, boundary_conditions, impl=None):
-        if impl is None:
-            dimension = len(data.shape)
-            if dimension == 1:
-                self._impl = make_scalar_field_1d(data, halo)
-            elif dimension == 2:
-                self._impl = make_scalar_field_2d(data, halo)
-            elif dimension == 3:
-                raise NotImplementedError()
-            else:
-                raise ValueError()
-        else:
-            self._impl = impl
-
+class ScalarField:
+    def __init__(self, data: np.ndarray, halo: int, boundary_conditions=(Cyclic, Cyclic)):
+        self.n_dims = data.ndim
+        shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
+        self.data = np.zeros(shape_with_halo, dtype=np.float64)
+        self.halo = halo
+        self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
+        self.get()[:] = data[:]
+        self.fill_halos = tuple([
+            boundary_conditions[i].make_scalar(indexers[self.n_dims].at[i], halo) for i in range(2)])
         self.boundary_conditions = boundary_conditions
-        super().__init__(halo)
+        self.flag = make_flag(False)
 
-    def add(self, rhs):
-        self.get()[:] += rhs.get()[:]
-        self._halo_valid = False
+    @staticmethod
+    def clone(field):
+        return ScalarField(field.get(), field.halo, field.boundary_conditions)
 
     def get(self) -> np.ndarray:
-        return self._impl.get()
+        results = self.data[self.domain]
+        return results
 
-    def clone(self):
-        return ScalarField(
-            data=None,
-            halo=self.halo,
-            boundary_conditions=self.boundary_conditions,
-            impl=self._impl.clone()
-        )
+    @property
+    def impl(self):
+        return (self.flag, self.data), self.fill_halos
 
-    def _fill_halos_impl(self):
-        for d in range(self.dimension):
-            for side in (0, 1):
-                self.boundary_conditions[d][side].scalar(self._impl, d)
+    @staticmethod
+    def make_null(n_dims):
+        null = ScalarField(np.empty([0]*n_dims), halo=0)
+        null.flag[0] = True
+        return null

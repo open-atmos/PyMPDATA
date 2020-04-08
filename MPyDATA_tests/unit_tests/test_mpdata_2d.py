@@ -6,59 +6,136 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.arakawa_c.scalar_field import ScalarField
-from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.arakawa_c.boundary_conditions.cyclic import CyclicLeft, CyclicRight
-from MPyDATA.mpdata import MPDATA
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.options import Options
-
-import numpy as np
 import pytest
+import numpy as np
 
-# noinspection PyUnresolvedReferences
-from MPyDATA_tests.unit_tests.__parametrisation__ import halo, case
+# test data by Dorota Jarecka
+# see http://dx.doi.org/10.3233/SPR-140379
+params = (
+    (3, 3, 0.1, 0.5, 1, 1,
+     np.array([[0., 0., 0.],
+               [0., 0., 0.],
+               [0., 0., 1.]]),
+     np.array([[0., 0., 0.1],
+               [0., 0., 0.],
+               [0.5, 0., 0.4]])
+     ),
+    (3, 3, 0.1, 0.5, 1, 2,
+     np.array([[0., 0., 0.],
+               [0., 0., 0.],
+               [0., 0., 1.]]),
+     np.array([[0., 0., 0.0921],
+               [0., 0., 0.],
+               [0.5011, 0., 0.4068]])
+     ),
+    (3, 3, 0.2, 0.2, 1, 1,
+     np.array([[0., 0., 0.],
+               [0., 1., 0.],
+               [0., 1., 0.]]),
+     np.array([[0., 0.2, 0.],
+               [0., 0.6, 0.2],
+               [0., 0.8, 0.2]])
+     ),
+    (3, 3, 0.2, 0.2, 1, 2,
+     np.array([[0., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 0.]]),
+     np.array([[0., 0., 0.],
+               [0., 0.64, 0.18],
+               [0., 0.18, 0.]])
+     ),
+    (3, 3, 0.2, 0.2, 1, 3,
+     np.array([[0., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 0.]]),
+     np.array([[0., 0., 0.],
+               [0., 0.6578, 0.1711],
+               [0., 0.1711, 0.]])
+     ),
+    (3, 3, 0.5, 0.5, 1, 1,
+     np.array([[0., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 0.]]),
+     np.array([[0., 0., 0.],
+               [0., 0., 0.5],
+               [0., 0.5, 0.]])),
+    (3, 3, 0.5, 0.5, 1, 2,
+     np.array([[0., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 0.]]),
+     np.array([[0., 0., 0.],
+               [0., 0., 0.5],
+               [0., 0.5, 0.]])
+     ),
+    (3, 3, 0.5, 0.5, 1, 3, np.array([[0., 0., 0.],
+                                     [0., 1., 0.],
+                                     [0., 0., 0.]]), np.array([[0., 0., 0.],
+                                                               [0., 0., 0.5],
+                                                               [0., 0.5, 0.]])),
+    (3, 3, 0.0, 1.0, 3, 1, np.array([[0., 0., 0.],
+                                     [0., 1., 0.],
+                                     [0., 0., 0.]]), np.array([[0., 0., 0.],
+                                                               [0., 1., 0.],
+                                                               [0., 0., 0.]])),
+    (3, 3, 0.0, 1.0, 3, 2, np.array([[0., 0., 0.],
+                                     [0., 1., 0.],
+                                     [0., 0., 0.]]), np.array([[0., 0., 0.],
+                                                               [0., 1., 0.],
+                                                               [0., 0., 0.]])),
+    (3, 3, 0.0, 1.0, 3, 3, np.array([[0., 0., 0.],
+                                     [0., 1., 0.],
+                                     [0., 0., 0.]]), np.array([[0., 0., 0.],
+                                                               [0., 1., 0.],
+                                                               [0., 0., 0.]])),
+    (3, 3, 1.0, 0.0, 4, 1, np.array([[0., 0., 0.],
+                                     [0., 0., 0.],
+                                     [0., 1., 0.]]), np.array([[0., 1., 0.],
+                                                               [0., 0., 0.],
+                                                               [0., 0., 0.]])),
+    (3, 3, 1.0, 0.0, 4, 2, np.array([[0., 0., 0.],
+                                     [0., 0., 0.],
+                                     [0., 1., 0.]]), np.array([[0., 1., 0.],
+                                                               [0., 0., 0.],
+                                                               [0., 0., 0.]])),
+    (3, 3, 1.0, 0.0, 4, 3, np.array([[0., 0., 0.],
+                                     [0., 0., 0.],
+                                     [0., 1., 0.]]), np.array([[0., 1., 0.],
+                                                               [0., 0., 0.],
+                                                               [0., 0., 0.]])),
+    (4, 4, 0.5, 0.5, 1, 1, np.array([[0., 0., 0., 0.],
+                                     [0., 0., 0., 0.],
+                                     [0., 0., 0., 0.],
+                                     [0., 0., 0., 1.]]), np.array([[0., 0., 0., 0.5],
+                                                                   [0., 0., 0., 0.],
+                                                                   [0., 0., 0., 0.],
+                                                                   [0.5, 0., 0., 0.]])),
+    (4, 4, 0.5, 0.5, 1, 2, np.array([[0., 0., 0., 0.],
+                                     [0., 0., 0., 0.],
+                                     [0., 0., 0., 0.],
+                                     [0., 0., 0., 1.]]), np.array([[0., 0., 0., 0.5],
+                                                                   [0., 0., 0., 0.],
+                                                                   [0., 0., 0., 0.],
+                                                                   [0.5, 0., 0., 0.]])),
+    (4, 4, 0.5, 0.5, 1, 3, np.array([[0., 0., 0., 0.],
+                                     [0., 0., 0., 0.],
+                                     [0., 0., 0., 0.],
+                                     [0., 0., 0., 1.]]), np.array([[0., 0., 0., 0.5],
+                                                                   [0., 0., 0., 0.],
+                                                                   [0., 0., 0., 0.],
+                                                                   [0.5, 0., 0., 0.]])),
+    (10, 1, 1.0, 0.0, 5, 1, np.array([1., 0., 1., 0., 0., 0., 0., 0., 0., 0.]),
+        np.array([0., 0., 0., 0., 0., 1., 0., 1., 0., 0.])))
 
 
-@pytest.fixture(scope="module")
-def options():
-    return Options()
+@pytest.fixture(params=params)
+def case(request):
+    return request.param
 
 
 class TestMPDATA2D:
-    @pytest.mark.parametrize("shape, ij0, out, C, n_steps", [
-        pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.), 1),
-        pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.), 1),
-        pytest.param((1, 3), (0, 1), np.array([[44., 0., 0.]]), (0., -1.), 1),
-        pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5), 1),
-        pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5), 1),
-    ])
-    def test_44(self, shape, ij0, out, C, n_steps, halo, options):
-        value = 44
-        scalar_field_init = np.zeros(shape)
-        scalar_field_init[ij0] = value
-
-        bcond = (
-            (CyclicLeft(), CyclicRight()),
-            (CyclicLeft(), CyclicRight()),
-        )
-
-        vector_field_init_x = np.full((shape[0] + 1, shape[1]), C[0])
-        vector_field_init_y = np.full((shape[0], shape[1] + 1), C[1])
-        state = ScalarField(scalar_field_init, halo=halo, boundary_conditions=bcond)
-        GC_field = VectorField((vector_field_init_x, vector_field_init_y), halo=halo, boundary_conditions=bcond)
-
-        G = ScalarField(np.ones(shape), halo=0, boundary_conditions=bcond)
-        mpdata = MPDATA(GC_field=GC_field, state=state, g_factor=G, opts=options)
-        for _ in range(n_steps):
-            mpdata.step(n_iters=1)
-
-        np.testing.assert_array_equal(
-            mpdata.arrays.curr.get(),
-            out
-        )
-
-    def test_Arabas_et_al_2014_sanity(self, case, options):
+    def test_Arabas_et_al_2014_sanity(self, case):
         case = {
             "nx": case[0],
             "ny": case[1],
@@ -70,15 +147,14 @@ class TestMPDATA2D:
             "output": case[7]
         }
         # Arrange
-        sut = MPDATAFactory.uniform_C_2d(
+        sut = MPDATAFactory.constant_2d(
             case["input"].reshape((case["nx"], case["ny"])),
             [case["Cx"], case["Cy"]],
-            options
+            options=Options(n_iters=case["ni"])
         )
 
         # Act
-        for _ in range(case["nt"]):
-            sut.step(n_iters=case["ni"])
+        sut.step(nt=case["nt"])
 
         # Assert
-        np.testing.assert_almost_equal(sut.arrays.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)
+        np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)

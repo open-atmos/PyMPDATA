@@ -1,28 +1,22 @@
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_ln, x_p2
-from MPyDATA_examples.Olesik_et_al_2020.setup import Setup
+from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_dt
 from MPyDATA.options import Options
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
 from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver
 from MPyDATA_examples.utils.error_norms import L2
-from MPyDATA.utils.pdf_integrator import discretised_analytical_solution
-from copy import deepcopy
-import numpy as np
+from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 
 
-def analysis(debug, setup, grid_layout, psi_coord, options_dict):
+def analysis(setup, grid_layout, psi_coord, options_dict):
     options_str = str(options_dict)
-    n_iters = options_dict.pop("n_iters")
-    options = Options(nug=True, **options_dict)
+    options = Options(**options_dict)
     simulation = Simulation(setup, grid_layout, psi_coord, options)
-    GC = simulation.solver.arrays.GC_phys.get_component(0)
-    print("GC min: ",np.amin(GC),", ", "GC max: ",np.amax(GC))
     result = {"n": [], "n_analytical": [], "error_norm_L2": []}
     last_step = 0
     for n_steps in setup.nt:
         steps = n_steps - last_step
-        for _ in range(steps):
-            simulation.step(n_iters=n_iters, debug=debug)
+        simulation.step(steps)
         last_step += steps
         result['n'].append(simulation.n.copy())
     result['r'] = simulation.r.copy()
@@ -31,16 +25,19 @@ def analysis(debug, setup, grid_layout, psi_coord, options_dict):
     return grid_layout.__class__.__name__, options_str, result
 
 
-def compute_figure_data(*, debug=False, nr, dt, psi_coord=x_id(),
-                        grid_layouts=[x_id(), x_p2(), x_ln()],
-                        opt_set=({'n_iters': 1},)
-                        ):
+def compute_figure_data(*, nr=default_nr, dt=default_dt, psi_coord=x_id()):
     setup = Setup(nr=nr, dt=dt)
     with parallel_backend('threading'):
         results = Parallel(n_jobs=-2)(
-            delayed(analysis)(debug, setup, grid_layout, psi_coord, options)
-            for grid_layout in grid_layouts
-            for options in deepcopy(opt_set)
+            delayed(analysis)(setup, grid_layout, psi_coord, options)
+            for grid_layout in [x_id(), x_p2(), x_ln()]
+            for options in (
+                {'n_iters': 1},
+                # TODO!
+               # {'n_iters': 2, 'fct': True},
+               # {'n_iters': 3, 'dfl': True},
+               # {'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}
+            )
         )
 
     coords = []

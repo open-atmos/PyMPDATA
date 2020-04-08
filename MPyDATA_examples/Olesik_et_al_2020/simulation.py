@@ -1,7 +1,6 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
 
 
-
 class Simulation:
     @staticmethod
     def __mgn(quantity, unit):
@@ -16,7 +15,7 @@ class Simulation:
         self.__r_unit = self.setup.si.micrometre
         self.__n_unit = self.setup.si.centimetres**-3 / self.setup.si.micrometre
 
-        self.solver, self.__r, self.__rh, self.dx = MPDATAFactory.equilibrium_growth_C_1d(
+        self.solver, self.__r, self.__rh, self.dx = MPDATAFactory.condensational_growth(
             self.setup.nr,
             self.__mgn(self.setup.r_min, self.__r_unit),
             self.__mgn(self.setup.r_max, self.__r_unit),
@@ -28,8 +27,8 @@ class Simulation:
             opts
         )
 
-    def step(self, n_iters: int, debug=False):
-        self.solver.step(n_iters=n_iters, debug=debug)
+    def step(self, nt):
+        self.solver.step(nt)
 
     @property
     def r(self):
@@ -41,7 +40,7 @@ class Simulation:
 
     @property
     def n(self):
-        psi = self.solver.arrays.curr.get()
+        psi = self.solver.curr.get()
         n = psi * self.psi_coord.dx_dr(self.__r)
         return n * self.__n_unit
 
