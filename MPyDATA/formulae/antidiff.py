@@ -102,7 +102,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
             if infinite_gauge:
                 tmp /= (1 + 1 + 1 + 1)
             else:
-                tmp /= (at(*psi, 2, 0) + at(*psi, 1, 0) + at(*psi, 0, 0) + at(*psi, -1, 0))
+                tmp /= at(*psi, 2, 0) + at(*psi, 1, 0) + at(*psi, 0, 0) + at(*psi, -1, 0) + epsilon
 
             result += tmp
 
