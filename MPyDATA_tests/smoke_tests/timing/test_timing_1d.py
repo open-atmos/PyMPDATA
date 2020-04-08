@@ -10,10 +10,19 @@ import numpy as np
     Options(n_iters=2),
     Options(n_iters=3),
     Options(n_iters=4),
+
     Options(n_iters=2, infinite_gauge=True),
     Options(n_iters=3, infinite_gauge=True),
     Options(n_iters=4, infinite_gauge=True),
-    Options(n_iters=2, divergent_flow=True)
+
+    Options(n_iters=2, flux_corrected_transport=True),
+    Options(n_iters=3, flux_corrected_transport=True),
+
+    Options(n_iters=2, divergent_flow=True),
+    Options(n_iters=3, divergent_flow=True),
+
+    Options(n_iters=2, third_order_terms=True),
+    Options(n_iters=3, third_order_terms=True)
 ])
 def test_timing_1d(benchmark, options):
     simulation = Simulation(Setup("cosine"), options)
