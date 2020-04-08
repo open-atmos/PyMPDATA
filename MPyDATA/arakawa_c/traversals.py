@@ -146,7 +146,24 @@ class Traversals:
         def boundary_cond_vector(halo_valid, comp_0, comp_1, fun_0, fun_1):
             if halo_valid[0]:
                 return
-            # TODO comp_0[i, :] and comp_1[:, j] not filled
+            for i in range(0, halo - 1):
+                for j in range(0, nj + 2 * halo):
+                    focus = (i, j)
+                    set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, 1))
+            for i in range(ni + 1 + halo - 1, ni + 1 + 2 * (halo - 1)):
+                for j in range(0, nj + 2 * halo):
+                    focus = (i, j)
+                    set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, -1))
+            if n_dims > 1:
+                for j in range(0, halo - 1):
+                    for i in range(0, ni + 2 * halo):
+                        focus = (i, j)
+                        set(comp_1, i, j, fun_1((focus, comp_1), nj + 1, 1))
+                for j in range(nj + 1 + halo - 1, nj + 1 + 2 * (halo - 1)):
+                    for i in range(0, ni + 2 * halo):
+                        focus = (i, j)
+                        set(comp_1, i, j, fun_1((focus, comp_1), nj + 1, -1))
+
             if n_dims > 1:
                 for j in range(0, halo) if n_dims > 1 else [-1]:
                     for i in range(0, ni + 1 + 2 * (halo - 1)):
