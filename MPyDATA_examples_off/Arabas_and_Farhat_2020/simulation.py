@@ -1,8 +1,9 @@
 from MPyDATA_examples_off.Arabas_and_Farhat_2020.options import OPTIONS
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
-import numpy as np
 from MPyDATA.options import Options
+import numpy as np
+import numba
 
 
 class Simulation:
@@ -59,7 +60,8 @@ class Simulation:
             boundary_conditions=Extrapolated
         )
 
-    # TODO: numba?
+
+    @numba.jit()
     def run(self, n_iters: int):
         psi = self.solvers[n_iters].curr.get()
         f_T = np.empty_like(psi)

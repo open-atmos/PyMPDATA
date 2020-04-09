@@ -14,22 +14,22 @@ def test_a(data):
     np.testing.assert_approx_equal(np.amax(sut), 4.796, significant=4)
 
 
-@pytest.mark.skip()  # TODO!
+@pytest.mark.skip()
 def test_b(data):
     sut = data[1]
     assert np.amin(sut) == 1
     assert np.amax(sut) == 5
 
 
-@pytest.mark.skip()  # TODO!
+@pytest.mark.skip()
 def test_c(data):
     sut = data[2]
     assert np.amin(sut) == 1
     assert np.amax(sut) == 5
 
 
-@pytest.mark.skip()  # TODO!
+@pytest.mark.skip()
 def test_d(data):
-    sut = data[2]
+    sut = data[3]
     assert np.amin(sut) == 1
     assert np.amax(sut) == 5

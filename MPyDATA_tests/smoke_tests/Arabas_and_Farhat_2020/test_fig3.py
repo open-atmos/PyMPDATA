@@ -23,4 +23,4 @@ class TestFig3:
             if key.startswith("MPDATA"):
                 x, y = value[0], value[1]
                 slope = np.diff(y) / np.diff(x)
-                np.testing.assert_almost_equal(slope, 1.3, 1)  # TODO: 2.5
+                np.testing.assert_almost_equal(slope, 2.7, 1)
