@@ -1,2 +1,3 @@
 .idea/*
 MPyDATA_examples/utils/output/*.pdf
+/MPyDATA_examples/*/.ipynb_checkpoints/

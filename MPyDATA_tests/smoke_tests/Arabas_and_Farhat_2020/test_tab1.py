@@ -1,4 +1,4 @@
-from MPyDATA_examples_off.Arabas_and_Farhat_2020.analysis_table_1 import table_1_data
+from MPyDATA_examples.Arabas_and_Farhat_2020.analysis_table_1 import table_1_data
 import numpy as np
 import pytest
 
