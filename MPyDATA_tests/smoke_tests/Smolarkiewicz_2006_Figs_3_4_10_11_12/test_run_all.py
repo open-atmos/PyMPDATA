@@ -77,3 +77,4 @@ class TestSmolarkiewicz2006:
         # Assert
         assert np.amin(psiT) >= 2
         assert np.amax(psiT) <= 4
+        assert np.amax(psiT) > 3

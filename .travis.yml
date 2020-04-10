@@ -31,14 +31,14 @@ install:
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
-  - pip$PY_SFX install --pre git+https://github.com/Quansight/numba.git@pearu/issue5470
+  - pip$PY_SFX install --pre git+https://github.com/numba/numba.git
   - travis_wait 60 python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       python$PY_SFX -m ipykernel install --user
       for i in MPyDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
-        travis_wait 60 jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i > $i.md.travis || exit 1;
+        jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i > $i.md.travis || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
         # diff $i.md.repo $i.md.travis
       done;

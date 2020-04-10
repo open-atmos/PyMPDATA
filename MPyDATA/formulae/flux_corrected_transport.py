@@ -68,7 +68,7 @@ def __make_beta(n_dims, at, atv, non_unit_g_factor, epsilon, extremum):
     sign = -1 if extremum == min else 1
     @numba.njit(**jit_flags)
     def denominator(flux):
-        return max(atv(*flux, -.5, 0), 0) - min(atv(*flux, +.5, 0), 0) + epsilon
+        return max(atv(*flux, sign*(-.5), 0), 0) - min(atv(*flux, sign*(+.5), 0), 0) + epsilon
 
     if non_unit_g_factor:
         @numba.njit(**jit_flags)
@@ -121,6 +121,7 @@ def __make_correction(at, atv):
     def correction(beta_down, GC, beta_up):
         a = min(1, at(*beta_down, 0, 0), at(*beta_up, 1, 0))
         b = min(1, at(*beta_up, 0, 0), at(*beta_down, 1, 0))
-        return atv(*GC, +.5, 0.) * (a + np.abs(a)) / 2 * (b - np.abs(b)) / 2
+        c = atv(*GC, +.5, 0.)
+        return (c + np.abs(c)) / 2 * a + (c - np.abs(c)) / 2 * b
 
     return correction

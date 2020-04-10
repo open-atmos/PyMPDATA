@@ -23,7 +23,7 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
     return output
 
 
-def convergence_in_space(num=8):
+def  convergence_in_space(num=8):
     with parallel_backend('threading', n_jobs=-2):
         data = Parallel()(
             delayed(compute)(log2_l2_opt, log2_C_opt)
