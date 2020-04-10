@@ -5,7 +5,8 @@ Created at 03.2020
 import numba
 import numpy as np
 from MPyDATA.jit_flags import jit_flags
-from MPyDATA.arakawa_c.utils import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.traversals import null_vector_formula
 
 
 def make_antidiff(non_unit_g_factor, options, traversals):
@@ -21,7 +22,8 @@ def make_antidiff(non_unit_g_factor, options, traversals):
             __make_antidiff(idx.atv[i], idx.at[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
-                            n_dims=traversals.n_dims, axis=i)
+                            n_dims=traversals.n_dims)
+            if i < traversals.n_dims else null_vector_formula
             for i in range(MAX_DIM_NUM)])
 
         @numba.njit(**jit_flags)
@@ -32,9 +34,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
     return apply
 
 
-def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, axis):
-    # TODO: optimise compile time for n_dim < MAX_DIMS
-
+def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
     infinite_gauge = options.infinite_gauge
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms

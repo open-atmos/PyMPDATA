@@ -3,13 +3,13 @@ Created at 03.2020
 """
 
 import numpy as np
-from .utils import make_null, make_flag, indexers, MAX_DIM_NUM
+from .indexers import make_null, make_flag, indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
-from ..arakawa_c.boundary_condition.cyclic import Cyclic
+from ..arakawa_c.boundary_condition.constant import Constant
 
 
 class VectorField:
-    def __init__(self, data, halo, boundary_conditions=(Cyclic, Cyclic)):
+    def __init__(self, data, halo, boundary_conditions):
         self.halo = halo
         self.n_dims = len(data)
 
@@ -20,8 +20,9 @@ class VectorField:
         self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
         for d in dims:
             self.get_component(d)[:] = data[d][:]
-        self.boundary_conditions = \
-            tuple([boundary_conditions[0].make_vector(indexers[self.n_dims].at[i]) for i in range(MAX_DIM_NUM)])
+        self.boundary_conditions = tuple(
+            [(boundary_conditions[i] if i < self.n_dims else Constant(np.nan)).make_vector(indexers[self.n_dims].at[i])
+             for i in range(MAX_DIM_NUM)])
         self.halo_valid = make_flag(False)
 
     @staticmethod
@@ -50,6 +51,6 @@ class VectorField:
 
     @staticmethod
     def make_null(n_dims):
-        null = VectorField([np.empty([0]*n_dims)] * n_dims, halo=1)
+        null = VectorField([np.empty([0] * n_dims)] * n_dims, halo=1)
         null.halo_valid[0] = True
         return null

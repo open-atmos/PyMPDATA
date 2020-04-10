@@ -50,13 +50,13 @@ class Simulation:
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, mu_coeff=mu_coeff),
-            boundary_conditions=Extrapolated
+            boundary_conditions=Extrapolated()
         )
         self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS, mu_coeff=mu_coeff),
-            boundary_conditions=Extrapolated
+            boundary_conditions=Extrapolated()
         )
 
 

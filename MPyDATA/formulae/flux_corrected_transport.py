@@ -4,7 +4,8 @@ Created at 25.03.2020
 
 import numpy as np
 import numba
-from MPyDATA.arakawa_c.utils import indexers, null_formula
+from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.traversals import null_scalar_formula, null_vector_formula
 from MPyDATA.jit_flags import jit_flags
 
 
@@ -17,7 +18,7 @@ def make_psi_extremum(extremum, options, traversals):
         idx = indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
 
-        formulae = (__make_psi_extremum(traversals.n_dims, idx.at[0], extremum), null_formula)
+        formulae = (__make_psi_extremum(traversals.n_dims, idx.at[0], extremum), null_scalar_formula)
 
         @numba.njit(**jit_flags)
         def apply(psi_extremum, psi, psi_bc, null_vecfield, null_vecfield_bc):
@@ -54,7 +55,7 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
         apply_scalar = traversals.apply_scalar(loop=False)
 
         formulae = (__make_beta(traversals.n_dims, idx.at[0], idx.atv[0], non_unit_g_factor, options.epsilon, extremum),
-                    null_formula)
+                    null_scalar_formula)
 
         @numba.njit(**jit_flags)
         def apply(beta, flux, flux_bc, psi, psi_bc, psi_extremum, psi_extremum_bc, g_factor, g_factor_bc):
@@ -106,7 +107,12 @@ def make_correction(options, traversals):
         idx = indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae = (__make_correction(idx.at[0], idx.atv[0]), __make_correction(idx.at[1], idx.atv[1]))
+        formulae = tuple([
+            __make_correction(idx.at[i], idx.atv[i])
+            if i < traversals.n_dims else null_vector_formula
+            for i in range(MAX_DIM_NUM)
+        ])
+
 
         @numba.njit(**jit_flags)
         def apply(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc):

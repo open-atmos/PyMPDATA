@@ -4,7 +4,8 @@ Created at 20.03.2020
 
 import numba
 from MPyDATA.jit_flags import jit_flags
-from MPyDATA.arakawa_c.utils import indexers, null_formula
+from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.traversals import null_vector_formula
 
 
 def make_laplacian(non_unit_g_factor, options, traversals):
@@ -16,10 +17,11 @@ def make_laplacian(non_unit_g_factor, options, traversals):
         idx = indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_laplacian = (*tuple([
+        formulae_laplacian = tuple([
             __make_laplacian(idx.at[i], options.mu_coeff, options.epsilon, non_unit_g_factor, traversals.n_dims)
-            for i in range(2)]),
-        )
+            if i < traversals.n_dims else null_vector_formula
+            for i in range(MAX_DIM_NUM)
+        ])
 
         @numba.njit(**jit_flags)
         def apply(GC_phys, psi, psi_bc, null_vecfield_bc):

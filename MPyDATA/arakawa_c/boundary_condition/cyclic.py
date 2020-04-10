@@ -9,15 +9,13 @@ from MPyDATA.jit_flags import jit_flags
 
 
 class Cyclic:
-    @staticmethod
-    def make_scalar(at, _):
+    def make_scalar(self, at, _):
         @numba.njit(**jit_flags)
         def fill_halos(psi, n, sign):
             return at(*psi, sign * n, 0)
         return fill_halos
 
-    @staticmethod
-    def make_vector(at):
+    def make_vector(self, at):
         @numba.njit(**jit_flags)
         def fill_halos(psi, n, sign):
             return at(*psi, sign * n, 0)
