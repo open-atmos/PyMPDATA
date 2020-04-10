@@ -35,6 +35,6 @@ class ScalarField:
 
     @staticmethod
     def make_null(n_dims):
-        null = ScalarField(np.empty([0]*n_dims), halo=0)
+        null = ScalarField(np.empty([0]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)]*n_dims)
         null.flag[0] = True
         return null

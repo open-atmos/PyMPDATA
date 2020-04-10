@@ -5,6 +5,7 @@ Created at 20.03.2020
 import numpy as np
 from scipy import integrate
 from .vector_field import VectorField
+from .boundary_condition.cyclic import Cyclic
 
 
 def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
@@ -47,7 +48,7 @@ def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo
     for d in range(len(GC)):
         np.testing.assert_array_less(np.abs(GC[d]), 1)
 
-    result = VectorField(GC, halo=halo)
+    result = VectorField(GC, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
 
     # nondivergence (of velocity field, hence dt)
     assert np.amax(abs(result.div((dt, dt)).get())) < 5e-9
