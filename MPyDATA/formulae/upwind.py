@@ -8,7 +8,7 @@ Created at 11.10.2019
 
 from MPyDATA.jit_flags import jit_flags
 import numba
-from MPyDATA.arakawa_c.utils import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
 
 
 def make_upwind(non_unit_g_factor, traversals):

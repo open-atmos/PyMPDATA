@@ -1,8 +1,8 @@
-from MPyDATA_examples_off.Arabas_and_Farhat_2020.options import OPTIONS
+from MPyDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
-import numpy as np
 from MPyDATA.options import Options
+import numpy as np
 
 
 class Simulation:
@@ -50,16 +50,16 @@ class Simulation:
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, mu_coeff=mu_coeff),
-            boundary_conditions=Extrapolated
+            boundary_conditions=Extrapolated()
         )
         self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS, mu_coeff=mu_coeff),
-            boundary_conditions=Extrapolated
+            boundary_conditions=Extrapolated()
         )
 
-    # TODO: numba?
+
     def run(self, n_iters: int):
         psi = self.solvers[n_iters].curr.get()
         f_T = np.empty_like(psi)

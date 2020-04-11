@@ -4,7 +4,7 @@ Created at 20.03.2020
 
 import numba
 from MPyDATA.jit_flags import jit_flags
-from .utils import indexers
+from .indexers import indexers
 
 
 class Traversals:
@@ -146,11 +146,11 @@ class Traversals:
         def boundary_cond_vector(halo_valid, comp_0, comp_1, fun_0, fun_1):
             if halo_valid[0]:
                 return
-            for i in range(0, halo - 1):
+            for i in range(halo - 2, -1, -1):  # note: non-reverse order assumed in Extrapolated
                 for j in range(0, nj + 2 * halo):
                     focus = (i, j)
                     set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, 1))
-            for i in range(ni + 1 + halo - 1, ni + 1 + 2 * (halo - 1)):
+            for i in range(ni + 1 + halo - 1, ni + 1 + 2 * (halo - 1)):  # note: non-reverse order assumed in Extrapolated
                 for j in range(0, nj + 2 * halo):
                     focus = (i, j)
                     set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, -1))
@@ -189,11 +189,11 @@ class Traversals:
             if halo_valid[0]:
                 return
 
-            for i in range(halo - 1, 0 - 1, -1):  # TODO: reverse order assumes in Extrapolated!
+            for i in range(halo - 1, 0 - 1, -1):  # note: reverse order assumes in Extrapolated!
                 for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
                     focus = (i, j)
                     set(psi, i, j, fun_0((focus, psi), ni, 1))
-            for i in range(ni + halo, ni + 2 * halo):  # TODO: non-reverse order assumed in Extrapolated
+            for i in range(ni + halo, ni + 2 * halo):  # note: non-reverse order assumed in Extrapolated
                 for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
                     focus = (i, j)
                     set(psi, i, j, fun_0((focus, psi), ni, -1))
@@ -210,3 +210,13 @@ class Traversals:
             halo_valid[0] = True
 
         return boundary_cond_scalar, boundary_cond_vector
+
+
+@numba.njit(**jit_flags)
+def null_scalar_formula(_, __, ___):
+    return 44.
+
+
+@numba.njit(**jit_flags)
+def null_vector_formula(_, __, ___, ____):
+    return 666.

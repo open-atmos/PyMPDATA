@@ -93,33 +93,18 @@ def make_null():
     return np.empty(0, dtype=np.float64)
 
 
-# TODO: remove at0, at1, ... - use only at[0], at[1]
 class Indexers1d:
-    at0 = at_1d
-    at1 = at_1d  # TODO: redundant
     at = (at_1d, at_1d)
-    atv0 = atv_1d
-    atv1 = atv_1d  # TODO: redundant
     atv = (atv_1d, atv_1d)
     set = set_1d
     get = get_1d
 
 
-# TODO: remove at0, at1, ... - use only at[0], at[1]
 class Indexers2d:
-    at0 = at_2d_axis0
-    at1 = at_2d_axis1
     at = (at_2d_axis0, at_2d_axis1)
-    atv0 = atv_2d_axis0
-    atv1 = atv_2d_axis1
     atv = (atv_2d_axis0, atv_2d_axis1)
     set = set_2d
     get = get_2d
 
 
 indexers = (None, Indexers1d, Indexers2d)
-
-
-@numba.njit(**jit_flags)
-def null_formula(_, __, ___):
-    return 44.

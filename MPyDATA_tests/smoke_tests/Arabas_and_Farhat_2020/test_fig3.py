@@ -1,4 +1,4 @@
-from MPyDATA_examples_off.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import convergence_in_time
+from MPyDATA_examples.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import convergence_in_time
 import pytest
 import numpy as np
 
@@ -23,4 +23,4 @@ class TestFig3:
             if key.startswith("MPDATA"):
                 x, y = value[0], value[1]
                 slope = np.diff(y) / np.diff(x)
-                np.testing.assert_almost_equal(slope, 1.3, 1)  # TODO: 2.5
+                np.testing.assert_almost_equal(slope, 2.7, 1)

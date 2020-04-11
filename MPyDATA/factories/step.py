@@ -18,7 +18,6 @@ def make_step(*,
               halo,
               non_unit_g_factor=False
               ):
-
     n_dims = len(grid)
     n_iters = options.n_iters
     mu_coeff = options.mu_coeff

@@ -1,5 +1,6 @@
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
+from MPyDATA.arakawa_c.boundary_condition.cyclic import Cyclic
 from MPyDATA.mpdata_factory import make_step
 from MPyDATA.options import Options
 from MPyDATA.mpdata import MPDATA
@@ -30,8 +31,8 @@ def test_upwind(shape, ij0, out, C, halo):
         np.full((shape[0] + 1, shape[1]), C[0]),
         np.full((shape[0], shape[1] + 1), C[1])
     )
-    state = ScalarField(scalar_field_init, halo=halo)
-    GC_field = VectorField(vector_field_init, halo=halo)
+    state = ScalarField(scalar_field_init, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
+    GC_field = VectorField(vector_field_init, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
 
     options = Options(n_iters=1)
     mpdata = MPDATA(options=options, step_impl=make_step(options=options, grid=shape, halo=halo), advector=GC_field, advectee=state)
