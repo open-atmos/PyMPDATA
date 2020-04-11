@@ -15,7 +15,6 @@ class SizeDistribution:
                 (1 / self.si.centimetre ** 3)
         )
 
-    # TODO: rename pdf_n
     def pdf(self, r):
         return (
                 (700 * self.si.micrometre) / r *
