@@ -22,7 +22,7 @@ def compute_row(T, S0):
 
 def table_1_data():
     with parallel_backend('threading', n_jobs=-2):
-        result = Parallel()(
+        result = Parallel(verbose=10)(
             delayed(compute_row)(T, S0)
             for T in (.25, .5, 3)
             for S0 in (80, 90, 100, 110, 120)

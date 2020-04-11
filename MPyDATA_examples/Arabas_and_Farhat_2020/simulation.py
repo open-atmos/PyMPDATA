@@ -59,21 +59,22 @@ class Simulation:
             boundary_conditions=Extrapolated()
         )
 
-
     def run(self, n_iters: int):
-        psi = self.solvers[n_iters].curr.get()
-        f_T = np.empty_like(psi)
-        f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
-        t = self.setup.T
-
-        for _ in range(self.nt):
-            self.solvers[n_iters].step(1)
-            if self.setup.amer:
+        if self.setup.amer:
+            psi = self.solvers[n_iters].curr.get()
+            f_T = np.empty_like(psi)
+            f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
+            t = self.setup.T
+            for _ in range(self.nt):
+                self.solvers[n_iters].step(1)
                 psi = self.solvers[n_iters].curr.get()
                 t -= self.dt
                 psi[:] += np.maximum(psi[:], f_T[:]/np.exp(self.setup.r * t)) - psi[:]
+        else:
+            self.solvers[n_iters].step(self.nt)
 
         return self.solvers[n_iters].curr.get()
+
 
     def terminal_value(self):
         return self.solvers[1].curr.get()

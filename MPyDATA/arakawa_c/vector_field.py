@@ -25,6 +25,8 @@ class VectorField:
             [(boundary_conditions[i] if i < self.n_dims else Constant(np.nan)).make_vector(indexers[self.n_dims].at[i])
              for i in range(MAX_DIM_NUM)])
         self.halo_valid = make_flag(False)
+        self.comp_0 = self.data[0]
+        self.comp_1 = self.data[1] if self.n_dims > 1 else make_null()
 
     @staticmethod
     def clone(field):
@@ -46,9 +48,7 @@ class VectorField:
 
     @property
     def impl(self):
-        comp_0 = self.data[0]
-        comp_1 = self.data[1] if self.n_dims > 1 else make_null()
-        return (self.halo_valid, comp_0, comp_1), self.fill_halos
+        return (self.halo_valid, self.comp_0, self.comp_1), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):
