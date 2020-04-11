@@ -54,7 +54,7 @@ def compute_figure_data(*, nr, dt, psi_coord=x_id(),
                 r = data.pop('r')
                 dx = data.pop('dx')
                 if 'grid' not in output[coord]:
-                    output[coord]["grid"] = {'rh': rh, 'r': r, 'dx': dx}
+                    output[coord]["grid"] = {'rh': rh, 'r': r, 'dx': dx, 'dt': dt}
                 output[coord]["numerical"][opts] = data['n']
 
     for coord in coords:
