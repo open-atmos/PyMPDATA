@@ -64,4 +64,4 @@ def convergence_in_time(num=13):
 def error_L2_norm(solvers, setup, S, nt, nx, n_iters: int):
     numerical = solvers[n_iters].curr.get()
     analytical = setup.analytical_solution(S)
-    return L2(numerical, analytical, nt, nx)
+    return L2(numerical, analytical, nt)

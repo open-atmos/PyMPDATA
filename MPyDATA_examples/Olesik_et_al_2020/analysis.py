@@ -1,5 +1,5 @@
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_ln, x_p2
-from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_dt
+from MPyDATA_examples.Olesik_et_al_2020.setup import Setup
 from MPyDATA.options import Options
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
@@ -73,7 +73,7 @@ def compute_figure_data(*, nr, dt, psi_coord=x_id(),
         analytical = output[coord]["analytical"]
         for opts in output[coord]["numerical"]:
             numerical = output[coord]["numerical"][opts]
-            error_L2[opts] = L2(numerical[-1].magnitude, analytical[-1].magnitude, setup.nt[-1], setup.nr)
+            error_L2[opts] = L2(numerical[-1].magnitude, analytical[-1].magnitude, setup.nt[-1])
         output[coord]["error_L2"] = error_L2
 
         # # TODO: calculate norms for mass and number

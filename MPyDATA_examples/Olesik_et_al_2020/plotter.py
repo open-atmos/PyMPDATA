@@ -82,7 +82,7 @@ class Plotter:
                 where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth = linewidth
             )
 
-        # normalised surface distribution # TODO: norm
+        # surface distribution # TODO: norm
         if 's' in self.plots:
             self.axs[self.plots.index('s')].step(
                 x,
