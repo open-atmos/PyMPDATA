@@ -23,6 +23,7 @@ def data():
 @pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_p3()])
 @pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_p3()])
 @pytest.mark.parametrize("flux_corrected_transport", [False, True])
+@pytest.mark.skip()
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
     opts = Options(flux_corrected_transport = flux_corrected_transport)
