@@ -24,6 +24,7 @@ jobs:
       os: windows
       before_install:
         - choco install python --version 3.8
+        - choco install pip
         - python -m pip install --upgrade pip
       env: PATH=/c/Python37:/c/Python38/Scripts:$PATH
 
