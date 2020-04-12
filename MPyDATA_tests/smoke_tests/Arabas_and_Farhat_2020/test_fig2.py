@@ -10,7 +10,6 @@ def l2err_vs_l2C():
 
 class TestFig2:
     @staticmethod
-    @pytest.mark.skip()
     def test_upwind_1st_order(l2err_vs_l2C):
         for key, value in l2err_vs_l2C.items():
             if key.startswith("upwind"):
@@ -19,7 +18,6 @@ class TestFig2:
                 np.testing.assert_almost_equal(slope, 2, 1)
 
     @staticmethod
-    @pytest.mark.skip()
     def test_mpdata_2nd_order(l2err_vs_l2C):
         for key, value in l2err_vs_l2C.items():
             if key.startswith("MPDATA"):
