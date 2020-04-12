@@ -3,7 +3,8 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import make_flag, indexers, MAX_DIM_NUM
+from .indexers import indexers, MAX_DIM_NUM
+from .traversals import make_meta, meta_halo_valid
 from ..arakawa_c.boundary_condition.constant import Constant
 
 
@@ -19,7 +20,7 @@ class ScalarField:
             [(boundary_conditions[i] if i < self.n_dims else Constant(np.nan)).make_scalar(indexers[self.n_dims].at[i], halo)
              for i in range(MAX_DIM_NUM)])
         self.boundary_conditions = boundary_conditions
-        self.flag = make_flag(False)
+        self.meta = make_meta(False, data.shape)
 
     @staticmethod
     def clone(field):
@@ -31,10 +32,10 @@ class ScalarField:
 
     @property
     def impl(self):
-        return (self.flag, self.data), self.fill_halos
+        return (self.meta, self.data), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):
         null = ScalarField(np.empty([0]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)]*n_dims)
-        null.flag[0] = True
+        null.meta[meta_halo_valid] = True
         return null

@@ -5,12 +5,39 @@ Created at 20.03.2020
 import numba
 from MPyDATA.jit_flags import jit_flags
 from .indexers import indexers
+import numpy as np
+
+meta_halo_valid = 0
+meta_ni = 1
+meta_nj = 2
+
+
+def make_meta(halo_valid: bool, grid):
+    meta = np.empty(3, dtype=int)
+    meta[meta_halo_valid] = halo_valid
+    meta[meta_ni] = grid[0]
+    meta[meta_nj] = grid[1] if len(grid) > 1 else 0
+    return meta
+
+
+def make_grid(grid):
+    @numba.njit()
+    def grid_static(_):
+        return grid
+
+    @numba.njit()
+    def grid_dynamic(meta):
+        return meta[meta_ni], meta[meta_nj]
+
+    if grid[0] > 0:
+        return grid_static
+    else:
+        return grid_dynamic
 
 
 class Traversals:
-
     def __init__(self, grid, halo):
-        self.grid = grid
+        self.grid = make_grid(grid)
         self.n_dims = len(grid)
         self.halo = halo
         self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
@@ -30,8 +57,7 @@ class Traversals:
     def make_apply_scalar(self, loop):
         halo = self.halo
         n_dims = self.n_dims
-        ni = self.grid[0]
-        nj = self.grid[1] if n_dims > 1 else 0
+        grid = self.grid
         set = indexers[self.n_dims].set
         get = indexers[self.n_dims].get
         boundary_cond_vector = self._boundary_cond_vector
@@ -39,7 +65,8 @@ class Traversals:
 
         if loop:
             @numba.njit(**jit_flags)
-            def apply_scalar_impl(fun_0, fun_1,
+            def apply_scalar_impl(ni, nj,
+                                  fun_0, fun_1,
                                   out,
                                   vec_arg1_0, vec_arg1_1,
                                   scal_arg2, scal_arg3, scal_arg4
@@ -56,7 +83,8 @@ class Traversals:
                                                  (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
         else:
             @numba.njit(**jit_flags)
-            def apply_scalar_impl(fun_0, fun_1,
+            def apply_scalar_impl(ni, nj,
+                                  fun_0, fun_1,
                                   out,
                                   vec_arg1_0, vec_arg1_1,
                                   scal_arg2, scal_arg3, scal_arg4
@@ -70,32 +98,32 @@ class Traversals:
 
         @numba.njit(**jit_flags)
         def apply_scalar(fun_0, fun_1,
-                         out_flag, out,
-                         vec_arg1_flag, vec_arg1_0, vec_arg1_1, vec_arg1_bc0, vec_arg1_bc1,
-                         scal_arg2_flag, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1,
-                         scal_arg3_flag, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1,
-                         scal_arg4_flag, scal_arg_4, scal_arg4_bc0, scal_arg4_bc1):
-            boundary_cond_vector(vec_arg1_flag, vec_arg1_0, vec_arg1_1, vec_arg1_bc0, vec_arg1_bc1)
-            boundary_cond_scalar(scal_arg2_flag, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1)
-            boundary_cond_scalar(scal_arg3_flag, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1)
-            boundary_cond_scalar(scal_arg4_flag, scal_arg_4, scal_arg4_bc0, scal_arg4_bc1)
-            apply_scalar_impl(fun_0, fun_1, out, vec_arg1_0, vec_arg1_1, scal_arg_2, scal_arg_3, scal_arg_4)
-            out_flag[0] = False
+                         out_meta, out,
+                         vec_arg1_meta, vec_arg1_0, vec_arg1_1, vec_arg1_bc0, vec_arg1_bc1,
+                         scal_arg2_meta, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1,
+                         scal_arg3_meta, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1,
+                         scal_arg4_meta, scal_arg_4, scal_arg4_bc0, scal_arg4_bc1):
+            boundary_cond_vector(vec_arg1_meta, vec_arg1_0, vec_arg1_1, vec_arg1_bc0, vec_arg1_bc1)
+            boundary_cond_scalar(scal_arg2_meta, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1)
+            boundary_cond_scalar(scal_arg3_meta, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1)
+            boundary_cond_scalar(scal_arg4_meta, scal_arg_4, scal_arg4_bc0, scal_arg4_bc1)
+            ni, nj = grid(out_meta)
+            apply_scalar_impl(ni, nj, fun_0, fun_1, out, vec_arg1_0, vec_arg1_1, scal_arg_2, scal_arg_3, scal_arg_4)
+            out_meta[meta_halo_valid] = False
 
         return apply_scalar
 
     def make_apply_vector(self):
         halo = self.halo
         n_dims = self.n_dims
-        ni = self.grid[0]
-        nj = self.grid[1] if n_dims > 1 else 0
+        grid = self.grid
         set = indexers[self.n_dims].set
         boundary_cond_vector = self._boundary_cond_vector
         boundary_cond_scalar = self._boundary_cond_scalar
 
-
         @numba.njit(**jit_flags)
-        def apply_vector_impl(fun0_0, fun0_1,
+        def apply_vector_impl(ni, nj,
+                              fun0_0, fun0_1,
                               out_0, out_1,
                               scal_arg1,
                               vec_arg2_0, vec_arg2_1,
@@ -115,37 +143,41 @@ class Traversals:
         @numba.njit(**jit_flags)
         def apply_vector(
                 fun0_0, fun0_1,
-                out_flag, out_0, out_1,
-                scal_arg1_flag, scal_arg1, scal_arg1_bc0, scal_arg1_bc1,
-                vec_arg2_flag, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1,
-                scal_arg3_flag, scal_arg3, scal_arg3_bc0, scal_arg3_bc1,
+                out_meta, out_0, out_1,
+                scal_arg1_meta, scal_arg1, scal_arg1_bc0, scal_arg1_bc1,
+                vec_arg2_meta, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1,
+                scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1,
         ):
-            boundary_cond_scalar(scal_arg1_flag, scal_arg1, scal_arg1_bc0, scal_arg1_bc1)
-            boundary_cond_vector(vec_arg2_flag, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1)
-            boundary_cond_scalar(scal_arg3_flag, scal_arg3, scal_arg3_bc0, scal_arg3_bc1)
+            boundary_cond_scalar(scal_arg1_meta, scal_arg1, scal_arg1_bc0, scal_arg1_bc1)
+            boundary_cond_vector(vec_arg2_meta, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1)
+            boundary_cond_scalar(scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1)
 
+            ni, nj = grid(out_meta)
             apply_vector_impl(
+                ni, nj,
                 fun0_0, fun0_1,
                 out_0, out_1,
                 scal_arg1,
                 vec_arg2_0, vec_arg2_1,
                 scal_arg3
             )
-            out_flag[0] = False
+            out_meta[meta_halo_valid] = False
 
         return apply_vector
 
     def make_boundary_conditions(self):
         halo = self.halo
         n_dims = self.n_dims
-        ni = self.grid[0]
-        nj = self.grid[1] if n_dims > 1 else 0
         set = indexers[self.n_dims].set
+        grid = self.grid
 
         @numba.njit(**jit_flags)
-        def boundary_cond_vector(halo_valid, comp_0, comp_1, fun_0, fun_1):
-            if halo_valid[0]:
+        def boundary_cond_vector(meta, comp_0, comp_1, fun_0, fun_1):
+            if meta[meta_halo_valid]:
                 return
+
+            ni, nj = grid(meta)
+
             for i in range(halo - 2, -1, -1):  # note: non-reverse order assumed in Extrapolated
                 for j in range(0, nj + 2 * halo):
                     focus = (i, j)
@@ -182,12 +214,14 @@ class Traversals:
                         focus = (i, j)
                         set(comp_1, i, j, fun_0((focus, comp_1), ni, -1))
 
-            halo_valid[0] = True
+            meta[meta_halo_valid] = True
 
         @numba.njit(**jit_flags)
-        def boundary_cond_scalar(halo_valid, psi, fun_0, fun_1):
-            if halo_valid[0]:
+        def boundary_cond_scalar(meta, psi, fun_0, fun_1):
+            if meta[meta_halo_valid]:
                 return
+
+            ni, nj = grid(meta)
 
             for i in range(halo - 1, 0 - 1, -1):  # note: reverse order assumes in Extrapolated!
                 for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
@@ -207,7 +241,7 @@ class Traversals:
                         focus = (i, j)
                         set(psi, i, j, fun_1((focus, psi), nj, -1))
 
-            halo_valid[0] = True
+            meta[meta_halo_valid] = True
 
         return boundary_cond_scalar, boundary_cond_vector
 
