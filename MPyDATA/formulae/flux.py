@@ -9,8 +9,8 @@ Created at 11.10.2019
 import numpy as np
 from MPyDATA.jit_flags import jit_flags
 import numba
-from MPyDATA.arakawa_c.utils import indexers, null_formula
-
+from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.traversals import null_vector_formula
 
 @numba.njit(**jit_flags)
 def minimum_0(c):
@@ -26,10 +26,11 @@ def make_flux_first_pass(traversals):
     idx = indexers[traversals.n_dims]
     apply_vector = traversals.apply_vector()
 
-    formulae_flux_first_pass = (
-        __make_flux(idx.atv0, idx.at0, first_pass=True, infinite_gauge=False),
-        __make_flux(idx.atv1, idx.at1, first_pass=True, infinite_gauge=False)
-    )
+    formulae_flux_first_pass = tuple([
+        __make_flux(idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
+        if i < traversals.n_dims else null_vector_formula
+        for i in range(MAX_DIM_NUM)
+    ])
 
     @numba.njit(**jit_flags)
     def apply(vectmp_a, GC_phys, psi, psi_bc, vec_bc):
@@ -51,8 +52,8 @@ def make_flux_subsequent(options, traversals):
         apply_vector = traversals.apply_vector()
 
         formulae_flux_subsequent = (
-            __make_flux(idx.atv0, idx.at0, first_pass=False, infinite_gauge=options.infinite_gauge),
-            __make_flux(idx.atv1, idx.at1, first_pass=False, infinite_gauge=options.infinite_gauge)
+            __make_flux(idx.atv[0], idx.at[0], first_pass=False, infinite_gauge=options.infinite_gauge),
+            __make_flux(idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge)
         )
 
         @numba.njit(**jit_flags)

@@ -18,7 +18,6 @@ def make_step(*,
               halo,
               non_unit_g_factor=False
               ):
-
     n_dims = len(grid)
     n_iters = options.n_iters
     mu_coeff = options.mu_coeff
@@ -97,4 +96,6 @@ def make_step(*,
                         fct_correction(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc)
                         flux_subsequent(flux, psi, psi_bc, GC_corr, vec_bc)
                 upwind(psi, flux, vec_bc, g_factor, g_factor_bc)
+            if mu_coeff != 0:
+                GC_phys = GC_orig
     return step

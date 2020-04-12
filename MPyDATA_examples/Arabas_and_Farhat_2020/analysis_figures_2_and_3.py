@@ -1,5 +1,5 @@
-from MPyDATA_examples_off.Arabas_and_Farhat_2020.simulation import Simulation
-from MPyDATA_examples_off.Arabas_and_Farhat_2020.setup1_european_corridor import Setup
+from MPyDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
+from MPyDATA_examples.Arabas_and_Farhat_2020.setup1_european_corridor import Setup
 from joblib import Parallel, delayed, parallel_backend
 import numpy as np
 
@@ -23,9 +23,9 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
     return output
 
 
-def  convergence_in_space(num=8):
+def convergence_in_space(num=8):
     with parallel_backend('threading', n_jobs=-2):
-        data = Parallel()(
+        data = Parallel(verbose=10)(
             delayed(compute)(log2_l2_opt, log2_C_opt)
             for log2_C_opt in np.linspace(-9.5, -6, num=num)
             for log2_l2_opt in range(1, 4)
@@ -44,7 +44,7 @@ def  convergence_in_space(num=8):
 
 def convergence_in_time(num=13):
     with parallel_backend('threading', n_jobs=-2):
-        data = Parallel()(
+        data = Parallel(verbose=10)(
             delayed(compute)(log2_l2_opt, log2_C_opt)
             for log2_C_opt in np.log2((.01, .005, .0025))
             for log2_l2_opt in np.linspace(1.1, 3.5, num=num)
@@ -64,4 +64,4 @@ def convergence_in_time(num=13):
 def error_L2_norm(solvers, setup, S, nt, nx, n_iters: int):
     numerical = solvers[n_iters].curr.get()
     analytical = setup.analytical_solution(S)
-    return L2(numerical, analytical, nt, nx)
+    return L2(numerical, analytical, nt)

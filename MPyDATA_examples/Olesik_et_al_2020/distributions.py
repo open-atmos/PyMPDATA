@@ -1,7 +1,6 @@
 import numpy as np
 
 
-# TODO: rename n_n -> number...; n_m -> mass...
 class n_n:
     @staticmethod
     def to_n_n(y, _, __):

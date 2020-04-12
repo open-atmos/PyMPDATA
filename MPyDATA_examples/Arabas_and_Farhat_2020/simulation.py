@@ -1,4 +1,4 @@
-from MPyDATA_examples_off.Arabas_and_Farhat_2020.options import OPTIONS
+from MPyDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
 from MPyDATA.mpdata_factory import MPDATAFactory
 from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
 from MPyDATA.options import Options
@@ -50,30 +50,31 @@ class Simulation:
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, mu_coeff=mu_coeff),
-            boundary_conditions=Extrapolated
+            boundary_conditions=Extrapolated()
         )
         self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS, mu_coeff=mu_coeff),
-            boundary_conditions=Extrapolated
+            boundary_conditions=Extrapolated()
         )
 
-
     def run(self, n_iters: int):
-        psi = self.solvers[n_iters].curr.get()
-        f_T = np.empty_like(psi)
-        f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
-        t = self.setup.T
-
-        for _ in range(self.nt):
-            self.solvers[n_iters].step(1)
-            if self.setup.amer:
+        if self.setup.amer:
+            psi = self.solvers[n_iters].curr.get()
+            f_T = np.empty_like(psi)
+            f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
+            t = self.setup.T
+            for _ in range(self.nt):
+                self.solvers[n_iters].step(1)
                 psi = self.solvers[n_iters].curr.get()
                 t -= self.dt
                 psi[:] += np.maximum(psi[:], f_T[:]/np.exp(self.setup.r * t)) - psi[:]
+        else:
+            self.solvers[n_iters].step(self.nt)
 
         return self.solvers[n_iters].curr.get()
+
 
     def terminal_value(self):
         return self.solvers[1].curr.get()

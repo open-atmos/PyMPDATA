@@ -16,7 +16,8 @@ from .options import Options
 from MPyDATA.factories.step import make_step
 from .arakawa_c.discretisation import nondivergent_vector_field_2d, discretised_analytical_solution
 from .arakawa_c.boundary_condition.extrapolated import Extrapolated
-from .arakawa_c.boundary_condition.zero import Zero
+from .arakawa_c.boundary_condition.constant import Constant
+from .arakawa_c.boundary_condition.cyclic import Cyclic
 
 
 class MPDATAFactory:
@@ -34,8 +35,8 @@ class MPDATAFactory:
         mpdata = MPDATA(
             options=options,
             step_impl=make_step(options=options, grid=data.shape, halo=halo, non_unit_g_factor=False),
-            advectee=ScalarField(data, halo=halo),
-            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo)
+            advectee=ScalarField(data, halo=halo, boundary_conditions=(Cyclic(),)),
+            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo, boundary_conditions=(Cyclic(),))
         )
         return mpdata
 
@@ -47,8 +48,8 @@ class MPDATAFactory:
             np.full((grid[0] + 1, grid[1]), C[0]),
             np.full((grid[0], grid[1] + 1), C[1])
         ]
-        GC = VectorField(GC_data, halo=halo)
-        state = ScalarField(data=data, halo=halo)
+        GC = VectorField(GC_data, halo=halo, boundary_conditions=(Cyclic(),Cyclic()))
+        state = ScalarField(data=data, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
         step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
         mpdata = MPDATA(options=options, step_impl=step, advectee=state, advector=GC)
         return mpdata
@@ -58,7 +59,7 @@ class MPDATAFactory:
         halo = MPDATAFactory.n_halo(options)
         step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
-        advectee = ScalarField(field, halo=halo)
+        advectee = ScalarField(field, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
         return MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC)
 
     @staticmethod
@@ -66,10 +67,10 @@ class MPDATAFactory:
         halo = MPDATAFactory.n_halo(options)
         step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
-        g_factor = ScalarField(g_factor, halo=halo)
+        g_factor = ScalarField(g_factor, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
         mpdatas = {}
         for k, v in field_values.items():
-            advectee = ScalarField(np.full(grid, v), halo=halo)
+            advectee = ScalarField(np.full(grid, v), halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
             mpdatas[k] = MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, EulerianFields(mpdatas)
 
@@ -128,10 +129,9 @@ class MPDATAFactory:
         np.testing.assert_array_less(np.abs(GCh), 1)
 
         n_halo = MPDATAFactory.n_halo(opts)
-        # TODO: implementation leak: the double bc are for 2D
-        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=(Extrapolated, Extrapolated))
-        state = ScalarField(psi, halo=n_halo, boundary_conditions=(Zero, Zero))
-        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=(Zero, Zero))
+        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=(Extrapolated(), Extrapolated()))
+        state = ScalarField(psi, halo=n_halo, boundary_conditions=(Constant(0), Constant(0)))
+        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=(Constant(0), Constant(0)))
         stepper = make_step(
             options=opts,
             grid=psi.shape,

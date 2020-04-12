@@ -3,11 +3,11 @@ from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation i
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.setup import Setup
 from MPyDATA.options import Options
 
-# TODO
+
 options = {
     'a': Options(n_iters=-1),
     'b': Options(n_iters=2, flux_corrected_transport=True),
-    'c': Options(n_iters=3, flux_corrected_transport=True),  # TODO: tot=True
+    'c': Options(n_iters=3, flux_corrected_transport=True, third_order_terms=True),
     'd': Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True)
 }
 
