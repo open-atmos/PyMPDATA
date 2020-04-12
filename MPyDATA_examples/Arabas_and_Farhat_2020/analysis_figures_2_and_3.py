@@ -39,6 +39,7 @@ def convergence_in_space(num=8):
                     result[key] = ([], [])
                 result[key][0].append(datum["log2_C"])
                 result[key][1].append(datum["err2"])
+                print(key)
         return result
 
 
@@ -58,6 +59,7 @@ def convergence_in_time(num=13):
                     result[key] = ([], [])
                 result[key][0].append(datum['log2_l2'])
                 result[key][1].append(datum['err2'])
+                print(key)
         return result
 
 
