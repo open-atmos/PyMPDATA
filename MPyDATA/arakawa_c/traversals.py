@@ -37,7 +37,7 @@ def make_grid(grid):
 
 class Traversals:
     def __init__(self, grid, halo):
-        self.grid = make_grid(grid)
+        self.grid = make_grid((grid[0], grid[1] if len(grid) > 1 else 0))
         self.n_dims = len(grid)
         self.halo = halo
         self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
