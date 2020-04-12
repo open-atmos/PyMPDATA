@@ -10,6 +10,7 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
     simulation = Simulation(Setup(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt))
     output = []
     for n_iters in (1, 2):
+        print(log2_l2_opt, log2_C_opt)
         simulation.run(n_iters)
         output.append({
             "n_iters": n_iters,
@@ -39,7 +40,6 @@ def convergence_in_space(num=8):
                     result[key] = ([], [])
                 result[key][0].append(datum["log2_C"])
                 result[key][1].append(datum["err2"])
-                print(key)
         return result
 
 
@@ -59,7 +59,6 @@ def convergence_in_time(num=13):
                     result[key] = ([], [])
                 result[key][0].append(datum['log2_l2'])
                 result[key][1].append(datum['err2'])
-                print(key)
         return result
 
 
