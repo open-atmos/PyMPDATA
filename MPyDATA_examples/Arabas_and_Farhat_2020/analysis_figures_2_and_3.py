@@ -10,7 +10,6 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
     simulation = Simulation(Setup(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt))
     output = []
     for n_iters in (1, 2):
-        print(log2_l2_opt, log2_C_opt)
         simulation.run(n_iters)
         output.append({
             "n_iters": n_iters,
