@@ -34,7 +34,7 @@ class MPDATAFactory:
 
         mpdata = MPDATA(
             options=options,
-            step_impl=make_step(options=options, n_dims=data.dimension, halo=halo, non_unit_g_factor=False),
+            step_impl=make_step(options=options, n_dims=len(data.shape), halo=halo, non_unit_g_factor=False),
             advectee=ScalarField(data, halo=halo, boundary_conditions=(Cyclic(),)),
             advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo, boundary_conditions=(Cyclic(),))
         )
