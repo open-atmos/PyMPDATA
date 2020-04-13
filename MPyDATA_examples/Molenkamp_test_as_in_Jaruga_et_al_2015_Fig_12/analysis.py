@@ -5,17 +5,17 @@ from MPyDATA.options import Options
 
 
 options = {
-    'a': Options(n_iters=-1),
-    'b': Options(n_iters=2, flux_corrected_transport=True),
-    'c': Options(n_iters=3, flux_corrected_transport=True, third_order_terms=True),
-    'd': Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True)
+    'upwind': Options(n_iters=-1),
+    '2+fct': Options(n_iters=2, flux_corrected_transport=True),
+    '3+fct+tot': Options(n_iters=3, flux_corrected_transport=True, third_order_terms=True),
+    '2+fct+iga': Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True)
 }
 
 
 def compute_panel(panel):
     setup = Setup(n_rotations=6)
     simulation = Simulation(setup, options[panel])
-    if panel == 'a':
+    if panel == 'upwind':
         return simulation.state
     simulation.run()
     return simulation.state
@@ -24,6 +24,6 @@ def compute_panel(panel):
 def fig_12_data():
     data = Parallel(n_jobs=-2)(
         delayed(compute_panel)(panel)
-        for panel in ['a', 'b', 'c', 'd']
+        for panel in ['upwind', '2+fct', '3+fct+tot', '2+fct+iga']
     )
     return data

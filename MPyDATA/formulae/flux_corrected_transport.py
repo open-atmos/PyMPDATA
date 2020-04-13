@@ -67,9 +67,19 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
 
 def __make_beta(n_dims, at, atv, non_unit_g_factor, epsilon, extremum):
     sign = -1 if extremum == min else 1
-    @numba.njit(**jit_flags)
-    def denominator(flux):
-        return max(atv(*flux, sign*(-.5), 0), 0) - min(atv(*flux, sign*(+.5), 0), 0) + epsilon
+    if n_dims == 1:
+        @numba.njit(**jit_flags)
+        def denominator(flux):
+            return max(atv(*flux, sign*(-.5), 0), 0) - min(atv(*flux, sign*(+.5), 0), 0) + epsilon
+    elif n_dims == 2:
+        @numba.njit(**jit_flags)
+        def denominator(flux):
+
+            return  max(atv(*flux, sign * (-.5), 0), 0) - min(atv(*flux, sign * (+.5), 0), 0)  \
+                    + max(atv(*flux, 0, sign * (-.5)), 0) - min(atv(*flux, 0, sign * (+.5)), 0)  \
+                    + epsilon
+    else:
+        raise NotImplementedError()
 
     if non_unit_g_factor:
         @numba.njit(**jit_flags)
@@ -86,6 +96,7 @@ def __make_beta(n_dims, at, atv, non_unit_g_factor, epsilon, extremum):
             return ((extremum(at(*psi_ext, 0, 0), at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0))
                      - at(*psi, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux)
+
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, flux, psi, psi_ext, g_factor):
