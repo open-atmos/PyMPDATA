@@ -15,7 +15,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict):
     simulation = Simulation(setup, grid_layout, psi_coord, options)
     result = {"n": [], "n_analytical": [], "error_norm_L2": []}
     last_step = 0
-    for n_steps in setup.nt:
+    for n_steps in setup.nt: # TODO: limit # of calcs for convergence tests for making it quicker
         steps = n_steps - last_step
         simulation.step(steps)
         last_step += steps
