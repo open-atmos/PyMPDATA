@@ -1,5 +1,4 @@
 import numba
-from MPyDATA.jit_flags import jit_flags
 
 
 class Constant:
@@ -9,7 +8,7 @@ class Constant:
     def make_scalar(self, _at, _halo):
         value = self._value
 
-        @numba.njit(**jit_flags)
+        @numba.njit()
         def fill_halos(_, __, ___):
             return value
         return fill_halos

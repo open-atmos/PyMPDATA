@@ -3,7 +3,6 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.jit_flags import jit_flags
 from MPyDATA.formulae.upwind import make_upwind
 from MPyDATA.formulae.flux import make_flux_first_pass, make_flux_subsequent
 from MPyDATA.formulae.laplacian import make_laplacian
@@ -12,6 +11,13 @@ from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_be
 from MPyDATA.arakawa_c.traversals import Traversals, meta_halo_valid
 from MPyDATA.options import Options
 from functools import lru_cache
+from numba.core.errors import NumbaExperimentalFeatureWarning
+import warnings
+
+warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
+
+# import os
+# os.environ["NUMBA_DISABLE_JIT"] = "1"
 
 
 def make_step(*,
@@ -39,10 +45,10 @@ def make_step_impl(options, non_unit_g_factor, grid):
     non_zero_mu_coeff = options.non_zero_mu_coeff
     flux_corrected_transport = options.flux_corrected_transport
 
-    traversals = Traversals(grid, halo)
+    traversals = Traversals(grid, halo, options.jit_flags)
 
-    upwind = make_upwind(non_unit_g_factor, traversals)
-    flux_first_pass = make_flux_first_pass(traversals)
+    upwind = make_upwind(options, non_unit_g_factor, traversals)
+    flux_first_pass = make_flux_first_pass(options, traversals)
     flux_subsequent = make_flux_subsequent(options, traversals)
     antidiff = make_antidiff(non_unit_g_factor, options, traversals)
     laplacian = make_laplacian(non_unit_g_factor, options, traversals)
@@ -52,14 +58,14 @@ def make_step_impl(options, non_unit_g_factor, grid):
     fct_beta_up = make_beta(max, non_unit_g_factor, options, traversals)
     fct_correction = make_correction(options, traversals)
 
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def axpy(out_meta, out0, out1, a, x_meta, x0, x1, y_meta, y0, y1):
         out0[:] = a * x0[:] + y0[:]
         if n_dims > 1:
             out1[:] = a * x1[:] + y1[:]
         out_meta[meta_halo_valid] = False
 
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def step(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,

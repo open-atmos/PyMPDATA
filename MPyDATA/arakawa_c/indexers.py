@@ -4,7 +4,6 @@ Created at 12.03.2020
 
 import numba
 import numpy as np
-from MPyDATA.jit_flags import jit_flags
 
 MAX_DIM_NUM = 2
 
@@ -13,33 +12,34 @@ f_i = 0
 f_j = f_i + 1
 f_d = f_j + 1
 
+
 @numba.njit([numba.boolean(numba.float64),
              numba.boolean(numba.int64)])
 def _is_integral(n):
     return int(n * 2.) % 2 == 0
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def at_1d(focus, arr, i, _):
     return arr[focus[f_i] + i]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def at_2d_axis0(focus, arr, i, j):
     return arr[focus[f_i] + i, focus[f_j] + j]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def at_2d_axis1(focus, arr, i, j):
     return arr[focus[f_i] + j, focus[f_j] + i]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def atv_1d(focus, arrs, i, _):
     return arrs[0][focus[f_i] + int(i - .5)]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def atv_2d_axis0(focus, arrs, i, j):
     if _is_integral(i):
         d = 1
@@ -52,7 +52,7 @@ def atv_2d_axis0(focus, arrs, i, j):
     return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def atv_2d_axis1(focus, arrs, i, j):
     if _is_integral(j):
         d = 1
@@ -65,22 +65,22 @@ def atv_2d_axis1(focus, arrs, i, j):
     return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def set_1d(arr, i, _, value):
     arr[i] = value
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def set_2d(arr, i, j, value):
     arr[i, j] = value
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def get_1d(arr, i, _):
     return arr[i]
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def get_2d(arr, i, j):
     return arr[i, j]
 

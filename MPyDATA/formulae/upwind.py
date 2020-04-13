@@ -6,18 +6,17 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.jit_flags import jit_flags
 import numba
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
 
 
-def make_upwind(non_unit_g_factor, traversals):
+def make_upwind(options, non_unit_g_factor, traversals):
     apply_scalar = traversals.apply_scalar(loop=True)
     idx = indexers[traversals.n_dims]
 
-    formulae_upwind = tuple([__make_upwind(idx.atv[i], idx.at[i], non_unit_g_factor) for i in range(MAX_DIM_NUM)])
+    formulae_upwind = tuple([__make_upwind(options.jit_flags, idx.atv[i], idx.at[i], non_unit_g_factor) for i in range(MAX_DIM_NUM)])
 
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def apply(psi, flux, vec_bc, g_factor, g_factor_bc):
         null_scalfield = g_factor
         null_scalfield_bc = g_factor_bc
@@ -27,7 +26,7 @@ def make_upwind(non_unit_g_factor, traversals):
     return apply
 
 
-def __make_upwind(atv, at, nug):
+def __make_upwind(jit_flags, atv, at, nug):
     @numba.njit(**jit_flags)
     def upwind(init, flux, g_factor, _, __):
         result = \

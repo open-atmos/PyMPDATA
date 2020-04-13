@@ -61,3 +61,11 @@ class Options:
             return 2
         else:
             return 1
+
+    @property
+    def jit_flags(self):
+        return {
+            "fastmath": True,
+            "error_model": 'numpy',
+            "boundscheck": False,
+        }

@@ -4,14 +4,13 @@ Created at 03.2020
 
 import numba
 import numpy as np
-from MPyDATA.jit_flags import jit_flags
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
 from MPyDATA.arakawa_c.traversals import null_vector_formula
 
 
 def make_antidiff(non_unit_g_factor, options, traversals):
     if options.n_iters <= 1:
-        @numba.njit(**jit_flags)
+        @numba.njit(**options.jit_flags)
         def apply(_GC_corr, _psi, _psi_bc, _GC_unco, _vec_bc, _g_factor, _g_factor_bc):
             return
     else:
@@ -26,7 +25,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
             if i < traversals.n_dims else null_vector_formula
             for i in range(MAX_DIM_NUM)])
 
-        @numba.njit(**jit_flags)
+        @numba.njit(**options.jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
             return apply_vector(*formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
                                 *g_factor, *g_factor_bc)
@@ -41,7 +40,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
     epsilon = options.epsilon
 
     # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def A(psi):
         result = at(*psi, 1, 0) - at(*psi, 0, 0)
         if infinite_gauge:
@@ -51,7 +50,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
         return result
 
     # eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def B(psi):
         result = (
                 at(*psi, 1, 1) + at(*psi, 0, 1) -
@@ -67,7 +66,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
             )
         return result
 
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def antidiff_basic(psi, GC, _):
         # eq. 13 in Smolarkiewicz 1984
         result = (np.abs(atv(*GC, .5, 0.)) - atv(*GC, +.5, 0.) ** 2) * A(psi)
@@ -81,7 +80,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
             )
         return result
 
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def antidiff_variants(psi, GC, G):
         # eq. 13 in Smolarkiewicz 1984
         result = antidiff_basic(psi, GC, G)

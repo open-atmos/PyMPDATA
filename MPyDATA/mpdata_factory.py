@@ -13,7 +13,7 @@ from .arakawa_c.scalar_field import ScalarField
 from .eulerian_fields import EulerianFields
 from .mpdata import MPDATA
 from .options import Options
-from MPyDATA.factories.step import make_step
+from MPyDATA.formulae.step import make_step
 from .arakawa_c.discretisation import nondivergent_vector_field_2d, discretised_analytical_solution
 from .arakawa_c.boundary_condition.extrapolated import Extrapolated
 from .arakawa_c.boundary_condition.constant import Constant
