@@ -3,8 +3,9 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import make_null, make_flag, indexers, MAX_DIM_NUM
+from .indexers import make_null, indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
+from .traversals import make_meta, meta_halo_valid
 from ..arakawa_c.boundary_condition.constant import Constant
 
 
@@ -24,7 +25,8 @@ class VectorField:
         self.fill_halos = tuple(
             [(boundary_conditions[i] if i < self.n_dims else Constant(np.nan)).make_vector(indexers[self.n_dims].at[i])
              for i in range(MAX_DIM_NUM)])
-        self.halo_valid = make_flag(False)
+        grid = tuple([data[d].shape[d] - 1 for d in dims])
+        self.meta = make_meta(False, grid)
         self.comp_0 = self.data[0]
         self.comp_1 = self.data[1] if self.n_dims > 1 else make_null()
 
@@ -48,10 +50,10 @@ class VectorField:
 
     @property
     def impl(self):
-        return (self.halo_valid, self.comp_0, self.comp_1), self.fill_halos
+        return (self.meta, self.comp_0, self.comp_1), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):
         null = VectorField([np.empty([0] * n_dims)] * n_dims, halo=1, boundary_conditions=[Constant(np.nan)]*n_dims)
-        null.halo_valid[0] = True
+        null.meta[meta_halo_valid] = True
         return null

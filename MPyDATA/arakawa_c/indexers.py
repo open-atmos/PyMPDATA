@@ -85,10 +85,6 @@ def get_2d(arr, i, j):
     return arr[i, j]
 
 
-def make_flag(value: bool):
-    return np.full(1, value, dtype=bool)
-
-
 def make_null():
     return np.empty(0, dtype=np.float64)
 

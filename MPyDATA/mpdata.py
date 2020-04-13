@@ -24,15 +24,15 @@ class MPDATA:
         self.g_factor = g_factor or null_scalar_field()
         self._vectmp_a = vector_field()
         self._vectmp_b = vector_field()
-        self._vectmp_c = vector_field() if options.mu_coeff != 0 else null_vector_field()
+        self._vectmp_c = vector_field() if options.non_zero_mu_coeff else null_vector_field()
         fct = options.flux_corrected_transport
         self.advectee_min = scalar_field() if fct else null_scalar_field()
         self.advectee_max = scalar_field() if fct else null_scalar_field()
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-    def step(self, nt):
-        self.step_impl(nt,
+    def step(self, nt, mu_coeff=0):
+        self.step_impl(nt, mu_coeff,
                        *self.curr.impl,
                        *self.GC_phys.impl,
                        *self.g_factor.impl,

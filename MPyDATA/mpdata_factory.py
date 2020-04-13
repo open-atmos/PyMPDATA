@@ -22,55 +22,43 @@ from .arakawa_c.boundary_condition.cyclic import Cyclic
 
 class MPDATAFactory:
     @staticmethod
-    def n_halo(opts: Options):
-        if opts.divergent_flow or opts.flux_corrected_transport or opts.third_order_terms:
-            return 2
-        else:
-            return 1
-
-    @staticmethod
     def constant_1d(data, C, options: Options):
-        halo = MPDATAFactory.n_halo(options)
-
         mpdata = MPDATA(
             options=options,
-            step_impl=make_step(options=options, grid=data.shape, halo=halo, non_unit_g_factor=False),
-            advectee=ScalarField(data, halo=halo, boundary_conditions=(Cyclic(),)),
-            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo, boundary_conditions=(Cyclic(),))
+            step_impl=make_step(options=options, n_dims=len(data.shape), non_unit_g_factor=False),
+            advectee=ScalarField(data, halo=options.n_halo, boundary_conditions=(Cyclic(),)),
+            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=options.n_halo, boundary_conditions=(Cyclic(),))
         )
         return mpdata
 
     @staticmethod
     def constant_2d(data: np.ndarray, C, options: Options):
-        halo = MPDATAFactory.n_halo(options)
         grid = data.shape
         GC_data = [
             np.full((grid[0] + 1, grid[1]), C[0]),
             np.full((grid[0], grid[1] + 1), C[1])
         ]
-        GC = VectorField(GC_data, halo=halo, boundary_conditions=(Cyclic(),Cyclic()))
-        state = ScalarField(data=data, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
-        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
+        GC = VectorField(GC_data, halo=options.n_halo, boundary_conditions=(Cyclic(),Cyclic()))
+        state = ScalarField(data=data, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+        step = make_step(options=options, grid=grid, non_unit_g_factor=False)
         mpdata = MPDATA(options=options, step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
-        halo = MPDATAFactory.n_halo(options)
-        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
-        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
-        advectee = ScalarField(field, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
+        step = make_step(options=options, grid=grid, non_unit_g_factor=False)
+        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
+        advectee = ScalarField(field, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
         return MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
-        halo = MPDATAFactory.n_halo(options)
-        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=True)
-        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
-        g_factor = ScalarField(g_factor, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
+        step = make_step(options=options, grid=grid, non_unit_g_factor=True)
+        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
+        g_factor = ScalarField(g_factor, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
         mpdatas = {}
         for k, v in field_values.items():
-            advectee = ScalarField(np.full(grid, v), halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
+            advectee = ScalarField(np.full(grid, v), halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
             mpdatas[k] = MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, EulerianFields(mpdatas)
 
@@ -82,12 +70,11 @@ class MPDATAFactory:
                                boundary_conditions
                                ):
         assert advectee.ndim == 1
-        halo = MPDATAFactory.n_halo(options)
         grid = advectee.shape
-        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
+        stepper = make_step(options=options, n_dims=len(grid), non_unit_g_factor=False)
         return MPDATA(options=options, step_impl=stepper,
-                      advectee=ScalarField(advectee, halo=halo, boundary_conditions=(boundary_conditions, boundary_conditions)),
-                      advector=VectorField((np.full(grid[0]+1, advector),), halo=halo, boundary_conditions=(boundary_conditions,boundary_conditions))
+                      advectee=ScalarField(advectee, halo=options.n_halo, boundary_conditions=(boundary_conditions, boundary_conditions)),
+                      advector=VectorField((np.full(grid[0]+1, advector),), halo=options.n_halo, boundary_conditions=(boundary_conditions,boundary_conditions))
                       )
 
     @staticmethod
@@ -128,14 +115,12 @@ class MPDATAFactory:
         # CFL condition
         np.testing.assert_array_less(np.abs(GCh), 1)
 
-        n_halo = MPDATAFactory.n_halo(opts)
-        g_factor = ScalarField(G, halo=n_halo, boundary_conditions=(Extrapolated(), Extrapolated()))
-        state = ScalarField(psi, halo=n_halo, boundary_conditions=(Constant(0), Constant(0)))
-        GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=(Constant(0), Constant(0)))
+        g_factor = ScalarField(G, halo=opts.n_halo, boundary_conditions=(Extrapolated(), Extrapolated()))
+        state = ScalarField(psi, halo=opts.n_halo, boundary_conditions=(Constant(0), Constant(0)))
+        GC_field = VectorField([GCh], halo=opts.n_halo, boundary_conditions=(Constant(0), Constant(0)))
         stepper = make_step(
             options=opts,
-            grid=psi.shape,
-            halo=n_halo,
+            n_dims=1,
             non_unit_g_factor=True
         )
         return (

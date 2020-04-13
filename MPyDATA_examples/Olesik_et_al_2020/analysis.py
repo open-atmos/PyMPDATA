@@ -8,6 +8,7 @@ from MPyDATA_examples.utils.error_norms import L2
 from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 from copy import deepcopy
 
+
 def analysis(setup, grid_layout, psi_coord, options_dict):
     options_str = str(options_dict)
     options = Options(**options_dict)
@@ -30,8 +31,8 @@ def compute_figure_data(*, nr, dt, psi_coord=x_id(),
                         opt_set=({'n_iters': 1},)
                         ):
     setup = Setup(nr=nr, dt=dt)
-    with parallel_backend('threading'):
-        results = Parallel(n_jobs=-2)(
+    with parallel_backend('threading', n_jobs=-2):
+        results = Parallel(verbose=10)(
             delayed(analysis)( setup, grid_layout, psi_coord, options)
             for grid_layout in grid_layouts
             for options in deepcopy(opt_set)
