@@ -10,20 +10,22 @@ from MPyDATA.formulae.laplacian import make_laplacian
 from MPyDATA.formulae.antidiff import make_antidiff
 from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
 from MPyDATA.arakawa_c.traversals import Traversals
+from functools import lru_cache
 
 
+@lru_cache()
 def make_step(*,
               options,
-              grid,
+              n_dims,
               halo,
-              non_unit_g_factor=False
+              non_unit_g_factor=False,
+              grid=None
               ):
-    n_dims = len(grid)
     n_iters = options.n_iters
     mu_coeff = options.mu_coeff
     flux_corrected_transport = options.flux_corrected_transport
 
-    traversals = Traversals(grid, halo)
+    traversals = Traversals(grid if grid is not None else [-1]*n_dims, halo)
 
     upwind = make_upwind(non_unit_g_factor, traversals)
 

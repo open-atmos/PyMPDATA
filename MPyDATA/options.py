@@ -48,5 +48,9 @@ class Options:
     def mu_coeff(self):
         return self._values['mu_coeff']
 
-    def __str__(self):
-        return str(self._values)
+    def __hash__(self):
+        value = hash(str(self._values))
+        return value
+
+    def __eq__(self, other):
+        return other.__hash__() == self.__hash__()

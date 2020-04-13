@@ -34,7 +34,7 @@ class MPDATAFactory:
 
         mpdata = MPDATA(
             options=options,
-            step_impl=make_step(options=options, grid=data.shape, halo=halo, non_unit_g_factor=False),
+            step_impl=make_step(options=options, n_dims=data.dimension, halo=halo, non_unit_g_factor=False),
             advectee=ScalarField(data, halo=halo, boundary_conditions=(Cyclic(),)),
             advector=VectorField((np.full(data.shape[0] + 1, C),), halo=halo, boundary_conditions=(Cyclic(),))
         )
@@ -50,14 +50,14 @@ class MPDATAFactory:
         ]
         GC = VectorField(GC_data, halo=halo, boundary_conditions=(Cyclic(),Cyclic()))
         state = ScalarField(data=data, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
-        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
+        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False, n_dims=2)
         mpdata = MPDATA(options=options, step_impl=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
         halo = MPDATAFactory.n_halo(options)
-        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
+        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False, n_dims=2)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         advectee = ScalarField(field, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
         return MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC)
@@ -65,7 +65,7 @@ class MPDATAFactory:
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
         halo = MPDATAFactory.n_halo(options)
-        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=True)
+        step = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=True, n_dims=2)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, halo)
         g_factor = ScalarField(g_factor, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
         mpdatas = {}
@@ -84,7 +84,7 @@ class MPDATAFactory:
         assert advectee.ndim == 1
         halo = MPDATAFactory.n_halo(options)
         grid = advectee.shape
-        stepper = make_step(options=options, grid=grid, halo=halo, non_unit_g_factor=False)
+        stepper = make_step(options=options, n_dims=len(grid), halo=halo, non_unit_g_factor=False)
         return MPDATA(options=options, step_impl=stepper,
                       advectee=ScalarField(advectee, halo=halo, boundary_conditions=(boundary_conditions, boundary_conditions)),
                       advector=VectorField((np.full(grid[0]+1, advector),), halo=halo, boundary_conditions=(boundary_conditions,boundary_conditions))
@@ -134,7 +134,7 @@ class MPDATAFactory:
         GC_field = VectorField([GCh], halo=n_halo, boundary_conditions=(Constant(0), Constant(0)))
         stepper = make_step(
             options=opts,
-            grid=psi.shape,
+            n_dims=1,
             halo=n_halo,
             non_unit_g_factor=True
         )
