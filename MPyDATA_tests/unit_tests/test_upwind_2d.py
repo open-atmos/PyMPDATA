@@ -8,13 +8,6 @@ import pytest
 import numpy as np
 
 
-@pytest.fixture(params=[
-    1, 2, 3
-])
-def halo(request):
-    return request.param
-
-
 @pytest.mark.parametrize("shape, ij0, out, C", [
     pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.)),
     pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.)),
@@ -22,7 +15,7 @@ def halo(request):
     pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5)),
     pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5)),
 ])
-def test_upwind(shape, ij0, out, C, halo):
+def test_upwind(shape, ij0, out, C):
     value = 44
     scalar_field_init = np.zeros(shape)
     scalar_field_init[ij0] = value
@@ -31,10 +24,11 @@ def test_upwind(shape, ij0, out, C, halo):
         np.full((shape[0] + 1, shape[1]), C[0]),
         np.full((shape[0], shape[1] + 1), C[1])
     )
-    state = ScalarField(scalar_field_init, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
-    GC_field = VectorField(vector_field_init, halo=halo, boundary_conditions=(Cyclic(), Cyclic()))
-
     options = Options(n_iters=1)
+
+    state = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+    GC_field = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+
     mpdata = MPDATA(options=options, step_impl=make_step(options=options, grid=shape), advector=GC_field, advectee=state)
     mpdata.step(1)
 
