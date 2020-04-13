@@ -46,7 +46,7 @@ class MPDATAFactory:
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
-        step = make_step(options=options, grid=grid, non_unit_g_factor=False, n_dims=2)
+        step = make_step(options=options, grid=grid, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
         advectee = ScalarField(field, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
         return MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC)
