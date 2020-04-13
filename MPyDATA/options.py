@@ -11,11 +11,11 @@ class Options:
                  flux_corrected_transport: bool = False,
                  third_order_terms: bool = False,
                  epsilon: float = 1e-15,
-                 mu_coeff: float = 0,
+                 non_zero_mu_coeff: bool = False,
                  ):
         self._values = {'n_iters': n_iters, 'infinite_gauge': infinite_gauge, 'epsilon': epsilon,
                         'divergent_flow': divergent_flow, 'flux_corrected_transport': flux_corrected_transport,
-                        'third_order_terms': third_order_terms, 'mu_coeff': mu_coeff}
+                        'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff}
 
         if flux_corrected_transport and n_iters < 2:
             raise ValueError()
@@ -45,8 +45,8 @@ class Options:
         return self._values['third_order_terms']
 
     @property
-    def mu_coeff(self):
-        return self._values['mu_coeff']
+    def non_zero_mu_coeff(self):
+        return self._values['non_zero_mu_coeff']
 
     def __hash__(self):
         value = hash(str(self._values))
@@ -54,3 +54,10 @@ class Options:
 
     def __eq__(self, other):
         return other.__hash__() == self.__hash__()
+
+    @property
+    def n_halo(self):
+        if self.divergent_flow or self.flux_corrected_transport or self.third_order_terms:
+            return 2
+        else:
+            return 1

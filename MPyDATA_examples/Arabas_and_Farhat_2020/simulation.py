@@ -44,18 +44,18 @@ class Simulation:
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
 
-        mu_coeff = 0.5 / self.l2
+        self.mu_coeff = 0.5 / self.l2
         self.solvers = {}
         self.solvers[1] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
-            options=Options(n_iters=1, mu_coeff=mu_coeff),
+            options=Options(n_iters=1, non_zero_mu_coeff=True),
             boundary_conditions=Extrapolated()
         )
         self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
-            options=Options(**OPTIONS, mu_coeff=mu_coeff),
+            options=Options(**OPTIONS),
             boundary_conditions=Extrapolated()
         )
 
@@ -66,16 +66,14 @@ class Simulation:
             f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
             t = self.setup.T
             for _ in range(self.nt):
-                self.solvers[n_iters].step(1)
+                self.solvers[n_iters].step(1, self.mu_coeff)
                 psi = self.solvers[n_iters].curr.get()
                 t -= self.dt
                 psi[:] += np.maximum(psi[:], f_T[:]/np.exp(self.setup.r * t)) - psi[:]
         else:
-            self.solvers[n_iters].step(self.nt)
+            self.solvers[n_iters].step(self.nt, self.mu_coeff)
 
         return self.solvers[n_iters].curr.get()
 
-
     def terminal_value(self):
         return self.solvers[1].curr.get()
-
