@@ -1,4 +1,4 @@
-from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_ln, x_p2
+from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 from MPyDATA_examples.Olesik_et_al_2020.setup import Setup
 from MPyDATA.options import Options
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
@@ -27,7 +27,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict):
 
 
 def compute_figure_data(*, nr, dt, psi_coord=x_id(),
-                        grid_layouts=(x_id(), x_p2(), x_ln()),
+                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(n=1)),
                         opt_set=({'n_iters': 1},)
                         ):
     setup = Setup(nr=nr, dt=dt)

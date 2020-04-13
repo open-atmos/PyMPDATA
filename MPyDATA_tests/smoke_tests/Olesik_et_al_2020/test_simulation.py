@@ -1,12 +1,12 @@
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_dt, default_nr
-from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_p3, x_p2, x_p3, x_ln
+from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 from MPyDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from MPyDATA.options import Options
 import pytest
 import numpy as np
 
-grid_layout_set = (x_id(), x_p2(), x_ln())
+grid_layout_set = (x_id(), x_p2(), x_log_of_pn(n=1))
 opt_set = (
     {'n_iters': 1},
     {'n_iters': 2, 'flux_corrected_transport': True},
@@ -20,10 +20,10 @@ def data():
     return result
 
 
-@pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_p3()])
-@pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_p3()])
+@pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(n=1)])
+@pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_pn(n=3)])
 @pytest.mark.parametrize("flux_corrected_transport", [False, True])
-@pytest.mark.skip()
+# @pytest.mark.skip()
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
     opts = Options(flux_corrected_transport = flux_corrected_transport)
@@ -37,7 +37,10 @@ def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Asserts for Jacobian
     G_with_halo = simulation.solver.g_factor.data
     assert np.isfinite(G_with_halo).all()
-    assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) <= 0).all()
+    if type(psi_coord)  == type(grid_layout):
+        np.testing.assert_array_almost_equal(np.diff(G_with_halo), 0)
+    else:
+        assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) <= 0).all()
 
 
 @pytest.mark.parametrize("coord", ['x_id', 'x_p2', 'x_ln'])
