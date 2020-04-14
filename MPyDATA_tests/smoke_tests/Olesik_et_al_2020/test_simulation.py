@@ -10,11 +10,13 @@ grid_layout_set = (x_id(), x_p2(), x_log_of_pn(n=1))
 opt_set = (
     {'n_iters': 1},
     {'n_iters': 2, 'flux_corrected_transport': True},
-    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True})
+    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
+)
+
 
 @pytest.fixture(scope='module')
 def data():
-    result, _ =  compute_figure_data(nr = default_nr , dt = default_dt, psi_coord=x_id(),
+    result, _ = compute_figure_data(nr=default_nr, dt=default_dt, psi_coord=x_id(),
                         grid_layouts=grid_layout_set,
                         opt_set=opt_set)
     return result
@@ -23,10 +25,9 @@ def data():
 @pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(n=1)])
 @pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_pn(n=3)])
 @pytest.mark.parametrize("flux_corrected_transport", [False, True])
-# @pytest.mark.skip()
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
-    opts = Options(flux_corrected_transport = flux_corrected_transport)
+    opts = Options(flux_corrected_transport=flux_corrected_transport)
     setup = Setup()
     # Act
     simulation = Simulation(setup, grid_layout=grid_layout, psi_coord=psi_coord, opts=opts)
@@ -43,21 +44,16 @@ def test_init(grid_layout, psi_coord, flux_corrected_transport):
         assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) <= 0).all()
 
 
-@pytest.mark.parametrize("coord", ['x_id', 'x_p2', 'x_ln'])
-@pytest.mark.parametrize("opts", [
-    "{'n_iters': 1}",
-    "{'n_iters': 2, 'fct': True}",
-    "{'n_iters': 3, 'dfl': True}",
-    "{'n_iters': 2, 'tot': True, 'iga': True, 'fct': True}"
-])
-@pytest.mark.skip()
-def test_n_finite(coord, opts, data):
+@pytest.mark.parametrize("grid_layout", grid_layout_set)
+@pytest.mark.parametrize("opts", opt_set)
+def test_n_finite(grid_layout, opts, data):
     # Arrange
-    psi = data[coord]['numerical'][opts][-1].magnitude
+    grid_layout_str = grid_layout.__class__.__name__
+    psi = data[grid_layout_str]['numerical'][str(opts)][-1].magnitude
 
     # Assert
     assert np.isfinite(psi).all()
-    assert 70 < np.amax(psi) < 225
+    assert 69 < np.amax(psi) < 225
 
 
 @pytest.mark.parametrize("grid_layout", grid_layout_set)
@@ -66,6 +62,8 @@ def test_L2_finite(grid_layout, opts, data):
     # Arrange
     grid_layout_str = grid_layout.__class__.__name__
     sut = data[grid_layout_str]['error_L2'][str(opts)]
+
+    print(sut)
 
     # Assert
     assert np.isfinite(sut).all()

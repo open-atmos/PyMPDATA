@@ -29,7 +29,6 @@ class Simulation:
 
     def step(self, nt):
         self.solver.step(nt)
-        print('step=',nt)
 
     @property
     def r(self):

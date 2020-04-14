@@ -29,9 +29,9 @@ def analysis(setup, grid_layout, psi_coord, options_dict):
 def compute_figure_data(*, nr, dt, psi_coord=x_id(),
                         grid_layouts=(x_id(), x_p2(), x_log_of_pn(n=1)),
                         opt_set=({'n_iters': 1},),
-                        mixing_ratios_g_kg = default_mixing_ratios_g_kg
+                        mixing_ratios_g_kg=default_mixing_ratios_g_kg
                         ):
-    setup = Setup(nr=nr, dt=dt, mixing_ratios_g_kg = mixing_ratios_g_kg)
+    setup = Setup(nr=nr, dt=dt, mixing_ratios_g_kg=mixing_ratios_g_kg)
     with parallel_backend('threading', n_jobs=-2):
         results = Parallel(verbose=10)(
             delayed(analysis)( setup, grid_layout, psi_coord, options)

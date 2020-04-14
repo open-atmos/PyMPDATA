@@ -6,12 +6,13 @@ import pint
 from functools import lru_cache
 
 default_nr = 64
-default_dt = .25 # TODO!!!
+default_dt = .25  # TODO!!!
 default_mixing_ratios_g_kg = np.array([1, 2, 4, 10])
+
 
 # based on Fig. 3 from East 1957
 class Setup:
-    def __init__(self, nr=default_nr, dt=default_dt, mixing_ratios_g_kg = default_mixing_ratios_g_kg):
+    def __init__(self, nr=default_nr, dt=default_dt, mixing_ratios_g_kg=default_mixing_ratios_g_kg):
         si = pint.UnitRegistry()
         self.si = si
         self.nr = nr
@@ -28,21 +29,21 @@ class Setup:
 
         self.C = (1 * si.gram / si.kilogram) / self.mixing_ratio(self.size_distribution.pdf)
 
-
         def find_out_steps(mrs, dt, pdf, drdt):
-            @lru_cache()
-            def findroot(ti):
-                return (mr - self.mixing_ratio(equilibrium_drop_growth.PdfEvolver(pdf, drdt, ti * t_unit))).magnitude
-
             out_steps = []
             for mr in mrs:
+                @lru_cache()
+                def findroot(ti):
+                    return (mr - self.mixing_ratio(
+                        equilibrium_drop_growth.PdfEvolver(pdf, drdt, ti * t_unit))).magnitude
+
                 t_unit = si.second
                 t = optimize.brentq(findroot, 0, (1 * si.hour).to(t_unit).magnitude)
                 out_steps.append(int(((t * t_unit)/dt).to(si.dimensionless).magnitude))
             return out_steps
 
-
-        self.out_steps = find_out_steps(mrs = self.mixing_ratios, dt = self.dt, pdf=self.pdf, drdt = self.drdt)
+        self.out_steps = find_out_steps(mrs=self.mixing_ratios, dt=self.dt, pdf=self.pdf, drdt=self.drdt)
+        print("os", self.out_steps)
 
     def mixing_ratio(self, pdf):
         # TODO!!!
