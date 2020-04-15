@@ -83,7 +83,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=2),
     Options(n_iters=3),
     Options(n_iters=4),
-    # Options(n_iters=2, infinite_gauge=True),  # TODO!
+    Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
     Options(n_iters=3, infinite_gauge=True),
     Options(n_iters=2, flux_corrected_transport=True),
     Options(n_iters=2, divergent_flow=True)
@@ -104,7 +104,7 @@ def test_timing_2d(benchmark, options):
         assert np.amin(state) >= h0
     assert np.amax(state) < 10 * h
 
-    if False:
+    if True:
         pyplot.imshow(state)
         pyplot.colorbar()
         pyplot.show()

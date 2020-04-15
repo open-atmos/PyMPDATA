@@ -10,7 +10,6 @@ import numpy as np
 
 from .arakawa_c.vector_field import VectorField
 from .arakawa_c.scalar_field import ScalarField
-from .eulerian_fields import EulerianFields
 from .mpdata import MPDATA
 from .options import Options
 from MPyDATA.formulae.step import make_step
@@ -60,7 +59,7 @@ class MPDATAFactory:
         for k, v in field_values.items():
             advectee = ScalarField(np.full(grid, v), halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
             mpdatas[k] = MPDATA(options=options, step_impl=step, advectee=advectee, advector=GC, g_factor=g_factor)
-        return GC, EulerianFields(mpdatas)
+        return GC, mpdatas
 
     @staticmethod
     def advection_diffusion_1d(*,
