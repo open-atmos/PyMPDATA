@@ -7,6 +7,7 @@ setup(
         'MPyDATA',
         'MPyDATA/formulae',
         'MPyDATA/arakawa_c',
+        'MPyDATA/arakawa_c/boundary_condition',
     ],
     license='GPL v3',
     long_description=''
