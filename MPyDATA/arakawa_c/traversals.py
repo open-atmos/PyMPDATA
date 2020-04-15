@@ -3,7 +3,6 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.jit_flags import jit_flags
 from .indexers import indexers
 import numpy as np
 
@@ -36,7 +35,8 @@ def make_grid(grid):
 
 
 class Traversals:
-    def __init__(self, grid, halo):
+    def __init__(self, grid, halo, jit_flags):
+        self.jit_flags = jit_flags
         self.grid = make_grid((grid[0], grid[1] if len(grid) > 1 else 0))
         self.n_dims = len(grid)
         self.halo = halo
@@ -55,6 +55,7 @@ class Traversals:
         return self._apply_vector
 
     def make_apply_scalar(self, loop):
+        jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
         grid = self.grid
@@ -114,6 +115,7 @@ class Traversals:
         return apply_scalar
 
     def make_apply_vector(self):
+        jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
         grid = self.grid
@@ -166,6 +168,7 @@ class Traversals:
         return apply_vector
 
     def make_boundary_conditions(self):
+        jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
         set = indexers[self.n_dims].set
@@ -246,11 +249,11 @@ class Traversals:
         return boundary_cond_scalar, boundary_cond_vector
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def null_scalar_formula(_, __, ___):
     return 44.
 
 
-@numba.njit(**jit_flags)
+@numba.njit()
 def null_vector_formula(_, __, ___, ____):
     return 666.

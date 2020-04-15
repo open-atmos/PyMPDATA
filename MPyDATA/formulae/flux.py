@@ -7,32 +7,22 @@ Created at 11.10.2019
 """
 
 import numpy as np
-from MPyDATA.jit_flags import jit_flags
 import numba
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
 from MPyDATA.arakawa_c.traversals import null_vector_formula
 
-@numba.njit(**jit_flags)
-def minimum_0(c):
-    return (c - np.abs(c)) / 2
 
-
-@numba.njit(**jit_flags)
-def maximum_0(c):
-    return (c + np.abs(c)) / 2
-
-
-def make_flux_first_pass(traversals):
+def make_flux_first_pass(options, traversals):
     idx = indexers[traversals.n_dims]
     apply_vector = traversals.apply_vector()
 
     formulae_flux_first_pass = tuple([
-        __make_flux(idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
+        __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
         if i < traversals.n_dims else null_vector_formula
         for i in range(MAX_DIM_NUM)
     ])
 
-    @numba.njit(**jit_flags)
+    @numba.njit(**options.jit_flags)
     def apply(vectmp_a, GC_phys, psi, psi_bc, vec_bc):
         null_scalarfield = psi
         null_bc = vec_bc
@@ -44,7 +34,7 @@ def make_flux_first_pass(traversals):
 
 def make_flux_subsequent(options, traversals):
     if options.n_iters <= 1:
-        @numba.njit(**jit_flags)
+        @numba.njit(**options.jit_flags)
         def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
             return
     else:
@@ -52,11 +42,11 @@ def make_flux_subsequent(options, traversals):
         apply_vector = traversals.apply_vector()
 
         formulae_flux_subsequent = (
-            __make_flux(idx.atv[0], idx.at[0], first_pass=False, infinite_gauge=options.infinite_gauge),
-            __make_flux(idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge)
+            __make_flux(options.jit_flags, idx.atv[0], idx.at[0], first_pass=False, infinite_gauge=options.infinite_gauge),
+            __make_flux(options.jit_flags, idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge)
         )
 
-        @numba.njit(**jit_flags)
+        @numba.njit(**options.jit_flags)
         def apply(flux, psi, psi_bc, GC_corr, vec_bc):
             null_scalarfield = psi
             null_bc = vec_bc
@@ -66,7 +56,15 @@ def make_flux_subsequent(options, traversals):
     return apply
 
 
-def __make_flux(atv, at, first_pass, infinite_gauge):
+def __make_flux(jit_flags, atv, at, first_pass, infinite_gauge):
+    @numba.njit(**jit_flags)
+    def minimum_0(c):
+        return (c - np.abs(c)) / 2
+
+    @numba.njit(**jit_flags)
+    def maximum_0(c):
+        return (c + np.abs(c)) / 2
+
     if not first_pass and infinite_gauge:
         @numba.njit(**jit_flags)
         def flux(_, GC, __):

@@ -17,8 +17,7 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
             "log2_C_opt": log2_C_opt,
             "log2_l2": np.log2(simulation.l2),
             "log2_l2_opt": log2_l2_opt,
-            "err2": error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, simulation.nx,
-                                  n_iters)
+            "err2": error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, n_iters)
         })
     return output
 
@@ -61,7 +60,7 @@ def convergence_in_time(num=13):
         return result
 
 
-def error_L2_norm(solvers, setup, S, nt, nx, n_iters: int):
+def error_L2_norm(solvers, setup, S, nt, n_iters: int):
     numerical = solvers[n_iters].curr.get()
     analytical = setup.analytical_solution(S)
     return L2(numerical, analytical, nt)

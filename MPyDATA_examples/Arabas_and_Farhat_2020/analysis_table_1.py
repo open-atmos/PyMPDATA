@@ -12,7 +12,7 @@ def compute_row(T, S0):
         simulation = Simulation(setup)
         f = simulation.run(n_iters=2)
         row.append(
-            error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, simulation.nx, n_iters=2))
+            error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, n_iters=2))
         np.testing.assert_almost_equal(simulation.S[simulation.ix_match], S0)
     row.append(f[simulation.ix_match])
     row.append(setup.analytical_solution(S0))

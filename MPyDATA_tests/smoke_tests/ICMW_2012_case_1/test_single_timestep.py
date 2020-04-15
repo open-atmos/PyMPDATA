@@ -39,7 +39,7 @@ def test_single_timestep(options):
         axis=0
     )
 
-    GC, eulerian_fields = MPDATAFactory.stream_function_2d(
+    GC, mpdatas = MPDATAFactory.stream_function_2d(
         grid=grid, size=size, dt=dt,
         stream_function=stream_function,
         field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
@@ -50,8 +50,9 @@ def test_single_timestep(options):
     # Plot
 
     # Act
-    eulerian_fields.step(nt=1)
+    for mpdata in mpdatas.values():
+        mpdata.step(1)
 
     # Assert
-    for k, v in eulerian_fields.mpdatas.items():
+    for k, v in mpdatas.items():
         assert np.isfinite(v.curr.get()).all()

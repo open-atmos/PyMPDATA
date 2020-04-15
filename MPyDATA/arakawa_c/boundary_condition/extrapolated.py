@@ -1,5 +1,4 @@
 import numba
-from MPyDATA.jit_flags import jit_flags
 
 # TODO: 1D only
 X = -1
@@ -12,7 +11,7 @@ class Extrapolated:
     def make_scalar(self, at, halo):
         eps = self._eps
 
-        @numba.njit(**jit_flags)
+        @numba.njit()
         def fill_halos_scalar(psi, n, sign):
             if sign > 0:  # left
                 edg = halo - psi[0][0]
@@ -29,7 +28,7 @@ class Extrapolated:
         return fill_halos_scalar
 
     def make_vector(self, at):
-        @numba.njit(**jit_flags)
+        @numba.njit()
         def fill_halos(psi, _, sign):
             return at(*psi, sign, 0)
         return fill_halos
