@@ -1,5 +1,5 @@
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
-from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_dt, default_nr
+from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_GC_max
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 from MPyDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from MPyDATA.options import Options
@@ -16,7 +16,7 @@ opt_set = (
 
 @pytest.fixture(scope='module')
 def data():
-    result, _ = compute_figure_data(nr=default_nr, dt=default_dt, psi_coord=x_id(),
+    result, _ = compute_figure_data(nr=default_nr, GC_max=default_GC_max, psi_coord=x_id(),
                         grid_layouts=grid_layout_set,
                         opt_set=opt_set)
     return result
@@ -30,7 +30,7 @@ def test_init(grid_layout, psi_coord, flux_corrected_transport):
     opts = Options(flux_corrected_transport=flux_corrected_transport)
     setup = Setup()
     # Act
-    simulation = Simulation(setup, grid_layout=grid_layout, psi_coord=psi_coord, opts=opts)
+    simulation = Simulation(setup, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
     simulation.step(1)
     # Asserts for array shapes
     assert simulation.n.shape[0] == setup.nr

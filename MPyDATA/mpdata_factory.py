@@ -77,7 +77,7 @@ class MPDATAFactory:
                       )
 
     @staticmethod
-    def condensational_growth(nr, r_min, r_max, dt, grid_layout, psi_coord, pdf_of_r, drdt_of_r, opts: Options):
+    def condensational_growth(nr, r_min, r_max, GC_max, grid_layout, psi_coord, pdf_of_r, drdt_of_r, opts: Options):
         # psi = psi(p)
         dp_dr = psi_coord.dx_dr
         dx_dr = grid_layout.dx_dr
@@ -109,6 +109,7 @@ class MPDATAFactory:
         #               |
         #             dp_dt
 
+        dt = GC_max * dx / np.amax(dp_dt)
         GCh = dp_dt * dt / dx
 
         # CFL condition
@@ -126,5 +127,6 @@ class MPDATAFactory:
             MPDATA(options=opts, step_impl=stepper, g_factor=g_factor, advectee=state, advector=GC_field),
             r,
             rh,
-            dx
+            dx,
+            dt
         )
