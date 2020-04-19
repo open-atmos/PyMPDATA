@@ -33,7 +33,6 @@ def make_step(*,
     if grid is None:
         grid = tuple([-1] * n_dims)
     value = make_step_impl(options, non_unit_g_factor, grid)
-    print(make_step_impl.cache_info())
     return value
 
 
