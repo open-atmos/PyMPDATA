@@ -13,7 +13,6 @@ import numpy as np
 
     Options(n_iters=2, infinite_gauge=True),
     Options(n_iters=3, infinite_gauge=True),
-    Options(n_iters=4, infinite_gauge=True),
 
     Options(n_iters=2, flux_corrected_transport=True),
     Options(n_iters=3, flux_corrected_transport=True),

@@ -7,12 +7,12 @@ import pytest
 # TODO: work in progress
 @pytest.mark.parametrize(
     "options", [
-        Options(n_iters=1),
-        Options(n_iters=2),
-        # Options(nug=True),
-        # Options(nug=True, fct=True),
-        # Options(nug=True, fct=True, iga=True),
-        # Options(nug=True, fct=True, tot=True),
+        # TODO
+        # Options(n_iters=1),
+        # Options(n_iters=2),
+        # Options(n_iters=2, flux_corrected_transport=True),
+        # Options(n_iters=3, flux_corrected_transport=True),
+        Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True),
         # Options(nug=True, fct=True, iga=True, tot=True),
         # Options(nug=True, fct=False, iga=True),
         # Options(nug=True, fct=False, tot=True),
