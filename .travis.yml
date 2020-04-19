@@ -34,7 +34,7 @@ script:
   - |
     if [[ $EXAMPLES == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user
-      for i in MPyDATA_examples/*/*.ipynb; do
+      for i in MPyDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
         jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
