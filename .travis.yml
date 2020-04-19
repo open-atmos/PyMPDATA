@@ -11,12 +11,9 @@ jobs:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
     - name: "Linux, Python 3.8, required packages, tests and codecov"
       python: 3.8
-      after_success:
-        - codecov
+      env: CODECOV=TRUE
     - name: "Linux, Python 3.8, required packages, examples"
       python: 3.8
-      after_success:
-        - codecov
       env: EXAMPLES=TRUE
     - name: "OSX, Python 3.8, required packages, tests"
       language: shell
@@ -45,6 +42,15 @@ script:
         # diff $i.md.repo $i.md.travis
       done;
     else
-      travis_wait 60 python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests
+      if [[ $CODECOV == 'TRUE' ]]; then
+	python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests
+      else
+	python$PY_SFX -m pytest MPyDATA_tests
+      fi;
     fi;
 
+after_success:
+  - |
+    if [[ $CODECOV == 'TRUE' ]]; then
+      codecov
+    fi;
