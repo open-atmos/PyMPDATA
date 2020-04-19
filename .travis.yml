@@ -43,14 +43,14 @@ script:
       done;
     else
       if [[ $CODECOV == 'TRUE' ]]; then
-	python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests
+	python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests;
       else
-	python$PY_SFX -m pytest MPyDATA_tests
+	python$PY_SFX -m pytest MPyDATA_tests;
       fi;
     fi;
 
 after_success:
   - |
     if [[ $CODECOV == 'TRUE' ]]; then
-      codecov
+      codecov;
     fi;
