@@ -4,13 +4,13 @@
 # MPyDATA
 
 MPyDATA is a high-performance **Numba-accelerated Pythonic implementation of the MPDATA 
-  algorithm of Smolarkiewicz et al.** for numerically solving generalised transport equations --
+  algorithm of Smolarkiewicz et al.** for numerically solving generalised transport equations -
   partial differential equations used to model conservation/balance laws, scalar-transport problems,
   convection-diffusion phenomena (in geophysical fluid dynamics and beyond).
 As of the current (early) version, MPyDATA supports homogeneous transport
   in 1D and 2D using structured meshes, optionally
   generalised by employment of a Jacobian of coordinate transformation. 
-MPyDATA includes implementation of a set of MPDATA **algorithm variants including
+MPyDATA includes implementation of a set of MPDATA **variants including
   flux-corrected transport (FCT), infinite-gauge, divergent-flow and 
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
@@ -36,7 +36,7 @@ It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 
 MPyDATA ships with a set of **examples/demos offered as github-hosted Jupyer notebooks
-  offering single-click deployment in the cloud using mybinder.org**.
+  offering single-click deployment in the cloud using [mybinder.org](https://mybinder.org)**.
 The examples/demos reproduce results from several published
   works on MPDATA and its applications, and provide a validation of the implementation
   and its performance.
@@ -101,18 +101,18 @@ The ```arakawa_c``` subpackage contains modules implementing the
 [Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) 
 in which:
 - scalar fields are discretised onto cell-center points,
-- vector fields are discretised onto coll-boundary points.
+- vector fields are discretised onto cell-boundary points.
 
 In MPyDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus
 first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
 
-From the user perspective, the two key classes with their c-tors are:
+From the user perspective, the two key classes with their init methods are:
 - [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA/arakawa_c/scalar_field.py)
 - [``VectorField(data, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA/arakawa_c/vector_field.py)
 
-The data parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
-The halo parameter is the extent of ghost-cell region that will surround the
+The ``data`` parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
+The ``halo`` parameter is the extent of ghost-cell region that will surround the
 data and will be used to implement boundary conditions. Its value (in practice 1 or 2) is
 dependent on maximal stencil extent for the MPDATA variant used and
 can be easily obtained using the ``Options.n_halo`` property.
@@ -156,13 +156,14 @@ in MPyDATA by the ``Stepper`` class.
 When instantiating the ``Stepper``, the user has a choice 
 of either supplying just the
 number of dimensions or specialising the stepper for
-a given grid. 
- with the following
-init method signature:
+a given grid:
 ```python
 from MPyDATA.stepper import Stepper
 
 stepper = Stepper(options=options, n_dims=2)
+```
+or
+```python
 stepper = Stepper(options=options, grid=(nx, ny))
 ```
 
@@ -177,7 +178,8 @@ Since creating an instance of the ``Stepper`` class
 involves lengthy analysis and compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
-instantiated objects.
+instantiated objects. Instances of ``Stepper`` contain no
+data and are (thread-)safe to be reused.
 
 The init method of ``Stepper`` has an additional 
 ``non_unit_g_factor`` argument which is a flag enabling 
@@ -191,7 +193,7 @@ the integration and store solution data. During instantiation,
 additional memory required by the solver is 
 allocated according to the options provided. 
 
-The only method of the ``Solver'' class besides the
+The only method of the ``Solver`` class besides the
 init is ``advance(self, nt: int, mu_coeff: float = 0)`` 
 which advances the solution by ``nt`` timesteps, optionally
 taking into account a given value of diffusion coefficient.
@@ -206,10 +208,10 @@ solver.advance(nt=1)
 
 #### Factories 
 
-The methods grouped in the ``Factories''' class are meant to 
+The methods grouped in the ``Factories`` class are meant to 
 automate instantiation of steppers, scalar and vector fields.
 All factories take float numbers and Numpy arrays as arguments,
-and hide instantiation of ``ScalaField'' or ``VectorField`` from
+and hide instantiation of ``ScalaField`` or ``VectorField`` from
 the user.
 
 At present, the API of factories is not stable, hence
@@ -232,7 +234,7 @@ os.environ["NUMBA_DISABLE_JIT"] = "1"
 ```
 
 ## Credits:
-Development of MPyDATA is supported by the EU through a grant of the Foundation for Polish Science (POIR.04.04.00-00-5E1C/18).
+Development of MPyDATA is supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
 
 copyright: Jagiellonian University   
 code licence: GPL v3   
