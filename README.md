@@ -143,7 +143,7 @@ advectee = ScalarField(
     boundary_conditions=(Cyclic(), Cyclic())
 )
 advector = VectorField(
-    data=(np.zeros(nx+1, ny), np.zeros(nx, ny+1)),
+    data=(np.zeros((nx+1, ny)), np.zeros((nx, ny+1))),
     halo=halo,
     boundary_conditions=(Cyclic(), Cyclic())    
 )
