@@ -71,10 +71,14 @@ MPyDATA ships with several demos that reproduce results from the literature, inc
   
 ## Package structure and API:
 
-MPyDATA is designed as a simple library in the spirit of "Do One Thing And Do It Well".
-Thus, despite being in principle hidden from the user, the key internal 
-elements of MPyDATA are worth introducing in order to make the
-control flow clearer, facilitate debugging and further development of the library.
+MPyDATA is designed as a simple library in the spirit of "Do One Thing And Do It Well", namely to numerically solve the following equation:
+
+![\partial_t (G \psi) + \nabla \cdot (Gu \psi) = 0](https://render.githubusercontent.com/render/math?math=%5Cpartial_t%20(G%20%5Cpsi)%20%2B%20%5Cnabla%20%5Ccdot%20(Gu%20%5Cpsi)%20%3D%200)
+
+where scalar field ![\psi](https://render.githubusercontent.com/render/math?math=%5Cpsi) is referred to as the advectee,
+vector field u is referred to as advector, and the G factor corresponds to optional coordinate transformation. 
+
+The key classes constituting the MPyDATA interface are summarised below:
 
 #### Options class
 
