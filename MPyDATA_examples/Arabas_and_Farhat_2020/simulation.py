@@ -1,5 +1,5 @@
 from MPyDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
-from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.factories import Factories
 from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
 from MPyDATA.options import Options
 import numpy as np
@@ -46,13 +46,13 @@ class Simulation:
 
         self.mu_coeff = 0.5 / self.l2
         self.solvers = {}
-        self.solvers[1] = MPDATAFactory.advection_diffusion_1d(
+        self.solvers[1] = Factories.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, non_zero_mu_coeff=True),
             boundary_conditions=Extrapolated()
         )
-        self.solvers[2] = MPDATAFactory.advection_diffusion_1d(
+        self.solvers[2] = Factories.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS),
@@ -66,12 +66,12 @@ class Simulation:
             f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
             t = self.setup.T
             for _ in range(self.nt):
-                self.solvers[n_iters].step(1, self.mu_coeff)
+                self.solvers[n_iters].advance(1, self.mu_coeff)
                 psi = self.solvers[n_iters].curr.get()
                 t -= self.dt
                 psi[:] += np.maximum(psi[:], f_T[:]/np.exp(self.setup.r * t)) - psi[:]
         else:
-            self.solvers[n_iters].step(self.nt, self.mu_coeff)
+            self.solvers[n_iters].advance(self.nt, self.mu_coeff)
 
         return self.solvers[n_iters].curr.get()
 

@@ -1,25 +1,26 @@
-# just defaults
 language: python
 os: linux
 
 jobs:
   include:
-    - name: "Linux, Python 3.8-dev, newest packages"
+    - name: "Linux, Python 3.8-dev, newest packages, tests"
       python: "3.8-dev"
       before_install:
         - sudo `which pip` install --upgrade pip
       before_script:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
-    - name: "Linux, Python 3.8, required packages"
+    - name: "Linux, Python 3.8, required packages, tests and codecov"
       python: 3.8
-      after_success:
-        - codecov
-    - name: "OSX, Python 3.8, required packages"
+      env: CODECOV=TRUE
+    - name: "Linux, Python 3.8, required packages, examples"
+      python: 3.8
+      env: EXAMPLES=TRUE
+    - name: "OSX, Python 3.8, required packages, tests"
       language: shell
       os: osx
       before_install:
         - export PY_SFX=3
-    - name: "Windows, Python 3.8, required packages"
+    - name: "Windows, Python 3.8, required packages, tests"
       language: shell
       os: windows
       before_install:
@@ -30,10 +31,8 @@ install:
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
-  - pip$PY_SFX install --pre git+https://github.com/numba/numba.git
-  - travis_wait 60 python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests
   - |
-    if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+    if [[ $EXAMPLES == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user
       for i in MPyDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
@@ -42,5 +41,16 @@ script:
         # jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i > $i.md.travis || exit 1;
         # diff $i.md.repo $i.md.travis
       done;
+    else
+      if [[ $CODECOV == 'TRUE' ]]; then
+        python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests;
+      else
+        python$PY_SFX -m pytest MPyDATA_tests;
+      fi;
     fi;
 
+after_success:
+  - |
+    if [[ $CODECOV == 'TRUE' ]]; then
+      codecov;
+    fi;

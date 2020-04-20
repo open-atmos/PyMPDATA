@@ -6,7 +6,7 @@ Created at 11.10.2019
 @author: Sylwester Arabas
 """
 
-from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.factories import Factories
 from MPyDATA.options import Options
 import pytest
 import numpy as np
@@ -147,14 +147,14 @@ class TestMPDATA2D:
             "output": case[7]
         }
         # Arrange
-        sut = MPDATAFactory.constant_2d(
+        sut = Factories.constant_2d(
             case["input"].reshape((case["nx"], case["ny"])),
             [case["Cx"], case["Cy"]],
             options=Options(n_iters=case["ni"])
         )
 
         # Act
-        sut.step(nt=case["nt"])
+        sut.advance(nt=case["nt"])
 
         # Assert
         np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)

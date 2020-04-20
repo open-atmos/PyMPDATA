@@ -16,26 +16,49 @@ import warnings
 
 warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
 
+
 # import os
 # os.environ["NUMBA_DISABLE_JIT"] = "1"
 
 
-def make_step(*,
-              options: Options,
-              n_dims: (int, None) = None,
-              non_unit_g_factor: bool = False,
-              grid: (tuple, None) = None
-              ):
-    if n_dims is not None and grid is not None:
-        raise ValueError()
-    if n_dims is None and grid is None:
-        raise ValueError()
-    if grid is None:
-        grid = tuple([-1] * n_dims)
-    value = make_step_impl(options, non_unit_g_factor, grid)
-    print(make_step_impl.cache_info())
-    return value
+class Stepper:
+    def __init__(self, *,
+                 options: Options,
+                 n_dims: (int, None) = None,
+                 non_unit_g_factor: bool = False,
+                 grid: (tuple, None) = None
+                 ):
+        if n_dims is not None and grid is not None:
+            raise ValueError()
+        if n_dims is None and grid is None:
+            raise ValueError()
+        if grid is None:
+            grid = tuple([-1] * n_dims)
+        self.__call = make_step_impl(options, non_unit_g_factor, grid)
+        self.options = options
 
+    def __call__(self, nt, mu_coeff,
+             psi, psi_bc,
+             GC_phys, GC_phys_bc,
+             g_factor, g_factor_bc,
+             vectmp_a, vectmp_a_bc,
+             vectmp_b, vectmp_b_bc,
+             vectmp_c, vectmp_c_bc,
+             psi_min, psi_min_bc,
+             psi_max, psi_max_bc,
+             beta_up, beta_up_bc,
+             beta_down, beta_down_bc):
+        self.__call(nt, mu_coeff,
+             psi, psi_bc,
+             GC_phys, GC_phys_bc,
+             g_factor, g_factor_bc,
+             vectmp_a, vectmp_a_bc,
+             vectmp_b, vectmp_b_bc,
+             vectmp_c, vectmp_c_bc,
+             psi_min, psi_min_bc,
+             psi_max, psi_max_bc,
+             beta_up, beta_up_bc,
+             beta_down, beta_down_bc)
 
 @lru_cache()
 def make_step_impl(options, non_unit_g_factor, grid):
@@ -119,4 +142,5 @@ def make_step_impl(options, non_unit_g_factor, grid):
                 upwind(psi, flux, vec_bc, g_factor, g_factor_bc)
             if non_zero_mu_coeff:
                 GC_phys = GC_orig
+
     return step

@@ -1,4 +1,4 @@
-from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.factories import Factories
 from MPyDATA.arakawa_c.discretisation import from_cdf_1d
 from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
 from MPyDATA.options import Options
@@ -9,7 +9,7 @@ class Simulation:
 
         x, state = from_cdf_1d(setup.cdf, setup.x_min, setup.x_max, setup.nx)
 
-        self.stepper = MPDATAFactory.constant_1d(
+        self.stepper = Factories.constant_1d(
             state,
             setup.C,
             options
@@ -21,4 +21,4 @@ class Simulation:
         return self.stepper.curr.get().copy()
 
     def run(self):
-        self.stepper.step(self.nt)
+        self.stepper.advance(self.nt)

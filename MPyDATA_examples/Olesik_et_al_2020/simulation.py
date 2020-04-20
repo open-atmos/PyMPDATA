@@ -1,8 +1,4 @@
 from MPyDATA.mpdata_factory import MPDATAFactory
-from functools import lru_cache
-from scipy import optimize
-from MPyDATA_examples.Olesik_et_al_2020.physics import equilibrium_drop_growth
-
 
 
 class Simulation:
@@ -10,7 +6,7 @@ class Simulation:
     def __mgn(quantity, unit):
         return quantity.to(unit).magnitude
 
-    def __init__(self, setup, grid_layout, psi_coord, opts, GC_max):
+    def __init__(self, setup, grid_layout, psi_coord, opts):
         self.setup = setup
         self.psi_coord = psi_coord
 
@@ -19,11 +15,11 @@ class Simulation:
         self.__r_unit = self.setup.si.micrometre
         self.__n_unit = self.setup.si.centimetres**-3 / self.setup.si.micrometre
 
-        self.solver, self.__r, self.__rh, self.dx, dt = MPDATAFactory.condensational_growth(
+        self.solver, self.__r, self.__rh, self.dx = MPDATAFactory.condensational_growth(
             self.setup.nr,
             self.__mgn(self.setup.r_min, self.__r_unit),
             self.__mgn(self.setup.r_max, self.__r_unit),
-            GC_max,
+            self.__mgn(self.setup.dt, self.__t_unit),
             grid_layout,
             psi_coord,
             lambda r: self.__mgn(self.setup.pdf(r * self.__r_unit), self.__n_unit),
@@ -31,9 +27,6 @@ class Simulation:
             opts
         )
 
-        self.out_steps = Simulation.find_out_steps(setup=self.setup, dt=dt)
-        self.dt = dt * self.__t_unit
-        
     def step(self, nt):
         self.solver.step(nt)
 
@@ -50,20 +43,4 @@ class Simulation:
         psi = self.solver.curr.get()
         n = psi * self.psi_coord.dx_dr(self.__r)
         return n * self.__n_unit
-
-    @staticmethod
-    def find_out_steps(setup, dt):
-        out_steps = []
-        for mr in setup.mixing_ratios:
-            @lru_cache()
-            def findroot(ti):
-                return (mr - setup.mixing_ratio(
-                    equilibrium_drop_growth.PdfEvolver(setup.pdf, setup.drdt, ti * t_unit))).magnitude
-
-            t_unit = setup.si.second
-            t = optimize.brentq(findroot, 0, (1 * setup.si.hour).to(t_unit).magnitude)
-            out_steps.append(int((t / dt)))
-        return out_steps
-
-
 
