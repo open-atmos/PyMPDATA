@@ -1,4 +1,4 @@
-from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.factories import Factories
 
 
 class Simulation:
@@ -15,7 +15,7 @@ class Simulation:
         self.__r_unit = self.setup.si.micrometre
         self.__n_unit = self.setup.si.centimetres**-3 / self.setup.si.micrometre
 
-        self.solver, self.__r, self.__rh, self.dx = MPDATAFactory.condensational_growth(
+        self.solver, self.__r, self.__rh, self.dx = Factories.condensational_growth(
             self.setup.nr,
             self.__mgn(self.setup.r_min, self.__r_unit),
             self.__mgn(self.setup.r_max, self.__r_unit),
@@ -28,7 +28,7 @@ class Simulation:
         )
 
     def step(self, nt):
-        self.solver.step(nt)
+        self.solver.advance(nt)
 
     @property
     def r(self):

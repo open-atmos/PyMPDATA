@@ -1,9 +1,9 @@
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.arakawa_c.boundary_condition.cyclic import Cyclic
-from MPyDATA.mpdata_factory import make_step
+from MPyDATA.factories import Stepper
 from MPyDATA.options import Options
-from MPyDATA.mpdata import MPDATA
+from MPyDATA.solver import Solver
 import pytest
 import numpy as np
 
@@ -29,8 +29,8 @@ def test_upwind(shape, ij0, out, C):
     state = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
     GC_field = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
 
-    mpdata = MPDATA(options=options, step_impl=make_step(options=options, grid=shape), advector=GC_field, advectee=state)
-    mpdata.step(1)
+    mpdata = Solver(stepper=Stepper(options=options, grid=shape), advector=GC_field, advectee=state)
+    mpdata.advance(1)
 
     np.testing.assert_array_equal(
         mpdata.curr.get(),

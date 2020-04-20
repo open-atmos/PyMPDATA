@@ -1,4 +1,4 @@
-from MPyDATA.mpdata_factory import MPDATAFactory
+from MPyDATA.factories import Factories
 from MPyDATA.options import Options
 import numpy as np
 import pytest
@@ -39,7 +39,7 @@ def test_single_timestep(options):
         axis=0
     )
 
-    GC, mpdatas = MPDATAFactory.stream_function_2d(
+    GC, mpdatas = Factories.stream_function_2d(
         grid=grid, size=size, dt=dt,
         stream_function=stream_function,
         field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
@@ -51,7 +51,7 @@ def test_single_timestep(options):
 
     # Act
     for mpdata in mpdatas.values():
-        mpdata.step(1)
+        mpdata.advance(1)
 
     # Assert
     for k, v in mpdatas.items():
