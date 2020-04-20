@@ -41,12 +41,17 @@ The examples/demos reproduce results from several published
   works on MPDATA and its applications, and provide a validation of the implementation
   and its performance.
  
-## Dependencies
+## Dependencies and installation
 
 MPyDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
 and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/requirements.txt) file.  
 
 The stringest constraint is likely the requirement of Numba 0.49 (released in April 2020).
+ 
+To install MPyDATA, one may use:
+```bash
+pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git
+```
  
 ## Examples/Demos:
 
@@ -189,7 +194,7 @@ represent coordinate transformations.
 #### Solver
 
 Instances of the ``Solver`` class are used to control
-the integration and store solution data. During instantiation, 
+the integration and access solution data. During instantiation, 
 additional memory required by the solver is 
 allocated according to the options provided. 
 
@@ -198,12 +203,15 @@ init is ``advance(self, nt: int, mu_coeff: float = 0)``
 which advances the solution by ``nt`` timesteps, optionally
 taking into account a given value of diffusion coefficient.
 
+Solution state is accessible through the ``Solver.curr`` property.
+
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
 ```python
 from MPyDATA.solver import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
+state = solver.curr.copy()
 ```
 
 #### Factories 
