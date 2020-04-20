@@ -27,7 +27,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
         grid_layout_str=grid_layout.__class__.__name__,
         option_str=options_str,
         result=result,
-        out_steps=simulation.out_steps,
+        out_steps=simulation.out_steps, # TODO? deepcopy? check if running tests multiple times crashes simulation
         dt=simulation.dt
     )
 
