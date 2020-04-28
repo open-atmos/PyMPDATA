@@ -101,7 +101,6 @@ def make_step_impl(options, non_unit_g_factor, grid):
              beta_up, beta_up_bc,
              beta_down, beta_down_bc
              ):
-        print(GC_phys)
         vec_bc = GC_phys_bc
         null_vecfield = GC_phys
         null_vecfield_bc = vec_bc
