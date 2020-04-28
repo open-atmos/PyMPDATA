@@ -43,10 +43,9 @@ class Setup:
             r = r_nounit * xunit
             result =  pdf(r) * r**3
             return result.to(yunit * xunit ** 3).magnitude
-
         I = integrate.quad(pdfarg,
             r_min.to(xunit).magnitude,
-            np.inf, epsrel=1e-06
+            np.inf #, epsrel=1e-06
         )[0] * yunit * xunit ** 4
         return (I * 4 / 3 * np.pi * self.rho_w / self.rho_a).to(self.si.gram / self.si.kilogram)
 

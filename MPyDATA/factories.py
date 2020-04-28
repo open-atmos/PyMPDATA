@@ -96,7 +96,10 @@ class Factories:
         )
         r = grid_layout.r(x)
 
-        psi = discretised_analytical_solution(rh, lambda r: pdf_of_r(r) / psi_coord.dx_dr(r))
+        def pdf_of_r_over_psi(r):
+            return pdf_of_r(r)/ psi_coord.dx_dr(r)
+
+        psi = discretised_analytical_solution(rh, pdf_of_r_over_psi)
 
         dp_dt = drdt_of_r(rh) * dp_dr(rh)
         G = dp_dr(r) / dx_dr(r)

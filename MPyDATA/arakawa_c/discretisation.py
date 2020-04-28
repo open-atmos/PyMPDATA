@@ -8,6 +8,7 @@ from .vector_field import VectorField
 from .boundary_condition.cyclic import Cyclic
 
 
+
 def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
     z = np.empty(gridsize)
     dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
@@ -84,7 +85,6 @@ def z_vec_coord(grid):
     assert np.amax(zZ) == 1
     assert zZ.shape == (nx, nz)
     return xX, zZ
-
 
 def discretised_analytical_solution(rh, pdf_t):
     output = np.empty(rh.shape[0]-1)
