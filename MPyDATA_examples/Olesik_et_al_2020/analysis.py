@@ -27,7 +27,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
         grid_layout_str=grid_layout.__class__.__name__,
         option_str=options_str,
         result=result,
-        out_steps=simulation.out_steps, # TODO? deepcopy? check if running tests multiple times crashes simulation
+        out_steps=simulation.out_steps,
         dt=simulation.dt
     )
 
@@ -38,7 +38,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
                         mixing_ratios_g_kg=default_mixing_ratios_g_kg
                         ):
     setup = Setup(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
-    with parallel_backend('threading', n_jobs=-2):
+    with parallel_backend('threading', n_jobs=-2):    # TODO: possible error with parallelisation
         results = Parallel(verbose=10)(
             delayed(analysis)( setup, grid_layout, psi_coord, options, GC_max)
             for grid_layout in grid_layouts

@@ -27,6 +27,7 @@ def plot(nr, cour, ln_2_err):
   norm=max(nr)
   theta = cour * pi / 2.
   r = np.log(1/nr)
+  # r += nr.shape[0]
   r -= min(r)
   r *= 10/max(r)
   for i in range(theta.shape[0]) :
