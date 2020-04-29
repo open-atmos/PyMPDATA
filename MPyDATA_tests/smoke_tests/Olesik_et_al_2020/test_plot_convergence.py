@@ -20,8 +20,7 @@ r2 = test[2]
 
 def test_plot():
     plot(r0, r1, r2)
-    show_plot('name.pdf')
-
+    plt.show()
 
 
 
