@@ -1,6 +1,6 @@
 from MPyDATA.arakawa_c.scalar_field import ScalarField
 from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.arakawa_c.boundary_condition.cyclic import Cyclic
+from MPyDATA.arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
 from MPyDATA.factories import Stepper
 from MPyDATA.options import Options
 from MPyDATA.solver import Solver
@@ -26,8 +26,8 @@ def test_upwind(shape, ij0, out, C):
     )
     options = Options(n_iters=1)
 
-    state = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
-    GC_field = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+    state = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    GC_field = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
 
     mpdata = Solver(stepper=Stepper(options=options, grid=shape), advector=GC_field, advectee=state)
     mpdata.advance(1)

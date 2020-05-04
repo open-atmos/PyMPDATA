@@ -1,7 +1,7 @@
 from MPyDATA.factories import Factories
 from MPyDATA.arakawa_c.discretisation import from_cdf_1d
 from MPyDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
-from MPyDATA.options import Options
+from MPyDATA import Options
 
 
 class Simulation:

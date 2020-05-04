@@ -1,6 +1,6 @@
-from MPyDATA.factories import Factories
+from MPyDATA import Factories
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.setup import Setup
-from MPyDATA.options import Options
+from MPyDATA import Options
 from MPyDATA.arakawa_c.discretisation import from_pdf_2d
 
 

@@ -1,30 +1,20 @@
-## @file
-# @author Anna Jaruga <ajaruga@igf.fuw.edu.pl>
-# @copyright University of Warsaw
-# @date Januar 2012
-# @section LICENSE
+# based on: https://github.com/igfuw/libmpdataxx/blob/master/tests/paper_2015_GMD/2_convergence_1d/plot.py
+# by Anna Jaruga (copyright University of Warsaw, 2012)
 # GPLv3+ (see the COPYING file or http://www.gnu.org/licenses/)
+# modified by Michael Olesik & Sylwester Arabas, 2020
 
-# 1d isolines test from pks & wwg 1990
-
-# for plotting in detached screen
-import matplotlib
 import numpy as np
-from numpy import loadtxt, zeros, linspace
-from math import pi, log, cos, sin, sqrt
+from numpy import zeros, linspace
+from math import pi, cos, sin, sqrt
 from scipy.interpolate import griddata
 from matplotlib.patches import Path, PathPatch
-
 import matplotlib.pyplot as plt
 
 
-def plot(nr, cour, ln_2_err):
-    theta = zeros(nr.shape[0])
-    r = zeros(nr.shape[0])
+def plot(nr, cour, ln_2_err, n_levels=11, ngrid=800 * 2, fontsize=20):
     x = zeros(nr.shape[0])
     y = zeros(nr.shape[0])
 
-    norm = max(nr)
     theta = cour * pi / 2.
     r = np.log(1 / nr)
     r -= min(r)
@@ -33,9 +23,11 @@ def plot(nr, cour, ln_2_err):
         x[i] = r[i] * cos(theta[i])
         y[i] = r[i] * sin(theta[i])
 
-    ngrid = 800 * 2
-    n_levels = 10
-    levels = np.linspace(min(ln_2_err), max(ln_2_err), n_levels)
+    levels = np.linspace(
+        np.floor(min(ln_2_err)),
+        np.ceil(max(ln_2_err)),
+        n_levels
+    )
     mn = 0
     mx = int(np.ceil(max(r)))
 
@@ -47,28 +39,25 @@ def plot(nr, cour, ln_2_err):
     fig = plt.gcf()
     fig.gca().set_xlim(mn, mx)
     fig.gca().set_ylim(mn, mx)
-    fig.gca().set_xlabel('r; C=0', fontsize=30)
-    fig.gca().set_ylabel('r; C=1', fontsize=30)
-    plt.tick_params(length=10, width=2, labelsize=24)
-    print('lev=',levels)
+    fig.gca().set_xlabel('r; C=0', fontsize=fontsize)
+    fig.gca().set_ylabel('r; C=1', fontsize=fontsize)
+    plt.tick_params(length=10, width=2, labelsize=fontsize)
     mpble = fig.gca().contourf(xi, yi, zi, levels, cmap=plt.cm.jet)
     cbar = plt.colorbar(mpble)
-    cbar.set_label(r'log$_2$(err)', fontsize=30, labelpad=20)
-    cbar.ax.tick_params(labelsize=24)
+    cbar.set_label(r'log$_2$(err)', fontsize=fontsize, labelpad=fontsize)
+    cbar.ax.tick_params(labelsize=fontsize)
     for r in range(mx, 0, -1):
-        zix = 1
-        if (r == 1): zix = 10
         patch = PathPatch(
             Path(
                 [(0, r), (r * 4 * (sqrt(2) - 1) / 3, r), (r, r * 4 * (sqrt(2) - 1) / 3), (r, 0)],
                 [Path.MOVETO, Path.CURVE4, Path.CURVE4, Path.CURVE4]
             ),
             color='white',
-            fill=(r == 1),
+            fill=False,
             linewidth=1,
-            zorder=zix
+            zorder=1
         )
-        if (r != 1): fig.gca().add_patch(patch)
+        fig.gca().add_patch(patch)
     for i in range(len(cour)):
         c = cos(theta[i])
         s = sin(theta[i])
@@ -84,5 +73,3 @@ def plot(nr, cour, ln_2_err):
             )
         )
     fig.gca().contour(xi, yi, zi, levels, linewidths=1, colors='k')
-    fig.gca().add_patch(patch)
-    fig.show()
