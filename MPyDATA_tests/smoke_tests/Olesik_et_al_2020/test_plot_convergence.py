@@ -18,9 +18,10 @@ r2 = test[2]
 
 # r2 = np.random.random(len(r0))
 
-def test_plot():
-    plot(r0, r1, r2)
-    plt.show()
+def test_plot(plot = False):
+    if plot:
+        plot(r0, r1, r2)
+        plt.show()
 
 
 
