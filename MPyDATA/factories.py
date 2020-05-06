@@ -14,9 +14,9 @@ from .solver import Solver
 from .options import Options
 from MPyDATA.stepper import Stepper
 from .arakawa_c.discretisation import nondivergent_vector_field_2d, discretised_analytical_solution
-from .arakawa_c.boundary_condition.extrapolated import Extrapolated
-from .arakawa_c.boundary_condition.constant import Constant
-from .arakawa_c.boundary_condition.cyclic import Cyclic
+from .arakawa_c.boundary_condition.extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
+from .arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
+from .arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
 
 
 class Factories:
@@ -24,8 +24,8 @@ class Factories:
     def constant_1d(data, C, options: Options):
         solver = Solver(
             stepper=Stepper(options=options, n_dims=len(data.shape), non_unit_g_factor=False),
-            advectee=ScalarField(data, halo=options.n_halo, boundary_conditions=(Cyclic(),)),
-            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=options.n_halo, boundary_conditions=(Cyclic(),))
+            advectee=ScalarField(data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),)),
+            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),))
         )
         return solver
 
@@ -36,8 +36,8 @@ class Factories:
             np.full((grid[0] + 1, grid[1]), C[0]),
             np.full((grid[0], grid[1] + 1), C[1])
         ]
-        GC = VectorField(GC_data, halo=options.n_halo, boundary_conditions=(Cyclic(),Cyclic()))
-        state = ScalarField(data=data, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+        GC = VectorField(GC_data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        state = ScalarField(data=data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         step = Stepper(options=options, grid=grid, non_unit_g_factor=False)
         mpdata = Solver(stepper=step, advectee=state, advector=GC)
         return mpdata
@@ -46,17 +46,17 @@ class Factories:
     def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
         step = Stepper(options=options, grid=grid, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-        advectee = ScalarField(field, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+        advectee = ScalarField(field, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         return Solver(stepper=step, advectee=advectee, advector=GC)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
         step = Stepper(options=options, grid=grid, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-        g_factor = ScalarField(g_factor, halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+        g_factor = ScalarField(g_factor, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         mpdatas = {}
         for k, v in field_values.items():
-            advectee = ScalarField(np.full(grid, v), halo=options.n_halo, boundary_conditions=(Cyclic(), Cyclic()))
+            advectee = ScalarField(np.full(grid, v), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
             mpdatas[k] = Solver(stepper=step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, mpdatas
 
@@ -117,9 +117,9 @@ class Factories:
         # CFL condition
         np.testing.assert_array_less(np.abs(GCh), 1)
 
-        g_factor = ScalarField(G, halo=opts.n_halo, boundary_conditions=(Extrapolated(), Extrapolated()))
-        state = ScalarField(psi, halo=opts.n_halo, boundary_conditions=(Constant(0), Constant(0)))
-        GC_field = VectorField([GCh], halo=opts.n_halo, boundary_conditions=(Constant(0), Constant(0)))
+        g_factor = ScalarField(G, halo=opts.n_halo, boundary_conditions=(ExtrapolatedBoundaryCondition(), ExtrapolatedBoundaryCondition()))
+        state = ScalarField(psi, halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0), ConstantBoundaryCondition(0)))
+        GC_field = VectorField([GCh], halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0), ConstantBoundaryCondition(0)))
         stepper = Stepper(
             options=opts,
             n_dims=1,

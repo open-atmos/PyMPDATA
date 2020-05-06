@@ -1,6 +1,6 @@
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_mixing_ratios_g_kg
-from MPyDATA.options import Options
+from MPyDATA import Options
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from joblib import Parallel, parallel_backend, delayed
 from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver

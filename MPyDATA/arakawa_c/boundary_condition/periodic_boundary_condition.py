@@ -7,7 +7,7 @@ Created at 20.03.2020
 import numba
 
 
-class Cyclic:
+class PeriodicBoundaryCondition:
     def make_scalar(self, at, _):
         @numba.njit()
         def fill_halos(psi, n, sign):

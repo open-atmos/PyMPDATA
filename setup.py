@@ -10,5 +10,5 @@ setup(
         'MPyDATA/arakawa_c/boundary_condition',
     ],
     license='GPL v3',
-    long_description=''
+    long_description='Numba-accelerated Pythonic implementation of MPDATA with Jupyter examples'
 )

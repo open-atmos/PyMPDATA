@@ -1,4 +1,4 @@
-from MPyDATA.factories import Factories
+from MPyDATA import Factories
 from functools import lru_cache
 from scipy import optimize
 from MPyDATA_examples.Olesik_et_al_2020.physics import equilibrium_drop_growth
