@@ -32,17 +32,20 @@ class Setup:
         xunit = self.si.micrometre
         yunit = 1 / self.si.micrometre / self.si.centimetre ** 3
 
-        def fmgn(fun, unit):
-            return lambda x: fun(x * xunit).to(unit).magnitude
+        # def fmgn(fun, unit):
+        #     return lambda x: fun(x * xunit).to(unit).magnitude
 
         r_min = .1 * self.si.micrometre
         while not np.isfinite(pdf(r_min).magnitude):
             r_min *= 1.01
 
-        I = integrate.quad(
-            fmgn(lambda r: pdf(r) * r ** 3, yunit * xunit ** 3),
+        def pdfarg(r_nounit):
+            r = r_nounit * xunit
+            result =  pdf(r) * r**3
+            return result.to(yunit * xunit ** 3).magnitude
+        I = integrate.quad(pdfarg,
             r_min.to(xunit).magnitude,
-            np.inf
+            np.inf #, epsrel=1e-06
         )[0] * yunit * xunit ** 4
         return (I * 4 / 3 * np.pi * self.rho_w / self.rho_a).to(self.si.gram / self.si.kilogram)
 

@@ -142,5 +142,4 @@ def make_step_impl(options, non_unit_g_factor, grid):
                 upwind(psi, flux, vec_bc, g_factor, g_factor_bc)
             if non_zero_mu_coeff:
                 GC_phys = GC_orig
-
     return step

@@ -1,7 +1,7 @@
 from MPyDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
-from MPyDATA.factories import Factories
-from MPyDATA.arakawa_c.boundary_condition.extrapolated import Extrapolated
-from MPyDATA.options import Options
+from MPyDATA import Factories
+from MPyDATA import ExtrapolatedBoundaryCondition
+from MPyDATA import Options
 import numpy as np
 
 
@@ -50,13 +50,13 @@ class Simulation:
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, non_zero_mu_coeff=True),
-            boundary_conditions=Extrapolated()
+            boundary_conditions=ExtrapolatedBoundaryCondition()
         )
         self.solvers[2] = Factories.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS),
-            boundary_conditions=Extrapolated()
+            boundary_conditions=ExtrapolatedBoundaryCondition()
         )
 
     def run(self, n_iters: int):

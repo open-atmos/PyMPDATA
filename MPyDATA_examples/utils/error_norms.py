@@ -10,3 +10,11 @@ def L2(numerical, analytical, nt):
         )
     ) / np.log(2)
     return err2
+
+def GMD(numerical, analytical, T):
+    assert numerical.shape == analytical.shape
+    NX = analytical.size
+    err = np.sqrt(
+            sum(pow(numerical - analytical, 2)) / NX
+        ) / T
+    return err

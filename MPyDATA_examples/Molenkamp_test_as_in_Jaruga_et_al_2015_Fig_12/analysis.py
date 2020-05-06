@@ -1,7 +1,7 @@
 from joblib import Parallel, delayed
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation import Simulation
 from MPyDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.setup import Setup
-from MPyDATA.options import Options
+from MPyDATA import Options
 
 
 options = {

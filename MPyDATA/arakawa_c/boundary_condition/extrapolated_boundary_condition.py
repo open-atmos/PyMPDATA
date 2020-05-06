@@ -4,7 +4,7 @@ import numba
 X = -1
 
 
-class Extrapolated:
+class ExtrapolatedBoundaryCondition:
     def __init__(self, eps=1e-10):
         self._eps = eps
 

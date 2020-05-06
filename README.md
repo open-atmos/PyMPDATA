@@ -100,7 +100,7 @@ For a discussion of the above options, see e.g., [Smolarkiewicz & Margolin 1998]
 In most use cases of MPyDATA, the first thing to do is to instantiate the Options class 
 with arguments suiting the problem at hand, e.g.:
 ```python
-from MPyDATA.options import Options
+from MPyDATA import Options
 options = Options(n_iters=3, infinite_gauge=True, flux_corrected_transport=True)
 ```
 
@@ -130,9 +130,9 @@ As an example, the code below shows how to instantiate a scalar
 and a vector field given a 2D constant-velocity problem,
 using a grid of 100x100 points and cyclic boundary conditions (with all values set to zero):
 ```python
-from MPyDATA.arakawa_c.scalar_field import ScalarField
-from MPyDATA.arakawa_c.vector_field import VectorField
-from MPyDATA.arakawa_c.boundary_condition.cyclic import Cyclic
+from MPyDATA import ScalarField
+from MPyDATA import VectorField
+from MPyDATA import PeriodicBoundaryCondition
 import numpy as np
 
 nx, ny = 100, 100
@@ -140,12 +140,12 @@ halo = options.n_halo
 advectee = ScalarField(
     data=np.zeros((nx, ny)), 
     halo=halo, 
-    boundary_conditions=(Cyclic(), Cyclic())
+    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
 )
 advector = VectorField(
     data=(np.zeros((nx+1, ny)), np.zeros((nx, ny+1))),
     halo=halo,
-    boundary_conditions=(Cyclic(), Cyclic())    
+    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())    
 )
 ```
 
@@ -167,7 +167,7 @@ of either supplying just the
 number of dimensions or specialising the stepper for
 a given grid:
 ```python
-from MPyDATA.stepper import Stepper
+from MPyDATA import Stepper
 
 stepper = Stepper(options=options, n_dims=2)
 ```
@@ -212,7 +212,7 @@ Solution state is accessible through the ``Solver.curr`` property.
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
 ```python
-from MPyDATA.solver import Solver
+from MPyDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
 state = solver.curr.get()

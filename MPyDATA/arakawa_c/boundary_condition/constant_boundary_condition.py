@@ -1,7 +1,7 @@
 import numba
 
 
-class Constant:
+class ConstantBoundaryCondition:
     def __init__(self, value):
         self._value = value
 
@@ -14,4 +14,4 @@ class Constant:
         return fill_halos
 
     def make_vector(self, at):
-        return Constant(self._value).make_scalar(at, 0)
+        return ConstantBoundaryCondition(self._value).make_scalar(at, 0)

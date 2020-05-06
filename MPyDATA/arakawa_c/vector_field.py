@@ -6,7 +6,7 @@ import numpy as np
 from .indexers import make_null, indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
 from .traversals import make_meta, meta_halo_valid
-from ..arakawa_c.boundary_condition.constant import Constant
+from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 
 
 class VectorField:
@@ -23,7 +23,7 @@ class VectorField:
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
         self.fill_halos = tuple(
-            [(boundary_conditions[i] if i < self.n_dims else Constant(np.nan)).make_vector(indexers[self.n_dims].at[i])
+            [(boundary_conditions[i] if i < self.n_dims else ConstantBoundaryCondition(np.nan)).make_vector(indexers[self.n_dims].at[i])
              for i in range(MAX_DIM_NUM)])
         grid = tuple([data[d].shape[d] - 1 for d in dims])
         self.meta = make_meta(False, grid)
@@ -45,7 +45,7 @@ class VectorField:
                 diff_sum = tmp
             else:
                 diff_sum += tmp
-        result = ScalarField(diff_sum, halo=0, boundary_conditions=[Constant(np.nan)]*len(grid_step))
+        result = ScalarField(diff_sum, halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * len(grid_step))
         return result
 
     @property
@@ -54,6 +54,6 @@ class VectorField:
 
     @staticmethod
     def make_null(n_dims):
-        null = VectorField([np.empty([0] * n_dims)] * n_dims, halo=1, boundary_conditions=[Constant(np.nan)]*n_dims)
+        null = VectorField([np.empty([0] * n_dims)] * n_dims, halo=1, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
         null.meta[meta_halo_valid] = True
         return null

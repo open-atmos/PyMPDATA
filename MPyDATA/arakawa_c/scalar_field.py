@@ -5,7 +5,7 @@ Created at 03.2020
 import numpy as np
 from .indexers import indexers, MAX_DIM_NUM
 from .traversals import make_meta, meta_halo_valid
-from ..arakawa_c.boundary_condition.constant import Constant
+from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 
 
 class ScalarField:
@@ -17,7 +17,7 @@ class ScalarField:
         self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
         self.get()[:] = data[:]
         self.fill_halos = tuple(
-            [(boundary_conditions[i] if i < self.n_dims else Constant(np.nan)).make_scalar(indexers[self.n_dims].at[i], halo)
+            [(boundary_conditions[i] if i < self.n_dims else ConstantBoundaryCondition(np.nan)).make_scalar(indexers[self.n_dims].at[i], halo)
              for i in range(MAX_DIM_NUM)])
         self.boundary_conditions = boundary_conditions
         self.meta = make_meta(False, data.shape)
@@ -36,6 +36,6 @@ class ScalarField:
 
     @staticmethod
     def make_null(n_dims):
-        null = ScalarField(np.empty([0]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)]*n_dims)
+        null = ScalarField(np.empty([0]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
         null.meta[meta_halo_valid] = True
         return null
