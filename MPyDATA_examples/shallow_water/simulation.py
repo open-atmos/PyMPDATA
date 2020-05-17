@@ -10,7 +10,11 @@ class Simulation:
         state = setup.H0(x)
 
         self.stepper = Factories.shallow_water(
+            nr = len(setup.grid),
+            r_min = min(setup.grid),
+            r_max = max(setup.grid),
             data=state,
+            C = setup.C,
             opts=options)
         self.nt = setup.nt
 

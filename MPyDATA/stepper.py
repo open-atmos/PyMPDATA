@@ -47,7 +47,9 @@ class Stepper:
              psi_min, psi_min_bc,
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
-             beta_down, beta_down_bc):
+             beta_down, beta_down_bc,
+             rhs, rhs_bc):
+
         self.__call(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,

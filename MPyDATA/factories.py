@@ -136,20 +136,30 @@ class Factories:
 
 
     @staticmethod
-    def shallow_water(data: np.ndarray, opts: Options):
+    def shallow_water(nr, r_min, r_max, data, C, opts: Options):
         grid = data.shape
         halo = opts.n_halo
         scalar_bcond = (PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
         vector_bcond = (ConstantBoundaryCondition(0), ConstantBoundaryCondition(0))
 
-        u = np.full(1,grid)
+        rh = np.linspace(r_min, r_max, nr+1)
+        Ch = C(rh)
         stepper = Stepper(options=opts, n_dims=len(grid), non_unit_g_factor=False)
         state = ScalarField(data=data, halo=halo, boundary_conditions=scalar_bcond)
-        GC_field=VectorField([u], halo=halo, boundary_conditions=vector_bcond)
+        GC_field=VectorField([Ch], halo=halo, boundary_conditions=vector_bcond)
+
         solver = Solver(
-            stepper =stepper,
+            stepper=stepper,
             advectee=state,
             advector=GC_field
         )
+
+        # solver2 = Solver(
+        #     stepper =stepper,
+        #     advectee=state,
+        #     advector=GC_field,
+        #     rhs=rhs_field
+        # )
+
         return solver
 

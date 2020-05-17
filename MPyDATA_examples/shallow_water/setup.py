@@ -5,6 +5,7 @@ from pynverse import inversefunc
 default_dx = 0.05
 default_dt = 0.01
 default_gridsize = 16
+
 class Setup:
     def __init__(self, dx = default_dx, dt = default_dt, gridsize = default_gridsize, nt = 500):
         self.dx = dx
@@ -30,3 +31,5 @@ class Setup:
         u = x * (self.lbd_t(t) / self.lbd(t))
         return np.where(x**2 < self.lbd(t)**2, u, 0)
 
+    def C(self, x):
+        return 2* self.analytic_u(x, self.nt*self.dt) * self.dt/self.dx # TODO!!!!
