@@ -33,3 +33,25 @@ class Setup:
 
     def C(self, x):
         return 2* self.analytic_u(x, self.nt*self.dt) * self.dt/self.dx # TODO!!!!
+
+class S2D:
+    def __init__(self, dx = default_dx, dt = default_dt, gridsize = default_gridsize, nt = 500):
+        self.dx = dx
+        self.dy = dx # TODO
+        self.dt = dt
+        self.nt = nt
+        self.x = np.linspace(-8, 8, int(gridsize/ dx))
+        self.y = np.linspace(-8, 8, int(gridsize/ dx))
+        self.xgrid, self.ygrid = np.meshgrid(self.x, self.y)
+
+
+
+        self.lbd = lambda t: (2 * t ** 2 + 1) ** 1 / 2
+
+    def H0(self, x, y):
+        return np.where(abs(x)+abs(y) < 1, 1 - x**2 - y**2, 0)
+
+
+    def analytic_H2(self, x, y, t):
+        return np.where(x**2 + y**2 <= self.lbd(t)**2, self.lbd(t)**-2 * (1 - (x**2 + y**2)/ self.lbd(t)**2), 0)
+
