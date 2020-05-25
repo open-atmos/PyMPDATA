@@ -29,6 +29,7 @@ jobs:
 
 install:
   - pip$PY_SFX install -U -r requirements.txt
+  - numba -s
 
 script:
   - |
