@@ -43,7 +43,7 @@ def test_size_distribution(plot=True):
     ).all()
 
     totalpdf = np.sum(numpdfy * (diff(x)))
-    cdf_max = sd.cdf(np.inf * r_unit)
-    print(totalpdf, cdf_max, totalpdf-cdf_max)
     from scipy import integrate
-    print(integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude))
+    integratedpdf, _ = integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude)
+    print(integratedpdf)
+    np.testing.assert_array_almost_equal(totalpdf,integratedpdf)
