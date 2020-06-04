@@ -3,13 +3,21 @@ from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 import pint
 from matplotlib import pyplot
 import numpy as np
+from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
+import pytest
+
 
 
 def diff(x):
     return np.diff(x.magnitude) * x.units
 
-
-def test_size_distribution(plot=True):
+@pytest.mark.parametrize(
+    "grid", [x_id(), x_log_of_pn(), x_p2()]
+)
+@pytest.mark.parametrize(
+    "coord", [x_id(), x_log_of_pn(), x_p2()]
+)
+def test_size_distribution(grid, coord, plot=True):
     # Arrange
     si = pint.UnitRegistry()
     sd = SizeDistribution(si)
@@ -17,9 +25,10 @@ def test_size_distribution(plot=True):
     r_unit = si.micrometre
 
     # Act
-    x = np.linspace(1, 18, 100) * r_unit
+    x = grid.x(np.linspace(1, 18, 100) * r_unit)
+    dx_dr = coord.dx_dr
     numpdfx = x[1:] - diff(x) / 2
-    pdf_t = lambda r:  sd.pdf(r * r_unit).to(n_unit).magnitude
+    pdf_t = lambda r:  sd.pdf(r * r_unit).to(n_unit).magnitude / dx_dr(r * r_unit)
     numpdfy = discretised_analytical_solution(rh=x.magnitude, pdf_t= pdf_t) * n_unit
 
     # Plot
@@ -45,5 +54,4 @@ def test_size_distribution(plot=True):
     totalpdf = np.sum(numpdfy * (diff(x)))
     from scipy import integrate
     integratedpdf, _ = integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude)
-    print(integratedpdf)
     np.testing.assert_array_almost_equal(totalpdf,integratedpdf)
