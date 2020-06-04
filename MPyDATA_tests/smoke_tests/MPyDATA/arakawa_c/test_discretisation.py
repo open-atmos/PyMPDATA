@@ -42,6 +42,12 @@ def test_size_distribution(grid, coord, plot=True):
         pyplot.show()
 
     # Assert
+    totalpdf = np.sum(numpdfy * (diff(x)))
+    from scipy import integrate
+    integratedpdf, _ = integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude)
+    print(totalpdf, integratedpdf)
+    np.testing.assert_array_almost_equal(totalpdf,integratedpdf)
+
     # relerr = ((sd.pdf(numpdfx) - numpdfy) / numpdfy).magnitude
     # assert not (relerr > 0).all()
     # assert not (relerr < 0).all()
@@ -50,9 +56,3 @@ def test_size_distribution(grid, coord, plot=True):
     #     True,
     #     np.abs(relerr) < 1e-2
     # ).all()
-
-    totalpdf = np.sum(numpdfy * (diff(x)))
-    from scipy import integrate
-    integratedpdf, _ = integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude)
-    print(totalpdf, integratedpdf)
-    np.testing.assert_array_almost_equal(totalpdf,integratedpdf)
