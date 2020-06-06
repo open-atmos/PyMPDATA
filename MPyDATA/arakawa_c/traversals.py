@@ -182,12 +182,14 @@ class Traversals:
             ni, nj = grid(meta)
 
             for i in range(halo - 2, -1, -1):  # note: non-reverse order assumed in Extrapolated
-                for j in range(0, nj + 2 * halo):
+                for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
                     focus = (i, j)
+                    print('left', i, j)
                     set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, 1))
             for i in range(ni + 1 + halo - 1, ni + 1 + 2 * (halo - 1)):  # note: non-reverse order assumed in Extrapolated
-                for j in range(0, nj + 2 * halo):
+                for j in range(0, nj + 2 * halo) if n_dims > 1 else [-1]:
                     focus = (i, j)
+                    print('right', i, j)
                     set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, -1))
             if n_dims > 1:
                 for j in range(0, halo - 1):
