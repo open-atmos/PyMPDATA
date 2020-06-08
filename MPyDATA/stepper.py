@@ -13,6 +13,8 @@ from MPyDATA.options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
 import warnings
+from .clock import clock
+
 
 warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
 
@@ -48,7 +50,7 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc):
-        self.__call(nt, mu_coeff,
+        return self.__call(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,
              g_factor, g_factor_bc,
@@ -59,6 +61,7 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc)
+
 
 @lru_cache()
 def make_step_impl(options, non_unit_g_factor, grid):
@@ -105,6 +108,7 @@ def make_step_impl(options, non_unit_g_factor, grid):
         null_vecfield = GC_phys
         null_vecfield_bc = vec_bc
 
+        time = clock()
         for _ in range(nt):
             if non_zero_mu_coeff:
                 GC_orig = GC_phys
@@ -142,4 +146,5 @@ def make_step_impl(options, non_unit_g_factor, grid):
                 upwind(psi, flux, vec_bc, g_factor, g_factor_bc)
             if non_zero_mu_coeff:
                 GC_phys = GC_orig
+        return (clock() - time) / nt
     return step
