@@ -55,7 +55,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
 
     output = {}
     for coord, case in cases.items():
-        output[coord] = {"numerical": {}}
+        output[coord] = {"numerical": {}, "wall_time": {}}
         for result in results:
             if coord == result.grid_layout_str:
                 opts = result.option_str
@@ -91,10 +91,8 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
     for coord, case in cases.items():
         for result in results:
             data = result.result
-            wall_time = {}
             for opts in output[coord]["numerical"]:
-                wall_time[opts] = data["wall_time"]
-            output[coord]["wall_time"] = wall_time
+                output[coord]["wall_time"][opts] = data["wall_time"]
 
         # # TODO: calculate norms for mass and number
 
