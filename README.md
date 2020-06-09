@@ -143,7 +143,7 @@ advectee = ScalarField(
     boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
 )
 advector = VectorField(
-    data=(np.zeros(nx+1, ny), np.zeros(nx, ny+1)),
+    data=(np.zeros((nx+1, ny)), np.zeros((nx, ny+1))),
     halo=halo,
     boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())    
 )
@@ -215,7 +215,7 @@ a solver and making one integration step looks as follows:
 from MPyDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
-state = solver.curr.copy()
+state = solver.curr.get()
 ```
 
 #### Factories 

@@ -50,6 +50,10 @@ class Options:
     def non_zero_mu_coeff(self):
         return self._values['non_zero_mu_coeff']
 
+    
+    def __str__(self):
+        return str(self._values)
+    
     def __hash__(self):
         value = hash(str(self._values))
         return value

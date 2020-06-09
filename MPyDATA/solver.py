@@ -40,7 +40,7 @@ class Solver:
 
 
     def advance(self, nt: int, mu_coeff: float = 0):
-        self.stepper(nt, mu_coeff,
+        wall_time_per_timestep = self.stepper(nt, mu_coeff,
                      *self.curr.impl,
                      *self.GC_phys.impl,
                      *self.g_factor.impl,
@@ -53,3 +53,4 @@ class Solver:
                      *self.beta_down.impl,
                      *self.rhs.impl
                      )
+        return wall_time_per_timestep
