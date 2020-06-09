@@ -34,7 +34,7 @@ class Simulation:
         self.dt = dt * self.__t_unit
 
     def step(self, nt):
-        self.solver.advance(nt)
+        return self.solver.advance(nt)
 
     @property
     def r(self):

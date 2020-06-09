@@ -13,7 +13,7 @@ from .stepper import Stepper
 
 class Solver:
     def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
-                 g_factor: [ScalarField, None] = None, rhs: ScalarField = None):
+                 g_factor: [ScalarField, None] = None):
         scalar_field = lambda: ScalarField.clone(advectee)
         null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims)
         vector_field = lambda: VectorField.clone(advector)
@@ -35,9 +35,6 @@ class Solver:
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-        trapez = options.trapez
-        self.rhs = rhs if trapez else null_scalar_field()
-
 
     def advance(self, nt: int, mu_coeff: float = 0):
         wall_time_per_timestep = self.stepper(nt, mu_coeff,
@@ -50,7 +47,6 @@ class Solver:
                      *self.advectee_min.impl,
                      *self.advectee_max.impl,
                      *self.beta_up.impl,
-                     *self.beta_down.impl,
-                     *self.rhs.impl
+                     *self.beta_down.impl
                      )
         return wall_time_per_timestep

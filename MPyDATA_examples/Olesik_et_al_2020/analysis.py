@@ -13,13 +13,14 @@ def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
     options_str = str(options_dict)
     options = Options(**options_dict)
     simulation = Simulation(setup, grid_layout,  psi_coord, options, GC_max)
-    result = {"n": [], "n_analytical": [], "error_norm_L2": []}
+    result = {"n": [], "n_analytical": [], "error_norm_L2": [], "wall_time":[]}
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
-        simulation.step(steps)
+        wall_time = simulation.step(steps)
         last_step += steps
         result['n'].append(simulation.n.copy())
+        result['wall_time'].append(wall_time)
     result['r'] = simulation.r.copy()
     result['rh'] = simulation.rh.copy()
     result['dx'] = simulation.dx
@@ -67,6 +68,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
                     output[coord]["grid"] = {'rh': rh, 'r': r, 'dx': dx, 'dt': case.dt, 'out_steps': case.out_steps}
                 output[coord]["numerical"][opts] = data['n']
 
+
     for coord, case in cases.items():
         analytical = []
         for t in [case.dt * nt for nt in case.out_steps]:
@@ -85,6 +87,14 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
             numerical = output[coord]["numerical"][opts]
             error_L2[opts] = L2(numerical[-1].magnitude, analytical[-1].magnitude, case.out_steps[-1])
         output[coord]["error_L2"] = error_L2
+
+    for coord, case in cases.items():
+        for result in results:
+            data = result.result
+            wall_time = {}
+            for opts in output[coord]["numerical"]:
+                wall_time[opts] = data["wall_time"]
+            output[coord]["wall_time"] = wall_time
 
         # # TODO: calculate norms for mass and number
 
