@@ -23,6 +23,7 @@ opt_set = (
 
 def test_wall_time():
     setup = Setup(nr=default_nr, mixing_ratios_g_kg=default_mixing_ratios_g_kg)
+    table_data = {"opts":[], "values":[]}
     for grid in grid_layout_set:
         norm = [1, ]
         for opts in opt_set:
@@ -36,6 +37,9 @@ def test_wall_time():
             print("mean time:", round(mean_time, 2), "\n")
             print("min time:", round(min_time, 2), "\n")
             print("elapsed real time (wrt upwind)", round(min_time/norm[0], 2), "\n")
+            table_data["opts"].append(opts+"("+grid.__class__.__name__+")")
+            table_data["values"].append(round(min_time/norm[0], 2))
+    return table_data
 
 
 def make_data(setup,grid,opts):
@@ -49,3 +53,19 @@ def make_data(setup,grid,opts):
         last_step += steps
         result['wall_time'].append(wall_time)
     return result
+
+def test_make_refdata():
+    data = test_wall_time()
+    latex_data = r"\hline" + "Variant  & Elapsed Real Time (wrt upwind) " + r"\\ \hline" + "\n"
+    for opt, value in zip(data["opts"], data["values"]):
+            latex_data += r"\hline" + f" {opt} & {value} " + r"\\ \hline" + "\n"
+    latex_start = r"\begin"+ "\n" +"{table}[]" +"\n" +r"\begin"+ "\n"+ "{tabular}"+ "\n" +"{ | l | l |}"+ "\n"
+    latex_end = "\end \n {tabular} \n \end \n {table}"
+    latex_table = latex_start + latex_data + latex_end
+    print(latex_table)
+
+
+
+
+
+
