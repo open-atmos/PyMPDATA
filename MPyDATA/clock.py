@@ -2,13 +2,20 @@ import numba
 import cffi
 import platform
 
+sys = platform.system()
+
 ffi = cffi.FFI()
 ffi.cdef('long clock(void);')
-libc = ffi.dlopen(None)
+
+if sys == 'Windows':
+    libc = ffi.dlopen('msvcrt.dll')
+else:
+    libc = ffi.dlopen(None)
+
 clock = libc.clock
 
 scale = 1
-if platform.system() == 'Linux':
+if sys == 'Linux':
     scale = 1000
 
 
