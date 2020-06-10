@@ -88,7 +88,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=2, flux_corrected_transport=True),
     Options(n_iters=2, divergent_flow=True)
 ])
-@pytest.mark.parametrize("dtype", (np.float32, np.float64))
+@pytest.mark.parametrize("dtype", (np.float64,))
 def test_timing_2d(benchmark, options, dtype):
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
