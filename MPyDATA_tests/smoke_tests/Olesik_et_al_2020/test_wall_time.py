@@ -26,8 +26,8 @@ def test_wall_time():
     for grid in grid_layout_set:
         norm = [1, ]
         for opts in opt_set:
-            result = make_data(setup,grid,opts)
-            print("\nVariant:", opts, "\nGrid Layout:", grid, "\n")
+            result = make_data(setup, grid, opts)
+            print("\nVariant:", opts, "\nGrid Layout:", grid.__class__.__name__, "\n")
             wall_times = result['wall_time']
             mean_time = np.nanmean(wall_times)
             min_time = np.nanmin(wall_times)
@@ -36,6 +36,7 @@ def test_wall_time():
             print("mean time:", round(mean_time, 2), "\n")
             print("min time:", round(min_time, 2), "\n")
             print("elapsed real time (wrt upwind)", round(min_time/norm[0], 2), "\n")
+
 
 def make_data(setup,grid,opts):
     options = Options(**opts)
