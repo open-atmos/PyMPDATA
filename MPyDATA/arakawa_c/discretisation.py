@@ -31,6 +31,7 @@ def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
     return x, y
 
 
+# TODO: handle dtype
 def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo):
     dx = size[0] / grid[0]
     dz = size[1] / grid[1]

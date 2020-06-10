@@ -63,8 +63,6 @@ def test_L2_finite(grid_layout, opts, data):
     grid_layout_str = grid_layout.__class__.__name__
     sut = data[grid_layout_str]['error_L2'][str(opts)]
 
-    print(sut)
-
     # Assert
     assert np.isfinite(sut).all()
 

@@ -21,11 +21,11 @@ from .arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBo
 
 class Factories:
     @staticmethod
-    def constant_1d(data, C, options: Options):
+    def constant_1d(data: np.ndarray, C: float, options: Options):
         solver = Solver(
             stepper=Stepper(options=options, n_dims=len(data.shape), non_unit_g_factor=False),
-            advectee=ScalarField(data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),)),
-            advector=VectorField((np.full(data.shape[0] + 1, C),), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),))
+            advectee=ScalarField(data.astype(options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),)),
+            advector=VectorField((np.full(data.shape[0] + 1, C, dtype=options.dtype),), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),))
         )
         return solver
 
@@ -33,30 +33,30 @@ class Factories:
     def constant_2d(data: np.ndarray, C, options: Options):
         grid = data.shape
         GC_data = [
-            np.full((grid[0] + 1, grid[1]), C[0]),
-            np.full((grid[0], grid[1] + 1), C[1])
+            np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
+            np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
         ]
         GC = VectorField(GC_data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-        state = ScalarField(data=data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        state = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         step = Stepper(options=options, grid=grid, non_unit_g_factor=False)
         mpdata = Solver(stepper=step, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
-    def stream_function_2d_basic(grid, size, dt, stream_function, field, options: Options):
+    def stream_function_2d_basic(grid, size, dt, stream_function, field: np.ndarray, options: Options):
         step = Stepper(options=options, grid=grid, non_unit_g_factor=False)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-        advectee = ScalarField(field, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        advectee = ScalarField(field.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         return Solver(stepper=step, advectee=advectee, advector=GC)
 
     @staticmethod
-    def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor, options: Options):
+    def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor: np.ndarray, options: Options):
         step = Stepper(options=options, grid=grid, non_unit_g_factor=True)
         GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-        g_factor = ScalarField(g_factor, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        g_factor = ScalarField(g_factor.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         mpdatas = {}
         for k, v in field_values.items():
-            advectee = ScalarField(np.full(grid, v), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+            advectee = ScalarField(np.full(grid, v, dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
             mpdatas[k] = Solver(stepper=step, advectee=advectee, advector=GC, g_factor=g_factor)
         return GC, mpdatas
 
@@ -71,10 +71,11 @@ class Factories:
         grid = advectee.shape
         stepper = Stepper(options=options, n_dims=len(grid), non_unit_g_factor=False)
         return Solver(stepper=stepper,
-                      advectee=ScalarField(advectee, halo=options.n_halo, boundary_conditions=(boundary_conditions, boundary_conditions)),
-                      advector=VectorField((np.full(grid[0]+1, advector),), halo=options.n_halo, boundary_conditions=(boundary_conditions,boundary_conditions))
+                      advectee=ScalarField(advectee.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=boundary_conditions),
+                      advector=VectorField((np.full(grid[0]+1, advector, dtype=options.dtype),), halo=options.n_halo, boundary_conditions=boundary_conditions)
                       )
 
+    # TODO: move to Olesik_et_al_2020 example?
     @staticmethod
     def condensational_growth(nr, r_min, r_max, GC_max, grid_layout, psi_coord, pdf_of_r, drdt_of_r, opts: Options):
         # psi = psi(p)
@@ -117,9 +118,9 @@ class Factories:
         # CFL condition
         np.testing.assert_array_less(np.abs(GCh), 1)
 
-        g_factor = ScalarField(G, halo=opts.n_halo, boundary_conditions=(ExtrapolatedBoundaryCondition(), ExtrapolatedBoundaryCondition()))
-        state = ScalarField(psi, halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0), ConstantBoundaryCondition(0)))
-        GC_field = VectorField([GCh], halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0), ConstantBoundaryCondition(0)))
+        g_factor = ScalarField(G.astype(dtype=opts.dtype), halo=opts.n_halo, boundary_conditions=(ExtrapolatedBoundaryCondition(),))
+        state = ScalarField(psi.astype(dtype=opts.dtype), halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0),))
+        GC_field = VectorField([GCh.astype(dtype=opts.dtype)], halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0),))
         stepper = Stepper(
             options=opts,
             n_dims=1,
