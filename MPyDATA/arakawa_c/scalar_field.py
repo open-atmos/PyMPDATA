@@ -6,13 +6,21 @@ import numpy as np
 from .indexers import indexers, MAX_DIM_NUM
 from .traversals import make_meta, meta_halo_valid
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
+import inspect
 
 
 class ScalarField:
     def __init__(self, data: np.ndarray, halo: int, boundary_conditions):
+        assert len(data.shape) == len(boundary_conditions)
+        for dim_length in data.shape:
+            assert halo <= dim_length
+        for bc in boundary_conditions:
+            assert not inspect.isclass(bc)
+
         self.n_dims = data.ndim
         shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
-        self.data = np.zeros(shape_with_halo, dtype=np.float64)
+        self.data = np.zeros(shape_with_halo, dtype=data.dtype)
+        self.dtype = data.dtype
         self.halo = halo
         self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
         self.get()[:] = data[:]

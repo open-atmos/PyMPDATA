@@ -50,13 +50,13 @@ class Simulation:
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, non_zero_mu_coeff=True),
-            boundary_conditions=ExtrapolatedBoundaryCondition()
+            boundary_conditions=(ExtrapolatedBoundaryCondition(),)
         )
         self.solvers[2] = Factories.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS),
-            boundary_conditions=ExtrapolatedBoundaryCondition()
+            boundary_conditions=(ExtrapolatedBoundaryCondition(),)
         )
 
     def run(self, n_iters: int):

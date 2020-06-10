@@ -2,6 +2,7 @@
 Created at 03.2020
 """
 
+import numpy as np
 
 class Options:
     def __init__(self, *,
@@ -12,13 +13,19 @@ class Options:
                  third_order_terms: bool = False,
                  epsilon: float = 1e-15,
                  non_zero_mu_coeff: bool = False,
+                 dtype: np.floating = np.float64
                  ):
         self._values = {'n_iters': n_iters, 'infinite_gauge': infinite_gauge, 'epsilon': epsilon,
                         'divergent_flow': divergent_flow, 'flux_corrected_transport': flux_corrected_transport,
-                        'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff}
+                        'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff,
+                        'dtype': dtype}
 
         if flux_corrected_transport and n_iters < 2:
             raise ValueError()
+
+    @property
+    def dtype(self):
+        return self._values['dtype']
 
     @property
     def n_iters(self):
