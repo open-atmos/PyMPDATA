@@ -24,7 +24,6 @@ def test_wall_time():
         for opt_i, opts in enumerate(result[coord]['numerical'].keys()):
             print("\nVariant:", opts, "\nGrid Layout:", coord)
             wall_times = result[coord]['wall_time'][opts]
-            print("elapsed real time: ", wall_times, "\n")
             mean_time = np.nanmean(wall_times)
             print("mean time:", mean_time, "\n")
             print("min time:", np.nanmin(wall_times), "\n")
