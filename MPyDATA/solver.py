@@ -19,12 +19,15 @@ class Solver:
         vector_field = lambda: VectorField.clone(advector)
         null_vector_field = lambda: VectorField.make_null(advector.n_dims)
 
-        # TODO: assert advectee and advector have the same options as stepper
         options = stepper.options
 
+        for field in [advector, advectee] + ([g_factor] if g_factor is not None else []):
+            assert field.halo == options.n_halo
+            assert field.dtype == options.dtype
+
         self.stepper = stepper
-        self.curr = advectee
-        self.GC_phys = advector
+        self.curr = advectee  # TODO: rename to self.advectee
+        self.GC_phys = advector  # TODO: rename to self.advector
         self.g_factor = g_factor or null_scalar_field()
         self._vectmp_a = vector_field()
         self._vectmp_b = vector_field()
