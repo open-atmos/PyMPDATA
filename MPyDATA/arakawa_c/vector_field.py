@@ -7,19 +7,30 @@ from .indexers import make_null, indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
 from .traversals import make_meta, meta_halo_valid
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
+import inspect
 
 
 class VectorField:
     def __init__(self, data, halo, boundary_conditions):
+        assert len(data) == len(boundary_conditions)
+        for field in data:
+            assert len(field.shape) == len(data)
+            for dim_length in field.shape:
+                assert halo <= dim_length
+        for bc in boundary_conditions:
+            assert not inspect.isclass(bc)
+
         self.halo = halo
         self.n_dims = len(data)
+        self.dtype = data[0].dtype
 
         dims = range(self.n_dims)
         halos = [[(halo - (d == c)) for c in dims] for d in dims]
         shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
-        self.data = [np.full(shape_with_halo[d], np.nan, dtype=np.float64) for d in dims]
+        self.data = [np.full(shape_with_halo[d], np.nan, dtype=self.dtype) for d in dims]
         self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
         for d in dims:
+            assert data[d].dtype == self.dtype
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
         self.fill_halos = tuple(
@@ -54,6 +65,10 @@ class VectorField:
 
     @staticmethod
     def make_null(n_dims):
-        null = VectorField([np.empty([0] * n_dims)] * n_dims, halo=1, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
+        null = VectorField(
+            [np.full([1] * n_dims, np.nan)] * n_dims,
+            halo=1,
+            boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims
+        )
         null.meta[meta_halo_valid] = True
         return null
