@@ -28,6 +28,7 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo apt-get install --no-install-recommends mpi-default-dev mpi-default-bin; fi
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
