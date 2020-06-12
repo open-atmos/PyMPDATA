@@ -13,3 +13,4 @@ scipy==1.4.1
 pint==0.9
 joblib==0.14.1
 cffi==1.14.0
+mpi4py
