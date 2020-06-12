@@ -1,6 +1,7 @@
 import numba
 import cffi
 import numpy as np
+import platform
 from mpi4py import MPI
 
 
@@ -14,7 +15,10 @@ ffi.cdef(f"typedef {_mpi_comm_t} MPI_Comm;")
 ffi.cdef("int MPI_Initialized(int *flag);")
 ffi.cdef("int MPI_Comm_size(MPI_Comm comm, int *size);")
 
-libmpi = ffi.dlopen(None)  # libmpi loaded by mpi4py
+lib = None  # libmpi loaded by mpi4py
+if platform.system() == 'Windows':
+    'libmpi.dll'
+libmpi = ffi.dlopen(lib)
 
 _MPI_Comm_size = libmpi.MPI_Comm_size
 _MPI_Initialized = libmpi.MPI_Initialized
