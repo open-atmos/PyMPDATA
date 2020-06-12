@@ -17,7 +17,7 @@ ffi.cdef("int MPI_Comm_size(MPI_Comm comm, int *size);")
 
 lib = None  # libmpi loaded by mpi4py
 if platform.system() == 'Windows':
-    'libmpi.dll'
+    lib = 'libmpi.dll'
 libmpi = ffi.dlopen(lib)
 
 _MPI_Comm_size = libmpi.MPI_Comm_size
