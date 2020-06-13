@@ -1,5 +1,6 @@
 import MPyDATA.mpi as mpi
-from mpi4py.MPI import COMM_WORLD as mpi4py
+from mpi4py.MPI import COMM_WORLD
+import pytest
 
 
 class TestMPI:
@@ -8,8 +9,8 @@ class TestMPI:
         assert mpi.initialized()
 
     @staticmethod
-    def test_size():
-        size = mpi.size()
-
-        assert size == mpi4py.Get_size()
+    @pytest.mark.parametrize("sut", [mpi.size, mpi.size.py_func])
+    def test_size(sut):
+        size = sut()
+        assert size == COMM_WORLD.Get_size()
 

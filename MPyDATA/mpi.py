@@ -6,14 +6,14 @@ from mpi4py import MPI
 
 
 if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
-    MPI_Comm = ctypes.c_int
+    _MPI_Comm_t = ctypes.c_int
 else:
-    MPI_Comm = ctypes.c_void_p
+    _MPI_Comm_t = ctypes.c_void_p
 
 if platform.system() == 'Linux':
     lib = 'libmpi.so'
 elif platform.system() == 'Windows':
-    lib = 'libmpi.dll'
+    lib = 'msmpi.dll'
 elif platform.system() == 'Darwin':
     lib = 'libmpi.dylib'
 else:
@@ -26,10 +26,24 @@ _MPI_Initialized.argtypes = [ctypes.c_void_p]
 
 _MPI_Comm_size = libmpi.MPI_Comm_size
 _MPI_Comm_size.restype = ctypes.c_int
-_MPI_Comm_size.argtypes = [MPI_Comm, ctypes.c_void_p]
+_MPI_Comm_size.argtypes = [_MPI_Comm_t, ctypes.c_void_p]
 
-comm_ptr = MPI._addressof(MPI.COMM_WORLD)
+_MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
 
+
+def _MPI_Comm_world():
+    return _MPI_Comm_t.from_address(_MPI_Comm_World_ptr)
+
+
+@numba.extending.overload(_MPI_Comm_world)
+def _MPI_Comm_world_njit():
+    def impl():
+        return numba.carray(
+            address_as_void_pointer(_MPI_Comm_World_ptr),
+            shape=(1,),
+            dtype=np.int64
+        )[0]
+    return impl
 
 # https://stackoverflow.com/questions/61509903/how-to-pass-array-pointer-to-numba-function
 @numba.extending.intrinsic
@@ -53,8 +67,7 @@ def initialized():
 
 @numba.njit()
 def size():
-    comm = numba.carray(address_as_void_pointer(comm_ptr), (1,), dtype=np.int64)
     value = np.empty(1, dtype=np.int32)
-    status = _MPI_Comm_size(comm[0], value.ctypes.data)
+    status = _MPI_Comm_size(_MPI_Comm_world(), value.ctypes.data)
     assert status == 0
     return value[0]
