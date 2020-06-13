@@ -28,6 +28,10 @@ _MPI_Comm_size = libmpi.MPI_Comm_size
 _MPI_Comm_size.restype = ctypes.c_int
 _MPI_Comm_size.argtypes = [_MPI_Comm_t, ctypes.c_void_p]
 
+_MPI_Comm_rank = libmpi.MPI_Comm_rank
+_MPI_Comm_rank.restype = ctypes.c_int
+_MPI_Comm_rank.argtypes = [_MPI_Comm_t, ctypes.c_void_p]
+
 _MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
 
 
@@ -44,6 +48,7 @@ def _MPI_Comm_world_njit():
             dtype=np.int64
         )[0]
     return impl
+
 
 # https://stackoverflow.com/questions/61509903/how-to-pass-array-pointer-to-numba-function
 @numba.extending.intrinsic
@@ -69,5 +74,13 @@ def initialized():
 def size():
     value = np.empty(1, dtype=np.int32)
     status = _MPI_Comm_size(_MPI_Comm_world(), value.ctypes.data)
+    assert status == 0
+    return value[0]
+
+
+@numba.njit()
+def rank():
+    value = np.empty(1, dtype=np.int32)
+    status = _MPI_Comm_rank(_MPI_Comm_world(), value.ctypes.data)
     assert status == 0
     return value[0]
