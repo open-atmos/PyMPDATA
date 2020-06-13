@@ -12,9 +12,9 @@ else:
 
 if platform.system() == 'Linux':
     lib = 'libmpi.so'
-elif platform.system() == 'Windows'
+elif platform.system() == 'Windows':
     lib = 'libmpi.dll'
-elif platform.system() == 'Darwin'
+elif platform.system() == 'Darwin':
     lib = 'libmpi.dylib'
 else:
     raise NotImplementedError()
