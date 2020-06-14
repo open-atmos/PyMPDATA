@@ -5,8 +5,9 @@ import pytest
 
 class TestMPI:
     @staticmethod
-    def test_init():
-        assert mpi.initialized()
+    @pytest.mark.parametrize("sut", [mpi.initialized, mpi.initialized.py_func])
+    def test_init(sut):
+        assert sut()
 
     @staticmethod
     @pytest.mark.parametrize("sut", [mpi.size, mpi.size.py_func])
