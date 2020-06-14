@@ -41,7 +41,6 @@ install:
       if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt; fi
       if [[ $MPI == 'default' ]]; then $apt_get_install mpi-default-bin mpi-default-dev; fi
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
-      if [[ $MPI == 'lam'     ]]; then $apt_get_install lam-runtime lam4-dev; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
     fi;
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install open-mpi; fi

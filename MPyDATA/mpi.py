@@ -45,7 +45,7 @@ def _MPI_Comm_world_njit():
         return numba.carray(
             address_as_void_pointer(_MPI_Comm_World_ptr),
             shape=(1,),
-            dtype=np.int64
+            dtype=np.intp
         )[0]
     return impl
 
@@ -64,7 +64,7 @@ def address_as_void_pointer(typingctx, src):
 
 @numba.njit()
 def initialized():
-    flag = np.empty((1,), dtype=np.int32)
+    flag = np.empty((1,), dtype=np.intc)
     status = _MPI_Initialized(flag.ctypes.data)
     assert status == 0
     return bool(flag[0])
@@ -72,7 +72,7 @@ def initialized():
 
 @numba.njit()
 def size():
-    value = np.empty(1, dtype=np.int32)
+    value = np.empty(1, dtype=np.intc)
     status = _MPI_Comm_size(_MPI_Comm_world(), value.ctypes.data)
     assert status == 0
     return value[0]
@@ -80,7 +80,7 @@ def size():
 
 @numba.njit()
 def rank():
-    value = np.empty(1, dtype=np.int32)
+    value = np.empty(1, dtype=np.intc)
     status = _MPI_Comm_rank(_MPI_Comm_world(), value.ctypes.data)
     assert status == 0
     return value[0]
