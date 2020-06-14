@@ -3,27 +3,25 @@ os: linux
 
 jobs:
   include:
-    - name: "Linux, Python 3.8-dev, newest packages, tests"
+    - name: "Linux, Python 3.8-dev, default MPI, newest packages, tests"
       python: "3.8-dev"
       before_install:
         - sudo `which pip` install --upgrade pip
       before_script:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
-    - name: "Linux, Python 3.8, required packages, tests and codecov"
+      env: MPI=default
+    - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
-      env: CODECOV=TRUE MPI=none
-    - name: "Linux, Python 3.8, required packages, tests, OpenMPI"
-      python: 3.8
-      env: MPI=openmpi
-    - name: "Linux, Python 3.8, required packages, tests, LAM/MPI"
+      env: CODECOV=TRUE MPI=openmpi
+    - name: "Linux, Python 3.8, LAM/MPI, required packages, tests"
       python: 3.8
       env: MPI=lam
-    - name: "Linux, Python 3.8, required packages, tests, MPICH"
+    - name: "Linux, Python 3.8, MPICH, required packages, tests"
       python: 3.8
       env: MPI=mpich
-    - name: "Linux, Python 3.8, required packages, examples"
+    - name: "Linux, Python 3.8, no MPI, required packages, examples"
       python: 3.8
-      env: EXAMPLES=TRUE
+      env: EXAMPLES=TRUE MPI=none
     - name: "OSX, Python 3.8, required packages, tests"
       language: shell
       os: osx
@@ -40,6 +38,8 @@ install:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
+      if [[ $MPI == 'none'    ]]; then sed '/mpi4py/d' requirements.txt; fi
+      if [[ $MPI == 'default' ]]; then $apt_get_install mpi-default-bin mpi-default-dev; fi
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
       if [[ $MPI == 'lam'     ]]; then $apt_get_install lam-runtime lam4-dev; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
