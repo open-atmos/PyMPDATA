@@ -39,7 +39,7 @@ jobs:
 install:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
-      export apt_get_install = "sudo apt-get install --no-install-recommends"
+      export apt_get_install="sudo apt-get install --no-install-recommends"
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
       if [[ $MPI == 'lam'     ]]; then $apt_get_install lam-runtime lam4-dev; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
