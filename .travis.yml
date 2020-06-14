@@ -11,7 +11,16 @@ jobs:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
     - name: "Linux, Python 3.8, required packages, tests and codecov"
       python: 3.8
-      env: CODECOV=TRUE
+      env: CODECOV=TRUE MPI=none
+    - name: "Linux, Python 3.8, required packages, tests, OpenMPI"
+      python: 3.8
+      env: MPI=openmpi
+    - name: "Linux, Python 3.8, required packages, tests, LAM/MPI"
+      python: 3.8
+      env: MPI=lam
+    - name: "Linux, Python 3.8, required packages, tests, MPICH"
+      python: 3.8
+      env: MPI=mpich
     - name: "Linux, Python 3.8, required packages, examples"
       python: 3.8
       env: EXAMPLES=TRUE
@@ -28,7 +37,13 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
-  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo apt-get install --no-install-recommends mpi-default-dev mpi-default-bin; fi
+  - |
+    if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+      export apt_get_install = "sudo apt-get install --no-install-recommends"
+      if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
+      if [[ $MPI == 'lam'     ]]; then $apt_get_install lam-runtime lam4-dev; fi
+      if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
+    fi;
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install open-mpi; fi
   - |
     if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
