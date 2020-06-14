@@ -13,9 +13,6 @@ jobs:
     - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
       env: CODECOV=TRUE MPI=openmpi
-    - name: "Linux, Python 3.8, LAM/MPI, required packages, tests"
-      python: 3.8
-      env: MPI=lam
     - name: "Linux, Python 3.8, MPICH, required packages, tests"
       python: 3.8
       env: MPI=mpich
