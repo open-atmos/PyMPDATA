@@ -89,10 +89,11 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=2, divergent_flow=True)
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
-def test_timing_2d(benchmark, options, dtype):
+@pytest.mark.parametrize("grid_static", (True, False))
+def test_timing_2d(benchmark, options, dtype, grid_static):
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-    mpdata = Factories.constant_2d(data=z, C=(-.5, .25), options=options)
+    mpdata = Factories.constant_2d(data=z, C=(-.5, .25), options=options, grid_static=grid_static)
 
     def set_z():
         mpdata.curr.get()[:] = z
