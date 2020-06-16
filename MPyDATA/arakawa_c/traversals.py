@@ -36,10 +36,12 @@ def make_irng(ni, n_threads):
 
         @numba.njit()
         def _impl(_, thread_id):
+            print(rngs[thread_id])
             return rngs[thread_id]
     else:
         @numba.njit()
         def _impl(meta, thread_id):
+            print(_rng(meta[meta_ni], thread_id))
             return _rng(meta[meta_ni], thread_id)
 
     return _impl
@@ -51,10 +53,12 @@ def make_grid(grid):
     if static:
         @numba.njit()
         def _impl(_):
+            print("grid", grid)
             return grid
     else:
         @numba.njit()
         def _impl(meta):
+            print(meta[meta_ni], meta[meta_nj])
             return meta[meta_ni], meta[meta_nj]
     return _impl
 
@@ -63,9 +67,9 @@ class Traversals:
     def __init__(self, grid, halo, jit_flags, n_threads):
         self.jit_flags = jit_flags
         self.grid = make_grid((grid[0], grid[1] if len(grid) > 1 else 0))
-        self.irng = make_irng(grid[0], n_threads)
         self.n_dims = len(grid)
         self.n_threads = 1 if self.n_dims == 1 else n_threads
+        self.irng = make_irng(grid[0], self.n_threads)
         self.halo = halo
         self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
         self._apply_scalar = self.make_apply_scalar(loop=False)
