@@ -36,12 +36,10 @@ def make_irng(ni, n_threads):
 
         @numba.njit()
         def _impl(_, thread_id):
-            print(rngs[thread_id])
             return rngs[thread_id]
     else:
         @numba.njit()
         def _impl(meta, thread_id):
-            print(_rng(meta[meta_ni], thread_id))
             return _rng(meta[meta_ni], thread_id)
 
     return _impl
@@ -53,12 +51,10 @@ def make_grid(grid):
     if static:
         @numba.njit()
         def _impl(_):
-            print("grid", grid)
             return grid
     else:
         @numba.njit()
         def _impl(meta):
-            print(meta[meta_ni], meta[meta_nj])
             return meta[meta_ni], meta[meta_nj]
     return _impl
 
