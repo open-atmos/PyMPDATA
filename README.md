@@ -15,7 +15,7 @@ MPyDATA includes implementation of a set of MPDATA **variants including
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
-No domain-decomposition parallelism supported yet.
+In 2D simulations, domain-decomposition is used for multi-threaded parallelism.
 
 MPyDATA is engineered purely in Python targeting both performance and usability,
     the latter encompassing research users', developers' and maintainers' perspectives.

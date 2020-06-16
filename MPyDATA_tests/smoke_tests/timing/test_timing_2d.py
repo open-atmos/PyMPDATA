@@ -78,19 +78,33 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
+# Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
+# TODO: threading_layer
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
-    Options(n_iters=3),
-    Options(n_iters=4),
-    # Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
     Options(n_iters=3, infinite_gauge=True),
     Options(n_iters=2, flux_corrected_transport=True),
-    Options(n_iters=2, divergent_flow=True)
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
-@pytest.mark.parametrize("grid_static", (True, False))
-def test_timing_2d(benchmark, options, dtype, grid_static):
+@pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
+@pytest.mark.parametrize("concurrency_str", ("serial", "threads"))
+def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
+    if grid_static_str == "static":
+        grid_static = True
+    elif grid_static_str == "dynamic":
+        grid_static = False
+    else:
+        raise ValueError()
+
+    if concurrency_str == "serial":
+        numba.set_num_threads(1)
+    elif concurrency_str == "threads":
+        numba.config.THREADING_LAYER = 'threads'
+        numba.set_num_threads(numba.config.NUMBA_NUM_THREADS // 2)
+    else:
+        raise ValueError()
+
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
     mpdata = Factories.constant_2d(data=z, C=(-.5, .25), options=options, grid_static=grid_static)

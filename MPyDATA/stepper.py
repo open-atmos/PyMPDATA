@@ -36,7 +36,8 @@ class Stepper:
             raise ValueError()
         if grid is None:
             grid = tuple([-1] * n_dims)
-        self.__call = make_step_impl(options, non_unit_g_factor, grid)
+        self.n_threads = numba.get_num_threads()
+        self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
         self.options = options
 
     def __call__(self, nt, mu_coeff,
@@ -50,6 +51,7 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc):
+        assert self.n_threads == numba.get_num_threads()
         return self.__call(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,
@@ -64,14 +66,14 @@ class Stepper:
 
 
 @lru_cache()
-def make_step_impl(options, non_unit_g_factor, grid):
+def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     n_iters = options.n_iters
     n_dims = len(grid)
     halo = options.n_halo
     non_zero_mu_coeff = options.non_zero_mu_coeff
     flux_corrected_transport = options.flux_corrected_transport
 
-    traversals = Traversals(grid, halo, options.jit_flags)
+    traversals = Traversals(grid, halo, options.jit_flags, n_threads=n_threads)
 
     upwind = make_upwind(options, non_unit_g_factor, traversals)
     flux_first_pass = make_flux_first_pass(options, traversals)

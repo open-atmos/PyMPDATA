@@ -14,7 +14,7 @@ class TestPeriodicBoundaryCondition:
         # arrange
         field = ScalarField(data, halo, (PeriodicBoundaryCondition(),))
         meta_and_data, fill_halos = field.impl
-        traversals = Traversals(grid=data.shape, halo=halo, jit_flags={})
+        traversals = Traversals(grid=data.shape, halo=halo, jit_flags={}, n_threads=1)
         sut, _ = traversals.make_boundary_conditions()
 
         # act
