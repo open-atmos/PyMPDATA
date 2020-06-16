@@ -35,7 +35,7 @@ class TestPeriodicBoundaryCondition:
         # arrange
         field = VectorField((data,), halo, (PeriodicBoundaryCondition(),))
         meta_and_data, fill_halos = field.impl
-        traversals = Traversals(grid=(data.shape[0]-1,), halo=halo, jit_flags={})
+        traversals = Traversals(grid=(data.shape[0]-1,), halo=halo, jit_flags={}, n_threads=1)
         _, sut = traversals.make_boundary_conditions()
 
         # act
