@@ -100,7 +100,7 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
     if concurrency_str == "serial":
         numba.set_num_threads(1)
     elif concurrency_str == "threads":
-        numba.config.THREADING_LAYER = 'threads'
+        # numba.config.THREADING_LAYER = 'omp'  #TODO: compare different
         numba.set_num_threads(numba.config.NUMBA_NUM_THREADS // 2)
     else:
         raise ValueError()

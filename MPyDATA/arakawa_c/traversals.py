@@ -65,7 +65,7 @@ class Traversals:
         self.grid = make_grid((grid[0], grid[1] if len(grid) > 1 else 0))
         self.irng = make_irng(grid[0], n_threads)
         self.n_dims = len(grid)
-        self.n_threads = n_threads
+        self.n_threads = 1 if self.n_dims == 1 else n_threads
         self.halo = halo
         self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
         self._apply_scalar = self.make_apply_scalar(loop=False)
@@ -126,7 +126,7 @@ class Traversals:
                         set(out, i, j, fun_0(get(out, i, j), (focus, vec_arg1_tpl),
                                              (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
 
-        @numba.njit(**{**jit_flags, **{'parallel': n_dims > 1 and n_threads > 1}})
+        @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
         def apply_scalar(fun_0, fun_1,
                          out_meta, out,
                          vec_arg1_meta, vec_arg1_0, vec_arg1_1, vec_arg1_bc0, vec_arg1_bc1,
@@ -140,7 +140,7 @@ class Traversals:
 
             ni, nj = grid(out_meta)
 
-            for thread_id in range(1) if n_dims == 1 or n_threads == 1 else numba.prange(n_threads):
+            for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
                 apply_scalar_impl(
                     irng(out_meta, thread_id),
                     (0, nj), fun_0, fun_1, out, vec_arg1_0, vec_arg1_1, scal_arg_2, scal_arg_3, scal_arg_4)
@@ -179,7 +179,7 @@ class Traversals:
                     if n_dims > 1:
                         set(out_tpl[1], i, j, fun0_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
 
-        @numba.njit(**{**jit_flags, **{'parallel': n_dims > 1 and n_threads > 1}})
+        @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
         def apply_vector(
                 fun0_0, fun0_1,
                 out_meta, out_0, out_1,
@@ -192,7 +192,7 @@ class Traversals:
             boundary_cond_scalar(scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1)
 
             ni, nj = grid(out_meta)
-            for thread_id in range(1) if n_dims == 1 or n_threads == 1 else numba.prange(n_threads):
+            for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
                 apply_vector_impl(
                     irng(out_meta, thread_id),
                     (0, nj),
