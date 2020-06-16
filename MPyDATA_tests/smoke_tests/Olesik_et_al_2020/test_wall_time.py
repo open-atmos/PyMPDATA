@@ -57,8 +57,8 @@ def make_refdata(data, generate=False):
     latex_data = r"\hline" + " Variant  & Elapsed Real Time (wrt upwind) " + r"\\ \hline" + "\n"
     for opt, value in zip(data["opts"], data["values"]):
             latex_data += r"\hline" + f" {opt} & {value} " + r"\\ \hline" + "\n"
-    latex_start = r"\begin"+ "\n" +"{table}[]" +"\n" +r"\begin"+ "\n"+ "{tabular}"+ "\n" +"{| l | l |}"+ "\n"
-    latex_end = "\end \n {tabular} \n \end \n {table}"
+    latex_start = r"\begin{table}[]" +"\n" +r"\begin{tabular}"+ "\n" +"{| l | l |}"+ "\n"
+    latex_end = "\end{tabular} \n \end{table}"
     latex_table = latex_start + latex_data + latex_end
     f = open("wall_time_refdata.txt", "w+")
     if generate:
