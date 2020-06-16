@@ -30,7 +30,7 @@ class Factories:
         return solver
 
     @staticmethod
-    def constant_2d(data: np.ndarray, C, options: Options):
+    def constant_2d(data: np.ndarray, C, options: Options, grid_static=True):
         grid = data.shape
         GC_data = [
             np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
@@ -38,8 +38,11 @@ class Factories:
         ]
         GC = VectorField(GC_data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         state = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-        step = Stepper(options=options, grid=grid, non_unit_g_factor=False)
-        mpdata = Solver(stepper=step, advectee=state, advector=GC)
+        if grid_static:
+            stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
+        else:
+            stepper = Stepper(options=options, n_dims=2, non_unit_g_factor=False)
+        mpdata = Solver(stepper=stepper, advectee=state, advector=GC)
         return mpdata
 
     @staticmethod
