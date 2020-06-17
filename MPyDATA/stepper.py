@@ -30,15 +30,17 @@ class Stepper:
                  non_unit_g_factor: bool = False,
                  grid: (tuple, None) = None
                  ):
+        self.options = options
+
         if n_dims is not None and grid is not None:
             raise ValueError()
         if n_dims is None and grid is None:
             raise ValueError()
         if grid is None:
             grid = tuple([-1] * n_dims)
-        self.n_threads = numba.get_num_threads()
-        self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
-        self.options = options
+
+        self.n_threads_at_startup = numba.get_num_threads()
+        self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads_at_startup)
 
     def __call__(self, nt, mu_coeff,
              psi, psi_bc,
@@ -51,8 +53,8 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc):
-        assert self.n_threads == numba.get_num_threads()
-        return self.__call(nt, mu_coeff,
+        assert numba.get_num_threads() == self.n_threads_at_startup
+        wall_time_per_timestep = self.__call(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,
              g_factor, g_factor_bc,
@@ -63,6 +65,9 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc)
+        threading_layer_checked_after_execution = numba.threading_layer()
+        assert threading_layer_checked_after_execution != 'workqueue'
+        return wall_time_per_timestep
 
 
 @lru_cache()

@@ -79,7 +79,6 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
 
 
 # Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
-# TODO: threading_layer
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
@@ -88,7 +87,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
-@pytest.mark.parametrize("concurrency_str", ("serial", "threads"))
+@pytest.mark.parametrize("concurrency_str", ("threads", "serial"))
 def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
     if grid_static_str == "static":
         grid_static = True
@@ -99,11 +98,8 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
 
     if concurrency_str == "serial":
         numba.set_num_threads(1)
-    elif concurrency_str == "threads":
-        # numba.config.THREADING_LAYER = 'omp'  #TODO: compare different
-        numba.set_num_threads(numba.config.NUMBA_NUM_THREADS // 2)
     else:
-        raise ValueError()
+        numba.set_num_threads(numba.config.NUMBA_NUM_THREADS)
 
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
@@ -115,7 +111,7 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
     benchmark.pedantic(mpdata.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
     state = mpdata.curr.get()
 
-    print(np.amin(state), np.amax(state))
+    print(np.amin(state), np.amax(state), numba.threading_layer(), numba.get_num_threads())
     if options.n_iters == 1:
         assert np.amin(state) >= h0
     assert np.amax(state) < 10 * h

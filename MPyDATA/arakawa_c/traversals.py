@@ -4,35 +4,29 @@ Created at 20.03.2020
 
 import numba
 from .indexers import indexers
+from .domain_decomposition import subdomain
 import numpy as np
-import math
+
 
 meta_halo_valid = 0
 meta_ni = 1
 meta_nj = 2
+meta_size = 3
 
 
 def make_meta(halo_valid: bool, grid):
-    meta = np.empty(3, dtype=int)
+    meta = np.empty(meta_size, dtype=int)
     meta[meta_halo_valid] = halo_valid
     meta[meta_ni] = grid[0]
     meta[meta_nj] = grid[1] if len(grid) > 1 else 0
     return meta
 
 
-# TODO: test the case of n_threads > ni
 def make_irng(ni, n_threads):
-    @numba.njit()
-    def _rng(n, thread_id):
-        n_max = math.ceil(n / n_threads)
-        i0 = n_max * thread_id
-        i1 = i0 + (n_max if i0 + n_max <= n else n - i0)
-        return i0, i1
-
     static = ni > 0
 
     if static:
-        rngs = tuple([_rng(ni, th) for th in range(n_threads)])
+        rngs = tuple([subdomain(ni, th, n_threads) for th in range(n_threads)])
 
         @numba.njit()
         def _impl(_, thread_id):
@@ -40,7 +34,7 @@ def make_irng(ni, n_threads):
     else:
         @numba.njit()
         def _impl(meta, thread_id):
-            return _rng(meta[meta_ni], thread_id)
+            return subdomain(meta[meta_ni], thread_id, n_threads)
 
     return _impl
 
