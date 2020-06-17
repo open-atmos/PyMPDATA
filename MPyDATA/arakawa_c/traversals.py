@@ -58,8 +58,8 @@ class Traversals:
         self.jit_flags = jit_flags
         self.grid = make_grid((grid[0], grid[1] if len(grid) > 1 else 0))
         self.n_dims = len(grid)
-        self.n_threads = 1 if self.n_dims == 1 else n_threads
-        self.irng = make_irng(grid[0], self.n_threads)
+        self.n_threads = n_threads
+        self.irng = make_irng(grid[0], n_threads)
         self.halo = halo
         self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
         self._apply_scalar = self.make_apply_scalar(loop=False)
