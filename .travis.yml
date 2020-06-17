@@ -29,6 +29,7 @@ jobs:
 
 install:
   - pip$PY_SFX install -U -r requirements.txt
+  - pip$PY_SFX install -U intel-openmp tbb icc_rt
   - python$PY_SFX -m numba -s
 
 script:
