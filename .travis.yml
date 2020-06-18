@@ -29,7 +29,8 @@ jobs:
 
 install:
   - pip$PY_SFX install -U -r requirements.txt
-  - pip$PY_SFX install -U intel-openmp tbb icc_rt
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then ldconfig; fi  # https://github.com/numba/numba/issues/4713
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then export NUMBA_THREADING_LAYER=tbb; fi  # https://github.com/numba/numba/issues/3400
   - python$PY_SFX -m numba -s
 
 script:
