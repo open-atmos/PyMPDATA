@@ -1,4 +1,4 @@
-numba==0.49.0
+numba==0.50.0
 numpy==1.18.2
 matplotlib==3.2.1
 pytest==5.4.1
@@ -13,6 +13,6 @@ scipy==1.4.1
 pint==0.9
 joblib==0.14.1
 cffi==1.14.0
-intel-openmp
-tbb
-icc_rt
+intel-openmp==2020.0.133
+tbb==2020.0.133
+icc_rt==2020.0.133
