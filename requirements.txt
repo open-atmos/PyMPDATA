@@ -1,4 +1,4 @@
-numba==0.50.0
+git+https://github.com/numba/numba@releases/tag/0.50.0#egg=numba
 numpy==1.18.2
 matplotlib==3.2.1
 pytest==5.4.1
