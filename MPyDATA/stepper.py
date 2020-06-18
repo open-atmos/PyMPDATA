@@ -40,6 +40,10 @@ class Stepper:
             grid = tuple([-1] * n_dims)
 
         self.n_threads = 1 if n_dims == 1 else numba.get_num_threads()
+        if numba.get_num_threads() > 1 and numba.threading_layer() == 'workqueue':
+            self.n_threads = 1
+            # TODO: issue a warning?
+
         self.n_dims = n_dims
         self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
@@ -54,8 +58,8 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc):
-        assert self.n_dims == 1 or numba.get_num_threads() == self.n_threads
-        wall_time_per_timestep = self.__call(nt, mu_coeff,
+        assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
+        return self.__call(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,
              g_factor, g_factor_bc,
@@ -66,8 +70,6 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc)
-        assert self.n_threads == 1 or numba.threading_layer() != 'workqueue'
-        return wall_time_per_timestep
 
 
 @lru_cache()
