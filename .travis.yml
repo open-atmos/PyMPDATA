@@ -32,7 +32,7 @@ install:
 
 script:
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo ldconfig; fi  # https://github.com/numba/numba/issues/4713
-  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then export NUMBA_THREADING_LAYER=tbb; fi  # https://github.com/numba/numba/issues/3400
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then export NUMBA_THREADING_LAYER=omp; fi
   - python$PY_SFX -m numba -s
   - python$PY_SFX -c 'import numba; print(numba.get_num_threads(), numba.threading_layer())'
   # TODO: ensure either tbb or openmp are enabled
