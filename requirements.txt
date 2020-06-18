@@ -13,6 +13,6 @@ scipy==1.4.1
 pint==0.9
 joblib==0.14.1
 cffi==1.14.0
-intel-openmp==2020.0.133
-tbb==2020.0.133
-icc_rt==2020.0.133
+intel-openmp
+tbb
+icc_rt
