@@ -16,7 +16,7 @@ def plot(nr, cour, ln_2_err, n_levels=11, ngrid=800 * 2, fontsize=20, name = r'l
     y = zeros(nr.shape[0])
 
     theta = cour * pi / 2.
-    r = np.log(1 / nr)
+    r = np.log(nr)
     r -= min(r)
     r *= 10 / max(r)
     for i in range(theta.shape[0]):

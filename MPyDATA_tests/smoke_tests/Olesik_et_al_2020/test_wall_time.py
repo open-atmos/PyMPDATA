@@ -9,17 +9,17 @@ import numpy as np
 grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = (
     {'n_iters': 1},
-    {'n_iters':2},
-    {'n_iters':2,'infinite_gauge':True},
+    {'n_iters': 2},
+    {'n_iters': 2,'infinite_gauge':True},
     {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True},
-    {'n_iters':2, 'third_order_terms':True},
-    {'n_iters':3},
+    {'n_iters': 2, 'third_order_terms':True},
+    {'n_iters': 3},
     {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
 )
 
 
 
-def test_wall_time(iters = 10):
+def test_wall_time(iters = 3):
     setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([2,]))
     table_data = {"opts":[], "values":[]}
     for grid in grid_layout_set:
@@ -38,7 +38,7 @@ def test_wall_time(iters = 10):
                 norm[0] = selected_value
             table_data["opts"].append(str(opts)+ "(" +grid.__class__.__name__+ ")")
             table_data["values"].append(round(selected_value/norm[0],2))
-    make_refdata(table_data, generate=False)
+    make_refdata(table_data, generate=True)
 
 
 def make_data(setup,grid,opts):
@@ -57,8 +57,8 @@ def make_refdata(data, generate=False):
     latex_data = r"\hline" + " Variant  & Elapsed Real Time (wrt upwind) " + r"\\ \hline" + "\n"
     for opt, value in zip(data["opts"], data["values"]):
             latex_data += r"\hline" + f" {opt} & {value} " + r"\\ \hline" + "\n"
-    latex_start = r"\begin{table}[]" +"\n" +r"\begin{tabular}"+ "\n" +"{| l | l |}"+ "\n"
-    latex_end = "\end{tabular} \n \end{table}"
+    latex_start = r"\begin"+ "\n" +"{table}[]" +"\n" +r"\begin"+ "\n"+ "{tabular}"+ "\n" +"{| l | l |}"+ "\n"
+    latex_end = "\end \n {tabular} \n \end \n {table}"
     latex_table = latex_start + latex_data + latex_end
     f = open("wall_time_refdata.txt", "w+")
     if generate:
@@ -67,7 +67,6 @@ def make_refdata(data, generate=False):
         for line in context_diff(f, latex_table, fromfile='before.py', tofile='after.py'):
             sys.stdout.write(line)
     f.close()
-
 
 
 
