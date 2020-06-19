@@ -55,6 +55,7 @@ def make_grid(grid):
 
 class Traversals:
     def __init__(self, grid, halo, jit_flags, n_threads):
+        assert not (n_threads > 1 and len(grid) > 1)
         self.jit_flags = jit_flags
         self.grid = make_grid((grid[0], grid[1] if len(grid) > 1 else 0))
         self.n_dims = len(grid)
