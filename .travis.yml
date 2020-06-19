@@ -9,7 +9,7 @@ jobs:
         - sudo `which pip` install --upgrade pip
       before_script:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
-        - pip install git+https://github.com/numba/numba@0.50.0#egg=numba
+        - pip install --force-reinstall git+https://github.com/numba/numba@0.50.0#egg=numba
         - python$PY_SFX -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
 
     - name: "Linux, Python 3.8, required packages, tests and codecov"
