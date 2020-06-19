@@ -40,9 +40,10 @@ class Stepper:
             grid = tuple([-1] * n_dims)
 
         self.n_threads = 1 if n_dims == 1 else numba.get_num_threads()
-        if numba.get_num_threads() > 1 and numba.threading_layer() == 'workqueue':
-            self.n_threads = 1
-            # TODO: issue a warning?
+        if self.n_threads > 1 and numba.threading_layer() == 'workqueue':
+            warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
+                          " to ``omp'' or ``tbb'' for higher parallel performance"
+                          " (see https://numba.pydata.org/numba-doc/latest/user/threading-layer.html)")
 
         self.n_dims = n_dims
         self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
