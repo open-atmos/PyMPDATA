@@ -205,6 +205,8 @@ class Traversals:
         jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
+        n_threads = self.n_threads
+        irng = self.irng
         set = indexers[self.n_dims].set
         grid = self.grid
 
@@ -215,39 +217,35 @@ class Traversals:
 
             ni, nj = grid(meta)
 
-            for i in range(halo - 2, -1, -1):  # note: non-reverse order assumed in Extrapolated
-                for j in range(0, nj + 2 * halo) if n_dims > 1 else (-1,):
+            for j in range(0, nj + 2 * halo) if n_dims > 1 else (-1,):
+                for i in range(halo - 2, -1, -1):  # note: non-reverse order assumed in Extrapolated
                     focus = (i, j)
                     set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, 1))
-            for i in range(ni + 1 + halo - 1, ni + 1 + 2 * (halo - 1)):  # note: non-reverse order assumed in Extrapolated
-                for j in range(0, nj + 2 * halo) if n_dims > 1 else (-1,):
+                for i in range(ni + 1 + halo - 1, ni + 1 + 2 * (halo - 1)):  # note: non-reverse order assumed in Extrapolated
                     focus = (i, j)
                     set(comp_0, i, j, fun_0((focus, comp_0), ni + 1, -1))
             if n_dims > 1:
-                for j in range(0, halo - 1):
-                    for i in range(0, ni + 2 * halo):
+                for i in range(0, ni + 2 * halo):
+                    for j in range(0, halo - 1):
                         focus = (i, j)
                         set(comp_1, i, j, fun_1((focus, comp_1), nj + 1, 1))
-                for j in range(nj + 1 + halo - 1, nj + 1 + 2 * (halo - 1)):
-                    for i in range(0, ni + 2 * halo):
+                    for j in range(nj + 1 + halo - 1, nj + 1 + 2 * (halo - 1)):
                         focus = (i, j)
                         set(comp_1, i, j, fun_1((focus, comp_1), nj + 1, -1))
 
             if n_dims > 1:
-                for j in range(0, halo) if n_dims > 1 else (-1,):
-                    for i in range(0, ni + 1 + 2 * (halo - 1)):
+                for i in range(0, ni + 1 + 2 * (halo - 1)):
+                    for j in range(0, halo) if n_dims > 1 else (-1,):
                         focus = (i, j)
                         set(comp_0, i, j, fun_1((focus, comp_0), nj, 1))
-                for j in range(nj + halo, nj + 2 * halo) if n_dims > 1 else (-1,):
-                    for i in range(0, ni + 1 + 2 * (halo - 1)):
+                    for j in range(nj + halo, nj + 2 * halo) if n_dims > 1 else (-1,):
                         focus = (i, j)
                         set(comp_0, i, j, fun_1((focus, comp_0), nj, -1))
-                for i in range(0, halo):
-                    for j in range(0, nj + 1 + 2 * (halo - 1)):
+                for j in range(0, nj + 1 + 2 * (halo - 1)):
+                    for i in range(0, halo):
                         focus = (i, j)
                         set(comp_1, i, j, fun_0((focus, comp_1), ni, 1))
-                for i in range(ni + halo, ni + 2 * halo):
-                    for j in range(0, nj + 1 + 2 * (halo - 1)):
+                    for i in range(ni + halo, ni + 2 * halo):
                         focus = (i, j)
                         set(comp_1, i, j, fun_0((focus, comp_1), ni, -1))
 
@@ -260,21 +258,19 @@ class Traversals:
 
             ni, nj = grid(meta)
 
-            for i in range(halo - 1, 0 - 1, -1):  # note: reverse order assumes in Extrapolated!
-                for j in range(0, nj + 2 * halo) if n_dims > 1 else (-1,):
+            for j in range(0, nj + 2 * halo) if n_dims > 1 else (-1,):
+                for i in range(halo - 1, 0 - 1, -1):  # note: reverse order assumes in Extrapolated!
                     focus = (i, j)
                     set(psi, i, j, fun_0((focus, psi), ni, 1))
-            for i in range(ni + halo, ni + 2 * halo):  # note: non-reverse order assumed in Extrapolated
-                for j in range(0, nj + 2 * halo) if n_dims > 1 else (-1,):
+                for i in range(ni + halo, ni + 2 * halo):  # note: non-reverse order assumed in Extrapolated
                     focus = (i, j)
                     set(psi, i, j, fun_0((focus, psi), ni, -1))
             if n_dims > 1:
-                for j in range(0, halo):
-                    for i in range(0, ni + 2 * halo):
+                for i in range(0, ni + 2 * halo):
+                    for j in range(0, halo):
                         focus = (i, j)
                         set(psi, i, j, fun_1((focus, psi), nj, 1))
-                for j in range(nj + halo, nj + 2 * halo):
-                    for i in range(0, ni + 2 * halo):
+                    for j in range(nj + halo, nj + 2 * halo):
                         focus = (i, j)
                         set(psi, i, j, fun_1((focus, psi), nj, -1))
 
