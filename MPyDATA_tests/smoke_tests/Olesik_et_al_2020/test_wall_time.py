@@ -68,7 +68,8 @@ def make_refdata(data, generate=False):
         f.write(latex_table)
     else:
         for line in context_diff(f, latex_table, fromfile='before.py', tofile='after.py'):
-            sys.stdout.write(line)
+            try: sys.stdout.write(line)
+            except: raise NotImplementedError
     f.close()
 
 
