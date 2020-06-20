@@ -20,7 +20,7 @@ opt_set = (
 
 
 def test_wall_time(iters = 3):
-    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([2,]))
+    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([1.5,2]))
     table_data = {"opts":[], "values":[]}
     for grid in grid_layout_set:
         norm = [1, ]
@@ -30,15 +30,17 @@ def test_wall_time(iters = 3):
             while i < iters:
                 result = make_data(setup, grid, opts)
                 wall_times = result['wall_time']
-                min_time = np.nanmin(wall_times)
-                minimum_values.append(min_time)
+                minimal = np.nanmin(wall_times)
+                minimum_values.append(minimal)
                 i+=1
+            print(minimum_values)
             selected_value = np.min(minimum_values)
+            print(selected_value)
             if opts == {'n_iters': 1}:
                 norm[0] = selected_value
             table_data["opts"].append(str(opts)+ "(" +grid.__class__.__name__+ ")")
             table_data["values"].append(round(selected_value/norm[0],2))
-    make_refdata(table_data, generate=True)
+    make_refdata(table_data, generate=False)
 
 
 def make_data(setup,grid,opts):
@@ -51,6 +53,7 @@ def make_data(setup,grid,opts):
         wall_time = simulation.step(steps)
         last_step += steps
         result['wall_time'].append(wall_time)
+    print('wt', result['wall_time'])
     return result
 
 def make_refdata(data, generate=False):

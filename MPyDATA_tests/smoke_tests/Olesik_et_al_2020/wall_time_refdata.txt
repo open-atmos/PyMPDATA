@@ -1,0 +1,17 @@
+\begin
+{table}[]
+\begin
+{tabular}
+{| l | l |}
+\hline Variant  & Elapsed Real Time (wrt upwind) \\ \hline
+\hline {'n_iters': 1}(x_log_of_pn) & nan \\ \hline
+\hline {'n_iters': 2}(x_log_of_pn) & nan \\ \hline
+\hline {'n_iters': 2, 'infinite_gauge': True}(x_log_of_pn) & nan \\ \hline
+\hline {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn) & nan \\ \hline
+\hline {'n_iters': 2, 'third_order_terms': True}(x_log_of_pn) & nan \\ \hline
+\hline {'n_iters': 3}(x_log_of_pn) & nan \\ \hline
+\hline {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn) & inf \\ \hline
+\end 
+ {tabular} 
+ \end 
+ {table}
