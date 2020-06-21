@@ -137,11 +137,16 @@ class Traversals:
                 boundary_cond_scalar(thread_id, scal_arg2_meta, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1)
                 boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1)
                 boundary_cond_scalar(thread_id, scal_arg4_meta, scal_arg_4, scal_arg4_bc0, scal_arg4_bc1)
+            vec_arg1_meta[meta_halo_valid] = True
+            scal_arg2_meta[meta_halo_valid] = True
+            scal_arg3_meta[meta_halo_valid] = True
+            scal_arg4_meta[meta_halo_valid] = True
 
+            # TODO: a barrier would be better
+            for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
                 apply_scalar_impl(
                     irng(out_meta, thread_id),
                     (0, nj), fun_0, fun_1, out, vec_arg1_0, vec_arg1_1, scal_arg_2, scal_arg_3, scal_arg_4)
-
             out_meta[meta_halo_valid] = False
 
         return apply_scalar
@@ -195,7 +200,11 @@ class Traversals:
                 boundary_cond_scalar(thread_id, scal_arg1_meta, scal_arg1, scal_arg1_bc0, scal_arg1_bc1)
                 boundary_cond_vector(thread_id, vec_arg2_meta, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1)
                 boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1)
+            scal_arg1_meta[meta_halo_valid] = True
+            vec_arg2_meta[meta_halo_valid] = True
+            scal_arg3_meta[meta_halo_valid] = True
 
+            for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
                 apply_vector_impl(
                     thread_id,
                     out_meta,
@@ -205,9 +214,6 @@ class Traversals:
                     vec_arg2_0, vec_arg2_1,
                     scal_arg3
                 )
-            scal_arg1_meta[meta_halo_valid] = True
-            vec_arg2_meta[meta_halo_valid] = True
-            scal_arg3_meta[meta_halo_valid] = True
             out_meta[meta_halo_valid] = False
 
         return apply_vector

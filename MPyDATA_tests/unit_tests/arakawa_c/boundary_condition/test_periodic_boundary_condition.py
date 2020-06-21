@@ -16,9 +16,10 @@ class TestPeriodicBoundaryCondition:
         meta_and_data, fill_halos = field.impl
         traversals = Traversals(grid=data.shape, halo=halo, jit_flags={}, n_threads=1)
         sut, _ = traversals.make_boundary_conditions()
+        thread_id = 0
 
         # act
-        sut(*meta_and_data, *fill_halos)
+        sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
         if side == LEFT:
@@ -37,14 +38,14 @@ class TestPeriodicBoundaryCondition:
         meta_and_data, fill_halos = field.impl
         traversals = Traversals(grid=(data.shape[0]-1,), halo=halo, jit_flags={}, n_threads=1)
         _, sut = traversals.make_boundary_conditions()
+        thread_id = 0
 
         # act
-        sut(*meta_and_data, *fill_halos)
+        sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
         if halo == 1:
             return
-        print(field.data)
         if side == LEFT:
             np.testing.assert_array_equal(field.data[0][:(halo-1)], data[-(halo-1):])
         elif side == RIGHT:
