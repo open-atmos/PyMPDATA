@@ -216,12 +216,11 @@ class Traversals:
         jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
-        n_threads = self.n_threads
         irng = self.irng
         set = indexers[self.n_dims].set
         grid = self.grid
 
-        @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
+        @numba.njit(**jit_flags)
         def boundary_cond_vector(thread_id, meta, comp_0, comp_1, fun_0, fun_1):
             if meta[meta_halo_valid]:
                 return
@@ -262,7 +261,7 @@ class Traversals:
                             focus = (i, j)
                             set(comp_1, i, j, fun_0((focus, comp_1), ni, -1))
 
-        @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
+        @numba.njit(**jit_flags)
         def boundary_cond_scalar(thread_id, meta, psi, fun_0, fun_1):
             if meta[meta_halo_valid]:
                 return
