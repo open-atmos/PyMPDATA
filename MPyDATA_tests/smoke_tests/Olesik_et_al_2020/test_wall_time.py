@@ -19,15 +19,15 @@ opt_set = (
 
 
 
-def test_wall_time(iters = 3):
-    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([1.5,2]))
+def test_wall_time(n_runs = 2):
+    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([2,]))
     table_data = {"opts":[], "values":[]}
     for grid in grid_layout_set:
         norm = [1, ]
         for opts in opt_set:
             i = 0
             minimum_values = []
-            while i < iters:
+            while i < n_runs:
                 result = make_data(setup, grid, opts)
                 wall_times = result['wall_time']
                 minimal = np.nanmin(wall_times)
@@ -63,16 +63,11 @@ def make_refdata(data, generate=False):
     latex_start = r"\begin"+ "\n" +"{table}[]" +"\n" +r"\begin"+ "\n"+ "{tabular}"+ "\n" +"{| l | l |}"+ "\n"
     latex_end = "\end \n {tabular} \n \end \n {table}"
     latex_table = latex_start + latex_data + latex_end
-    f = open("wall_time_refdata.txt", "w+")
-    if generate:
-        f.write(latex_table)
-    else:
-        for line in context_diff(f, latex_table, fromfile='before.py', tofile='after.py'):
-            try: sys.stdout.write(line)
-            except: raise NotImplementedError
-    f.close()
-
-
+    with open("wall_time_refdata.txt", "w+" if generate else "r") as f:
+        if generate:
+            f.write(latex_table)
+        else:
+            assert ''.join(context_diff(f.read(), latex_table)) == ''
 
 
 
