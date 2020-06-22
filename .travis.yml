@@ -3,24 +3,28 @@ os: linux
 
 jobs:
   include:
-    - name: "Linux, Python 3.8-dev, newest packages, tests"
+    - name: "Linux, Python 3.8-dev, default MPI, newest packages, tests"
       python: "3.8-dev"
       before_install:
         - sudo `which pip` install --upgrade pip
       before_script:
         - pip install -U $(pip freeze | cut -d '=' -f 1)
-    - name: "Linux, Python 3.8, required packages, tests and codecov"
+      env: MPI=default
+    - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
-      env: CODECOV=TRUE
-    - name: "Linux, Python 3.8, required packages, examples"
+      env: CODECOV=TRUE MPI=openmpi
+    - name: "Linux, Python 3.8, MPICH, required packages, tests"
       python: 3.8
-      env: EXAMPLES=TRUE
-    - name: "OSX, Python 3.8, required packages, tests"
+      env: MPI=mpich
+    - name: "Linux, Python 3.8, no MPI, required packages, examples"
+      python: 3.8
+      env: EXAMPLES=TRUE MPI=none
+    - name: "OSX, Python 3.8, OpenMPI, required packages, tests"
       language: shell
       os: osx
       before_install:
         - export PY_SFX=3
-    - name: "Windows, Python 3.8, required packages, tests"
+    - name: "Windows, Python 3.8, MS-MPI, required packages, tests"
       language: shell
       os: windows
       before_install:
@@ -28,6 +32,23 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
+  - |
+    if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+      export apt_get_install="sudo apt-get install --no-install-recommends"
+      if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt; fi
+      if [[ $MPI == 'default' ]]; then $apt_get_install mpi-default-bin mpi-default-dev; fi
+      if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
+      if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
+    fi;
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install open-mpi; fi
+  - |
+    if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
+      WEB_ADDRESS=https://github.com/microsoft/Microsoft-MPI/releases/download/v10.1.1
+      curl -L $WEB_ADDRESS/msmpisetup.exe -o msmpisetup.exe
+      curl -L $WEB_ADDRESS/msmpisdk.msi -o msmpisdk.msi
+      ./msmpisetup.exe
+      msiexec //i msmpisdk.msi
+    fi;
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
