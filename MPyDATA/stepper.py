@@ -29,7 +29,7 @@ class Stepper:
                  n_dims: (int, None) = None,
                  non_unit_g_factor: bool = False,
                  grid: (tuple, None) = None,
-                 n_threads: int = numba.get_num_threads()
+                 n_threads: (int, None) = None
                  ):
         self.options = options
 
@@ -40,6 +40,8 @@ class Stepper:
         if grid is None:
             grid = tuple([-1] * n_dims)
 
+        if n_threads is None:
+            n_threads = numba.get_num_threads()
         self.n_threads = 1 if n_dims == 1 else n_threads
         if self.n_threads > 1 and numba.threading_layer() == 'workqueue':
             warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
