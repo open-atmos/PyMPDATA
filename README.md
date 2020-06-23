@@ -184,16 +184,20 @@ will take longer, yet same instance of the
 stepper can be used for different grids.  
 
 Since creating an instance of the ``Stepper`` class
-involves lengthy analysis and compilation of the algorithm code,
+involves time consuming compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
 instantiated objects. Instances of ``Stepper`` contain no
-data and are (thread-)safe to be reused.
+mutable data and are (thread-)safe to be reused.
 
-The init method of ``Stepper`` has an additional 
-``non_unit_g_factor`` argument which is a flag enabling 
-handling of the G factor term which can be used to 
-represent coordinate transformations. 
+The init method of ``Stepper`` has an optional
+``non_unit_g_factor`` argument which is a Boolean flag 
+enabling handling of the G factor term which can be used to 
+represent coordinate transformations and/or variable fluid density. 
+
+Optionally, the number of threads to use during 2D calculations
+may be specified using the optional ``n_threads`` argument with a
+default value of ``numba.get_num_threads()``.
 
 #### Solver
 
