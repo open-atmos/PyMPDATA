@@ -1,4 +1,4 @@
-from MPyDATA.factories import Factories
+from MPyDATA import ScalarField, VectorField, PeriodicBoundaryCondition, Solver, Stepper
 from MPyDATA.options import Options
 import numpy as np
 import numba
@@ -103,7 +103,22 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
 
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-    mpdata = Factories.constant_2d(data=z, C=(-.5, .25), options=options, grid_static=grid_static)
+
+    C = (-.5, .25)
+    grid = z.shape
+    GC_data = [
+        np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
+        np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
+    ]
+    GC = VectorField(GC_data, halo=options.n_halo,
+                     boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    state = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
+                        boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    if grid_static:
+        stepper = Stepper(options=options, grid=grid)
+    else:
+        stepper = Stepper(options=options, n_dims=2)
+    mpdata = Solver(stepper=stepper, advectee=state, advector=GC)
 
     def set_z():
         mpdata.curr.get()[:] = z
@@ -111,7 +126,6 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
     benchmark.pedantic(mpdata.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
     state = mpdata.curr.get()
 
-    print(np.amin(state), np.amax(state), numba.threading_layer(), numba.get_num_threads())
     if options.n_iters == 1:
         assert np.amin(state) >= h0
     assert np.amax(state) < 10 * h
