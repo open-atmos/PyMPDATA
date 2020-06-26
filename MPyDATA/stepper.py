@@ -8,7 +8,8 @@ from MPyDATA.formulae.flux import make_flux_first_pass, make_flux_subsequent
 from MPyDATA.formulae.laplacian import make_laplacian
 from MPyDATA.formulae.antidiff import make_antidiff
 from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
-from MPyDATA.arakawa_c.traversals import Traversals, meta_halo_valid
+from MPyDATA.arakawa_c.traversals import Traversals
+from .arakawa_c.meta import meta_halo_valid
 from MPyDATA.options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning

@@ -195,9 +195,15 @@ The init method of ``Stepper`` has an optional
 enabling handling of the G factor term which can be used to 
 represent coordinate transformations and/or variable fluid density. 
 
-Optionally, the number of threads to use during 2D calculations
+Optionally, the number of threads to use for domain decomposition
+in first (non-contiguous) dimension during 2D calculations
 may be specified using the optional ``n_threads`` argument with a
-default value of ``numba.get_num_threads()``.
+default value of ``numba.get_num_threads()``. The multi-threaded
+logic of MPyDATA depends thus on settings of numba, namely on the
+selected threading layer (either via ``NUMBA_THREADING_LAYER`` env 
+var or via ``numba.config.THREADING_LAYER``) and the selected size of the 
+thread pool (``NUMBA_NUM_THREADS`` env var or ``numba.config.NUMBA_NUM_THREADS``).
+
 
 #### Solver
 

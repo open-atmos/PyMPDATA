@@ -5,7 +5,7 @@ Created at 03.2020
 import numba
 import numpy as np
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import null_vector_formula
+from .null import null_vector_formula
 
 
 def make_antidiff(non_unit_g_factor, options, traversals):

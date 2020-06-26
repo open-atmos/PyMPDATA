@@ -4,53 +4,8 @@ Created at 20.03.2020
 
 import numba
 from .indexers import indexers
-from .domain_decomposition import subdomain
-import numpy as np
-
-
-meta_halo_valid = 0
-meta_ni = 1
-meta_nj = 2
-meta_size = 3
-
-
-def make_meta(halo_valid: bool, grid):
-    meta = np.empty(meta_size, dtype=int)
-    meta[meta_halo_valid] = halo_valid
-    meta[meta_ni] = grid[0]
-    meta[meta_nj] = grid[1] if len(grid) > 1 else 0
-    return meta
-
-
-def make_irng(ni, n_threads):
-    static = ni > 0
-
-    if static:
-        rngs = tuple([subdomain(ni, th, n_threads) for th in range(n_threads)])
-
-        @numba.njit()
-        def _impl(_, thread_id):
-            return rngs[thread_id]
-    else:
-        @numba.njit()
-        def _impl(meta, thread_id):
-            return subdomain(meta[meta_ni], thread_id, n_threads)
-
-    return _impl
-
-
-def make_grid(grid):
-    static = grid[0] > 0
-
-    if static:
-        @numba.njit()
-        def _impl(_):
-            return grid
-    else:
-        @numba.njit()
-        def _impl(meta):
-            return meta[meta_ni], meta[meta_nj]
-    return _impl
+from .meta import meta_halo_valid
+from .static_grid import make_irng, make_grid
 
 
 class Traversals:
@@ -62,10 +17,10 @@ class Traversals:
         self.n_threads = n_threads
         self.irng = make_irng(grid[0], n_threads)
         self.halo = halo
-        self._boundary_cond_scalar, self._boundary_cond_vector = self.make_boundary_conditions()
-        self._apply_scalar = self.make_apply_scalar(loop=False)
-        self._apply_scalar_loop = self.make_apply_scalar(loop=True)
-        self._apply_vector = self.make_apply_vector()
+        self._boundary_cond_scalar, self._boundary_cond_vector = self._make_boundary_conditions()
+        self._apply_scalar = self._make_apply_scalar(loop=False)
+        self._apply_scalar_loop = self._make_apply_scalar(loop=True)
+        self._apply_vector = self._make_apply_vector()
 
     def apply_scalar(self, *, loop):
         if loop:
@@ -76,7 +31,7 @@ class Traversals:
     def apply_vector(self):
         return self._apply_vector
 
-    def make_apply_scalar(self, loop):
+    def _make_apply_scalar(self, loop):
         jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
@@ -90,12 +45,16 @@ class Traversals:
 
         if loop:
             @numba.njit(**jit_flags)
-            def apply_scalar_impl(rng_0, rng_1,
+            def apply_scalar_impl(thread_id, out_meta,
                                   fun_0, fun_1,
                                   out,
                                   vec_arg1_0, vec_arg1_1,
                                   scal_arg2, scal_arg3, scal_arg4
                                   ):
+                ni, nj = grid(out_meta)
+                rng_0 = irng(out_meta, thread_id)
+                rng_1 = (0, nj)
+
                 vec_arg1_tpl = (vec_arg1_0, vec_arg1_1)
                 for i in range(rng_0[0] + halo, rng_0[1] + halo):
                     for j in range(rng_1[0] + halo, rng_1[1] + halo) if n_dims > 1 else (-1,):
@@ -108,12 +67,16 @@ class Traversals:
                                                  (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
         else:
             @numba.njit(**jit_flags)
-            def apply_scalar_impl(rng_0, rng_1,
+            def apply_scalar_impl(thread_id, out_meta,
                                   fun_0, fun_1,
                                   out,
                                   vec_arg1_0, vec_arg1_1,
                                   scal_arg2, scal_arg3, scal_arg4
                                   ):
+                ni, nj = grid(out_meta)
+                rng_0 = irng(out_meta, thread_id)
+                rng_1 = (0, nj)
+
                 vec_arg1_tpl = (vec_arg1_0, vec_arg1_1)
                 for i in range(rng_0[0] + halo, rng_0[1] + halo):
                     for j in range(rng_1[0] + halo, rng_1[1] + halo) if n_dims > 1 else (-1,):
@@ -128,11 +91,7 @@ class Traversals:
                          scal_arg2_meta, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1,
                          scal_arg3_meta, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1,
                          scal_arg4_meta, scal_arg_4, scal_arg4_bc0, scal_arg4_bc1):
-
-            ni, nj = grid(out_meta)
-
             for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
-                # TODO: loop over multiple fields here?
                 boundary_cond_vector(thread_id, vec_arg1_meta, vec_arg1_0, vec_arg1_1, vec_arg1_bc0, vec_arg1_bc1)
                 boundary_cond_scalar(thread_id, scal_arg2_meta, scal_arg_2, scal_arg2_bc0, scal_arg2_bc1)
                 boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg_3, scal_arg3_bc0, scal_arg3_bc1)
@@ -142,16 +101,15 @@ class Traversals:
             scal_arg3_meta[meta_halo_valid] = True
             scal_arg4_meta[meta_halo_valid] = True
 
-            # TODO: a barrier would be better
             for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
                 apply_scalar_impl(
-                    irng(out_meta, thread_id),
-                    (0, nj), fun_0, fun_1, out, vec_arg1_0, vec_arg1_1, scal_arg_2, scal_arg_3, scal_arg_4)
+                    thread_id, out_meta,
+                    fun_0, fun_1, out, vec_arg1_0, vec_arg1_1, scal_arg_2, scal_arg_3, scal_arg_4)
             out_meta[meta_halo_valid] = False
 
         return apply_scalar
 
-    def make_apply_vector(self):
+    def _make_apply_vector(self):
         jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
@@ -195,8 +153,6 @@ class Traversals:
                 scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1,
         ):
             for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
-                # TODO: loop over multiple fields here?
-
                 boundary_cond_scalar(thread_id, scal_arg1_meta, scal_arg1, scal_arg1_bc0, scal_arg1_bc1)
                 boundary_cond_vector(thread_id, vec_arg2_meta, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1)
                 boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1)
@@ -218,7 +174,7 @@ class Traversals:
 
         return apply_vector
 
-    def make_boundary_conditions(self):
+    def _make_boundary_conditions(self):
         jit_flags = self.jit_flags
         halo = self.halo
         n_dims = self.n_dims
@@ -294,13 +250,3 @@ class Traversals:
                         set(psi, i, j, fun_1((focus, psi), nj, -1))
 
         return boundary_cond_scalar, boundary_cond_vector
-
-
-@numba.njit()
-def null_scalar_formula(_, __, ___):
-    return 44.
-
-
-@numba.njit()
-def null_vector_formula(_, __, ___, ____):
-    return 666.

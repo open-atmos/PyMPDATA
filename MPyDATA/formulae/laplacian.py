@@ -4,8 +4,9 @@ Created at 20.03.2020
 
 import numba
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import null_vector_formula, Traversals
+from MPyDATA.arakawa_c.traversals import Traversals
 from MPyDATA.options import Options
+from .null import null_vector_formula
 
 
 def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):

@@ -5,7 +5,7 @@ Created at 25.03.2020
 import numpy as np
 import numba
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import null_scalar_formula, null_vector_formula
+from .null import null_scalar_formula, null_vector_formula
 
 
 def make_psi_extremum(extremum, options, traversals):
