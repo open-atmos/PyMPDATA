@@ -8,6 +8,9 @@ from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import P
 from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 from MPyDATA_examples.utils.error_norms import GMD
 from difflib import context_diff
+import pathlib
+
+
 
 
 GCs = np.linspace(.15,.85, 3)
@@ -41,7 +44,7 @@ def test_convergence(generate = False):
         results = [list(i) for i in zip(*results0)]
         values  = np.array(results[0:2])
         v_str = "\n".join(" ".join(map(str, x)) for x in values)
-        with open("convergence_refdata.txt", "w+" if generate else "r") as f:
+        with open(pathlib.Path(__file__).parent.joinpath("convergence_refdata.txt"), "w+" if generate else "r") as f:
             if generate:
                 f.write(v_str)
             else:

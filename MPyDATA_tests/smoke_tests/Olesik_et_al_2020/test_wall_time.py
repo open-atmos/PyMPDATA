@@ -5,6 +5,7 @@ from MPyDATA import Options
 from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_mixing_ratios_g_kg
 from difflib import context_diff
 import numpy as np
+import pathlib
 
 grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = (
@@ -63,8 +64,7 @@ def make_refdata(data, generate=False):
     latex_start = r"\begin"+ "\n" +"{table}[]" +"\n" +r"\begin"+ "\n"+ "{tabular}"+ "\n" +"{| l | l |}"+ "\n"
     latex_end = "\end \n {tabular} \n \end \n {table}"
     latex_table = latex_start + latex_data + latex_end
-    with open("wall_time_refdata.txt", "w+" if generate else "r") as f:
-        if generate:
+    with open(pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt"), "w"+ if generate else "r") as f:
             f.write(latex_table)
         else:
             assert ''.join(context_diff(f.read(), latex_table)) == ''
