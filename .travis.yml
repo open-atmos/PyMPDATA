@@ -13,7 +13,8 @@ jobs:
       before_script:
         - pip install -U $(pip freeze | grep -v "@" | cut -d '=' -f 1)
         - export NUMBA_THREADING_LAYER=omp
-        - python$PY_SFX -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
+        - python -m numba -s
+        - python -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
       env: MPI=default
     - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
