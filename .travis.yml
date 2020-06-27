@@ -14,7 +14,7 @@ jobs:
         - cd ..
         - sed -i '/numba/d' requirements.txt
       before_script:
-        - pip install -U $(pip freeze | grep -v "@" | cut -d '=' -f 1)
+        - pip install -U $(pip freeze | grep -v numba | cut -d '=' -f 1)
         - export NUMBA_THREADING_LAYER=omp
         - python -m numba -s
         - python -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
