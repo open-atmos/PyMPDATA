@@ -122,7 +122,7 @@ class Traversals:
 
         @numba.njit(**jit_flags)
         def apply_vector_impl(thread_id, out_meta,
-                              fun0_0, fun0_1,
+                              fun_0, fun_1,
                               out_0, out_1,
                               scal_arg1,
                               vec_arg2_0, vec_arg2_1,
@@ -132,17 +132,14 @@ class Traversals:
             rng_0 = irng(out_meta, thread_id)
             rng_1 = (0, nj)
             last_thread = rng_0[1] == ni
-
-            out_tpl = (out_0, out_1)
             arg2 = (vec_arg2_0, vec_arg2_1)
 
-            # -1, -1
             for i in range(rng_0[0] + halo - 1, rng_0[1] + halo - 1 + (1 if last_thread else 0)):
                 for j in range(rng_1[0] + halo - 1, rng_1[1] + 1 + halo - 1) if n_dims > 1 else (-1,):
                     focus = (i, j)
-                    set(out_tpl[0], i, j, fun0_0((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
+                    set(out_0, i, j, fun_0((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
                     if n_dims > 1:
-                        set(out_tpl[1], i, j, fun0_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
+                        set(out_1, i, j, fun_1((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
 
         @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
         def apply_vector(
@@ -150,7 +147,7 @@ class Traversals:
                 out_meta, out_0, out_1,
                 scal_arg1_meta, scal_arg1, scal_arg1_bc0, scal_arg1_bc1,
                 vec_arg2_meta, vec_arg2_0, vec_arg2_1, vec_arg2_bc0, vec_arg2_bc1,
-                scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1,
+                scal_arg3_meta, scal_arg3, scal_arg3_bc0, scal_arg3_bc1
         ):
             for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
                 boundary_cond_scalar(thread_id, scal_arg1_meta, scal_arg1, scal_arg1_bc0, scal_arg1_bc1)

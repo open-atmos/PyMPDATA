@@ -8,7 +8,7 @@ jobs:
       before_install:
         - sudo `which pip` install --upgrade pip
         - pip install numpy
-        - git clone git://github.com/numba/numba.git
+        - git clone --depth 1 git://github.com/numba/numba.git
         - cd numba
         - python setup.py install
         - cd ..
