@@ -90,8 +90,8 @@ def make_null():
 
 
 class Indexers1d:
-    at = (at_1d, at_1d)
-    atv = (atv_1d, atv_1d)
+    at = (at_1d, None)
+    atv = (atv_1d, None)
     set = set_1d
     get = get_1d
 

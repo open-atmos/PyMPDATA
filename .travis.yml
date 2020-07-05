@@ -7,8 +7,17 @@ jobs:
       python: "3.8-dev"
       before_install:
         - sudo `which pip` install --upgrade pip
+        - pip install numpy
+        - git clone --depth 1 git://github.com/numba/numba.git
+        - cd numba
+        - python setup.py install
+        - cd ..
+        - sed -i '/numba/d' requirements.txt
       before_script:
-        - pip install -U $(pip freeze | cut -d '=' -f 1)
+        - pip install -U $(pip freeze | grep -v numba | cut -d '=' -f 1)
+        - export NUMBA_THREADING_LAYER=omp
+        - python -m numba -s
+        - python -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
       env: MPI=default
     - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
@@ -52,6 +61,7 @@ install:
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
+  - python$PY_SFX -m numba -s
   - |
     if [[ $EXAMPLES == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user

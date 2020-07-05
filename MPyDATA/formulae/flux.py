@@ -9,7 +9,6 @@ Created at 11.10.2019
 import numpy as np
 import numba
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import null_vector_formula
 
 
 def make_flux_first_pass(options, traversals):
@@ -18,7 +17,7 @@ def make_flux_first_pass(options, traversals):
 
     formulae_flux_first_pass = tuple([
         __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
-        if i < traversals.n_dims else null_vector_formula
+        if i < traversals.n_dims else None
         for i in range(MAX_DIM_NUM)
     ])
 

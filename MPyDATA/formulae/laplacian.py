@@ -4,7 +4,7 @@ Created at 20.03.2020
 
 import numba
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import null_vector_formula, Traversals
+from MPyDATA.arakawa_c.traversals import Traversals
 from MPyDATA.options import Options
 
 
@@ -19,7 +19,7 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
 
         formulae_laplacian = tuple([
             __make_laplacian(options.jit_flags, idx.at[i], options.epsilon, non_unit_g_factor, traversals.n_dims)
-            if i < traversals.n_dims else null_vector_formula
+            if i < traversals.n_dims else None
             for i in range(MAX_DIM_NUM)
         ])
 

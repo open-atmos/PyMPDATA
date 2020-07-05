@@ -8,7 +8,8 @@ from MPyDATA.formulae.flux import make_flux_first_pass, make_flux_subsequent
 from MPyDATA.formulae.laplacian import make_laplacian
 from MPyDATA.formulae.antidiff import make_antidiff
 from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
-from MPyDATA.arakawa_c.traversals import Traversals, meta_halo_valid
+from MPyDATA.arakawa_c.traversals import Traversals
+from .arakawa_c.meta import meta_halo_valid
 from MPyDATA.options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
@@ -28,16 +29,28 @@ class Stepper:
                  options: Options,
                  n_dims: (int, None) = None,
                  non_unit_g_factor: bool = False,
-                 grid: (tuple, None) = None
+                 grid: (tuple, None) = None,
+                 n_threads: (int, None) = None
                  ):
+        self.options = options
+
         if n_dims is not None and grid is not None:
             raise ValueError()
         if n_dims is None and grid is None:
             raise ValueError()
         if grid is None:
             grid = tuple([-1] * n_dims)
-        self.__call = make_step_impl(options, non_unit_g_factor, grid)
-        self.options = options
+
+        if n_threads is None:
+            n_threads = numba.get_num_threads()
+        self.n_threads = 1 if n_dims == 1 else n_threads
+        if self.n_threads > 1 and numba.threading_layer() == 'workqueue':
+            warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
+                          " to ``omp'' or ``tbb'' for higher parallel performance"
+                          " (see https://numba.pydata.org/numba-doc/latest/user/threading-layer.html)")
+
+        self.n_dims = n_dims
+        self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
     def __call__(self, nt, mu_coeff,
              psi, psi_bc,
@@ -50,6 +63,7 @@ class Stepper:
              psi_max, psi_max_bc,
              beta_up, beta_up_bc,
              beta_down, beta_down_bc):
+        assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
         return self.__call(nt, mu_coeff,
              psi, psi_bc,
              GC_phys, GC_phys_bc,
@@ -64,14 +78,14 @@ class Stepper:
 
 
 @lru_cache()
-def make_step_impl(options, non_unit_g_factor, grid):
+def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     n_iters = options.n_iters
     n_dims = len(grid)
     halo = options.n_halo
     non_zero_mu_coeff = options.non_zero_mu_coeff
     flux_corrected_transport = options.flux_corrected_transport
 
-    traversals = Traversals(grid, halo, options.jit_flags)
+    traversals = Traversals(grid, halo, options.jit_flags, n_threads=n_threads)
 
     upwind = make_upwind(options, non_unit_g_factor, traversals)
     flux_first_pass = make_flux_first_pass(options, traversals)

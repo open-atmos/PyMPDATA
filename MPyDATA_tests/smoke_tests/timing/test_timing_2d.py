@@ -1,4 +1,4 @@
-from MPyDATA.factories import Factories
+from MPyDATA import ScalarField, VectorField, PeriodicBoundaryCondition, Solver, Stepper
 from MPyDATA.options import Options
 import numpy as np
 import numba
@@ -78,22 +78,47 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
+# Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
-    Options(n_iters=3),
-    Options(n_iters=4),
-    # Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
     Options(n_iters=3, infinite_gauge=True),
     Options(n_iters=2, flux_corrected_transport=True),
-    Options(n_iters=2, divergent_flow=True)
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
-@pytest.mark.parametrize("grid_static", (True, False))
-def test_timing_2d(benchmark, options, dtype, grid_static):
+@pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
+@pytest.mark.parametrize("concurrency_str", ("threads", "serial"))
+def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
+    if grid_static_str == "static":
+        grid_static = True
+    elif grid_static_str == "dynamic":
+        grid_static = False
+    else:
+        raise ValueError()
+
+    if concurrency_str == "serial":
+        numba.set_num_threads(1)
+    else:
+        numba.set_num_threads(numba.config.NUMBA_NUM_THREADS)
+
     setup = Setup(n_rotations=6)
     _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
-    mpdata = Factories.constant_2d(data=z, C=(-.5, .25), options=options, grid_static=grid_static)
+
+    C = (-.5, .25)
+    grid = z.shape
+    GC_data = [
+        np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
+        np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
+    ]
+    GC = VectorField(GC_data, halo=options.n_halo,
+                     boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    state = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
+                        boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    if grid_static:
+        stepper = Stepper(options=options, grid=grid)
+    else:
+        stepper = Stepper(options=options, n_dims=2)
+    mpdata = Solver(stepper=stepper, advectee=state, advector=GC)
 
     def set_z():
         mpdata.curr.get()[:] = z
@@ -101,7 +126,6 @@ def test_timing_2d(benchmark, options, dtype, grid_static):
     benchmark.pedantic(mpdata.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
     state = mpdata.curr.get()
 
-    print(np.amin(state), np.amax(state))
     if options.n_iters == 1:
         assert np.amin(state) >= h0
     assert np.amax(state) < 10 * h
