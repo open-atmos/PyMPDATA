@@ -121,10 +121,10 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
     mpdata = Solver(stepper=stepper, advectee=state, advector=GC)
 
     def set_z():
-        mpdata.curr.get()[:] = z
+        mpdata.advectee.get()[:] = z
 
     benchmark.pedantic(mpdata.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
-    state = mpdata.curr.get()
+    state = mpdata.advectee.get()
 
     if options.n_iters == 1:
         assert np.amin(state) >= h0

@@ -18,7 +18,7 @@ class Simulation:
 
     @property
     def state(self):
-        return self.stepper.curr.get().copy()
+        return self.stepper.advectee.get().copy()
 
     def run(self):
         self.stepper.advance(self.nt)

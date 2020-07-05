@@ -225,7 +225,7 @@ a solver and making one integration step looks as follows:
 from MPyDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
-state = solver.curr.get()
+state = solver.advectee.get()
 ```
 
 #### Factories 

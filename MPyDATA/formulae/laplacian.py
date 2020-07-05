@@ -24,10 +24,10 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         ])
 
         @numba.njit(**options.jit_flags)
-        def apply(GC_phys, psi, psi_bc, null_vecfield_bc):
-            null_vecfield = GC_phys
-            null_scalarfield = psi
-            return apply_vector(*formulae_laplacian, *GC_phys, *psi, *psi_bc, *null_vecfield, *null_vecfield_bc,
+        def apply(advector, advectee, advectee_bc, null_vecfield_bc):
+            null_vecfield = advector
+            null_scalarfield = advectee
+            return apply_vector(*formulae_laplacian, *advector, *advectee, *advectee_bc, *null_vecfield, *null_vecfield_bc,
                                 *null_scalarfield, *null_vecfield_bc)
 
     return apply
@@ -38,10 +38,10 @@ def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor, n_dims):
         raise NotImplementedError()
 
     @numba.njit(**jit_flags)
-    def A(psi, _, __):
+    def A(advectee, _, __):
         return -2 * (
-                at(*psi, 1, 0) - at(*psi, 0, 0)
+            at(*advectee, 1, 0) - at(*advectee, 0, 0)
         ) / (
-                at(*psi, 1, 0) + at(*psi, 0, 0) + epsilon
+            at(*advectee, 1, 0) + at(*advectee, 0, 0) + epsilon
         )
     return A

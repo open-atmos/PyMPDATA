@@ -33,6 +33,6 @@ def test_upwind(shape, ij0, out, C):
     mpdata.advance(1)
 
     np.testing.assert_array_equal(
-        mpdata.curr.get(),
+        mpdata.advectee.get(),
         out
     )

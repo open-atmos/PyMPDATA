@@ -55,4 +55,4 @@ def test_single_timestep(options):
 
     # Assert
     for k, v in mpdatas.items():
-        assert np.isfinite(v.curr.get()).all()
+        assert np.isfinite(v.advectee.get()).all()
