@@ -4,7 +4,7 @@ from MPyDATA.arakawa_c.indexers import indexers
 from MPyDATA.arakawa_c.meta import meta_halo_valid
 
 
-def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, irng, grid,
+def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunk, domain,
                        boundary_cond_vector, boundary_cond_scalar):
     set = indexers[n_dims].set
     get = indexers[n_dims].get
@@ -17,8 +17,8 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, irng, grid,
                               vec_arg1_0, vec_arg1_1,
                               scal_arg2, scal_arg3, scal_arg4
                               ):
-            ni, nj = grid(out_meta)
-            rng_0 = irng(out_meta, thread_id)
+            ni, nj = domain(out_meta)
+            rng_0 = chunk(out_meta, thread_id)
             rng_1 = (0, nj)
 
             vec_arg1_tpl = (vec_arg1_0, vec_arg1_1)
@@ -39,8 +39,8 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, irng, grid,
                               vec_arg1_0, vec_arg1_1,
                               scal_arg2, scal_arg3, scal_arg4
                               ):
-            ni, nj = grid(out_meta)
-            rng_0 = irng(out_meta, thread_id)
+            ni, nj = domain(out_meta)
+            rng_0 = chunk(out_meta, thread_id)
             rng_1 = (0, nj)
 
             vec_arg1_tpl = (vec_arg1_0, vec_arg1_1)
@@ -76,7 +76,7 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, irng, grid,
     return apply_scalar
 
 
-def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, irng, grid):
+def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunk, domain):
     set = indexers[n_dims].set
 
     @numba.njit(**jit_flags)
@@ -84,8 +84,8 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, irng, grid):
         if meta[meta_halo_valid]:
             return
 
-        ni, nj = grid(meta)
-        i_rng = irng(meta, thread_id)
+        ni, nj = domain(meta)
+        i_rng = chunk(meta, thread_id)
         last_thread = i_rng[1] == ni
 
         if thread_id == 0:

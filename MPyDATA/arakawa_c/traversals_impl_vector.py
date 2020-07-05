@@ -4,7 +4,7 @@ from MPyDATA.arakawa_c.indexers import indexers
 from MPyDATA.arakawa_c.meta import meta_halo_valid
 
 
-def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, grid, irng, boundary_cond_vector,
+def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, domain, chunk, boundary_cond_vector,
                        boundary_cond_scalar):
     set = indexers[n_dims].set
 
@@ -16,8 +16,8 @@ def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, grid, irng, bounda
                           vec_arg2_0, vec_arg2_1,
                           scal_arg3
                           ):
-        ni, nj = grid(out_meta)
-        rng_0 = irng(out_meta, thread_id)
+        ni, nj = domain(out_meta)
+        rng_0 = chunk(out_meta, thread_id)
         rng_1 = (0, nj)
         last_thread = rng_0[1] == ni
         arg2 = (vec_arg2_0, vec_arg2_1)
@@ -60,7 +60,7 @@ def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, grid, irng, bounda
     return apply_vector
 
 
-def _make_fill_halos_vector(*, jit_flags, halo, n_dims, irng, grid):
+def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunk, domain):
     set = indexers[n_dims].set
 
     @numba.njit(**jit_flags)
@@ -68,8 +68,8 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, irng, grid):
         if meta[meta_halo_valid]:
             return
 
-        ni, nj = grid(meta)
-        i_rng = irng(meta, thread_id)
+        ni, nj = domain(meta)
+        i_rng = chunk(meta, thread_id)
         last_thread = i_rng[1] == ni
 
         if thread_id == 0:

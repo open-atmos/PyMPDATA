@@ -1,4 +1,4 @@
-from MPyDATA.arakawa_c.static_grid import make_grid, make_irng
+from MPyDATA.arakawa_c.static_grid import make_domain, make_chunk
 from MPyDATA.arakawa_c.meta import meta_ni, meta_nj, meta_size
 from MPyDATA.arakawa_c.domain_decomposition import subdomain
 import pytest
@@ -17,7 +17,7 @@ class TestStaticGrid:
         assert grid[0] != meta[meta_ni]
 
         # act
-        grid_fun = make_grid(grid)
+        grid_fun = make_domain(grid)
 
         # assert
         assert grid == grid_fun(meta)
@@ -28,7 +28,7 @@ class TestStaticGrid:
         grid = (0, )
 
         # act
-        grid_fun = make_grid(grid)
+        grid_fun = make_domain(grid)
 
         # assert
         assert (meta[meta_ni], meta[meta_nj]) == grid_fun(meta)
@@ -41,7 +41,7 @@ class TestStaticGrid:
         assert ni != meta[meta_ni]
 
         # act
-        irng_fun = make_irng(ni=ni, n_threads=n_threads)
+        irng_fun = make_chunk(ni=ni, n_threads=n_threads)
 
         # assert
         for thread_id in range(n_threads):
@@ -54,7 +54,7 @@ class TestStaticGrid:
         ni = 0
 
         # act
-        irng_fun = make_irng(ni=ni, n_threads=n_threads)
+        irng_fun = make_chunk(ni=ni, n_threads=n_threads)
 
         # assert
         for thread_id in range(n_threads):

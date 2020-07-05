@@ -4,7 +4,7 @@ from MPyDATA.arakawa_c.domain_decomposition import subdomain
 from MPyDATA.arakawa_c.meta import meta_ni, meta_nj
 
 
-def make_irng(ni, n_threads):
+def make_chunk(ni, n_threads):
     static = ni > 0
 
     if static:
@@ -21,7 +21,7 @@ def make_irng(ni, n_threads):
     return _impl
 
 
-def make_grid(grid):
+def make_domain(grid):
     static = grid[0] > 0
 
     if static:
