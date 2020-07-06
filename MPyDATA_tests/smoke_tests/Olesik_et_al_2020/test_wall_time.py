@@ -21,7 +21,7 @@ opt_set = (
 
 
 def test_wall_time(n_runs = 2):
-    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([2,]))
+    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array([5,]))
     table_data = {"opts":[], "values":[]}
     for grid in grid_layout_set:
         norm = [1, ]
