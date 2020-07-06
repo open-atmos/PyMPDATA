@@ -32,36 +32,36 @@ class Factories:
     @staticmethod
     def constant_2d(data: np.ndarray, C, options: Options, grid_static=True):
         grid = data.shape
-        GC_data = [
+        advector_data = [
             np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
             np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
         ]
-        GC = VectorField(GC_data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-        state = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        advector = VectorField(advector_data, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        advectee = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         if grid_static:
             stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
         else:
             stepper = Stepper(options=options, n_dims=2, non_unit_g_factor=False)
-        mpdata = Solver(stepper=stepper, advectee=state, advector=GC)
+        mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
         return mpdata
 
     @staticmethod
     def stream_function_2d_basic(grid, size, dt, stream_function, field: np.ndarray, options: Options):
-        step = Stepper(options=options, grid=grid, non_unit_g_factor=False)
-        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
+        stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
+        advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
         advectee = ScalarField(field.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-        return Solver(stepper=step, advectee=advectee, advector=GC)
+        return Solver(stepper=stepper, advectee=advectee, advector=advector)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor: np.ndarray, options: Options):
-        step = Stepper(options=options, grid=grid, non_unit_g_factor=True)
-        GC = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
+        stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
+        advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
         g_factor = ScalarField(g_factor.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         mpdatas = {}
         for k, v in field_values.items():
             advectee = ScalarField(np.full(grid, v, dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-            mpdatas[k] = Solver(stepper=step, advectee=advectee, advector=GC, g_factor=g_factor)
-        return GC, mpdatas
+            mpdatas[k] = Solver(stepper=stepper, advectee=advectee, advector=advector, g_factor=g_factor)
+        return advector, mpdatas
 
     @staticmethod
     def advection_diffusion_1d(*,

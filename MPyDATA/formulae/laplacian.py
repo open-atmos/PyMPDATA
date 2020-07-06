@@ -11,7 +11,7 @@ from MPyDATA.options import Options
 def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):
     if not options.non_zero_mu_coeff:
         @numba.njit(**options.jit_flags)
-        def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
+        def apply(_1, _2, _3, _4, _5):
             return
     else:
         idx = indexers[traversals.n_dims]
