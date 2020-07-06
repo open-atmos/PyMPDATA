@@ -64,10 +64,14 @@ def make_refdata(data, generate=False):
     latex_start = r"\begin"+ "\n" +"{table}[]" +"\n" +r"\begin"+ "\n"+ "{tabular}"+ "\n" +"{| l | l |}"+ "\n"
     latex_end = "\end \n {tabular} \n \end \n {table}"
     latex_table = latex_start + latex_data + latex_end
-    with open(pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt"), "w"+ if generate else "r") as f:
+    with open(pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt"), "w+" if generate else "r") as f:
+        if generate:
             f.write(latex_table)
         else:
-            assert ''.join(context_diff(f.read(), latex_table)) == ''
+            try:
+                assert ''.join(context_diff(f.read(), latex_table)) == ''
+            except:
+                raise ValueError
 
 
 

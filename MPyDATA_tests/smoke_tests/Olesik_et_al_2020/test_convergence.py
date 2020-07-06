@@ -48,7 +48,9 @@ def test_convergence(generate = False):
             if generate:
                 f.write(v_str)
             else:
-                assert ''.join(context_diff(f.read(), v_str)) == ''
+                try:
+                    assert ''.join(context_diff(f.read(), v_str)) == ''
+                except: raise ValueError
 
 
 def analysis(nr, GC,options):
