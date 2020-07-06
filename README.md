@@ -217,7 +217,7 @@ init is ``advance(self, nt: int, mu_coeff: float = 0)``
 which advances the solution by ``nt`` timesteps, optionally
 taking into account a given value of diffusion coefficient.
 
-Solution state is accessible through the ``Solver.curr`` property.
+Solution state is accessible through the ``Solver.advectee`` property.
 
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
@@ -225,7 +225,7 @@ a solver and making one integration step looks as follows:
 from MPyDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
-state = solver.curr.get()
+state = solver.advectee.get()
 ```
 
 #### Factories 

@@ -10,7 +10,7 @@ def test_upwind_1d():
     mpdata = Factories.constant_1d(state, C, Options(n_iters=1))
     nt = 5
 
-    conserved = np.sum(mpdata.curr.get())
+    conserved = np.sum(mpdata.advectee.get())
     mpdata.advance(nt)
 
-    assert np.sum(mpdata.curr.get()) == conserved
+    assert np.sum(mpdata.advectee.get()) == conserved

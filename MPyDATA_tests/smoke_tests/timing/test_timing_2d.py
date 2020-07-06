@@ -88,7 +88,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
 @pytest.mark.parametrize("concurrency_str", ("threads", "serial"))
-def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
+def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, plot=False):
     if grid_static_str == "static":
         grid_static = True
     elif grid_static_str == "dynamic":
@@ -106,32 +106,31 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str):
 
     C = (-.5, .25)
     grid = z.shape
-    GC_data = [
+    advector_data = [
         np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
         np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
     ]
-    GC = VectorField(GC_data, halo=options.n_halo,
+    advector = VectorField(advector_data, halo=options.n_halo,
                      boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-    state = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
+    advectee = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
                         boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
     if grid_static:
         stepper = Stepper(options=options, grid=grid)
     else:
         stepper = Stepper(options=options, n_dims=2)
-    mpdata = Solver(stepper=stepper, advectee=state, advector=GC)
+    solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 
     def set_z():
-        mpdata.curr.get()[:] = z
+        solver.advectee.get()[:] = z
 
-    benchmark.pedantic(mpdata.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
-    state = mpdata.curr.get()
+    benchmark.pedantic(solver.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
 
     if options.n_iters == 1:
-        assert np.amin(state) >= h0
-    assert np.amax(state) < 10 * h
+        assert np.amin(solver.advectee.get()) >= h0
+    assert np.amax(solver.advectee.get()) < 10 * h
 
-    if False:
-        pyplot.imshow(state)
+    if plot:
+        pyplot.imshow(solver.advectee.get())
         pyplot.colorbar()
         pyplot.show()
 
