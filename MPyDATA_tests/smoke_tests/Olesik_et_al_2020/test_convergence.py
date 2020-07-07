@@ -32,7 +32,7 @@ opt_set = (
 
 
 
-def test_convergence(generate = False):
+def test_convergence(generate = False, plot = False, opt_set=opt_set):
     for opt in opt_set:
         options = Options(**opt)
         with parallel_backend('threading', n_jobs=-2):
@@ -43,6 +43,11 @@ def test_convergence(generate = False):
             )
         results = [list(i) for i in zip(*results0)]
         values  = np.array(results[0:2])
+        if plot:
+            from MPyDATA_examples.Olesik_et_al_2020.demo_plot_convergence import plot
+            from MPyDATA_examples.utils.show_plot import show_plot
+            plot(values[0], values[1], values[2], n_levels=10)
+            show_plot(filename=f'convergence.pdf')
         v_str = "\n".join(" ".join(map(str, x)) for x in values)
         with open(pathlib.Path(__file__).parent.joinpath("convergence_refdata.txt"), "w+" if generate else "r") as f:
             if generate:
