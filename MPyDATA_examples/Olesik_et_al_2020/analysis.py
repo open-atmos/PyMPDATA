@@ -41,7 +41,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
     setup = Setup(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
     with parallel_backend('threading', n_jobs=-2):    # TODO: possible error with parallelisation
         results = Parallel(verbose=10)(
-            delayed(analysis)(setup, grid_layout, psi_coord, options, GC_max)
+            delayed(analysis)( setup, grid_layout, psi_coord, options, GC_max)
             for grid_layout in grid_layouts
             for options in deepcopy(opt_set)
         )
