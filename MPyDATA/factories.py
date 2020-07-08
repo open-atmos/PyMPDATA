@@ -136,7 +136,3 @@ class Factories:
             dx,
             dt
         )
-
-
-
-
