@@ -68,7 +68,6 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
                     output[coord]["grid"] = {'rh': rh, 'r': r, 'dx': dx, 'dt': case.dt, 'out_steps': case.out_steps}
                 output[coord]["numerical"][opts] = data['n']
 
-
     for coord, case in cases.items():
         analytical = []
         for t in [case.dt * nt for nt in case.out_steps]:
