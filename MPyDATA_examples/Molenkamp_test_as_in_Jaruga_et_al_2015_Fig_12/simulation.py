@@ -12,7 +12,7 @@ class Simulation:
 
     @property
     def state(self):
-        return self.mpdata.curr.get().copy()
+        return self.mpdata.advectee.get().copy()
 
     def run(self):
         self.mpdata.advance(self.nt)

@@ -26,8 +26,8 @@ class Solver:
             assert field.dtype == options.dtype
 
         self.stepper = stepper
-        self.curr = advectee  # TODO: rename to self.advectee
-        self.GC_phys = advector  # TODO: rename to self.advector
+        self.advectee = advectee
+        self.advector = advector
         self.g_factor = g_factor or null_scalar_field()
         self._vectmp_a = vector_field()
         self._vectmp_b = vector_field()
@@ -40,15 +40,15 @@ class Solver:
 
     def advance(self, nt: int, mu_coeff: float = 0):
         wall_time_per_timestep = self.stepper(nt, mu_coeff,
-                     *self.curr.impl,
-                     *self.GC_phys.impl,
-                     *self.g_factor.impl,
-                     *self._vectmp_a.impl,
-                     *self._vectmp_b.impl,
-                     *self._vectmp_c.impl,
-                     *self.advectee_min.impl,
-                     *self.advectee_max.impl,
-                     *self.beta_up.impl,
-                     *self.beta_down.impl
-                     )
+                                              *self.advectee.impl,
+                                              *self.advector.impl,
+                                              *self.g_factor.impl,
+                                              *self._vectmp_a.impl,
+                                              *self._vectmp_b.impl,
+                                              *self._vectmp_c.impl,
+                                              *self.advectee_min.impl,
+                                              *self.advectee_max.impl,
+                                              *self.beta_up.impl,
+                                              *self.beta_down.impl
+                                              )
         return wall_time_per_timestep

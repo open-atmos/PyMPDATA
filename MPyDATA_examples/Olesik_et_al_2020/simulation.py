@@ -46,7 +46,7 @@ class Simulation:
 
     @property
     def n(self):
-        psi = self.solver.curr.get()
+        psi = self.solver.advectee.get()
         n = psi * self.psi_coord.dx_dr(self.__r)
         return n * self.__n_unit
 

@@ -5,13 +5,12 @@ Created at 03.2020
 import numba
 import numpy as np
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import null_vector_formula
 
 
 def make_antidiff(non_unit_g_factor, options, traversals):
     if options.n_iters <= 1:
         @numba.njit(**options.jit_flags)
-        def apply(_GC_corr, _psi, _psi_bc, _GC_unco, _vec_bc, _g_factor, _g_factor_bc):
+        def apply(_1, _2, _3, _4, _5, _6, _7):
             return
     else:
         idx = indexers[traversals.n_dims]
@@ -22,7 +21,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims)
-            if i < traversals.n_dims else null_vector_formula
+            if i < traversals.n_dims else None
             for i in range(MAX_DIM_NUM)])
 
         @numba.njit(**options.jit_flags)

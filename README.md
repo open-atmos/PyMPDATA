@@ -15,7 +15,7 @@ MPyDATA includes implementation of a set of MPDATA **variants including
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
-No domain-decomposition parallelism supported yet.
+In 2D simulations, domain-decomposition is used for multi-threaded parallelism.
 
 MPyDATA is engineered purely in Python targeting both performance and usability,
     the latter encompassing research users', developers' and maintainers' perspectives.
@@ -184,16 +184,26 @@ will take longer, yet same instance of the
 stepper can be used for different grids.  
 
 Since creating an instance of the ``Stepper`` class
-involves lengthy analysis and compilation of the algorithm code,
+involves time consuming compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
 instantiated objects. Instances of ``Stepper`` contain no
-data and are (thread-)safe to be reused.
+mutable data and are (thread-)safe to be reused.
 
-The init method of ``Stepper`` has an additional 
-``non_unit_g_factor`` argument which is a flag enabling 
-handling of the G factor term which can be used to 
-represent coordinate transformations. 
+The init method of ``Stepper`` has an optional
+``non_unit_g_factor`` argument which is a Boolean flag 
+enabling handling of the G factor term which can be used to 
+represent coordinate transformations and/or variable fluid density. 
+
+Optionally, the number of threads to use for domain decomposition
+in first (non-contiguous) dimension during 2D calculations
+may be specified using the optional ``n_threads`` argument with a
+default value of ``numba.get_num_threads()``. The multi-threaded
+logic of MPyDATA depends thus on settings of numba, namely on the
+selected threading layer (either via ``NUMBA_THREADING_LAYER`` env 
+var or via ``numba.config.THREADING_LAYER``) and the selected size of the 
+thread pool (``NUMBA_NUM_THREADS`` env var or ``numba.config.NUMBA_NUM_THREADS``).
+
 
 #### Solver
 
@@ -207,7 +217,7 @@ init is ``advance(self, nt: int, mu_coeff: float = 0)``
 which advances the solution by ``nt`` timesteps, optionally
 taking into account a given value of diffusion coefficient.
 
-Solution state is accessible through the ``Solver.curr`` property.
+Solution state is accessible through the ``Solver.advectee`` property.
 
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
@@ -215,7 +225,7 @@ a solver and making one integration step looks as follows:
 from MPyDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
-state = solver.curr.get()
+state = solver.advectee.get()
 ```
 
 #### Factories 

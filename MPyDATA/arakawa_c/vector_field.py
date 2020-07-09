@@ -5,7 +5,7 @@ Created at 03.2020
 import numpy as np
 from .indexers import make_null, indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
-from .traversals import make_meta, meta_halo_valid
+from .meta import meta_halo_valid, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
 
