@@ -38,7 +38,6 @@ class Solver:
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-
     def advance(self, nt: int, mu_coeff: float = 0):
         wall_time_per_timestep = self.stepper(nt, mu_coeff,
                      *self.curr.impl,
