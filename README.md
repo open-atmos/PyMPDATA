@@ -64,7 +64,7 @@ MPyDATA ships with several demos that reproduce results from the literature, inc
   (1D advection-diffusion example based on Black-Scholes equation)
 - Olesik, Bartman et al. 2020 (in preparation) 
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FOlesik_et_al_2020/)
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyData/blob/master/MPyData_examples/Olesik_et_al_2020/)   
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Michaeldz36/MPyDATA/blob/develop/MPyDATA_examples/Olesik_et_al_2020/demo_make_plots.ipynb)   
   (1D particle population condensational growth problem with coordinate transformations)
 - Molenkamp test (as in [Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 12)
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/)   
