@@ -6,6 +6,10 @@ from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_mixing_ratio
 from difflib import context_diff
 import numpy as np
 import pathlib
+import pytest
+import platform
+
+
 
 grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = (
@@ -19,8 +23,8 @@ opt_set = (
 )
 
 
-
-def test_wall_time(n_runs = 2, mrats = [5,], generate=False, print_tab = False):
+@pytest.mark.skipif(platform.system()=='Windows', reason="not enough accuracy on windows code (look MPyDATA/clock.py)")
+def test_wall_time(n_runs=5, mrats=[1.5,], generate=False, print_tab=False):
     setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts":[], "values":[]}
     for grid in grid_layout_set:
@@ -34,6 +38,7 @@ def test_wall_time(n_runs = 2, mrats = [5,], generate=False, print_tab = False):
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
                 i+=1
+            print(minimum_values)
             selected_value = np.min(minimum_values)
             if opts == {'n_iters': 1}:
                 norm[0] = selected_value
