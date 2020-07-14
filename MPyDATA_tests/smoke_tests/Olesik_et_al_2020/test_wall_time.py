@@ -22,7 +22,7 @@ opt_set = (
 
 @pytest.mark.skipif(platform.system() == 'Windows',
                     reason="not enough accuracy on windows code (look MPyDATA/clock.py)")
-def test_wall_time(n_runs=10, mrats=[1.5, ], generate=False, print_tab=False):
+def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False):
     setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
