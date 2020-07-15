@@ -11,7 +11,7 @@ from matplotlib.patches import Path, PathPatch
 import matplotlib.pyplot as plt
 
 
-def plot(nr, cour, ln_2_err, n_levels=11, ngrid=800 * 2, fontsize=20, name = r'log$_2$(err)'):
+def plot(nr, cour, ln_2_err, ngrid=800 * 2, fontsize=20, name = r'log$_2$(err)'):
     x = zeros(nr.shape[0])
     y = zeros(nr.shape[0])
 
@@ -21,11 +21,12 @@ def plot(nr, cour, ln_2_err, n_levels=11, ngrid=800 * 2, fontsize=20, name = r'l
     for i in range(theta.shape[0]):
         x[i] = r[i] * cos(theta[i])
         y[i] = r[i] * sin(theta[i])
-
+    min_val = np.floor(min(ln_2_err))
+    max_val = np.ceil(max(ln_2_err))
     levels = np.linspace(
-        np.floor(min(ln_2_err)),
-        np.ceil(max(ln_2_err)),
-        n_levels
+        min_val,
+        max_val,
+        int(max_val-min_val + 1)
     )
     mn = 0
     mx = int(np.ceil(max(r)))

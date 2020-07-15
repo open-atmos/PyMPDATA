@@ -73,8 +73,9 @@ def make_textable(data, generate=False, print_tab=False):
 
 
 def compare_refdata(data, generate=False, rtol =.3):
+    path = pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt")
     if generate:
-        np.savetxt("wall_time_refdata.txt", data, delimiter=',')
+        np.savetxt(path, data, delimiter=',')
     else:
-        refdata = np.loadtxt("wall_time_refdata.txt", delimiter=',')
+        refdata = np.loadtxt(path, delimiter=',')
         np.testing.assert_allclose(actual=data, desired=refdata, rtol=rtol)
