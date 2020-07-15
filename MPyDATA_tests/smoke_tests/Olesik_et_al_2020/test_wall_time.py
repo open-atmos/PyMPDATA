@@ -22,7 +22,7 @@ opt_set = (
 
 @pytest.mark.skipif(platform.system() == 'Windows',
                     reason="not enough accuracy on windows code (look MPyDATA/clock.py)")
-def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False):
+def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False, rtol=.3):
     setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
@@ -36,15 +36,13 @@ def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False):
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
                 i += 1
-            print(minimum_values)
             selected_value = np.min(minimum_values)
             if opts == {'n_iters': 1}:
                 norm[0] = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
             table_data["values"].append(round(selected_value / norm[0], 2))
-            print(table_data["values"])
-    make_refdata(data=table_data, generate=generate, print_tab=print_tab)
-    compare_refdata(data=table_data["values"])
+    make_textable(data=table_data, generate=generate, print_tab=print_tab)
+    compare_refdata(data=table_data["values"], generate=generate, rtol=rtol)
 
 
 def make_data(setup, grid, opts):
@@ -60,7 +58,7 @@ def make_data(setup, grid, opts):
     return result
 
 
-def make_refdata(data, generate=False, print_tab=False):
+def make_textable(data, generate=False, print_tab=False):
     latex_data = r"\hline" + " Variant  & Elapsed Real Time (wrt upwind) " + r"\\ \hline" + "\n"
     for opt, value in zip(data["opts"], data["values"]):
         latex_data += r"\hline" + f" {opt} & {value} " + r"\\ \hline" + "\n"
@@ -69,12 +67,14 @@ def make_refdata(data, generate=False, print_tab=False):
     latex_table = latex_start + latex_data + latex_end
     if print_tab:
         print(latex_table)
-    with open(pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt"), "w+" if generate else "r") as f:
+    with open(pathlib.Path(__file__).parent.joinpath("wall_time_textable.txt"), "w+" if generate else "r") as f:
         if generate:
             f.write(latex_table)
 
 
-def compare_refdata(data):
-    decimal = .69  # abs(desired-actual) < 1.5 * 10**(-decimal) , so it would allow ~30% difference
-    data_from_mybinder_test = [1.0, 2.53, 2.24, 5.76, 2.97, 4.09, 9.08]
-    np.testing.assert_array_almost_equal(data_from_mybinder_test, data, decimal=decimal)
+def compare_refdata(data, generate=False, rtol =.3):
+    if generate:
+        np.savetxt("wall_time_refdata.txt", data, delimiter=',')
+    else:
+        refdata = np.loadtxt("wall_time_refdata.txt", delimiter=',')
+        np.testing.assert_allclose(actual=data, desired=refdata, rtol=rtol)

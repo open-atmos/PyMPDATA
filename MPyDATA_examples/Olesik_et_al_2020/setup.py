@@ -35,18 +35,23 @@ class Setup:
         # def fmgn(fun, unit):
         #     return lambda x: fun(x * xunit).to(unit).magnitude
 
-        r_min = .1 * self.si.micrometre
+        r_min = .1 * self.si.um
         while not np.isfinite(pdf(r_min).magnitude):
             r_min *= 1.01
 
+        r_max = 1 * self.si.mm
+
         def pdfarg(r_nounit):
             r = r_nounit * xunit
-            result =  pdf(r) * r**3
+            result = pdf(r) * r ** 3
             return result.to(yunit * xunit ** 3).magnitude
-        I = integrate.quad(pdfarg,
-            r_min.to(xunit).magnitude,
-            np.inf #, epsrel=1e-06
-        )[0] * yunit * xunit ** 4
+
+        def ipdf(func, rmin, rmax):
+            # TODO: optimize quad!!!!! (and take rmax = np.inf)
+            I_unitless = integrate.quad(func, rmin, rmax)[0]
+            # I_unitless = (func(rmax)+func(rmin))/2 * (rmin + rmax)
+            return I_unitless * yunit * xunit ** 4
+        I = ipdf(func=pdfarg, rmin=r_min.to(xunit).magnitude, rmax=r_max.to(xunit).magnitude)
         return (I * 4 / 3 * np.pi * self.rho_w / self.rho_a).to(self.si.gram / self.si.kilogram)
 
     def pdf(self, r):
@@ -54,4 +59,3 @@ class Setup:
 
     def cdf(self, r):
         return self.C * self.size_distribution.cdf(r)
-

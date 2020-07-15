@@ -1,5 +1,4 @@
 from MPyDATA import Factories
-from functools import lru_cache
 from scipy import optimize
 from MPyDATA_examples.Olesik_et_al_2020.physics import equilibrium_drop_growth
 
@@ -54,7 +53,6 @@ class Simulation:
     def find_out_steps(setup, dt):
         out_steps = []
         for mr in setup.mixing_ratios:
-            @lru_cache()
             def findroot(ti):
                 return (mr - setup.mixing_ratio(
                     equilibrium_drop_growth.PdfEvolver(setup.pdf, setup.drdt, ti * t_unit))).magnitude
