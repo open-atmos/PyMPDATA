@@ -40,7 +40,7 @@ class Setup:
         while not np.isfinite(pdf(r_min).magnitude):
             r_min *= 1.01
 
-        r_max = 25 * self.si.mm
+        r_max = 250 * self.si.um
 
         def pdfarg(r_nounit):
             r = r_nounit * xunit
@@ -48,12 +48,13 @@ class Setup:
             return result.to(yunit * xunit ** 3).magnitude
 
         def ipdf(func, rmin, rmax):
-            # y = pdf((r_max + r_min)/2).to(yunit).magnitude
             # TODO: optimize quad!!!!! (and take rmax = np.inf)
             # arr = np.array([rmin.to(xunit).magnitude, rmax.to(xunit).magnitude]) * self.si.dimensionless
             # y = discretised_analytical_solution(arr, func)
-            # I_unitless = y * (r_max - r_min).to(xunit).magnitude
-            I_unitless = integrate.quad(func, rmin.to(xunit).magnitude, rmax.to(xunit).magnitude)[0]
+
+            av = (rmin+rmax)/2
+            y = (func(av.to(xunit).magnitude))
+            I_unitless = y * (r_max - r_min).to(xunit).magnitude
             return I_unitless * yunit * xunit ** 4
 
         I = ipdf(func=pdfarg, rmin=r_min, rmax=r_max)
