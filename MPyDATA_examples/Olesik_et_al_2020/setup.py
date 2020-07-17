@@ -40,7 +40,7 @@ class Setup:
         while not np.isfinite(pdf(r_min).magnitude):
             r_min *= 1.01
 
-        r_max = 250 * self.si.um
+        r_max = 50 * self.si.um
 
         def pdfarg(r_nounit):
             r = r_nounit * xunit
