@@ -5,23 +5,17 @@ from matplotlib import pyplot
 import numpy as np
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 import pytest
-import platform
-
 
 
 def diff(x):
     return np.diff(x.magnitude) * x.units
-
 @pytest.mark.parametrize(
     "grid", [x_id(), x_log_of_pn(), x_p2()]
 )
 @pytest.mark.parametrize(
     "coord", [x_id(), x_log_of_pn(), x_p2()]
 )
-
-@pytest.mark.skipif(platform.system() == 'Windows',
-                    reason="test is not passing on travis windows build")
-def test_size_distribution(grid, coord, plot=True):
+def test_size_distribution(grid, coord, plot=False):
     # Arrange
     si = pint.UnitRegistry()
     sd = SizeDistribution(si)
@@ -40,7 +34,7 @@ def test_size_distribution(grid, coord, plot=True):
         # Fig 3 from East & Marshall 1954
         si.setup_matplotlib()
         pyplot.plot(numpdfx, numpdfy, label='cdf')
-        pyplot.plot(numpdfx, sd.pdf(numpdfx), label='pdf', linestyle='--')
+        pyplot.plot(numpdfx, pdf_t(numpdfx.magnitude) * n_unit, label='pdf', linestyle='--')
         pyplot.legend()
         pyplot.gca().yaxis.set_units(1 / si.centimetre ** 3 / si.micrometre)
         pyplot.show()
@@ -52,3 +46,13 @@ def test_size_distribution(grid, coord, plot=True):
     print(totalpdf, integratedpdf)
     np.testing.assert_array_almost_equal(totalpdf,integratedpdf)
 
+
+def test_quad_vs_midpoint():
+    # Arrange
+    x = np.linspace(0, np.pi, 3)
+    a = discretised_analytical_solution(x, np.sin, midpoint_value=True)
+    b = discretised_analytical_solution(x, np.sin, midpoint_value=False)
+    test_val = np.abs((a - b)/a)
+    # Assert
+    assert (test_val > .05).all()
+    assert (test_val < .1).all()

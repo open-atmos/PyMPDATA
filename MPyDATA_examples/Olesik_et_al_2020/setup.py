@@ -4,10 +4,11 @@ from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 from scipy import integrate
 import numpy as np
 import pint
+from scipy import optimize
 
 default_nr = 64
 default_GC_max = .5
-default_mixing_ratios_g_kg = np.array([1, 2, 4, 10])
+default_mixing_ratios_g_kg = np.array([1, 4, 10])
 
 
 # based on Fig. 3 from East 1957
@@ -27,6 +28,18 @@ class Setup:
         self.size_distribution = East_and_Marshall_1954.SizeDistribution(si)
 
         self.C = (1 * si.gram / si.kilogram) / self.mixing_ratio(self.size_distribution.pdf)
+        self.out_times = self.find_out_steps()
+
+    def find_out_steps(self):
+        out_steps = []
+        for mr in self.mixing_ratios:
+            def findroot(ti):
+                return (mr - self.mixing_ratio(
+                    equilibrium_drop_growth.PdfEvolver(self.pdf, self.drdt, ti * t_unit))).magnitude
+            t_unit = self.si.second
+            t = optimize.brentq(findroot, 0, (1 * self.si.hour).to(t_unit).magnitude)
+            out_steps.append(t)
+        return out_steps
 
     def mixing_ratio(self, pdf):
         # TODO!!!
@@ -40,24 +53,15 @@ class Setup:
         while not np.isfinite(pdf(r_min).magnitude):
             r_min *= 1.01
 
-        r_max = 50 * self.si.um
-
         def pdfarg(r_nounit):
             r = r_nounit * xunit
             result = pdf(r) * r ** 3
             return result.to(yunit * xunit ** 3).magnitude
 
-        def ipdf(func, rmin, rmax):
-            # TODO: optimize quad!!!!! (and take rmax = np.inf)
-            # arr = np.array([rmin.to(xunit).magnitude, rmax.to(xunit).magnitude]) * self.si.dimensionless
-            # y = discretised_analytical_solution(arr, func)
-
-            av = (rmin+rmax)/2
-            y = (func(av.to(xunit).magnitude))
-            I_unitless = y * (r_max - r_min).to(xunit).magnitude
-            return I_unitless * yunit * xunit ** 4
-
-        I = ipdf(func=pdfarg, rmin=r_min, rmax=r_max)
+        I = integrate.quad(pdfarg,
+                           r_min.to(xunit).magnitude,
+                           np.inf
+                           )[0] * yunit * xunit ** 4
         return (I * 4 / 3 * np.pi * self.rho_w / self.rho_a).to(self.si.gram / self.si.kilogram)
 
     def pdf(self, r):

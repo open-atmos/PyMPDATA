@@ -99,3 +99,21 @@ class Plotter:
                 where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth=linewidth
             )
 
+    def mass_difference(self, mnorm, y, bin_boundaries):
+        M_analytical = mnorm
+        r1 = bin_boundaries[:-1]
+        r2 = bin_boundaries[1:]
+        y_approx = n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a
+        M_numerical = np.sum(y_approx *(r2-r1))
+        deltaM = abs((M_analytical-M_numerical)/M_analytical).to_base_units()*100
+        print("Mass difference:", deltaM, "%")
+
+        N_numerical = np.sum(y*(r2-r1))
+        n_unit = self.setup.pdf(bin_boundaries[0]).units
+        r_unit = bin_boundaries[0].units
+        pdf_t = lambda x: self.setup.pdf(x * r_unit).to(n_unit).magnitude
+        N_analytical, _ = integrate.quad(pdf_t, bin_boundaries.magnitude[0], bin_boundaries.magnitude[-1]) * n_unit * r_unit
+        deltaN = abs((N_analytical-N_numerical)/N_analytical).to_base_units()*100
+        print("Number difference:", deltaN, "%")
+
+        return deltaM, deltaN

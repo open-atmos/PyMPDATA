@@ -17,7 +17,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
-        wall_time = simulation.step(steps)
+        wall_time = simulation.step(steps) if steps > 0 else 0
         last_step += steps
         result['n'].append(simulation.n.copy())
         result['wall_time'].append(wall_time)
@@ -39,9 +39,9 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
                         mixing_ratios_g_kg=default_mixing_ratios_g_kg
                         ):
     setup = Setup(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
-    with parallel_backend('threading', n_jobs=-2):    # TODO: possible error with parallelisation
+    with parallel_backend('threading', n_jobs=-2):
         results = Parallel(verbose=10)(
-            delayed(analysis)( setup, grid_layout, psi_coord, options, GC_max)
+            delayed(analysis)(setup, grid_layout, psi_coord, options, GC_max)
             for grid_layout in grid_layouts
             for options in deepcopy(opt_set)
         )
@@ -97,6 +97,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
 
     return output, setup
 
+
 class Result:
     def __init__(self, *, dt, out_steps, grid_layout_str, option_str, result):
         self.dt = dt
@@ -104,6 +105,7 @@ class Result:
         self.result = result
         self.out_steps = out_steps
         self.grid_layout_str = grid_layout_str
+
 
 class Case:
     def __init__(self, result: Result):

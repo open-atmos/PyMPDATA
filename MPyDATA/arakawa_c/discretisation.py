@@ -8,7 +8,6 @@ from .vector_field import VectorField
 from .boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
 
 
-
 def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
     z = np.empty(gridsize)
     dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
@@ -87,10 +86,14 @@ def z_vec_coord(grid):
     assert zZ.shape == (nx, nz)
     return xX, zZ
 
-def discretised_analytical_solution(rh, pdf_t):
+
+def discretised_analytical_solution(rh, pdf_t, midpoint_value=False):
     output = np.empty(rh.shape[0]-1)
     for i in range(output.shape[0]):
-        dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i+1]) # TODO: handle other output values
-        output[i] = dcdf / (rh[i+1] - rh[i])
+        if midpoint_value:
+            output[i] = pdf_t((rh[i]+rh[i+1])/2)
+        else:
+            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO: handle other output values
+            output[i] = dcdf / (rh[i + 1] - rh[i])
     return output
 
