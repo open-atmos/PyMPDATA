@@ -22,7 +22,7 @@ opt_set = (
 
 @pytest.mark.skipif(platform.system() == 'Windows',
                     reason="not enough accuracy on windows code (look MPyDATA/clock.py)")
-def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False, rtol=.3):
+def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False, rtol=.1):
     setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
@@ -42,7 +42,7 @@ def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False, rto
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
             table_data["values"].append(round(selected_value / norm[0], 2))
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
-    compare_refdata(data=table_data["values"], generate=generate, rtol=rtol)
+    compare_refdata(data=table_data["values"], rtol=rtol, generate=generate)
 
 
 def make_data(setup, grid, opts):
@@ -72,7 +72,7 @@ def make_textable(data, generate=False, print_tab=False):
             f.write(latex_table)
 
 
-def compare_refdata(data, generate=False, rtol =.3):
+def compare_refdata(data, rtol, generate=False):
     path = pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt")
     if generate:
         np.savetxt(path, data, delimiter=',')
