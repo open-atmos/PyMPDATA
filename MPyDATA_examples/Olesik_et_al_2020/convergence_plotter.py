@@ -11,7 +11,12 @@ from matplotlib.patches import Path, PathPatch
 import matplotlib.pyplot as plt
 
 
-def plot(nr, cour, ln_2_err, ngrid=800 * 2, fontsize=20, name = r'log$_2$(err)'):
+# TODO rewrite plotter using matplotlib's polar plot (faster?)
+def plot(nr, cour, ln_2_err, ngrid=800 * 2, fontsize=20, name=r'log$_2$(err)'):
+    if name == 'log$_2$(err)':
+        flag = True
+    else:
+        flag = False
     x = zeros(nr.shape[0])
     y = zeros(nr.shape[0])
 
@@ -21,12 +26,14 @@ def plot(nr, cour, ln_2_err, ngrid=800 * 2, fontsize=20, name = r'log$_2$(err)')
     for i in range(theta.shape[0]):
         x[i] = r[i] * cos(theta[i])
         y[i] = r[i] * sin(theta[i])
-    min_val = np.floor(min(ln_2_err))
-    max_val = np.ceil(max(ln_2_err))
+    min_val = np.floor(min(ln_2_err)) if flag else min(ln_2_err)
+    max_val = np.ceil(max(ln_2_err)) if flag else max(ln_2_err)
+
+    amplitude = max_val - min_val
     levels = np.linspace(
         min_val,
         max_val,
-        int(max_val-min_val + 1)
+        int(amplitude + 1) if flag else 7
     )
     mn = 0
     mx = int(np.ceil(max(r)))
