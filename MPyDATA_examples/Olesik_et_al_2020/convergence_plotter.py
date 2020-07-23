@@ -23,6 +23,7 @@ def plot(nr, cour, ln_2_err, ngrid=800 * 2, fontsize=20, name=r'log$_2$(err)'):
     theta = cour * pi / 2.
     r = np.log2(1 / nr)
     r -= min(r)
+
     for i in range(theta.shape[0]):
         x[i] = r[i] * cos(theta[i])
         y[i] = r[i] * sin(theta[i])
@@ -80,3 +81,33 @@ def plot(nr, cour, ln_2_err, ngrid=800 * 2, fontsize=20, name=r'log$_2$(err)'):
             )
         )
     fig.gca().contour(xi, yi, zi, levels, linewidths=1, colors='k')
+
+
+def polar_plot(nr, cour, ln_2_err, name=r'log$_2$(err)'):
+    if name == 'log$_2$(err)':
+        flag = True
+    else:
+        flag = False
+
+    theta_array = cour * pi / 2.
+    dr = 1 / nr
+    r_array = np.log2(dr)
+
+    X, Y = np.meshgrid(theta_array, r_array)
+    Z = np.array(list(ln_2_err)).reshape(len(r_array), len(theta_array))
+    Z[Z > 0] = 0
+
+    ax = plt.subplot(111, projection='polar')
+    cnt = ax.contourf(X, Y, Z)
+    legend = plt.colorbar(cnt, ax=ax, pad=0.1)
+
+    # ax.set_rlim(0, max(r_array) + 1)
+    ax.set_thetalim(0, np.pi/2)
+    # ax.set_rticks(range(0, int(max(r_array)) + 1))
+    # ax.set_rlabel_position(-22.5)
+    theta_ticks = np.linspace(0, 90, 11)
+    ax.set_thetagrids(theta_ticks, theta_ticks / 90)
+    ax.grid(True)
+
+    ax.set_title(name+" vs nr and C", va='bottom')
+    plt.show()
