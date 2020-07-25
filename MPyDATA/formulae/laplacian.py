@@ -8,6 +8,8 @@ from MPyDATA.arakawa_c.traversals import Traversals
 from MPyDATA.options import Options
 
 
+# TODO: anisotropy
+
 def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):
     if not options.non_zero_mu_coeff:
         @numba.njit(**options.jit_flags)
@@ -18,7 +20,7 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         apply_vector = traversals.apply_vector()
 
         formulae_laplacian = tuple([
-            __make_laplacian(options.jit_flags, idx.at[i], options.epsilon, non_unit_g_factor, traversals.n_dims)
+            __make_laplacian(options.jit_flags, idx.at[i], options.epsilon, non_unit_g_factor)
             if i < traversals.n_dims else None
             for i in range(MAX_DIM_NUM)
         ])
@@ -33,8 +35,8 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
     return apply
 
 
-def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor, n_dims):
-    if non_unit_g_factor or n_dims > 1:
+def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor):
+    if non_unit_g_factor:
         raise NotImplementedError()
 
     @numba.njit(**jit_flags)

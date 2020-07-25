@@ -77,7 +77,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     y = np.linspace(yrange[0] + dy / 2, yrange[1] - dy / 2, gridsize[1])
     return x, y, z
 
-
+# TODO: mu=0 & mu!=0
 # Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
