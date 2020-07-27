@@ -41,7 +41,7 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
-  - travis_wait 30 mvn install
+  - travis_wait 30 jupyter nbconvert
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
