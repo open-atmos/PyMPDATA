@@ -41,6 +41,7 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
+  - travis_wait 30 mvn install
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
@@ -67,9 +68,9 @@ script:
       python$PY_SFX -m ipykernel install --user
       for i in MPyDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
-        jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
+        jupyter nbconvert --ExecutePreprocessor.timeout=3600 --to markdown --execute --stdout $i || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
-        # jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i > $i.md.travis || exit 1;
+        # jupyter nbconvert --ExecutePreprocessor.timeout=3600 --to markdown --execute --stdout $i > $i.md.travis || exit 1;
         # diff $i.md.repo $i.md.travis
       done;
     else
