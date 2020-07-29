@@ -2,11 +2,9 @@ from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA import Options
-from MPyDATA_examples.Olesik_et_al_2020.setup import Setup
 import numpy as np
 import pathlib
-import pytest
-import platform
+
 
 grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = (
@@ -19,15 +17,11 @@ opt_set = (
     {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
 )
 
-@pytest.mark.skipif(platform.system() == 'Darwin',
-                    reason="test takes too much time on Mac osx (look MPyDATA/clock.py)")
-@pytest.mark.skipif(platform.system() == 'Windows',
-                    reason="not enough accuracy on windows code (look MPyDATA/clock.py)")
-def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False, rtol=.25):
-    setup = Setup(nr=default_nr, mixing_ratios_g_kg=np.array(mrats))
+
+def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=False, rtol=.25):
+    setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
-        norm = [1, ]
         for opts in opt_set:
             i = 0
             minimum_values = []
@@ -39,9 +33,9 @@ def test_wall_time(n_runs=5, mrats=[1.5, ], generate=False, print_tab=False, rto
                 i += 1
             selected_value = np.min(minimum_values)
             if opts == {'n_iters': 1}:
-                norm[0] = selected_value
+                norm = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
-            table_data["values"].append(round(selected_value / norm[0], 2))
+            table_data["values"].append(round(selected_value / norm, 1))
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
     compare_refdata(data=table_data["values"], rtol=rtol, generate=generate)
 
@@ -53,9 +47,9 @@ def make_data(setup, grid, opts):
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
-        wall_time = simulation.step(steps)
+        wall_time_per_timestep = simulation.step(steps)
         last_step += steps
-        result['wall_time'].append(wall_time)
+        result['wall_time'].append(wall_time_per_timestep)
     return result
 
 
@@ -78,5 +72,5 @@ def compare_refdata(data, rtol, generate=False):
     if generate:
         np.savetxt(path, data, delimiter=',')
     else:
-        refdata = np.loadtxt(path, delimiter=',')
+        refdata = np.loadtxt(path, delimiter=',')[:len(data)]
         np.testing.assert_allclose(actual=data, desired=refdata, rtol=rtol)

@@ -22,4 +22,4 @@ if sys == 'Linux':
 @numba.njit()
 def time():
     value = clock()
-    return value // scale
+    return value / scale
