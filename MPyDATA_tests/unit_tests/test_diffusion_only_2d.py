@@ -4,7 +4,7 @@ import numpy as np
 
 def test_diffusion_only_2d(
         data0=np.array([[0, 0, 0], [0, 1., 0], [0, 0, 0]]),
-        mu=.1,
+        mu=(.1, .1),
         nt=1
 ):
     # Arrange
