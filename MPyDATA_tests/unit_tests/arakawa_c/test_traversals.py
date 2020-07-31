@@ -122,7 +122,7 @@ class TestTraversals:
         )
         for d in range(n_dims):
             data = out.get_component(d)
-            focus = [-halos[d][i] for i in range(n_dims)]
+            focus = tuple(-halos[d][i] for i in range(n_dims))
             for i in range(halos[d][0], halos[d][0] + data.shape[0]):
                 for j in (-1,) if n_dims == 1 else range(halos[d][1], halos[d][1] + data.shape[1]):
                     value = indexers[n_dims].at[0](focus, data, i, j)

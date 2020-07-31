@@ -44,7 +44,7 @@ class Simulation:
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
 
-        self.mu_coeff = 0.5 / self.l2
+        self.mu_coeff = (0.5 / self.l2,)
         self.solvers = {}
         self.solvers[1] = Factories.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
