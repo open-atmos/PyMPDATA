@@ -31,7 +31,7 @@ def polar_plot(nr, cour, values, name):
     ax.scatter(X, Y, alpha=.2, s=10)
     legend = plt.colorbar(cnt, ax=ax, pad=0.1)
 
-    ax.set_thetalim(0, np.pi/2)
+    ax.set_thetalim(min(theta_array),max(theta_array))
     ax.set_rlim(0, max(r_array))
     theta_ticks = np.linspace(0, 90, 11)
     ax.set_thetagrids(theta_ticks, theta_ticks / 90)

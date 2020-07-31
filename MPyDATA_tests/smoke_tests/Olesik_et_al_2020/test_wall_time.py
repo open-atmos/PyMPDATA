@@ -1,4 +1,4 @@
-from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_GC_max
+from MPyDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_GC_max, default_opt_set
 from MPyDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn
 from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA import Options
@@ -7,18 +7,10 @@ import pathlib
 
 
 grid_layout_set = (x_log_of_pn(base=2),)
-opt_set = (
-    {'n_iters': 1},
-    {'n_iters': 2},
-    {'n_iters': 2, 'infinite_gauge': True},
-    {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True},
-    {'n_iters': 2, 'third_order_terms': True},
-    {'n_iters': 3},
-    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
-)
+opt_set = default_opt_set
 
 
-def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=False, rtol=.25):
+def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=False, rtol=.3):
     setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:

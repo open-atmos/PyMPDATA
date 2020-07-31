@@ -9,6 +9,15 @@ from scipy import optimize
 default_nr = 64
 default_GC_max = .5
 default_mixing_ratios_g_kg = np.array([1, 4, 10])
+default_opt_set = (
+    {'n_iters': 1},
+    {'n_iters': 2},
+    {'n_iters': 2, 'infinite_gauge': True},
+    {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True},
+    {'n_iters': 3, 'third_order_terms': True},
+    {'n_iters': 3},
+    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
+)
 
 
 # based on Fig. 3 from East 1957
