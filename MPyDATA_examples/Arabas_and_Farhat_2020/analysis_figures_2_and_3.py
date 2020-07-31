@@ -6,17 +6,16 @@ import numpy as np
 from MPyDATA_examples.utils.error_norms import L2
 
 
-def compute(log2_l2_opt: float, log2_C_opt: float):
-    simulation = Simulation(Setup(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt))
+def compute(simulation):
     output = []
     for n_iters in (1, 2):
         simulation.run(n_iters)
         output.append({
             "n_iters": n_iters,
             "log2_C": np.log2(simulation.C),
-            "log2_C_opt": log2_C_opt,
+            "log2_C_opt": np.log2(simulation.setup.C_opt),
             "log2_l2": np.log2(simulation.l2),
-            "log2_l2_opt": log2_l2_opt,
+            "log2_l2_opt": np.log2(simulation.setup.l2_opt),
             "err2": error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, n_iters)
         })
     return output
@@ -25,7 +24,7 @@ def compute(log2_l2_opt: float, log2_C_opt: float):
 def convergence_in_space(num=8):
     with parallel_backend('threading', n_jobs=-2):
         data = Parallel(verbose=10)(
-            delayed(compute)(log2_l2_opt, log2_C_opt)
+            delayed(compute)(Simulation(Setup(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt)))
             for log2_C_opt in np.linspace(-9.5, -6, num=num)
             for log2_l2_opt in range(1, 4)
         )
@@ -44,7 +43,7 @@ def convergence_in_space(num=8):
 def convergence_in_time(num=13):
     with parallel_backend('threading', n_jobs=-2):
         data = Parallel(verbose=10)(
-            delayed(compute)(log2_l2_opt, log2_C_opt)
+            delayed(compute)(Simulation(Setup(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt)))
             for log2_C_opt in np.log2((.01, .005, .0025))
             for log2_l2_opt in np.linspace(1.1, 3.5, num=num)
         )
