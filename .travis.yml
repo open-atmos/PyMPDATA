@@ -69,7 +69,7 @@ script:
       python$PY_SFX -m ipykernel install --user
       for i in MPyDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
-        jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
+        travis_wait 30 jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
         # jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i > $i.md.travis || exit 1;
         # diff $i.md.repo $i.md.travis
