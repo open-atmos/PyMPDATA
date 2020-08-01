@@ -44,7 +44,9 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
-  - if [[ $MPI == 'none' ]]; then sed -i '/mpi4py/d' requirements.txt; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then export SEDCMD="sed -i ''"; fi 
+  - if [ $TRAVIS_OS_NAME == linux ]; then export SEDCMD="sed -i"; fi 
+  - if [[ $MPI == 'none' ]]; then $SEDCMD '/mpi4py/d' requirements.txt; fi
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
