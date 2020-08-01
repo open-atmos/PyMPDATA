@@ -157,4 +157,4 @@ class TestMPDATA2D:
         sut.advance(nt=case["nt"])
 
         # Assert
-        np.testing.assert_almost_equal(sut.curr.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)
+        np.testing.assert_almost_equal(sut.advectee.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)

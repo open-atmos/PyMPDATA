@@ -22,10 +22,10 @@ def make_flux_first_pass(options, traversals):
     ])
 
     @numba.njit(**options.jit_flags)
-    def apply(vectmp_a, GC_phys, psi, psi_bc, vec_bc):
-        null_scalarfield = psi
+    def apply(vectmp_a, advector, advectee, advectee_bc, vec_bc):
+        null_scalarfield = advectee
         null_bc = vec_bc
-        return apply_vector(*formulae_flux_first_pass, *vectmp_a, *psi, *psi_bc, *GC_phys, *vec_bc,
+        return apply_vector(*formulae_flux_first_pass, *vectmp_a, *advectee, *advectee_bc, *advector, *vec_bc,
                             *null_scalarfield, *null_bc)
 
     return apply
@@ -66,12 +66,12 @@ def __make_flux(jit_flags, atv, at, first_pass, infinite_gauge):
 
     if not first_pass and infinite_gauge:
         @numba.njit(**jit_flags)
-        def flux(_, GC, __):
-            return atv(*GC, +.5, 0)
+        def flux(_, advector, __):
+            return atv(*advector, +.5, 0)
     else:
         @numba.njit(**jit_flags)
-        def flux(psi, GC, __):
+        def flux(advectee, advector, __):
             return \
-                maximum_0(atv(*GC, +.5, 0)) * at(*psi, 0, 0) + \
-                minimum_0(atv(*GC, +.5, 0)) * at(*psi, 1, 0)
+                maximum_0(atv(*advector, +.5, 0)) * at(*advectee, 0, 0) + \
+                minimum_0(atv(*advector, +.5, 0)) * at(*advectee, 1, 0)
     return flux
