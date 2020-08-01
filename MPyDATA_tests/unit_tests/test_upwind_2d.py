@@ -26,13 +26,13 @@ def test_upwind(shape, ij0, out, C):
     )
     options = Options(n_iters=1)
 
-    state = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-    GC_field = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    advectee = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    advector = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
 
-    mpdata = Solver(stepper=Stepper(options=options, grid=shape), advector=GC_field, advectee=state)
+    mpdata = Solver(stepper=Stepper(options=options, grid=shape), advector=advector, advectee=advectee)
     mpdata.advance(1)
 
     np.testing.assert_array_equal(
-        mpdata.curr.get(),
+        mpdata.advectee.get(),
         out
     )

@@ -53,28 +53,28 @@ class Stepper:
         self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
     def __call__(self, nt, mu_coeff,
-             psi, psi_bc,
-             GC_phys, GC_phys_bc,
-             g_factor, g_factor_bc,
-             vectmp_a, vectmp_a_bc,
-             vectmp_b, vectmp_b_bc,
-             vectmp_c, vectmp_c_bc,
-             psi_min, psi_min_bc,
-             psi_max, psi_max_bc,
-             beta_up, beta_up_bc,
-             beta_down, beta_down_bc):
+                 advectee, advectee_bc,
+                 advector, advector_bc,
+                 g_factor, g_factor_bc,
+                 vectmp_a, vectmp_a_bc,
+                 vectmp_b, vectmp_b_bc,
+                 vectmp_c, vectmp_c_bc,
+                 psi_min, psi_min_bc,
+                 psi_max, psi_max_bc,
+                 beta_up, beta_up_bc,
+                 beta_down, beta_down_bc):
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
         return self.__call(nt, mu_coeff,
-             psi, psi_bc,
-             GC_phys, GC_phys_bc,
-             g_factor, g_factor_bc,
-             vectmp_a, vectmp_a_bc,
-             vectmp_b, vectmp_b_bc,
-             vectmp_c, vectmp_c_bc,
-             psi_min, psi_min_bc,
-             psi_max, psi_max_bc,
-             beta_up, beta_up_bc,
-             beta_down, beta_down_bc)
+                           advectee, advectee_bc,
+                           advector, advector_bc,
+                           g_factor, g_factor_bc,
+                           vectmp_a, vectmp_a_bc,
+                           vectmp_b, vectmp_b_bc,
+                           vectmp_c, vectmp_c_bc,
+                           psi_min, psi_min_bc,
+                           psi_max, psi_max_bc,
+                           beta_up, beta_up_bc,
+                           beta_down, beta_down_bc)
 
 
 @lru_cache()
@@ -100,15 +100,15 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
 
     @numba.njit(**options.jit_flags)
     def axpy(out_meta, out0, out1, a, x_meta, x0, x1, y_meta, y0, y1):
-        out0[:] = a * x0[:] + y0[:]
+        out0[:] = a[0] * x0[:] + y0[:]
         if n_dims > 1:
-            out1[:] = a * x1[:] + y1[:]
+            out1[:] = a[1] * x1[:] + y1[:]
         out_meta[meta_halo_valid] = False
 
     @numba.njit(**options.jit_flags)
     def step(nt, mu_coeff,
-             psi, psi_bc,
-             GC_phys, GC_phys_bc,
+             advectee, advectee_bc,
+             advector, advector_bc,
              g_factor, g_factor_bc,
              vectmp_a, vectmp_a_bc,
              vectmp_b, vectmp_b_bc,
@@ -118,47 +118,47 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
              beta_up, beta_up_bc,
              beta_down, beta_down_bc
              ):
-        vec_bc = GC_phys_bc
-        null_vecfield = GC_phys
+        vec_bc = advector_bc
+        null_vecfield = advector
         null_vecfield_bc = vec_bc
 
         time = clock()
         for _ in range(nt):
             if non_zero_mu_coeff:
-                GC_orig = GC_phys
-                GC_phys = vectmp_c
+                advector_orig = advector
+                advector = vectmp_c
             for it in range(n_iters):
                 if it == 0:
                     if flux_corrected_transport:
-                        fct_psi_min(psi_min, psi, psi_bc, null_vecfield, null_vecfield_bc)
-                        fct_psi_max(psi_max, psi, psi_bc, null_vecfield, null_vecfield_bc)
+                        fct_psi_min(psi_min, advectee, advectee_bc, null_vecfield, null_vecfield_bc)
+                        fct_psi_max(psi_max, advectee, advectee_bc, null_vecfield, null_vecfield_bc)
                     if non_zero_mu_coeff:
-                        laplacian(GC_phys, psi, psi_bc, null_vecfield_bc)
-                        axpy(*GC_phys, mu_coeff, *GC_phys, *GC_orig)
-                    flux_first_pass(vectmp_a, GC_phys, psi, psi_bc, vec_bc)
+                        laplacian(advector, advectee, advectee_bc, null_vecfield_bc)
+                        axpy(*advector, mu_coeff, *advector, *advector_orig)
+                    flux_first_pass(vectmp_a, advector, advectee, advectee_bc, vec_bc)
                     flux = vectmp_a
                 else:
                     if it == 1:
-                        GC_unco = GC_phys
-                        GC_corr = vectmp_a
+                        advector_oscilatory = advector
+                        advector_nonoscilatory = vectmp_a
                         flux = vectmp_b
                     elif it % 2 == 0:
-                        GC_unco = vectmp_a
-                        GC_corr = vectmp_b
+                        advector_oscilatory = vectmp_a
+                        advector_nonoscilatory = vectmp_b
                         flux = vectmp_a
                     else:
-                        GC_unco = vectmp_b
-                        GC_corr = vectmp_a
+                        advector_oscilatory = vectmp_b
+                        advector_nonoscilatory = vectmp_a
                         flux = vectmp_b
-                    antidiff(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc)
-                    flux_subsequent(flux, psi, psi_bc, GC_corr, vec_bc)
+                    antidiff(advector_nonoscilatory, advectee, advectee_bc, advector_oscilatory, vec_bc, g_factor, g_factor_bc)
+                    flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                     if flux_corrected_transport:
-                        fct_beta_down(beta_down, flux, vec_bc, psi, psi_bc, psi_min, psi_min_bc, g_factor, g_factor_bc)
-                        fct_beta_up(beta_up, flux, vec_bc, psi, psi_bc, psi_max, psi_max_bc, g_factor, g_factor_bc)
-                        fct_correction(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc)
-                        flux_subsequent(flux, psi, psi_bc, GC_corr, vec_bc)
-                upwind(psi, flux, vec_bc, g_factor, g_factor_bc)
+                        fct_beta_down(beta_down, flux, vec_bc, advectee, advectee_bc, psi_min, psi_min_bc, g_factor, g_factor_bc)
+                        fct_beta_up(beta_up, flux, vec_bc, advectee, advectee_bc, psi_max, psi_max_bc, g_factor, g_factor_bc)
+                        fct_correction(advector_nonoscilatory, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc)
+                        flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
+                upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
             if non_zero_mu_coeff:
-                GC_phys = GC_orig
+                advector = advector_orig
         return (clock() - time) / nt
     return step
