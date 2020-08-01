@@ -32,7 +32,7 @@ jobs:
       language: shell
       os: osx
       env: MPI=openmpi
-    - name: "OSX, Python 3.8, OpenMPI, required packages, tests"
+    - name: "OSX, Python 3.8, no MPI, required packages, examples"
       language: shell
       os: osx
       env: EXAMPLES_ONLY=TRUE MPI=none
