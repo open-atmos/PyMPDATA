@@ -32,7 +32,7 @@ class Setup:
 
     @property
     def nt(self):
-        return int(300 * self.n_rotations)
+        return int(100 * self.n_rotations)
 
     @property
     def size(self):
@@ -78,12 +78,11 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
-# Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),  # TODO!
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
     Options(n_iters=3, infinite_gauge=True),
-    Options(n_iters=2, flux_corrected_transport=True),
+    Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True)
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
@@ -125,12 +124,11 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
 
     benchmark.pedantic(solver.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
 
-    if options.n_iters == 1:
-        assert np.amin(solver.advectee.get()) >= h0
+    if options.n_iters == 1 or options.flux_corrected_transport:
+        np.testing.assert_almost_equal(np.amin(solver.advectee.get()), h0)
     assert np.amax(solver.advectee.get()) < 10 * h
 
     if plot:
         pyplot.imshow(solver.advectee.get())
         pyplot.colorbar()
         pyplot.show()
-
