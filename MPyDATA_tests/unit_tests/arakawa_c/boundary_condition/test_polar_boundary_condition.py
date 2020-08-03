@@ -13,15 +13,16 @@ class TestPeriodicBoundaryCondition:
         # arrange
         data = np.array(
             [
-                [1, 5],
-                [2, 6],
-                [3, 7],
-                [4, 8]
+                [1,  6],
+                [2,  7],
+                [3,  8],
+                [4,  9],
+                [5, 10]
             ]
         )
         bc = (
             PeriodicBoundaryCondition(),
-            PolarBoundaryCondition(data.shape, 0)
+            PolarBoundaryCondition(data.shape, 0, 1)
         )
         field = ScalarField(data, halo, bc)
         meta_and_data, fill_halos = field.impl
