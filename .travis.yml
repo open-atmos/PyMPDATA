@@ -62,8 +62,6 @@ install:
       export HOMEBREW_NO_INSTALL_CLEANUP=1
       export HOMEBREW_NO_AUTO_UPDATE=1
       if [[ $MPI == 'openmpi' ]]; then brew install open-mpi; fi;
-      
-      brew install ffmpeg
     fi;
   - |
     if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
