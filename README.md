@@ -15,7 +15,7 @@ MPyDATA includes implementation of a set of MPDATA **variants including
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
-No domain-decomposition parallelism supported yet.
+In 2D simulations, domain-decomposition is used for multi-threaded parallelism.
 
 MPyDATA is engineered purely in Python targeting both performance and usability,
     the latter encompassing research users', developers' and maintainers' perspectives.
@@ -57,13 +57,13 @@ pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git
 
 MPyDATA ships with several demos that reproduce results from the literature, including:
 - [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)   
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb) 
   (1D homogeneous cases depicting infinite-gauge and flux-corrected transport cases)
 - [Arabas & Farhat 2020](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1 
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FArabas_and_Farhat_2020/)   
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FArabas_and_Farhat_2020/)
   (1D advection-diffusion example based on Black-Scholes equation)
 - Olesik, Bartman et al. 2020 (in preparation) 
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FOlesik_et_al_2020/)   
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FOlesik_et_al_2020/)
   (1D particle population condensational growth problem with coordinate transformations)
 - Molenkamp test (as in [Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 12)
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/)   
@@ -184,16 +184,26 @@ will take longer, yet same instance of the
 stepper can be used for different grids.  
 
 Since creating an instance of the ``Stepper`` class
-involves lengthy analysis and compilation of the algorithm code,
+involves time consuming compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
 instantiated objects. Instances of ``Stepper`` contain no
-data and are (thread-)safe to be reused.
+mutable data and are (thread-)safe to be reused.
 
-The init method of ``Stepper`` has an additional 
-``non_unit_g_factor`` argument which is a flag enabling 
-handling of the G factor term which can be used to 
-represent coordinate transformations. 
+The init method of ``Stepper`` has an optional
+``non_unit_g_factor`` argument which is a Boolean flag 
+enabling handling of the G factor term which can be used to 
+represent coordinate transformations and/or variable fluid density. 
+
+Optionally, the number of threads to use for domain decomposition
+in first (non-contiguous) dimension during 2D calculations
+may be specified using the optional ``n_threads`` argument with a
+default value of ``numba.get_num_threads()``. The multi-threaded
+logic of MPyDATA depends thus on settings of numba, namely on the
+selected threading layer (either via ``NUMBA_THREADING_LAYER`` env 
+var or via ``numba.config.THREADING_LAYER``) and the selected size of the 
+thread pool (``NUMBA_NUM_THREADS`` env var or ``numba.config.NUMBA_NUM_THREADS``).
+
 
 #### Solver
 
@@ -207,7 +217,7 @@ init is ``advance(self, nt: int, mu_coeff: float = 0)``
 which advances the solution by ``nt`` timesteps, optionally
 taking into account a given value of diffusion coefficient.
 
-Solution state is accessible through the ``Solver.curr`` property.
+Solution state is accessible through the ``Solver.advectee`` property.
 
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
@@ -215,7 +225,7 @@ a solver and making one integration step looks as follows:
 from MPyDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
-state = solver.curr.get()
+state = solver.advectee.get()
 ```
 
 #### Factories 

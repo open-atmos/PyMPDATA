@@ -44,7 +44,7 @@ class Simulation:
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
 
-        self.mu_coeff = 0.5 / self.l2
+        self.mu_coeff = (0.5 / self.l2,)
         self.solvers = {}
         self.solvers[1] = Factories.advection_diffusion_1d(
             advectee=setup.payoff(self.S),
@@ -61,19 +61,19 @@ class Simulation:
 
     def run(self, n_iters: int):
         if self.setup.amer:
-            psi = self.solvers[n_iters].curr.get()
+            psi = self.solvers[n_iters].advectee.get()
             f_T = np.empty_like(psi)
             f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
             t = self.setup.T
             for _ in range(self.nt):
                 self.solvers[n_iters].advance(1, self.mu_coeff)
-                psi = self.solvers[n_iters].curr.get()
+                psi = self.solvers[n_iters].advectee.get()
                 t -= self.dt
                 psi[:] += np.maximum(psi[:], f_T[:]/np.exp(self.setup.r * t)) - psi[:]
         else:
             self.solvers[n_iters].advance(self.nt, self.mu_coeff)
 
-        return self.solvers[n_iters].curr.get()
+        return self.solvers[n_iters].advectee.get()
 
     def terminal_value(self):
-        return self.solvers[1].curr.get()
+        return self.solvers[1].advectee.get()

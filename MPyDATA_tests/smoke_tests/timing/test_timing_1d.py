@@ -25,10 +25,10 @@ import numpy as np
 ])
 def test_timing_1d(benchmark, options):
     simulation = Simulation(Setup("cosine"), options)
-    psi0 = simulation.stepper.curr.get().copy()
+    psi0 = simulation.stepper.advectee.get().copy()
 
     def set_psi():
-        simulation.stepper.curr.get()[:] = psi0
+        simulation.stepper.advectee.get()[:] = psi0
 
     benchmark.pedantic(simulation.run, {}, setup=set_psi, warmup_rounds=1, rounds=3)
 
