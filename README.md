@@ -58,16 +58,23 @@ pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git
 MPyDATA ships with several demos that reproduce results from the literature, including:
 - [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb) 
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)    
   (1D homogeneous cases depicting infinite-gauge and flux-corrected transport cases)
 - [Arabas & Farhat 2020](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1 
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FArabas_and_Farhat_2020/)
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FArabas_and_Farhat_2020/demo.ipynb) 
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/Arabas_and_Farhat_2020/demo.ipynb)    
   (1D advection-diffusion example based on Black-Scholes equation)
-- Olesik, Bartman et al. 2020 (in preparation) 
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FOlesik_et_al_2020/)
+- Olesik et al. 2020 (in preparation) 
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FOlesik_et_al_2020/)    
   (1D particle population condensational growth problem with coordinate transformations)
 - Molenkamp test (as in [Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 12)
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/)   
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/)      
   (2D solid-body rotation test)
+- 1D advection-diffusion example with animation
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2Fadvection_diffusion_1d/demo.ipynb) 
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/advection_diffusion_1d/demo.ipynb)    
+  
+  
   
 ## Package structure and API:
 
@@ -227,18 +234,6 @@ solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
 state = solver.advectee.get()
 ```
-
-#### Factories 
-
-The methods grouped in the ``Factories`` class are meant to 
-automate instantiation of steppers, scalar and vector fields.
-All factories take float numbers and Numpy arrays as arguments,
-and hide instantiation of ``ScalaField`` or ``VectorField`` from
-the user.
-
-At present, the API of factories is not stable, hence
-it's best to look around the examples for actual usage 
-examples.
 
 #### Debugging
 
