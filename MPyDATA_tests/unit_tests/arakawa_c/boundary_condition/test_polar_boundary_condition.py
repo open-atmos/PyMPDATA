@@ -1,6 +1,7 @@
-from MPyDATA import ScalarField, VectorField, PolarBoundaryCondition, PeriodicBoundaryCondition
+from MPyDATA import ScalarField, PolarBoundaryCondition, PeriodicBoundaryCondition
 from MPyDATA.arakawa_c.traversals import Traversals
 import numpy as np
+import numba
 import pytest
 
 LEFT, RIGHT = 'left', 'right'
@@ -9,7 +10,8 @@ LEFT, RIGHT = 'left', 'right'
 class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("halo", (1, ))
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
-    def test_scalar_2d(self, halo, side):
+    @pytest.mark.parametrize("n_threads", (1,2,3))
+    def test_scalar_2d(self, halo, side, n_threads):
         # arrange
         data = np.array(
             [
@@ -26,11 +28,12 @@ class TestPeriodicBoundaryCondition:
         )
         field = ScalarField(data, halo, bc)
         meta_and_data, fill_halos = field.impl
-        traversals = Traversals(grid=data.shape, halo=halo, jit_flags={})
-        sut, _ = traversals.make_boundary_conditions()
+        traversals = Traversals(grid=data.shape, halo=halo, jit_flags={}, n_threads=n_threads)
+        sut = traversals._fill_halos_scalar
 
         # act
-        sut(*meta_and_data, *fill_halos)
+        for thread_id in numba.prange(n_threads):
+            sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
         print(field.data)
