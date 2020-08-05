@@ -3,7 +3,6 @@ Created at 20.03.2020
 """
 
 import numba
-import numpy as np
 
 
 class PolarBoundaryCondition:
@@ -40,7 +39,7 @@ class PolarBoundaryCondition:
 
     def make_vector(self, at):
         @numba.njit()
-        def fill_halos(psi, _, sign):
-            return np.nan  # TODO!
+        def fill_halos(psi, _, __):
+            return at(*psi, 0, 0)  # TODO!
 
         return fill_halos
