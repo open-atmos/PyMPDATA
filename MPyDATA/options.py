@@ -22,6 +22,8 @@ class Options:
 
         if flux_corrected_transport and n_iters < 2:
             raise ValueError()
+        if n_iters < 1:
+            raise ValueError()
 
     @property
     def dtype(self):

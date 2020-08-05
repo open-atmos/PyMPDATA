@@ -17,3 +17,4 @@ from MPyDATA.arakawa_c.vector_field import VectorField
 from MPyDATA.arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
 from MPyDATA.arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 from MPyDATA.arakawa_c.boundary_condition.extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
+from MPyDATA.arakawa_c.boundary_condition.polar_boundary_condition import PolarBoundaryCondition
