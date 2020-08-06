@@ -23,7 +23,7 @@ llvmlite==0.33.0
 MarkupSafe==1.1.1
 matplotlib==3.2.2
 mistune==0.8.4
-MPyDATA @ git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git@de10e25c532988ee410569b77f8cbbe020994c90
+MPyDATA @ git+https://github.com/pawel-rozwoda/MPyDATA.git
 nbconvert==5.6.1
 nbformat==5.0.7
 notebook==6.0.3
