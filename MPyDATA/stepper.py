@@ -40,6 +40,8 @@ class Stepper:
             raise ValueError()
         if grid is None:
             grid = tuple([-1] * n_dims)
+        if n_dims is None:
+            n_dims = len(grid)
 
         if n_threads is None:
             n_threads = numba.get_num_threads()
