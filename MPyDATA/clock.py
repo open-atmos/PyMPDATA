@@ -1,14 +1,14 @@
 import numba
 import ctypes
 import platform
-from ctypes.util import find_library
+from ctypes.util import find_library, find_msvcrt
 
 if platform.system() == 'Windows':
-    libname = 'msvcrt'
+    lib = find_msvcrt()
 else:
-    libname = 'c'
+    lib = find_library('c')
 
-clock = ctypes.CDLL(find_library('c')).clock
+clock = ctypes.CDLL(lib).clock
 clock.argtypes = []
 
 scale = 1
