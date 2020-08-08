@@ -1,21 +1,18 @@
 import numba
-import cffi
+import ctypes
 import platform
+from ctypes.util import find_library
 
-sys = platform.system()
-
-ffi = cffi.FFI()
-ffi.cdef('long clock(void);')
-
-if sys == 'Windows':
-    libc = ffi.dlopen('msvcrt.dll')
+if platform.system() == 'Windows':
+    libname = 'msvcrt'
 else:
-    libc = ffi.dlopen(None)
+    libname = 'c'
 
-clock = libc.clock
+clock = ctypes.CDLL(find_library('c')).clock
+clock.argtypes = []
 
 scale = 1
-if sys == 'Linux':
+if platform.system() == 'Linux':
     scale = 1000
 
 
