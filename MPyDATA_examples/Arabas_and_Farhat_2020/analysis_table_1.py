@@ -11,20 +11,21 @@ def compute_row(simulations):
     for i in range(1, len(simulations)):
         assert simulations[i].setup.T == T
         assert simulations[i].setup.S0 == S0
-    row = [simulations[0].setup.T, simulations[0].setup.S0]
+    row = [T, S0]
+    f = None
     for simulation in simulations:
         f = simulation.run(n_iters=2)
         row.append(
             error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, n_iters=2))
         np.testing.assert_almost_equal(simulation.S[simulation.ix_match], S0)
-    row.append(f[simulations[0].ix_match])
+    row.append(f[simulations[-1].ix_match])
     row.append(simulations[0].setup.analytical_solution(S0))
     row.append(simulations[0].setup.analytical_solution(S0, amer=False))
     return row
 
 
 def table_1_data():
-    with parallel_backend('threading', n_jobs=1):
+    with parallel_backend('threading', n_jobs=-2):
         result = Parallel(verbose=10)(
             delayed(compute_row)(tuple(
                 Simulation(Setup(T=T, C_opt=C_opt, S0=S0))
