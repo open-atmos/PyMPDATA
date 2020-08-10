@@ -3,6 +3,7 @@ from MPyDATA import Factories
 from MPyDATA import ExtrapolatedBoundaryCondition
 from MPyDATA import Options
 import numpy as np
+import numba
 
 
 class Simulation:
@@ -65,11 +66,16 @@ class Simulation:
             f_T = np.empty_like(psi)
             f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
             t = self.setup.T
+            r = self.setup.r
+
+            @numba.njit()
+            def rhs(psi, t):
+                psi[:] += np.maximum(psi[:], f_T[:] / np.exp(r * t)) - psi[:]
+
             for _ in range(self.nt):
                 self.solvers[n_iters].advance(1, self.mu_coeff)
-                psi = self.solvers[n_iters].advectee.get()
                 t -= self.dt
-                psi[:] += np.maximum(psi[:], f_T[:]/np.exp(self.setup.r * t)) - psi[:]
+                rhs(self.solvers[n_iters].advectee.get(), t)
         else:
             self.solvers[n_iters].advance(self.nt, self.mu_coeff)
 

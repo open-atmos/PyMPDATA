@@ -5,25 +5,31 @@ import numpy as np
 from joblib import Parallel, delayed, parallel_backend
 
 
-def compute_row(T, S0):
-    row = [T, S0]
-    for C_opt in (.02, .01, .005):
-        setup = Setup(T=T, C_opt=C_opt, S0=S0)
-        simulation = Simulation(setup)
+def compute_row(simulations):
+    S0 = simulations[0].setup.S0
+    T = simulations[0].setup.T
+    for i in range(1, len(simulations)):
+        assert simulations[i].setup.T == T
+        assert simulations[i].setup.S0 == S0
+    row = [simulations[0].setup.T, simulations[0].setup.S0]
+    for simulation in simulations:
         f = simulation.run(n_iters=2)
         row.append(
             error_L2_norm(simulation.solvers, simulation.setup, simulation.S, simulation.nt, n_iters=2))
         np.testing.assert_almost_equal(simulation.S[simulation.ix_match], S0)
-    row.append(f[simulation.ix_match])
-    row.append(setup.analytical_solution(S0))
-    row.append(setup.analytical_solution(S0, amer=False))
+    row.append(f[simulations[0].ix_match])
+    row.append(simulations[0].setup.analytical_solution(S0))
+    row.append(simulations[0].setup.analytical_solution(S0, amer=False))
     return row
 
 
 def table_1_data():
-    with parallel_backend('threading', n_jobs=-2):
+    with parallel_backend('threading', n_jobs=1):
         result = Parallel(verbose=10)(
-            delayed(compute_row)(T, S0)
+            delayed(compute_row)(tuple(
+                Simulation(Setup(T=T, C_opt=C_opt, S0=S0))
+                for C_opt in (.02, .01, .005)
+            ))
             for T in (.25, .5, 3)
             for S0 in (80, 90, 100, 110, 120)
         )
