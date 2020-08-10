@@ -20,10 +20,6 @@ from .clock import clock
 warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
 
 
-# import os
-# os.environ["NUMBA_DISABLE_JIT"] = "1"
-
-
 class Stepper:
     def __init__(self, *,
                  options: Options,
@@ -40,6 +36,8 @@ class Stepper:
             raise ValueError()
         if grid is None:
             grid = tuple([-1] * n_dims)
+        if n_dims is None:
+            n_dims = len(grid)
 
         if n_threads is None:
             n_threads = numba.get_num_threads()
@@ -52,7 +50,7 @@ class Stepper:
         self.n_dims = n_dims
         self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
-    def __call__(self, nt, mu_coeff,
+    def __call__(self, nt, mu_coeff, post_step,
                  advectee, advectee_bc,
                  advector, advector_bc,
                  g_factor, g_factor_bc,
@@ -64,7 +62,7 @@ class Stepper:
                  beta_up, beta_up_bc,
                  beta_down, beta_down_bc):
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
-        return self.__call(nt, mu_coeff,
+        return self.__call(nt, mu_coeff, post_step,
                            advectee, advectee_bc,
                            advector, advector_bc,
                            g_factor, g_factor_bc,
@@ -106,7 +104,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
         out_meta[meta_halo_valid] = False
 
     @numba.njit(**options.jit_flags)
-    def step(nt, mu_coeff,
+    def step(nt, mu_coeff, post_step,
              advectee, advectee_bc,
              advector, advector_bc,
              g_factor, g_factor_bc,
@@ -160,5 +158,6 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
             if non_zero_mu_coeff:
                 advector = advector_orig
+            post_step(advectee[1], _)
         return (clock() - time) / nt
     return step

@@ -50,6 +50,8 @@ install:
       if [[ $MPI == 'default' ]]; then $apt_get_install mpi-default-bin mpi-default-dev; fi
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
+
+      $apt_get_install ffmpeg
     fi;
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install open-mpi; fi
   - |

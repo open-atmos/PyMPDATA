@@ -5,7 +5,7 @@ from MPyDATA import Options
 
 
 options = {
-    'upwind': Options(n_iters=-1),
+    'upwind': Options(n_iters=1),
     '2+fct': Options(n_iters=2, flux_corrected_transport=True),
     '3+fct+tot': Options(n_iters=3, flux_corrected_transport=True, third_order_terms=True),
     '2+fct+iga': Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True)
