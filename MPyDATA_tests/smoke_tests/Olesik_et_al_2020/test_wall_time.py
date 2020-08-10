@@ -10,7 +10,7 @@ grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = default_opt_set
 
 
-def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=False, rtol=.3):
+def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=True, rtol=.3):
     setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
