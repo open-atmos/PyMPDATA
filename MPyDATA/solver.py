@@ -9,6 +9,12 @@ Created at 25.09.2019
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .stepper import Stepper
+import numba
+
+
+@numba.njit()
+def post_step_null(psi, it):
+    pass
 
 
 class Solver:
@@ -38,9 +44,10 @@ class Solver:
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-    def advance(self, nt: int, mu_coeff: float = 0):
+    def advance(self, nt: int, mu_coeff: float = 0, post_step=post_step_null):
         assert mu_coeff == 0 or self.options.non_zero_mu_coeff
-        wall_time_per_timestep = self.stepper(nt, mu_coeff,
+        assert hasattr(post_step, 'py_func')
+        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step,
                                               *self.advectee.impl,
                                               *self.advector.impl,
                                               *self.g_factor.impl,
