@@ -11,10 +11,12 @@ grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = default_opt_set
 
 if platform.system() == 'Windows':
-    rtol = .8
+    rtol = .3
 else:
     rtol = .3
-def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=True, rtol=rtol):
+
+
+def test_wall_time(n_runs=2, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
     setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
@@ -31,6 +33,8 @@ def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=True, rtol=r
             if opts == {'n_iters': 1}:
                 norm = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
+
+            print("for travis testing upwind time", norm)
             table_data["values"].append(round(selected_value / norm, 1))
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
     compare_refdata(data=table_data["values"], rtol=rtol, generate=generate)

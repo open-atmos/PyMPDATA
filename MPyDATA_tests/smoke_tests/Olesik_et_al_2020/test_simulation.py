@@ -33,7 +33,7 @@ def test_init(grid_layout, psi_coord, flux_corrected_transport):
     simulation = Simulation(setup, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
     simulation.step(1)
     # Asserts for array shapes
-    assert simulation.n.shape[0] == setup.nr
+    assert simulation.n_of_r.shape[0] == setup.nr
 
     # Asserts for Jacobian
     G_with_halo = simulation.solver.g_factor.data

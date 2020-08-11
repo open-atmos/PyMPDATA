@@ -71,6 +71,7 @@ class Simulation:
     def __init__(self, setup, grid_layout, psi_coord, opts, GC_max):
         self.setup = setup
         self.psi_coord = psi_coord
+        self.grid_layout = grid_layout
 
         # units of calculation
         self.__t_unit = self.setup.si.seconds
@@ -104,10 +105,16 @@ class Simulation:
         return self.__rh * self.__r_unit
 
     @property
-    def n(self):
+    def n_of_r(self):
         psi = self.solver.advectee.get()
         n = psi * self.psi_coord.dx_dr(self.__r)
         return n * self.__n_unit
+
+    @property
+    def n_of_x(self):
+        n = self.solver.advectee.get()
+        return n * self.__n_unit * self.grid_layout.x(self.__r_unit) * self.__r_unit
+
 
 
 

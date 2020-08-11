@@ -19,7 +19,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
         steps = n_steps - last_step
         wall_time = simulation.step(steps) if steps > 0 else 0
         last_step += steps
-        result['n'].append(simulation.n.copy())
+        result['n'].append(simulation.n_of_r.copy())
         result['wall_time'].append(wall_time)
     result['r'] = simulation.r.copy()
     result['rh'] = simulation.rh.copy()
