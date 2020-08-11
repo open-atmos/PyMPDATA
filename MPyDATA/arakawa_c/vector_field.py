@@ -3,7 +3,7 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import make_null, indexers, MAX_DIM_NUM
+from .indexers import indexers, MAX_DIM_NUM
 from .scalar_field import ScalarField
 from .meta import meta_halo_valid, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
@@ -39,7 +39,8 @@ class VectorField:
         grid = tuple([data[d].shape[d] - 1 for d in dims])
         self.meta = make_meta(False, grid)
         self.comp_0 = self.data[0]
-        self.comp_1 = self.data[1] if self.n_dims > 1 else make_null()
+        self.comp_1 = self.data[1] if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
+        self.comp_2 = self.data[2] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
 
     @staticmethod
     def clone(field):
@@ -61,7 +62,7 @@ class VectorField:
 
     @property
     def impl(self):
-        return (self.meta, self.comp_0, self.comp_1), self.fill_halos
+        return (self.meta, self.comp_0, self.comp_1, self.comp_2), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):

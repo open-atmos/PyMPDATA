@@ -42,7 +42,8 @@ def make_flux_subsequent(options, traversals):
 
         formulae_flux_subsequent = (
             __make_flux(options.jit_flags, idx.atv[0], idx.at[0], first_pass=False, infinite_gauge=options.infinite_gauge),
-            __make_flux(options.jit_flags, idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge)
+            __make_flux(options.jit_flags, idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge),
+            __make_flux(options.jit_flags, idx.atv[2], idx.at[2], first_pass=False, infinite_gauge=options.infinite_gauge),
         )
 
         @numba.njit(**options.jit_flags)

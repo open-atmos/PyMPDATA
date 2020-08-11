@@ -16,7 +16,11 @@ def make_psi_extremum(extremum, options, traversals):
         idx = indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
 
-        formulae = (__make_psi_extremum(options.jit_flags, traversals.n_dims, idx.at[0], extremum), None)
+        formulae = (
+            __make_psi_extremum(options.jit_flags, traversals.n_dims, idx.at[0], extremum),
+            None,
+            None
+        )
 
         @numba.njit(**options.jit_flags)
         def apply(psi_extremum, psi, psi_bc, null_vecfield, null_vecfield_bc):
@@ -53,6 +57,7 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
         apply_scalar = traversals.apply_scalar(loop=False)
 
         formulae = (__make_beta(options.jit_flags, traversals.n_dims, idx.at[0], idx.atv[0], non_unit_g_factor, options.epsilon, extremum),
+                    None,
                     None)
 
         @numba.njit(**options.jit_flags)
@@ -73,7 +78,7 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
         @numba.njit(**jit_flags)
         def denominator(flux):
 
-            return  max(atv(*flux, sign * (-.5), 0), 0) - min(atv(*flux, sign * (+.5), 0), 0)  \
+            return max(atv(*flux, sign * (-.5), 0), 0) - min(atv(*flux, sign * (+.5), 0), 0)  \
                     + max(atv(*flux, 0, sign * (-.5)), 0) - min(atv(*flux, 0, sign * (+.5)), 0)  \
                     + epsilon
     else:
@@ -121,7 +126,6 @@ def make_correction(options, traversals):
             if i < traversals.n_dims else None
             for i in range(MAX_DIM_NUM)
         ])
-
 
         @numba.njit(**options.jit_flags)
         def apply(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc):

@@ -1,7 +1,7 @@
 import numba
 
 from MPyDATA.arakawa_c.domain_decomposition import subdomain
-from MPyDATA.arakawa_c.meta import meta_ni, meta_nj
+from MPyDATA.arakawa_c.meta import meta_ni, meta_nj, meta_nk
 
 
 def make_chunk(ni, n_threads):
@@ -31,5 +31,5 @@ def make_domain(grid):
     else:
         @numba.njit()
         def _impl(meta):
-            return meta[meta_ni], meta[meta_nj]
+            return meta[meta_ni], meta[meta_nj], meta[meta_nk]
     return _impl
