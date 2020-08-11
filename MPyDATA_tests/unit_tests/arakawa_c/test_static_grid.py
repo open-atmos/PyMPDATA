@@ -1,11 +1,12 @@
 from MPyDATA.arakawa_c.static_grid import make_domain, make_chunk
-from MPyDATA.arakawa_c.meta import meta_ni, meta_nj, meta_size
+from MPyDATA.arakawa_c.meta import meta_ni, meta_nj, meta_nk, meta_size
 from MPyDATA.arakawa_c.domain_decomposition import subdomain
 import pytest
 
 meta = [None] * meta_size
 meta[meta_ni] = 200
 meta[meta_nj] = 2000
+meta[meta_nk] = 0
 meta = tuple(meta)
 
 
@@ -31,7 +32,7 @@ class TestStaticGrid:
         grid_fun = make_domain(grid)
 
         # assert
-        assert (meta[meta_ni], meta[meta_nj]) == grid_fun(meta)
+        assert (meta[meta_ni], meta[meta_nj], meta[meta_nk]) == grid_fun(meta)
 
     @staticmethod
     @pytest.mark.parametrize("ni", (3, 30, 300))

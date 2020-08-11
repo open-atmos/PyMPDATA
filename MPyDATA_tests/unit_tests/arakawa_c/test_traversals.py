@@ -10,10 +10,12 @@ jit_flags = Options().jit_flags
 
 
 @numba.njit(**jit_flags)
-def cell_id(i, j):
+def cell_id(i, j, k):
     if i == -1:
-        return j
-    return 100 * i + j
+        i = 0
+    if j == -1:
+        j = 0
+    return 100 * i + 10 * j + k
 
 
 @numba.njit(**jit_flags)
@@ -42,7 +44,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))
+    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
     @pytest.mark.parametrize("loop", (True, False))
     def test_apply_scalar(n_threads, halo, grid, loop):
         n_dims = len(grid)
@@ -59,7 +61,7 @@ class TestTraversals:
         out = ScalarField(np.zeros(grid), halo, [ConstantBoundaryCondition(np.nan)]*n_dims)
 
         # act
-        sut(_cell_id_scalar, _cell_id_scalar,
+        sut(_cell_id_scalar, _cell_id_scalar, _cell_id_scalar,
             *out.impl[0],
             *vec_null_arg_impl[0], *vec_null_arg_impl[1],
             *scl_null_arg_impl[0], *scl_null_arg_impl[1],
@@ -72,9 +74,10 @@ class TestTraversals:
         assert data.shape == grid
         focus = (-halo, -halo)
         for i in range(halo, halo + grid[0]):
-            for j in (-1,) if n_dims == 1 else range(halo, halo + grid[1]):
-                value = indexers[n_dims].at[0](focus, data, i, j)
-                assert value == (n_dims if loop else 1) * cell_id(i, j)
+            for j in (-1,) if n_dims < 2 else range(halo, halo + grid[1]):
+                for k in (-1,) if n_dims < 3 else range(halo, halo + grid[2]):
+                    value = indexers[n_dims].at[0](focus, data, i, j, k)
+                    assert value == (n_dims if loop else 1) * cell_id(i, j, k)
         assert scl_null_arg_impl[0][0][meta_halo_valid]
         assert vec_null_arg_impl[0][0][meta_halo_valid]
         assert not out.impl[0][0][meta_halo_valid]
@@ -82,7 +85,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))
+    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
     def test_apply_vector(n_threads, halo, grid):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -108,7 +111,7 @@ class TestTraversals:
         out = VectorField(data, halo, [ConstantBoundaryCondition(np.nan)] * n_dims)
 
         # act
-        sut(_cell_id_vector, _cell_id_vector,
+        sut(_cell_id_vector, _cell_id_vector, _cell_id_vector,
             *out.impl[0],
             *scl_null_arg_impl[0], *scl_null_arg_impl[1],
             *vec_null_arg_impl[0], *vec_null_arg_impl[1],
@@ -124,9 +127,10 @@ class TestTraversals:
             data = out.get_component(d)
             focus = tuple(-halos[d][i] for i in range(n_dims))
             for i in range(halos[d][0], halos[d][0] + data.shape[0]):
-                for j in (-1,) if n_dims == 1 else range(halos[d][1], halos[d][1] + data.shape[1]):
-                    value = indexers[n_dims].at[0](focus, data, i, j)
-                    assert value == cell_id(i, j)
+                for j in (-1,) if n_dims < 2 else range(halos[d][1], halos[d][1] + data.shape[1]):
+                    for k in (-1,) if n_dims < 3 else range(halos[d][2], halos[d][2] + data.shape[2]):
+                        value = indexers[n_dims].at[0](focus, data, i, j, k)
+                        assert value == cell_id(i, j, k)
 
         assert scl_null_arg_impl[0][0][meta_halo_valid]
         assert vec_null_arg_impl[0][0][meta_halo_valid]
