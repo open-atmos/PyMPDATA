@@ -4,13 +4,17 @@ from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA import Options
 import numpy as np
 import pathlib
+import platform
 
 
 grid_layout_set = (x_log_of_pn(base=2),)
 opt_set = default_opt_set
 
-
-def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=True, rtol=.3):
+if platform.system() == 'Windows':
+    rtol = .8
+else:
+    rtol = .3
+def test_wall_time(n_runs=3, mrats=[5, ], generate=False, print_tab=True, rtol=rtol):
     setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
@@ -49,8 +53,8 @@ def make_textable(data, generate=False, print_tab=False):
     latex_data = r"\hline" + " Variant  & Elapsed Real Time (wrt upwind) " + r"\\ \hline" + "\n"
     for opt, value in zip(data["opts"], data["values"]):
         latex_data += r"\hline" + f" {opt} & {value} " + r"\\ \hline" + "\n"
-    latex_start = r"\begin" + "\n" + "{table}[]" + "\n" + r"\begin" + "\n" + "{tabular}" + "\n" + "{| l | l |}" + "\n"
-    latex_end = "\end \n {tabular} \n \end \n {table}"
+    latex_start = r"\begin{table}[]" + "\n" + r"\begin{tabular}{| l | l |}" + "\n"
+    latex_end = "\end{tabular} \n \end{table}"
     latex_table = latex_start + latex_data + latex_end
     if print_tab:
         print(latex_table)
