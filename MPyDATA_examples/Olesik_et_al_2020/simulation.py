@@ -60,7 +60,8 @@ class Simulation:
             r,
             rh,
             dx,
-            dt
+            dt,
+            g_factor
         )
 
 
@@ -76,16 +77,17 @@ class Simulation:
         # units of calculation
         self.__t_unit = self.setup.si.seconds
         self.__r_unit = self.setup.si.micrometre
-        self.__n_unit = self.setup.si.centimetres ** -3 / self.setup.si.micrometre
+        self.__p_unit = self.psi_coord.x(self.__r_unit)
+        self.__n_of_r_unit = self.setup.si.centimetres ** -3 / self.setup.si.micrometre
 
-        self.solver, self.__r, self.__rh, self.dx, dt = Simulation.make_condensational_growth_solver(
+        self.solver, self.__r, self.__rh, self.dx, dt, self._g_factor = Simulation.make_condensational_growth_solver(
             self.setup.nr,
             self.__mgn(self.setup.r_min, self.__r_unit),
             self.__mgn(self.setup.r_max, self.__r_unit),
             GC_max,
             grid_layout,
             psi_coord,
-            lambda r: self.__mgn(self.setup.pdf(r * self.__r_unit), self.__n_unit),
+            lambda r: self.__mgn(self.setup.pdf(r * self.__r_unit), self.__n_of_r_unit),
             lambda r: self.__mgn(self.setup.drdt(r * self.__r_unit), self.__r_unit / self.__t_unit),
             opts
         )
@@ -108,14 +110,21 @@ class Simulation:
     def n_of_r(self):
         psi = self.solver.advectee.get()
         n = psi * self.psi_coord.dx_dr(self.__r)
-        return n * self.__n_unit
+        return n * self.__n_of_r_unit
 
     @property
-    def n_of_x(self):
-        n = self.solver.advectee.get()
-        return n * self.__n_unit * self.grid_layout.x(self.__r_unit) * self.__r_unit
+    def psi(self):
+        return self.solver.advectee.get()
+
+    @property
+    def g_factor(self):
+        return self._g_factor.get()
 
 
+    @property
+    def dp_dr(self):
+        # TODO: shouldn't be returned from simulation, rather something like n_of_x really
+        return self.psi_coord.dx_dr(self.__r)
 
 
 
