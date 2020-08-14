@@ -73,10 +73,13 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
         # eq. 13 in Smolarkiewicz 1984
         tmp = A(psi)
         
-        if DPDC:  # TODO n_dims > 1
-            tmp = 1 / (1 - np.abs(tmp))
+        
         
         result = (np.abs(atv(*GC, .5, 0.)) - atv(*GC, +.5, 0.) ** 2) * tmp
+        if DPDC:  # TODO n_dims > 1
+            a = (1 / (1 - np.abs(tmp)))
+            b = - (tmp*a)/(1 - tmp**2)
+            result = result * (result * b + a) 
         if n_dims == 1:
             return result
         else:
