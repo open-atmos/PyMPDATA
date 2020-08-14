@@ -53,7 +53,7 @@ class x_p3:
 
 
 class x_log_of_pn:
-    def __init__(self, r0, base = np.e, n = 3):
+    def __init__(self, r0 = 1, base = np.e, n = 3):
         self.r0 = r0
         self.base = base
         self.n = n
