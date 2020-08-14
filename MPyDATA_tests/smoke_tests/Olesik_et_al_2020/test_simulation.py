@@ -7,7 +7,7 @@ import pytest
 import numpy as np
 
 setup=Setup()
-grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1 * setup.si.um,n=1))
+grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))
 opt_set = (
     {'n_iters': 1},
     {'n_iters': 2, 'flux_corrected_transport': True},

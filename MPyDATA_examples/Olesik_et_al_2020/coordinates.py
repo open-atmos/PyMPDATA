@@ -19,6 +19,9 @@ class x_id:
     def dx_dr(self, r):
         return r**0
 
+    def moment_of_r_integral(self, x, k):
+        return 1 / (k + 1) * x ** (k + 1)
+
 
 
 
@@ -32,6 +35,9 @@ class x_p2:
     def dx_dr(self, r):
         return 2*r
 
+    def moment_of_r_integral(self, x, k):
+        return 2 / (k + 2) * x**((k+2)/2)
+
 class x_p3:
     def x(self,r):
         return r**3
@@ -41,6 +47,9 @@ class x_p3:
 
     def dx_dr(self, r):
         return 3*r**2
+
+    def moment_of_r_integral(self, x, k):
+        return 3 / (k + 3) * x**((k+3)/3)
 
 
 class x_log_of_pn:
@@ -57,6 +66,9 @@ class x_log_of_pn:
 
     def dx_dr(self, r):
         return self.n / r / np.log(self.base)
+
+    def moment_of_r_integral(self, x, k):
+        return self.r0**k * self.n / (k * np.log(self.base)) * self.base**(k / self.n * x)
 
 
 
