@@ -7,7 +7,7 @@ import pathlib
 import platform
 
 
-grid_layout_set = (x_log_of_pn(base=2),)
+grid_layout_set = (x_log_of_pn(r0=1,base=2),)
 opt_set = default_opt_set
 
 if platform.system() == 'Windows':

@@ -34,7 +34,7 @@ def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
 
 
 def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
-                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(n=1)),
+                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
                         opt_set=({'n_iters': 1},),
                         mixing_ratios_g_kg=default_mixing_ratios_g_kg
                         ):

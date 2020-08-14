@@ -10,10 +10,10 @@ import pytest
 def diff(x):
     return np.diff(x.magnitude) * x.units
 @pytest.mark.parametrize(
-    "grid", [x_id(), x_log_of_pn(), x_p2()]
+    "grid", [x_id(), x_log_of_pn(r0=1), x_p2()]
 )
 @pytest.mark.parametrize(
-    "coord", [x_id(), x_log_of_pn(), x_p2()]
+    "coord", [x_id(), x_log_of_pn(r0=1), x_p2()]
 )
 def test_size_distribution(grid, coord, plot=False):
     # Arrange

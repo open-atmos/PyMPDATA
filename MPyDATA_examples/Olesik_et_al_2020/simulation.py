@@ -77,6 +77,7 @@ class Simulation:
         # units of calculation
         self.__t_unit = self.setup.si.seconds
         self.__r_unit = self.setup.si.micrometre
+        self.__p_unit = psi_coord.x(self.__r_unit)
         self.__n_of_r_unit = self.setup.si.centimetres ** -3 / self.setup.si.micrometre
 
         self.solver, self.__r, self.__rh, self.dx, dt, self._g_factor = Simulation.make_condensational_growth_solver(
@@ -113,10 +114,12 @@ class Simulation:
 
     @property
     def psi(self):
-        return self.solver.advectee.get()
+        psi_unit = self.__n_of_r_unit * self.__r_unit / self.__p_unit
+        return self.solver.advectee.get() * psi_unit
 
     @property
     def g_factor(self):
+        #TODO: return with unit?
         return self._g_factor.get()
 
 

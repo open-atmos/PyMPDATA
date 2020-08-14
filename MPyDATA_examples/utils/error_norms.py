@@ -19,15 +19,16 @@ def Smolarkiewicz_Grabowski_1990_eq21(numerical, analytical, T):
         ) / T
     return err
 
-def Smolarkiewicz_Rasch_r0(numerical, analytical, g_factor):
-    err = np.sqrt(sum(pow(numerical - analytical, 2)) * g_factor) / np.max(analytical)
+def modified_Smolarkiewicz_Rasch_r0(numerical, analytical, T, g_factor):
+    NX = analytical.size
+    err = np.sqrt(sum(pow(numerical - analytical, 2) * g_factor) / NX) / np.amax(analytical) / T
     return err
 
-def Smolarkiewicz_Rasch_r1(numerical, analytical, g_factor):
-    err = sum(numerical * g_factor) / sum(analytical * g_factor) - 1
-    return err
-
-def Smolarkiewicz_Rasch_r2(numerical, analytical, g_factor):
-    err = sum(numerical**2 * g_factor) / sum(analytical**2 * g_factor) - 1
-    return err
+# def Smolarkiewicz_Rasch_r1(numerical, analytical, g_factor):
+#     err = (sum(numerical * g_factor) / sum(analytical * g_factor) - 1 )
+#     return err
+#
+# def Smolarkiewicz_Rasch_r2(numerical, analytical, g_factor):
+#     err = (sum(numerical**2 * g_factor) / sum(analytical**2 * g_factor) - 1)
+#     return err
 

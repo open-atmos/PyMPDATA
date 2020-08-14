@@ -8,7 +8,7 @@ Created at 22.07.2019
 
 import numpy as np
 
-
+# TODO: add moment function
 class x_id:
     def x(self, r):
         return r
@@ -18,6 +18,7 @@ class x_id:
 
     def dx_dr(self, r):
         return r**0
+
 
 
 
@@ -43,8 +44,8 @@ class x_p3:
 
 
 class x_log_of_pn:
-    def __init__(self, base = np.e, n = 3):
-        self.r0 = 1
+    def __init__(self, r0, base = np.e, n = 3):
+        self.r0 = r0
         self.base = base
         self.n = n
 
