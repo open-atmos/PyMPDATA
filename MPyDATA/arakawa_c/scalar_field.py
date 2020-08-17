@@ -24,12 +24,12 @@ class ScalarField:
         self.halo = halo
         self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
         self.get()[:] = data[:]
-        self.fill_halos = tuple([
-            (
-                boundary_conditions[i] if i < self.n_dims else ConstantBoundaryCondition(np.nan)
-            ).make_scalar(indexers[self.n_dims].at[i], halo)
-            for i in range(MAX_DIM_NUM)
-        ])
+
+        fill_halos = [ConstantBoundaryCondition(np.nan)] * (MAX_DIM_NUM - self.n_dims)
+        for d in range(self.n_dims):
+            fill_halos.append(boundary_conditions[d])
+        self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
+
         self.boundary_conditions = boundary_conditions
         self.meta = make_meta(False, data.shape)
 

@@ -17,7 +17,7 @@ def make_flux_first_pass(options, traversals):
 
     formulae_flux_first_pass = tuple([
         __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
-        if i < traversals.n_dims else None
+        if i >= MAX_DIM_NUM - traversals.n_dims else None
         for i in range(MAX_DIM_NUM)
     ])
 
@@ -40,10 +40,11 @@ def make_flux_subsequent(options, traversals):
         idx = indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_flux_subsequent = (
-            __make_flux(options.jit_flags, idx.atv[0], idx.at[0], first_pass=False, infinite_gauge=options.infinite_gauge),
-            __make_flux(options.jit_flags, idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge)
-        )
+        formulae_flux_subsequent = tuple([
+            __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=False, infinite_gauge=options.infinite_gauge)
+            if i >= MAX_DIM_NUM - traversals.n_dims else None
+            for i in range(MAX_DIM_NUM)
+        ])
 
         @numba.njit(**options.jit_flags)
         def apply(flux, psi, psi_bc, GC_corr, vec_bc):

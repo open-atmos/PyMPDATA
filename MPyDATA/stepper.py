@@ -96,11 +96,14 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     fct_beta_up = make_beta(max, non_unit_g_factor, options, traversals)
     fct_correction = make_correction(options, traversals)
 
+    # TODO: move to formulae
     @numba.njit(**options.jit_flags)
-    def axpy(out_meta, out0, out1, a, x_meta, x0, x1, y_meta, y0, y1):
-        out0[:] = a[0] * x0[:] + y0[:]
+    def axpy(out_meta, out_outer, out_inner, a,
+             x_meta, x_outer, x_inner,
+             y_meta, y_outer, y_inner):
         if n_dims > 1:
-            out1[:] = a[1] * x1[:] + y1[:]
+            out_outer[:] = a[0] * x_outer[:] + y_outer[:]
+        out_inner[:] = a[-1] * x_inner[:] + y_inner[:]
         out_meta[meta_halo_valid] = False
 
     @numba.njit(**options.jit_flags)

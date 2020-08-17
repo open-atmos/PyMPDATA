@@ -33,13 +33,16 @@ class VectorField:
             assert data[d].dtype == self.dtype
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
-        self.fill_halos = tuple(
-            [(boundary_conditions[i] if i < self.n_dims else ConstantBoundaryCondition(np.nan)).make_vector(indexers[self.n_dims].at[i])
-             for i in range(MAX_DIM_NUM)])
+
+        fill_halos = [ConstantBoundaryCondition(np.nan)] * (MAX_DIM_NUM - self.n_dims)
+        for d in range(self.n_dims):
+            fill_halos.append(boundary_conditions[d])
+        self.fill_halos = tuple([fh.make_vector(indexers[self.n_dims].at[i]) for i, fh in enumerate(fill_halos)])
+
         grid = tuple([data[d].shape[d] - 1 for d in dims])
         self.meta = make_meta(False, grid)
-        self.comp_0 = self.data[0]
-        self.comp_1 = self.data[1] if self.n_dims > 1 else make_null()
+        self.comp_outer = self.data[0] if self.n_dims > 1 else make_null()
+        self.comp_inner = self.data[-1]
 
     @staticmethod
     def clone(field):
@@ -61,7 +64,7 @@ class VectorField:
 
     @property
     def impl(self):
-        return (self.meta, self.comp_0, self.comp_1), self.fill_halos
+        return (self.meta, self.comp_outer, self.comp_inner), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):

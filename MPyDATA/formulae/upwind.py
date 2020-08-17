@@ -14,7 +14,11 @@ def make_upwind(options, non_unit_g_factor, traversals):
     apply_scalar = traversals.apply_scalar(loop=True)
     idx = indexers[traversals.n_dims]
 
-    formulae_upwind = tuple([__make_upwind(options.jit_flags, idx.atv[i], idx.at[i], non_unit_g_factor) for i in range(MAX_DIM_NUM)])
+    formulae_upwind = tuple([
+        __make_upwind(options.jit_flags, idx.atv[i], idx.at[i], non_unit_g_factor)
+        if i >= MAX_DIM_NUM - traversals.n_dims else None
+        for i in range(MAX_DIM_NUM)
+    ])
 
     @numba.njit(**options.jit_flags)
     def apply(psi, flux, vec_bc, g_factor, g_factor_bc):

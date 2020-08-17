@@ -21,7 +21,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims)
-            if i < traversals.n_dims else None
+            if i >= MAX_DIM_NUM - traversals.n_dims else None
             for i in range(MAX_DIM_NUM)])
 
         @numba.njit(**options.jit_flags)

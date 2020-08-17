@@ -20,8 +20,8 @@ def _is_integral(n):
 
 
 @numba.njit()
-def at_1d(focus, arr, i, _):
-    return arr[focus[f_i] + i]
+def at_1d(focus, arr, j, _):  # TODO: _=0?
+    return arr[focus[f_j] + j]
 
 
 @numba.njit()
@@ -35,18 +35,18 @@ def at_2d_axis1(focus, arr, i, j):
 
 
 @numba.njit()
-def atv_1d(focus, arrs, i, _):
-    return arrs[0][focus[f_i] + int(i - .5)]
+def atv_1d(focus, arrs, j, _):
+    return arrs[-1][focus[f_j] + int(j - .5)]
 
 
 @numba.njit()
 def atv_2d_axis0(focus, arrs, i, j):
     if _is_integral(i):
-        d = 1
+        d = -1
         ii = int(i)
         jj = int(j - .5)
     else:
-        d = 0
+        d = -2
         ii = int(i - .5)
         jj = int(j)
     return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
@@ -55,19 +55,19 @@ def atv_2d_axis0(focus, arrs, i, j):
 @numba.njit()
 def atv_2d_axis1(focus, arrs, i, j):
     if _is_integral(j):
-        d = 1
+        d = -1
         ii = int(j)
         jj = int(i - .5)
     else:
-        d = 0
+        d = -2
         ii = int(j - .5)
         jj = int(i)
     return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
 
 
 @numba.njit()
-def set_1d(arr, i, _, value):
-    arr[i] = value
+def set_1d(arr, _, j, value):
+    arr[j] = value
 
 
 @numba.njit()
@@ -76,8 +76,8 @@ def set_2d(arr, i, j, value):
 
 
 @numba.njit()
-def get_1d(arr, i, _):
-    return arr[i]
+def get_1d(arr, _, j):
+    return arr[j]
 
 
 @numba.njit()
@@ -90,8 +90,8 @@ def make_null():
 
 
 class Indexers1d:
-    at = (at_1d, None)
-    atv = (atv_1d, None)
+    at = (None, at_1d)
+    atv = (None, atv_1d)
     set = set_1d
     get = get_1d
 

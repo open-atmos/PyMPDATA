@@ -10,7 +10,7 @@ from .traversals_impl_vector import _make_apply_vector, _make_fill_halos_vector
 class Traversals:
     def __init__(self, grid, halo, jit_flags, n_threads):
         assert not (n_threads > 1 and len(grid) == 1)
-        domain = make_domain((grid[0], grid[1] if len(grid) > 1 else 0))
+        domain = make_domain((grid[0] if len(grid) > 1 else 0, grid[-1]))
         self.n_dims = len(grid)
         chunk = make_chunk(grid[0], n_threads)
         self._fill_halos_scalar = _make_fill_halos_scalar(
