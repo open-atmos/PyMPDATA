@@ -6,7 +6,7 @@ import numba
 import pytest
 
 
-class TestPeriodicBoundaryCondition:
+class TestPolarBoundaryCondition:
     @pytest.mark.parametrize("halo", (1, ))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     def test_scalar_2d(self, halo, n_threads):

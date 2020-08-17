@@ -30,8 +30,8 @@ From developers' and maintainers' perspective, MPyDATA offers wide unit-test cov
 MPyDATA design features
   a **custom-built multi-dimensional Arakawa-C grid layer** allowing
   to concisely represent multi-dimensional stencil operations.
-The grid layer is built on top of NumPy's ndarrays using Numba's @njit
-  functionality and has been carefully profiled for performance.
+The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
+  using Numba's @njit functionality for high-performance array traversals.
 It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 
@@ -243,7 +243,7 @@ of embracing Numba is that it can be easily switched off. This
 brings multiple-order-of-magnitude drop in performance, yet 
 it also make the entire code of the library susceptible to
 interactive debugging, one way of enabling it is by setting the 
-following environment variable:
+following environment variable before importing MPyDATA:
 
 ```python
 import os
