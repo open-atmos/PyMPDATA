@@ -44,7 +44,6 @@ class TestTraversals:
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((5, 6), (11,)))
     @pytest.mark.parametrize("loop", (True, False))
-    @pytest.mark.skip() # TODO !
     def test_apply_scalar(n_threads, halo, grid, loop):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -74,8 +73,9 @@ class TestTraversals:
         focus = (-halo, -halo)
         for i in (-1,) if n_dims == 1 else range(halo, halo + grid[0]):
             for j in range(halo, halo + grid[-1]):
-                value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, i, j)
-                assert value == (n_dims if loop else 1) * cell_id(i, j)
+                ij = (i, j) if n_dims == 2 else (j, i)
+                value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
+                assert (n_dims if loop else 1) * cell_id(i, j) == value
         assert scl_null_arg_impl[0][0][meta_halo_valid]
         assert vec_null_arg_impl[0][0][meta_halo_valid]
         assert not out.impl[0][0][meta_halo_valid]
@@ -84,7 +84,6 @@ class TestTraversals:
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((5, 6), (11,)))
-    @pytest.mark.skip() # TODO !
     def test_apply_vector(n_threads, halo, grid):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -132,8 +131,9 @@ class TestTraversals:
             focus = tuple(-halos[d][i] for i in range(MAX_DIM_NUM))
             for i in (-1,) if n_dims == 1 else range(halos[d][0], halos[d][0] + data.shape[0]):
                 for j in range(halos[d][1], halos[d][1] + data.shape[-1]):
-                    value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, i, j)
-                    assert value == cell_id(i, j)
+                    ij = (i, j) if n_dims == 2 else (j, i)
+                    value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
+                    assert cell_id(i, j) == value
 
         assert scl_null_arg_impl[0][0][meta_halo_valid]
         assert vec_null_arg_impl[0][0][meta_halo_valid]
