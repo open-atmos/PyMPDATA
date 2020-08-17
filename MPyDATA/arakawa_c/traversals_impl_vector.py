@@ -79,7 +79,7 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunk, domain):
                     for j in range(0, n_inner + 2 * halo):
                         focus = (i, j)
                         set(comp_outer, i, j, fun_outer((focus, comp_outer), n_outer + 1, left))
-            if thread_id == last_thread:
+            if last_thread:
                 for i in range(n_outer + 1 + halo - 1,
                                n_outer + 1 + 2 * (halo - 1)):  # note: non-reverse order assumed in Extrapolated
                     for j in range(0, n_inner + 2 * halo):
@@ -110,7 +110,7 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunk, domain):
                     for j in range(0, n_inner + 1 + 2 * (halo - 1)):
                         focus = (i, j)
                         set(comp_inner, i, j, fun_outer((focus, comp_inner), n_outer, left))
-            if thread_id == last_thread:
+            if last_thread:
                 for i in range(n_outer + halo, n_outer + 2 * halo):
                     for j in range(0, n_inner + 1 + 2 * (halo - 1)):
                         focus = (i, j)

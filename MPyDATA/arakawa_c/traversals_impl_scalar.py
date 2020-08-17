@@ -94,7 +94,7 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunk, domain):
                     for j in range(0, n_inner + 2 * halo):
                         focus = (i, j)
                         set(psi, i, j, fun_outer((focus, psi), n_outer, 1))
-            if thread_id == last_thread:
+            if last_thread:
                 for i in range(n_outer + halo, n_outer + 2 * halo):  # note: non-reverse order assumed in Extrapolated
                     for j in range(0, n_inner + 2 * halo):
                         focus = (i, j)
