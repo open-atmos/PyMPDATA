@@ -5,7 +5,6 @@ import platform
 from mpi4py import MPI
 
 
-
 if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
     _MPI_Comm_t = ctypes.c_int
 else:
