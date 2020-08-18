@@ -4,13 +4,7 @@ Created at 12.03.2020
 
 import numba
 import numpy as np
-
-MAX_DIM_NUM = 2
-
-
-f_i = 0
-f_j = f_i + 1
-f_d = f_j + 1
+from .enumerations import INNER, OUTER
 
 
 @numba.njit([numba.boolean(numba.float64),
@@ -21,22 +15,22 @@ def _is_integral(n):
 
 @numba.njit()
 def at_1d(focus, arr, j, _):  # TODO: _=0?
-    return arr[focus[f_j] + j]
+    return arr[focus[INNER] + j]
 
 
 @numba.njit()
 def at_2d_axis0(focus, arr, i, j):
-    return arr[focus[f_i] + i, focus[f_j] + j]
+    return arr[focus[OUTER] + i, focus[INNER] + j]
 
 
 @numba.njit()
 def at_2d_axis1(focus, arr, i, j):
-    return arr[focus[f_i] + j, focus[f_j] + i]
+    return arr[focus[OUTER] + j, focus[INNER] + i]
 
 
 @numba.njit()
 def atv_1d(focus, arrs, j, _):
-    return arrs[-1][focus[f_j] + int(j - .5)]
+    return arrs[-1][focus[INNER] + int(j - .5)]
 
 
 @numba.njit()
@@ -49,7 +43,7 @@ def atv_2d_axis0(focus, arrs, i, j):
         d = -2
         ii = int(i - .5)
         jj = int(j)
-    return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
+    return arrs[d][focus[OUTER] + ii, focus[INNER] + jj]
 
 
 @numba.njit()
@@ -62,7 +56,7 @@ def atv_2d_axis1(focus, arrs, i, j):
         d = -2
         ii = int(j - .5)
         jj = int(i)
-    return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
+    return arrs[d][focus[OUTER] + ii, focus[INNER] + jj]
 
 
 @numba.njit()

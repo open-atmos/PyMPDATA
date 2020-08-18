@@ -1,14 +1,14 @@
 import numpy as np
 
-meta_halo_valid = 0
-meta_nouter = 1
-meta_ninner = 2
-meta_size = 3
+META_HALO_VALID = 0
+META_N_OUTER = 1
+META_N_INNER = 2
+META_SIZE = 3
 
 
 def make_meta(halo_valid: bool, grid):
-    meta = np.empty(meta_size, dtype=int)
-    meta[meta_halo_valid] = halo_valid
-    meta[meta_nouter] = grid[0] if len(grid) > 1 else 0
-    meta[meta_ninner] = grid[-1]
+    meta = np.empty(META_SIZE, dtype=int)
+    meta[META_HALO_VALID] = halo_valid
+    meta[META_N_OUTER] = grid[0] if len(grid) > 1 else 0
+    meta[META_N_INNER] = grid[-1]
     return meta

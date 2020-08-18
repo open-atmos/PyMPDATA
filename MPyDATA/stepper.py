@@ -9,7 +9,7 @@ from MPyDATA.formulae.laplacian import make_laplacian
 from MPyDATA.formulae.antidiff import make_antidiff
 from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
 from MPyDATA.arakawa_c.traversals import Traversals
-from .arakawa_c.meta import meta_halo_valid
+from .arakawa_c.meta import META_HALO_VALID
 from MPyDATA.options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
@@ -104,7 +104,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
         if n_dims > 1:
             out_outer[:] = a[0] * x_outer[:] + y_outer[:]
         out_inner[:] = a[-1] * x_inner[:] + y_inner[:]
-        out_meta[meta_halo_valid] = False
+        out_meta[META_HALO_VALID] = False
 
     @numba.njit(**options.jit_flags)
     def step(nt, mu_coeff, post_step,

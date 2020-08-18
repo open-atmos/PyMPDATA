@@ -7,7 +7,8 @@ Created at 11.10.2019
 """
 
 import numba
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers
 
 
 def make_upwind(options, non_unit_g_factor, traversals):

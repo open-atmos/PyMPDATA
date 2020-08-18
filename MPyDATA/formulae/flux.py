@@ -8,7 +8,8 @@ Created at 11.10.2019
 
 import numpy as np
 import numba
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers
+from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
 
 
 def make_flux_first_pass(options, traversals):

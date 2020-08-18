@@ -1,5 +1,5 @@
 from MPyDATA.arakawa_c.traversals import Traversals
-from MPyDATA.arakawa_c.meta import meta_halo_valid
+from MPyDATA.arakawa_c.meta import META_HALO_VALID
 from MPyDATA import Options, ScalarField, VectorField, ConstantBoundaryCondition
 from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
 import pytest
@@ -76,9 +76,9 @@ class TestTraversals:
                 ij = (i, j) if n_dims == 2 else (j, i)
                 value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
                 assert (n_dims if loop else 1) * cell_id(i, j) == value
-        assert scl_null_arg_impl[0][0][meta_halo_valid]
-        assert vec_null_arg_impl[0][0][meta_halo_valid]
-        assert not out.impl[0][0][meta_halo_valid]
+        assert scl_null_arg_impl[0][0][META_HALO_VALID]
+        assert vec_null_arg_impl[0][0][META_HALO_VALID]
+        assert not out.impl[0][0][META_HALO_VALID]
 
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
@@ -135,6 +135,6 @@ class TestTraversals:
                     value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
                     assert cell_id(i, j) == value
 
-        assert scl_null_arg_impl[0][0][meta_halo_valid]
-        assert vec_null_arg_impl[0][0][meta_halo_valid]
-        assert not out.impl[0][0][meta_halo_valid]
+        assert scl_null_arg_impl[0][0][META_HALO_VALID]
+        assert vec_null_arg_impl[0][0][META_HALO_VALID]
+        assert not out.impl[0][0][META_HALO_VALID]

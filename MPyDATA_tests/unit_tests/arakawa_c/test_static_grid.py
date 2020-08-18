@@ -1,11 +1,11 @@
-from MPyDATA.arakawa_c.static_grid import make_domain, make_chunk
-from MPyDATA.arakawa_c.meta import meta_nouter, meta_ninner, meta_size
+from MPyDATA.arakawa_c.grid import make_domain, make_chunk
+from MPyDATA.arakawa_c.meta import META_N_OUTER, META_N_INNER, META_SIZE
 from MPyDATA.arakawa_c.domain_decomposition import subdomain
 import pytest
 
-meta = [None] * meta_size
-meta[meta_nouter] = 200
-meta[meta_ninner] = 2000
+meta = [None] * META_SIZE
+meta[META_N_OUTER] = 200
+meta[META_N_INNER] = 2000
 meta = tuple(meta)
 
 
@@ -14,8 +14,8 @@ class TestStaticGrid:
     def test_make_grid_static():
         # arrange
         grid = (100, 1000)
-        assert grid[0] != meta[meta_nouter]
-        assert grid[0] != meta[meta_ninner]
+        assert grid[0] != meta[META_N_OUTER]
+        assert grid[0] != meta[META_N_INNER]
 
         # act
         grid_fun = make_domain(grid)
@@ -32,14 +32,14 @@ class TestStaticGrid:
         grid_fun = make_domain(grid)
 
         # assert
-        assert (meta[meta_nouter], meta[meta_ninner]) == grid_fun(meta)
+        assert (meta[META_N_OUTER], meta[META_N_INNER]) == grid_fun(meta)
 
     @staticmethod
     @pytest.mark.parametrize("n", (3, 30, 300))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     def test_make_irng_static(n, n_threads):
         # arrange
-        assert n != meta[meta_nouter]
+        assert n != meta[META_N_OUTER]
 
         # act
         irng_fun = make_chunk(n=n, n_threads=n_threads)
@@ -59,5 +59,5 @@ class TestStaticGrid:
 
         # assert
         for thread_id in range(n_threads):
-            assert subdomain(meta[meta_nouter], thread_id, n_threads) == irng_fun(meta, thread_id)
+            assert subdomain(meta[META_N_OUTER], thread_id, n_threads) == irng_fun(meta, thread_id)
 

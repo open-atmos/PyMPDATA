@@ -4,7 +4,8 @@ Created at 25.03.2020
 
 import numpy as np
 import numba
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers
+from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
 
 
 def make_psi_extremum(extremum, options, traversals):
@@ -51,9 +52,14 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
     else:
         idx = indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
-
-        formulae = (__make_beta(options.jit_flags, traversals.n_dims, idx.at[-1], idx.atv[-1], non_unit_g_factor, options.epsilon, extremum),
-                    None)
+        at_idx = MAX_DIM_NUM - traversals.n_dims
+        formulae = (
+            __make_beta(
+                options.jit_flags, traversals.n_dims, idx.at[at_idx], idx.atv[at_idx],
+                non_unit_g_factor, options.epsilon, extremum
+            ),
+            None
+        )
 
         @numba.njit(**options.jit_flags)
         def apply(beta, flux, flux_bc, psi, psi_bc, psi_extremum, psi_extremum_bc, g_factor, g_factor_bc):
@@ -73,7 +79,7 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
         @numba.njit(**jit_flags)
         def denominator(flux):
 
-            return  max(atv(*flux, sign * (-.5), 0), 0) - min(atv(*flux, sign * (+.5), 0), 0)  \
+            return max(atv(*flux, sign * (-.5), 0), 0) - min(atv(*flux, sign * (+.5), 0), 0)  \
                     + max(atv(*flux, 0, sign * (-.5)), 0) - min(atv(*flux, 0, sign * (+.5)), 0)  \
                     + epsilon
     else:
@@ -121,7 +127,6 @@ def make_correction(options, traversals):
             if i >= MAX_DIM_NUM - traversals.n_dims else None
             for i in range(MAX_DIM_NUM)
         ])
-
 
         @numba.njit(**options.jit_flags)
         def apply(GC_corr, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc):

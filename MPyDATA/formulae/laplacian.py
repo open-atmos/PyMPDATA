@@ -3,7 +3,8 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers
+from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
 from MPyDATA.arakawa_c.traversals import Traversals
 from MPyDATA.options import Options
 

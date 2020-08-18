@@ -1,10 +1,11 @@
 import numba
 
-from MPyDATA.arakawa_c.indexers import indexers
-from MPyDATA.arakawa_c.meta import meta_halo_valid
+from .indexers import indexers
+from .meta import META_HALO_VALID
+from .enumerations import OUTER, INNER
 
 
-def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunk, domain,
+def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
                        boundary_cond_vector, boundary_cond_scalar):
     set = indexers[n_dims].set
     get = indexers[n_dims].get
@@ -17,9 +18,10 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunk, domai
                               vec_arg1_outer, vec_arg1_inner,
                               scal_arg2, scal_arg3, scal_arg4
                               ):
-            n_outer, n_inner = domain(out_meta)
-            rng_outer = chunk(out_meta, thread_id)
-            rng_inner = (0, n_inner)
+            # TODO: use halos and points
+            span = spanner(out_meta)
+            rng_outer = chunker(out_meta, thread_id)
+            rng_inner = (0, span[INNER])
 
             vec_arg1_tpl = (vec_arg1_outer, vec_arg1_inner)
             for i in range(rng_outer[0] + halo, rng_outer[1] + halo) if n_dims > 1 else (-1,):
@@ -38,9 +40,10 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunk, domai
                               vec_arg1_outer, vec_arg1_inner,
                               scal_arg2, scal_arg3, scal_arg4
                               ):
-            n_outer, n_inner = domain(out_meta)
-            rng_outer = chunk(out_meta, thread_id)
-            rng_inner = (0, n_inner)
+            # TODO: use halos, points
+            span = spanner(out_meta)
+            rng_outer = chunker(out_meta, thread_id)
+            rng_inner = (0, span[INNER])
 
             vec_arg1_tpl = (vec_arg1_outer, vec_arg1_inner)
             for i in range(rng_outer[0] + halo, rng_outer[1] + halo) if n_dims > 1 else (-1,):
@@ -61,52 +64,52 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunk, domai
             boundary_cond_scalar(thread_id, scal_arg2_meta, scal_arg_2, scal_arg2_bc_outer, scal_arg2_bc_inner)
             boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg_3, scal_arg3_bc_outer, scal_arg3_bc_inner)
             boundary_cond_scalar(thread_id, scal_arg4_meta, scal_arg_4, scal_arg4_bc_outer, scal_arg4_bc_inner)
-        vec_arg1_meta[meta_halo_valid] = True
-        scal_arg2_meta[meta_halo_valid] = True
-        scal_arg3_meta[meta_halo_valid] = True
-        scal_arg4_meta[meta_halo_valid] = True
+        vec_arg1_meta[META_HALO_VALID] = True
+        scal_arg2_meta[META_HALO_VALID] = True
+        scal_arg3_meta[META_HALO_VALID] = True
+        scal_arg4_meta[META_HALO_VALID] = True
 
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             apply_scalar_impl(
                 thread_id, out_meta,
                 fun_outer, fun_inner, out, vec_arg1_outer, vec_arg1_inner, scal_arg_2, scal_arg_3, scal_arg_4)
-        out_meta[meta_halo_valid] = False
+        out_meta[META_HALO_VALID] = False
 
     return apply_scalar
 
 
-def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunk, domain):
+def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner):
     set = indexers[n_dims].set
 
     @numba.njit(**jit_flags)
     def boundary_cond_scalar(thread_id, meta, psi, fun_outer, fun_inner):
-        if meta[meta_halo_valid]:
+        if meta[META_HALO_VALID]:
             return
 
-        n_outer, n_inner = domain(meta)
-        outer_rng = chunk(meta, thread_id)
-        last_thread = outer_rng[1] == n_outer
-
+        # TODO: use halos, spans
+        span = spanner(meta)
+        outer_rng = chunker(meta, thread_id)
+        last_thread = outer_rng[1] == span[OUTER]
 
         if n_dims > 1:
             if thread_id == 0:
                 for i in range(halo - 1, 0 - 1, -1):  # note: reverse order assumes in Extrapolated!
-                    for j in range(0, n_inner + 2 * halo):
+                    for j in range(0, span[INNER] + 2 * halo):
                         focus = (i, j)
-                        set(psi, i, j, fun_outer((focus, psi), n_outer, 1))
+                        set(psi, i, j, fun_outer((focus, psi), span[OUTER], 1))
             if last_thread:
-                for i in range(n_outer + halo, n_outer + 2 * halo):  # note: non-reverse order assumed in Extrapolated
-                    for j in range(0, n_inner + 2 * halo):
+                for i in range(span[OUTER] + halo, span[OUTER] + 2 * halo):  # note: non-reverse order assumed in Extrapolated
+                    for j in range(0, span[INNER] + 2 * halo):
                         focus = (i, j)
-                        set(psi, i, j, fun_outer((focus, psi), n_outer, -1))
+                        set(psi, i, j, fun_outer((focus, psi), span[OUTER], -1))
 
         for i in range(outer_rng[0], outer_rng[1] + (2 * halo if last_thread else 0)) if n_dims > 1 else (-1,):
             for j in range(0, halo):
                 focus = (i, j)
-                set(psi, i, j, fun_inner((focus, psi), n_inner, 1))
+                set(psi, i, j, fun_inner((focus, psi), span[INNER], 1))
         for i in range(outer_rng[0], outer_rng[1] + (2 * halo if last_thread else 0)) if n_dims > 1 else (-1,):
-            for j in range(n_inner + halo, n_inner + 2 * halo):
+            for j in range(span[INNER] + halo, span[INNER] + 2 * halo):
                 focus = (i, j)
-                set(psi, i, j, fun_inner((focus, psi), n_inner, -1))
+                set(psi, i, j, fun_inner((focus, psi), span[INNER], -1))
 
     return boundary_cond_scalar

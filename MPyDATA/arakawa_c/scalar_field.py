@@ -3,8 +3,9 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import indexers, MAX_DIM_NUM
-from .meta import meta_halo_valid, make_meta
+from .indexers import indexers
+from .enumerations import MAX_DIM_NUM
+from .meta import META_HALO_VALID, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
 
@@ -48,5 +49,5 @@ class ScalarField:
     @staticmethod
     def make_null(n_dims):
         null = ScalarField(np.empty([0]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
-        null.meta[meta_halo_valid] = True
+        null.meta[META_HALO_VALID] = True
         return null

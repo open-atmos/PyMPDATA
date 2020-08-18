@@ -3,9 +3,10 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import make_null, indexers, MAX_DIM_NUM
+from .indexers import make_null, indexers
+from .enumerations import MAX_DIM_NUM
 from .scalar_field import ScalarField
-from .meta import meta_halo_valid, make_meta
+from .meta import META_HALO_VALID, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
 
@@ -73,5 +74,5 @@ class VectorField:
             halo=1,
             boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims
         )
-        null.meta[meta_halo_valid] = True
+        null.meta[META_HALO_VALID] = True
         return null
