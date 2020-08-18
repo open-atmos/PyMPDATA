@@ -3,11 +3,14 @@ Created at 20.03.2020
 """
 
 import numba
-from ..enumerations import ARG_FOCUS
+from ..enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 
 
 class PolarBoundaryCondition:
     def __init__(self, grid, longitude_idx, latitude_idx):
+        assert SIGN_RIGHT == -1
+        assert SIGN_LEFT == +1
+
         self.nlon = grid[longitude_idx]
         self.nlat = grid[latitude_idx]
         assert self.nlon % 2 == 0

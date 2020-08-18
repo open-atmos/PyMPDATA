@@ -2,10 +2,10 @@ import numba
 
 from .indexers import indexers
 from .meta import META_HALO_VALID
-from .enumerations import OUTER, INNER
+from .enumerations import OUTER, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_STOP, RNG_START
 
 
-def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, boundary_cond_vector,
+def _make_apply_vector(*, jit_flags, n_halo, n_dims, n_threads, spanner, chunker, boundary_cond_vector,
                        boundary_cond_scalar):
     set = indexers[n_dims].set
 
@@ -17,15 +17,19 @@ def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, 
                           vec_arg2_outer, vec_arg2_inner,
                           scal_arg3
                           ):
-        # TODO: use halos, points
         span = spanner(out_meta)
         rng_outer = chunker(out_meta, thread_id)
         rng_inner = (0, span[INNER])
-        last_thread = rng_outer[1] == span[OUTER]
+        last_thread = rng_outer[RNG_STOP] == span[OUTER]
         arg2 = (vec_arg2_outer, vec_arg2_inner)
 
-        for i in range(rng_outer[0] + halo - 1, rng_outer[1] + halo - 1 + (1 if last_thread else 0)) if n_dims > 1 else (-1,):
-            for j in range(rng_inner[0] + halo - 1, rng_inner[1] + 1 + halo - 1):
+        halos = (
+            (n_halo - 1, n_halo),
+            (n_halo, n_halo - 1)
+        )
+
+        for i in range(rng_outer[RNG_START] + halos[OUTER][OUTER], rng_outer[RNG_STOP] + halos[OUTER][OUTER] + (1 if last_thread else 0)) if n_dims > 1 else (-1,):
+            for j in range(rng_inner[RNG_START] + halos[INNER][INNER], rng_inner[RNG_STOP] + 1 + halos[INNER][INNER]):
                 focus = (i, j)
                 if n_dims > 1:
                     set(out_outer, i, j, fun_outer((focus, scal_arg1), (focus, arg2), (focus, scal_arg3)))
@@ -70,52 +74,55 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
         if meta[META_HALO_VALID]:
             return
 
-        # TODO: use halos, points
         span = spanner(meta)
-        outer_rng = chunker(meta, thread_id)
-        last_thread = outer_rng[1] == span[OUTER]
-        LEFT, RIGHT = +1, -1  # TODO: somewhere esle
+        rng_outer = chunker(meta, thread_id)
+        last_thread = rng_outer[1] == span[OUTER]
+
+        halos = (
+            (halo-1, halo),
+            (halo, halo-1)
+        )
 
         if n_dims > 1:
             if thread_id == 0:
-                for i in range(halo - 2, -1, -1):  # note: non-reverse order assumed in Extrapolated
-                    for j in range(0, span[INNER] + 2 * halo):
+                for i in range(halos[OUTER][OUTER] - 1, -1, -1):  # note: non-reverse order assumed in Extrapolated
+                    for j in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
                         focus = (i, j)
-                        set(comp_outer, i, j, fun_outer((focus, comp_outer), span[OUTER] + 1, LEFT))
+                        set(comp_outer, i, j, fun_outer((focus, comp_outer), span[OUTER] + 1, SIGN_LEFT))
             if last_thread:
-                for i in range(span[OUTER] + 1 + halo - 1,
-                               span[OUTER] + 1 + 2 * (halo - 1)):  # note: non-reverse order assumed in Extrapolated
-                    for j in range(0, span[INNER] + 2 * halo):
+                for i in range(span[OUTER] + 1 + halos[OUTER][OUTER],
+                               span[OUTER] + 1 + 2 * halos[OUTER][OUTER]):  # note: non-reverse order assumed in Extrapolated
+                    for j in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
                         focus = (i, j)
-                        set(comp_outer, i, j, fun_outer((focus, comp_outer), span[OUTER] + 1, RIGHT))
+                        set(comp_outer, i, j, fun_outer((focus, comp_outer), span[OUTER] + 1, SIGN_RIGHT))
 
-        for i in range(outer_rng[0], outer_rng[1] + (2 * halo if last_thread else 0)) if n_dims > 1 else (-1,):
-            for j in range(0, halo - 1):
+        for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0)) if n_dims > 1 else (-1,):
+            for j in range(0, halos[INNER][INNER]):
                 focus = (i, j)
-                set(comp_inner, i, j, fun_inner((focus, comp_inner), span[INNER] + 1, LEFT))
-            for j in range(span[INNER] + 1 + halo - 1, span[INNER] + 1 + 2 * (halo - 1)):
+                set(comp_inner, i, j, fun_inner((focus, comp_inner), span[INNER] + 1, SIGN_LEFT))
+            for j in range(span[INNER] + 1 + halos[INNER][INNER], span[INNER] + 1 + 2 * halos[INNER][INNER]):
                 focus = (i, j)
-                set(comp_inner, i, j, fun_inner((focus, comp_inner), span[INNER] + 1, RIGHT))
+                set(comp_inner, i, j, fun_inner((focus, comp_inner), span[INNER] + 1, SIGN_RIGHT))
 
         if n_dims > 1:
-            for i in range(outer_rng[0], outer_rng[1] + ((1 + 2 * (halo - 1)) if last_thread else 0)):
-                for j in range(0, halo):
+            for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + ((1 + 2 * halos[OUTER][OUTER]) if last_thread else 0)):
+                for j in range(0, halos[OUTER][INNER]):
                     focus = (i, j)
-                    set(comp_outer, i, j, fun_inner((focus, comp_outer), span[INNER], LEFT))
-                for j in range(span[INNER] + halo, span[INNER] + 2 * halo):
+                    set(comp_outer, i, j, fun_inner((focus, comp_outer), span[INNER], SIGN_LEFT))
+                for j in range(span[INNER] + halos[OUTER][INNER], span[INNER] + 2 * halos[OUTER][INNER]):
                     focus = (i, j)
-                    set(comp_outer, i, j, fun_inner((focus, comp_outer), span[INNER], RIGHT))
+                    set(comp_outer, i, j, fun_inner((focus, comp_outer), span[INNER], SIGN_RIGHT))
 
         if n_dims > 1:
             if thread_id == 0:
-                for i in range(0, halo):
-                    for j in range(0, span[INNER] + 1 + 2 * (halo - 1)):
+                for i in range(0, halos[INNER][OUTER]):
+                    for j in range(0, span[INNER] + 1 + 2 * halos[INNER][INNER]):
                         focus = (i, j)
-                        set(comp_inner, i, j, fun_outer((focus, comp_inner), span[OUTER], LEFT))
+                        set(comp_inner, i, j, fun_outer((focus, comp_inner), span[OUTER], SIGN_LEFT))
             if last_thread:
-                for i in range(span[OUTER] + halo, span[OUTER] + 2 * halo):
-                    for j in range(0, span[INNER] + 1 + 2 * (halo - 1)):
+                for i in range(span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]):
+                    for j in range(0, span[INNER] + 1 + 2 * halos[INNER][INNER]):
                         focus = (i, j)
-                        set(comp_inner, i, j, fun_outer((focus, comp_inner), span[OUTER], RIGHT))
+                        set(comp_inner, i, j, fun_outer((focus, comp_inner), span[OUTER], SIGN_RIGHT))
 
     return boundary_cond_vector

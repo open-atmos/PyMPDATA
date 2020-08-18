@@ -1,5 +1,5 @@
 import numba
-from ..enumerations import ARG_FOCUS, INNER
+from ..enumerations import ARG_FOCUS, INNER, SIGN_LEFT
 
 # TODO: 1D only
 X = -1
@@ -14,13 +14,13 @@ class ExtrapolatedBoundaryCondition:
 
         @numba.njit()
         def fill_halos_scalar(psi, n, sign):
-            if sign > 0:  # left
+            if sign == SIGN_LEFT:
                 edg = halo - psi[ARG_FOCUS][INNER]
                 nom = at(*psi, edg + 1, X) - at(*psi, edg, X)
                 den = at(*psi, edg + 2, X) - at(*psi, edg + 1, X)
                 cnst = nom / den if abs(den) > eps else 0
                 return max(at(*psi, 1, X) - (at(*psi, 2, X) - at(*psi, 1, X)) * cnst, 0)
-            else:  # right
+            else:
                 edg = n + halo - 1 - psi[ARG_FOCUS][INNER]
                 den = at(*psi, edg - 1, X) - at(*psi, edg - 2, X)
                 nom = at(*psi, edg, X) - at(*psi, edg - 1, X)
