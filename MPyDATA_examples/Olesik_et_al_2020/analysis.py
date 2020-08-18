@@ -7,6 +7,7 @@ from MPyDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import P
 from MPyDATA_examples.utils.error_norms import L2
 from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 from copy import deepcopy
+import numpy as np
 
 
 def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
@@ -112,3 +113,24 @@ class Case:
         self.dt = result.dt
         self.out_steps = result.out_steps
         self.grid_layour_str = result.grid_layout_str
+
+
+def rel_disp(r, psi, psi_coord):
+    mom0 = 0
+    mom1 = 0
+    mom2 = 0
+    for i in range(len(psi)):
+        psi_i = psi[i]
+        dp_i = psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        A_i = psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 1) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
+        B_i = psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 2) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
+        bin_mom0 = psi_i * dp_i
+        bin_mom1 = psi_i * A_i
+        bin_mom2 = psi_i * B_i
+        mom0 += bin_mom0
+        mom1 += bin_mom1
+        mom2 += bin_mom2
+    mu = mom1 / mom0
+    std = np.sqrt(mom2/mom0 - mu**2)
+    d = std/mu
+    return d
