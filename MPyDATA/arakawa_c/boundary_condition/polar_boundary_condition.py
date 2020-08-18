@@ -3,7 +3,7 @@ Created at 20.03.2020
 """
 
 import numba
-from ..enumerations import BC_ARG_FOCUS
+from ..enumerations import ARG_FOCUS
 
 
 class PolarBoundaryCondition:
@@ -26,8 +26,8 @@ class PolarBoundaryCondition:
 
         @numba.njit()
         def fill_halos(psi, _, sign):
-            lon = psi[BC_ARG_FOCUS][lon_idx]
-            lat = psi[BC_ARG_FOCUS][lat_idx]
+            lon = psi[ARG_FOCUS][lon_idx]
+            lat = psi[ARG_FOCUS][lat_idx]
             if lat <= left_edge_idx:
                 step = (left_edge_idx - lat) * 2 + 1
             if lat >= right_edge_idx:

@@ -1,7 +1,8 @@
 from MPyDATA.arakawa_c.traversals import Traversals
 from MPyDATA.arakawa_c.meta import META_HALO_VALID
 from MPyDATA import Options, ScalarField, VectorField, ConstantBoundaryCondition
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from MPyDATA.arakawa_c.indexers import indexers
+from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM, INNER, OUTER, IMPL_META_AND_DATA, IMPL_BC, META_AND_DATA_META, ARG_FOCUS
 import pytest
 import numba
 import numpy as np
@@ -18,22 +19,22 @@ def cell_id(i, j):
 
 @numba.njit(**jit_flags)
 def _cell_id_scalar(value, arg_1_vec, arg_2_scl, arg_3_scl, arg_4_scl):
-    focus = arg_1_vec[0]
-    if focus != arg_2_scl[0]:
+    focus = arg_1_vec[ARG_FOCUS]
+    if focus != arg_2_scl[ARG_FOCUS]:
         raise Exception()
-    if focus != arg_3_scl[0]:
+    if focus != arg_3_scl[ARG_FOCUS]:
         raise Exception()
-    if focus != arg_4_scl[0]:
+    if focus != arg_4_scl[ARG_FOCUS]:
         raise Exception()
     return value + cell_id(*focus)
 
 
 @numba.njit(**jit_flags)
 def _cell_id_vector(arg_1, arg_2, arg_3):
-    focus = arg_1[0]
-    if focus != arg_2[0]:
+    focus = arg_1[ARG_FOCUS]
+    if focus != arg_2[ARG_FOCUS]:
         raise Exception()
-    if focus != arg_3[0]:
+    if focus != arg_3[ARG_FOCUS]:
         raise Exception()
     return cell_id(*focus)
 
@@ -60,11 +61,11 @@ class TestTraversals:
 
         # act
         sut(_cell_id_scalar, _cell_id_scalar,
-            *out.impl[0],
-            *vec_null_arg_impl[0], *vec_null_arg_impl[1],
-            *scl_null_arg_impl[0], *scl_null_arg_impl[1],
-            *scl_null_arg_impl[0], *scl_null_arg_impl[1],
-            *scl_null_arg_impl[0], *scl_null_arg_impl[1]
+            *out.impl[IMPL_META_AND_DATA],
+            *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
+            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
+            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
+            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
             )
 
         # assert
@@ -76,9 +77,9 @@ class TestTraversals:
                 ij = (i, j) if n_dims == 2 else (j, i)
                 value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
                 assert (n_dims if loop else 1) * cell_id(i, j) == value
-        assert scl_null_arg_impl[0][0][META_HALO_VALID]
-        assert vec_null_arg_impl[0][0][META_HALO_VALID]
-        assert not out.impl[0][0][META_HALO_VALID]
+        assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
 
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
@@ -110,10 +111,10 @@ class TestTraversals:
 
         # act
         sut(_cell_id_vector, _cell_id_vector,
-            *out.impl[0],
-            *scl_null_arg_impl[0], *scl_null_arg_impl[1],
-            *vec_null_arg_impl[0], *vec_null_arg_impl[1],
-            *scl_null_arg_impl[0], *scl_null_arg_impl[1]
+            *out.impl[IMPL_META_AND_DATA],
+            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
+            *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
+            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
             )
 
         # assert
@@ -129,12 +130,12 @@ class TestTraversals:
         for d in range(n_dims):
             data = out.get_component(d)
             focus = tuple(-halos[d][i] for i in range(MAX_DIM_NUM))
-            for i in (-1,) if n_dims == 1 else range(halos[d][0], halos[d][0] + data.shape[0]):
-                for j in range(halos[d][1], halos[d][1] + data.shape[-1]):
+            for i in (-1,) if n_dims == 1 else range(halos[d][OUTER], halos[d][OUTER] + data.shape[0]):
+                for j in range(halos[d][INNER], halos[d][INNER] + data.shape[-1]):
                     ij = (i, j) if n_dims == 2 else (j, i)
                     value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
                     assert cell_id(i, j) == value
 
-        assert scl_null_arg_impl[0][0][META_HALO_VALID]
-        assert vec_null_arg_impl[0][0][META_HALO_VALID]
-        assert not out.impl[0][0][META_HALO_VALID]
+        assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
