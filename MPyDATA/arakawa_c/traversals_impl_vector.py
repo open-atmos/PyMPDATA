@@ -5,7 +5,7 @@ from .meta import META_HALO_VALID
 from .enumerations import OUTER, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_STOP, RNG_START
 
 
-def _make_apply_vector(*, jit_flags, n_halo, n_dims, n_threads, spanner, chunker, boundary_cond_vector,
+def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, boundary_cond_vector,
                        boundary_cond_scalar):
     set = indexers[n_dims].set
 
@@ -24,8 +24,8 @@ def _make_apply_vector(*, jit_flags, n_halo, n_dims, n_threads, spanner, chunker
         arg2 = (vec_arg2_outer, vec_arg2_inner)
 
         halos = (
-            (n_halo - 1, n_halo),
-            (n_halo, n_halo - 1)
+            (halo - 1, halo),
+            (halo, halo - 1)
         )
 
         for i in range(rng_outer[RNG_START] + halos[OUTER][OUTER], rng_outer[RNG_STOP] + halos[OUTER][OUTER] + (1 if last_thread else 0)) if n_dims > 1 else (-1,):
