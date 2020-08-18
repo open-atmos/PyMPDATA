@@ -139,9 +139,9 @@ def make_correction(options, traversals):
 def __make_correction(jit_flags, at, atv):
     @numba.njit(**jit_flags)
     def correction(beta_down, GC, beta_up):
-        a = min(1, at(*beta_down, 0, 0), at(*beta_up, 1, 0))
-        b = min(1, at(*beta_up, 0, 0), at(*beta_down, 1, 0))
-        c = atv(*GC, +.5, 0.)
+        a = min(1, at(*beta_down, 0), at(*beta_up, 1))
+        b = min(1, at(*beta_up, 0), at(*beta_down, 1))
+        c = atv(*GC, +.5)
         return (c + np.abs(c)) / 2 * a + (c - np.abs(c)) / 2 * b
 
     return correction

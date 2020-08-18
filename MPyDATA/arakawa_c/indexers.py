@@ -14,27 +14,27 @@ def _is_integral(n):
 
 
 @numba.njit()
-def at_1d(focus, arr, j, _):  # TODO: _=0?
+def at_1d(focus, arr, j, _=-1):
     return arr[focus[INNER] + j]
 
 
 @numba.njit()
-def at_2d_axis0(focus, arr, i, j):
+def at_2d_axis0(focus, arr, i, j=0):
     return arr[focus[OUTER] + i, focus[INNER] + j]
 
 
 @numba.njit()
-def at_2d_axis1(focus, arr, i, j):
-    return arr[focus[OUTER] + j, focus[INNER] + i]
+def at_2d_axis1(focus, arr, j, i=0):
+    return arr[focus[OUTER] + i, focus[INNER] + j]
 
 
 @numba.njit()
-def atv_1d(focus, arrs, j, _):
+def atv_1d(focus, arrs, j, _=-1):
     return arrs[-1][focus[INNER] + int(j - .5)]
 
 
 @numba.njit()
-def atv_2d_axis0(focus, arrs, i, j):
+def atv_2d_axis0(focus, arrs, i, j=0):
     if _is_integral(i):
         d = -1
         ii = int(i)
@@ -47,15 +47,15 @@ def atv_2d_axis0(focus, arrs, i, j):
 
 
 @numba.njit()
-def atv_2d_axis1(focus, arrs, i, j):
-    if _is_integral(j):
+def atv_2d_axis1(focus, arrs, j, i=0):
+    if _is_integral(i):
         d = -1
-        ii = int(j)
-        jj = int(i - .5)
+        ii = int(i)
+        jj = int(j - .5)
     else:
         d = -2
-        ii = int(j - .5)
-        jj = int(i)
+        ii = int(i - .5)
+        jj = int(j)
     return arrs[d][focus[OUTER] + ii, focus[INNER] + jj]
 
 
