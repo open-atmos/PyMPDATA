@@ -3,14 +3,15 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.formulae.upwind import make_upwind
-from MPyDATA.formulae.flux import make_flux_first_pass, make_flux_subsequent
-from MPyDATA.formulae.laplacian import make_laplacian
-from MPyDATA.formulae.antidiff import make_antidiff
-from MPyDATA.formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
-from MPyDATA.arakawa_c.traversals import Traversals
+from .formulae.upwind import make_upwind
+from .formulae.flux import make_flux_first_pass, make_flux_subsequent
+from .formulae.laplacian import make_laplacian
+from .formulae.antidiff import make_antidiff
+from .formulae.flux_corrected_transport import make_psi_extremum, make_beta, make_correction
+from .arakawa_c.traversals import Traversals
 from .arakawa_c.meta import META_HALO_VALID
-from MPyDATA.options import Options
+from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
+from .options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
 import warnings
@@ -98,12 +99,14 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
 
     # TODO: move to formulae
     @numba.njit(**options.jit_flags)
-    def axpy(out_meta, out_outer, out_inner, a,
-             x_meta, x_outer, x_inner,
-             y_meta, y_outer, y_inner):
+    def axpy(out_meta, out_outer, out_mid3d, out_inner, a,
+             x_meta, x_outer, x_mid3d, x_inner,
+             y_meta, y_outer, y_mid3d, y_inner):
         if n_dims > 1:
-            out_outer[:] = a[0] * x_outer[:] + y_outer[:]
-        out_inner[:] = a[-1] * x_inner[:] + y_inner[:]
+            out_outer[:] = a[OUTER] * x_outer[:] + y_outer[:]
+            if n_dims > 2:
+                out_mid3d[:] = a[MID3D] * x_mid3d[:] + y_mid3d[:]
+        out_inner[:] = a[INNER] * x_inner[:] + y_inner[:]
         out_meta[META_HALO_VALID] = False
 
     @numba.njit(**options.jit_flags)
@@ -161,6 +164,6 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
             if non_zero_mu_coeff:
                 advector = advector_orig
-            post_step(advectee[1], _)
+            post_step(advectee[ARG_DATA], _)
         return (clock() - time) / nt
     return step

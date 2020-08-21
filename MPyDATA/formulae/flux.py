@@ -8,8 +8,8 @@ Created at 11.10.2019
 
 import numpy as np
 import numba
-from MPyDATA.arakawa_c.indexers import indexers
-from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
+from ..arakawa_c.indexers import indexers
+from ..arakawa_c.enumerations import MAX_DIM_NUM
 
 
 def make_flux_first_pass(options, traversals):
@@ -18,7 +18,7 @@ def make_flux_first_pass(options, traversals):
 
     formulae_flux_first_pass = tuple([
         __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
-        if i >= MAX_DIM_NUM - traversals.n_dims else None
+        if idx.at[i] is not None else None
         for i in range(MAX_DIM_NUM)
     ])
 
@@ -43,7 +43,7 @@ def make_flux_subsequent(options, traversals):
 
         formulae_flux_subsequent = tuple([
             __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=False, infinite_gauge=options.infinite_gauge)
-            if i >= MAX_DIM_NUM - traversals.n_dims else None
+            if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
         ])
 

@@ -3,8 +3,8 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import make_null, indexers
-from .enumerations import MAX_DIM_NUM
+from .indexers import indexers
+from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER
 from .scalar_field import ScalarField
 from .meta import META_HALO_VALID, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
@@ -35,14 +35,17 @@ class VectorField:
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
 
-        fill_halos = [ConstantBoundaryCondition(np.nan)] * (MAX_DIM_NUM - self.n_dims)
-        for d in range(self.n_dims):
-            fill_halos.append(boundary_conditions[d])
+        # TODO: code repeated in ScalarField
+        fill_halos = [None] * MAX_DIM_NUM
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else ConstantBoundaryCondition(np.nan)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else ConstantBoundaryCondition(np.nan)
+        fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_vector(indexers[self.n_dims].at[i]) for i, fh in enumerate(fill_halos)])
 
         grid = tuple([data[d].shape[d] - 1 for d in dims])
         self.meta = make_meta(False, grid)
-        self.comp_outer = self.data[0] if self.n_dims > 1 else make_null()
+        self.comp_outer = self.data[0] if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
+        self.comp_mid3d = self.data[1] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_inner = self.data[-1]
 
     @staticmethod
@@ -65,7 +68,7 @@ class VectorField:
 
     @property
     def impl(self):
-        return (self.meta, self.comp_outer, self.comp_inner), self.fill_halos
+        return (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):

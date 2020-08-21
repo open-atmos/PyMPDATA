@@ -12,7 +12,7 @@ from .arakawa_c.vector_field import VectorField
 from .arakawa_c.scalar_field import ScalarField
 from .solver import Solver
 from .options import Options
-from MPyDATA.stepper import Stepper
+from .stepper import Stepper
 from .arakawa_c.discretisation import nondivergent_vector_field_2d, discretised_analytical_solution
 from .arakawa_c.boundary_condition.extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
 from .arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition

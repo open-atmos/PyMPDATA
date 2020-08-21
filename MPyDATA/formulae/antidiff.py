@@ -4,8 +4,8 @@ Created at 03.2020
 
 import numba
 import numpy as np
-from MPyDATA.arakawa_c.indexers import indexers
-from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
+from ..arakawa_c.indexers import indexers
+from ..arakawa_c.enumerations import MAX_DIM_NUM
 
 
 def make_antidiff(non_unit_g_factor, options, traversals):
@@ -22,7 +22,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims)
-            if i >= MAX_DIM_NUM - traversals.n_dims else None
+            if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)])
 
         @numba.njit(**options.jit_flags)

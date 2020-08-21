@@ -4,8 +4,8 @@ Created at 25.03.2020
 
 import numpy as np
 import numba
-from MPyDATA.arakawa_c.indexers import indexers
-from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM
+from ..arakawa_c.indexers import indexers
+from ..arakawa_c.enumerations import MAX_DIM_NUM, INNER, OUTER
 
 
 def make_psi_extremum(extremum, options, traversals):
@@ -17,7 +17,8 @@ def make_psi_extremum(extremum, options, traversals):
         idx = indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
 
-        formulae = (__make_psi_extremum(options.jit_flags, traversals.n_dims, idx.at[-1], extremum), None)
+        at_idx = INNER if traversals.n_dims == 1 else OUTER
+        formulae = (__make_psi_extremum(options.jit_flags, traversals.n_dims, idx.at[at_idx], extremum), None, None)
 
         @numba.njit(**options.jit_flags)
         def apply(psi_extremum, psi, psi_bc, null_vecfield, null_vecfield_bc):
@@ -33,11 +34,19 @@ def __make_psi_extremum(jit_flags, n_dims, at, extremum):
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, _1, psi, _3, _4):
-            return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0))
+            return extremum(at(*psi, 0), at(*psi, -1), at(*psi, 1))
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, _1, psi, _3, _4):
             return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0), at(*psi, 0, -1), at(*psi, 0, 1))
+    elif n_dims == 3:
+        def psi_extremum(_0, _1, psi, _3, _4):
+            return extremum(
+                at(*psi, 0, 0, 0),
+                at(*psi, -1, 0, 0), at(*psi, 1, 0, 0),
+                at(*psi, 0, -1, 0), at(*psi, 0, 1, 0),
+                at(*psi, 0, 0, -1), at(*psi, 0, 0, 1),
+            )
     else:
         raise NotImplementedError()
     return psi_extremum
@@ -52,12 +61,13 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
     else:
         idx = indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
-        at_idx = MAX_DIM_NUM - traversals.n_dims
+        at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
             __make_beta(
                 options.jit_flags, traversals.n_dims, idx.at[at_idx], idx.atv[at_idx],
                 non_unit_g_factor, options.epsilon, extremum
             ),
+            None,
             None
         )
 
@@ -69,26 +79,37 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
     return apply
 
 
+# TODO: shorte using inline ifs?
 def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum):
     sign = -1 if extremum == min else 1
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def denominator(flux):
-            return max(atv(*flux, sign*(-.5), 0), 0) - min(atv(*flux, sign*(+.5), 0), 0) + epsilon
+            return max(atv(*flux, -.5 * sign), 0) - min(atv(*flux, +.5 * sign), 0) + epsilon
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def denominator(flux):
-
-            return max(atv(*flux, sign * (-.5), 0), 0) - min(atv(*flux, sign * (+.5), 0), 0)  \
-                    + max(atv(*flux, 0, sign * (-.5)), 0) - min(atv(*flux, 0, sign * (+.5)), 0)  \
-                    + epsilon
+            return (
+                max(atv(*flux, -.5 * sign, 0), 0) - min(atv(*flux, +.5 * sign, 0), 0) +
+                max(atv(*flux, 0, -.5 * sign), 0) - min(atv(*flux, 0, +.5 * sign), 0) +
+                epsilon
+            )
+    elif n_dims == 3:
+        @numba.njit(**jit_flags)
+        def denominator(flux):
+            return (
+                max(atv(*flux, -.5 * sign, 0, 0), 0) - min(atv(*flux, +.5 * sign, 0, 0), 0) +
+                max(atv(*flux, 0, -.5 * sign, 0), 0) - min(atv(*flux, 0, +.5 * sign, 0), 0) +
+                max(atv(*flux, 0, 0, -.5 * sign), 0) - min(atv(*flux, 0, 0, +.5 * sign), 0) +
+                epsilon
+            )
     else:
         raise NotImplementedError()
 
     if non_unit_g_factor:
         @numba.njit(**jit_flags)
         def G(g_factor):
-            return at(*g_factor, 0, 0)
+            return at(*g_factor, 0)
     else:
         @numba.njit(**jit_flags)
         def G(_):
@@ -97,15 +118,27 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, flux, psi, psi_ext, g_factor):
-            return ((extremum(at(*psi_ext, 0, 0), at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0))
-                     - at(*psi, 0, 0)) * sign * G(g_factor)
+            return ((extremum(at(*psi_ext, 0), at(*psi, 0), at(*psi, -1), at(*psi, 1))
+                     - at(*psi, 0)) * sign * G(g_factor)
                     ) / denominator(flux)
 
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, flux, psi, psi_ext, g_factor):
             return ((extremum(at(*psi_ext, 0, 0),
-                              at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0), at(*psi, 0, -1), at(*psi, 0, 1))
+                              at(*psi, 0, 0),
+                              at(*psi, -1, 0), at(*psi, 1, 0),
+                              at(*psi, 0, -1), at(*psi, 0, 1))
+                     - at(*psi, 0, 0)) * sign * G(g_factor)
+                    ) / denominator(flux)
+    elif n_dims == 3:
+        @numba.njit(**jit_flags)
+        def psi_extremum(_0, flux, psi, psi_ext, g_factor):
+            return ((extremum(at(*psi_ext, 0, 0, 0),
+                              at(*psi, 0, 0, 0),
+                              at(*psi, -1, 0, 0), at(*psi, 1, 0, 0),
+                              at(*psi, 0, -1, 0), at(*psi, 0, 1, 0),
+                              at(*psi, 0, 0, -1), at(*psi, 0, 0, 1))
                      - at(*psi, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux)
     else:
@@ -124,7 +157,7 @@ def make_correction(options, traversals):
 
         formulae = tuple([
             __make_correction(options.jit_flags, idx.at[i], idx.atv[i])
-            if i >= MAX_DIM_NUM - traversals.n_dims else None
+            if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
         ])
 

@@ -4,7 +4,7 @@ Created at 03.2020
 
 import numpy as np
 from .indexers import indexers
-from .enumerations import MAX_DIM_NUM
+from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER
 from .meta import META_HALO_VALID, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
@@ -26,9 +26,10 @@ class ScalarField:
         self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
         self.get()[:] = data[:]
 
-        fill_halos = [ConstantBoundaryCondition(np.nan)] * (MAX_DIM_NUM - self.n_dims)
-        for d in range(self.n_dims):
-            fill_halos.append(boundary_conditions[d])
+        fill_halos = [None] * MAX_DIM_NUM
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else ConstantBoundaryCondition(np.nan)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else ConstantBoundaryCondition(np.nan)
+        fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
 
         self.boundary_conditions = boundary_conditions

@@ -1,6 +1,7 @@
 from MPyDATA import ScalarField, VectorField, \
     PolarBoundaryCondition, PeriodicBoundaryCondition
 from MPyDATA.arakawa_c.traversals import Traversals
+from MPyDATA.arakawa_c.enumerations import OUTER, INNER
 import numpy as np
 import numba
 import pytest
@@ -17,11 +18,11 @@ class TestPolarBoundaryCondition:
                 [2,  7],
                 [3,  8],
                 [4,  9]
-            ]
+            ], dtype=float
         )
         bc = (
             PeriodicBoundaryCondition(),
-            PolarBoundaryCondition(data.shape, 0, 1)
+            PolarBoundaryCondition(grid=data.shape, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = ScalarField(data, halo, bc)
         meta_and_data, fill_halos = field.impl
@@ -35,11 +36,11 @@ class TestPolarBoundaryCondition:
         # assert
         np.testing.assert_array_equal(
             field.data[halo:-halo, :halo],
-            np.roll(field.get()[:, :halo], data.shape[0] // 2, axis=0)
+            np.roll(field.get()[:, :halo], data.shape[OUTER] // 2, axis=OUTER)
         )
         np.testing.assert_array_equal(
             field.data[halo:-halo, -halo:],
-            np.roll(field.get()[:, -halo:], data.shape[0] // 2, axis=0)
+            np.roll(field.get()[:, -halo:], data.shape[OUTER] // 2, axis=OUTER)
         )
 
     @pytest.mark.parametrize("halo", (1, ))
@@ -54,17 +55,17 @@ class TestPolarBoundaryCondition:
                 [3,  8],
                 [4,  9],
                 [5, 10],
-            ]),
+            ], dtype=float),
             np.array([
                 [1, 5,  9],
                 [2, 6, 10],
                 [3, 7, 11],
                 [4, 8, 12],
-            ])
+            ], dtype=float)
         )
         bc = (
             PeriodicBoundaryCondition(),
-            PolarBoundaryCondition(grid, 0, 1)
+            PolarBoundaryCondition(grid=grid, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = VectorField(data, halo, bc)
         meta_and_data, fill_halos = field.impl
@@ -76,8 +77,4 @@ class TestPolarBoundaryCondition:
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
-        print(field.data[0].shape)
-        print(field.data[0])
-        print(field.data[1].shape)
-        print(field.data[1])
         # TODO !

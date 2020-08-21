@@ -2,7 +2,8 @@ from MPyDATA.arakawa_c.traversals import Traversals
 from MPyDATA.arakawa_c.meta import META_HALO_VALID
 from MPyDATA import Options, ScalarField, VectorField, ConstantBoundaryCondition
 from MPyDATA.arakawa_c.indexers import indexers
-from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM, INNER, OUTER, IMPL_META_AND_DATA, IMPL_BC, META_AND_DATA_META, ARG_FOCUS
+from MPyDATA.arakawa_c.enumerations import MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC, \
+    META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
 import pytest
 import numba
 import numpy as np
@@ -11,10 +12,13 @@ jit_flags = Options().jit_flags
 
 
 @numba.njit(**jit_flags)
-def cell_id(i, j):
-    if i == -1:
-        return j
-    return 100 * i + j
+def cell_id(i, j, k):
+    if i == INVALID_INDEX:
+        i = 0
+    if j == INVALID_INDEX:
+        j = 0
+    print(i, j, k, 100 * i + 10 * j + k)
+    return 100 * i + 10 * j + k
 
 
 @numba.njit(**jit_flags)
@@ -43,7 +47,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))
+    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
     @pytest.mark.parametrize("loop", (True, False))
     def test_apply_scalar(n_threads, halo, grid, loop):
         n_dims = len(grid)
@@ -60,7 +64,9 @@ class TestTraversals:
         out = ScalarField(np.zeros(grid), halo, [ConstantBoundaryCondition(np.nan)]*n_dims)
 
         # act
-        sut(_cell_id_scalar, _cell_id_scalar,
+        sut(_cell_id_scalar,
+            _cell_id_scalar if loop else None,
+            _cell_id_scalar if loop else None,
             *out.impl[IMPL_META_AND_DATA],
             *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
@@ -71,12 +77,18 @@ class TestTraversals:
         # assert
         data = out.get()
         assert data.shape == grid
-        focus = (-halo, -halo)
-        for i in (-1,) if n_dims == 1 else range(halo, halo + grid[0]):
-            for j in range(halo, halo + grid[-1]):
-                ij = (i, j) if n_dims == 2 else (j, i)
-                value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
-                assert (n_dims if loop else 1) * cell_id(i, j) == value
+        focus = (-halo, -halo, -halo)
+        for i in range(halo, halo + grid[OUTER]) if n_dims > 1 else (INVALID_INDEX,):
+            for j in range(halo, halo + grid[MID3D]) if n_dims > 2 else (INVALID_INDEX,):
+                for k in range(halo, halo + grid[INNER]):
+                    if n_dims == 1:
+                        ijk = (k, INVALID_INDEX, INVALID_INDEX)
+                    elif n_dims == 2:
+                        ijk = (i, k, INVALID_INDEX)
+                    else:
+                        raise NotImplementedError()
+                    value = indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
+                    assert (n_dims if loop else 1) * cell_id(i, j, k) == value
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
@@ -84,7 +96,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))
+    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
     def test_apply_vector(n_threads, halo, grid):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -104,37 +116,52 @@ class TestTraversals:
                 np.zeros((grid[0]+1, grid[1])),
                 np.zeros((grid[0], grid[1]+1))
             )
+        elif n_dims == 3:
+            pass  # TODO
         else:
             raise NotImplementedError()
 
         out = VectorField(data, halo, [ConstantBoundaryCondition(np.nan)] * n_dims)
 
         # act
-        sut(_cell_id_vector, _cell_id_vector,
+        sut(*[_cell_id_vector] * MAX_DIM_NUM,
             *out.impl[IMPL_META_AND_DATA],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
             *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
             )
+        print("DONE")
 
         # assert
+        halos = (
+            (halo-1, halo, halo),
+            (halo, halo-1, halo),
+            (halo, halo, halo-1)
+        )
+
         if n_dims == 1:
-            halos = ((-1, halo-1),)
+            dims = (INNER,)
         elif n_dims == 2:
-            halos = (
-                (halo-1, halo),
-                (halo, halo-1)
-            )
+            dims = (OUTER, INNER)
         else:
             raise NotImplementedError()
-        for d in range(n_dims):
+        for d in dims:
+            print("DIM", d)
             data = out.get_component(d)
             focus = tuple(-halos[d][i] for i in range(MAX_DIM_NUM))
-            for i in (-1,) if n_dims == 1 else range(halos[d][OUTER], halos[d][OUTER] + data.shape[0]):
-                for j in range(halos[d][INNER], halos[d][INNER] + data.shape[-1]):
-                    ij = (i, j) if n_dims == 2 else (j, i)
-                    value = indexers[n_dims].at[MAX_DIM_NUM-n_dims](focus, data, *ij)
-                    assert cell_id(i, j) == value
+            print("focus", focus)
+            for i in range(halos[d][OUTER], halos[d][OUTER] + data.shape[OUTER]) if n_dims > 1 else (INVALID_INDEX,):
+                for j in range(halos[d][MID3D], halos[d][MID3D] + data.shape[MID3D]) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(halos[d][INNER], halos[d][INNER] + data.shape[INNER]):
+                        if n_dims == 1:
+                            ijk = (k, INVALID_INDEX, INVALID_INDEX)
+                        elif n_dims == 2:
+                            ijk = (i, k, INVALID_INDEX)
+                        else:
+                            raise NotImplementedError()
+                        print("check at", i, j, k)
+                        value = indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
+                        assert cell_id(i, j, k) == value
 
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
