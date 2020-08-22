@@ -17,7 +17,6 @@ def cell_id(i, j, k):
         i = 0
     if j == INVALID_INDEX:
         j = 0
-    print(i, j, k, 100 * i + 10 * j + k)
     return 100 * i + 10 * j + k
 
 
@@ -130,7 +129,6 @@ class TestTraversals:
             *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
             )
-        print("DONE")
 
         # assert
         halos = (
@@ -166,3 +164,5 @@ class TestTraversals:
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+
+# TODO: test boundary conditions
