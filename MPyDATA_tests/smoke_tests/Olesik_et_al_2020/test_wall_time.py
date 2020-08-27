@@ -4,20 +4,15 @@ from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA import Options
 import numpy as np
 import pathlib
-import platform
 
 
 grid_layout_set = (x_log_of_pn(r0=1,base=2),)
 opt_set = default_opt_set
 
-if platform.system() == 'Windows':
-    rtol = .3
-else:
-    rtol = .3
 
 
-def test_wall_time(n_runs=2, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
-    setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
+def test_wall_time(n_runs=2, mrats=[10, ], generate=False, print_tab=True, rtol=.3):
+    setup = Setup(nr=default_nr * 20, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
         for opts in opt_set:
