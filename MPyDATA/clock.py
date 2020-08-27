@@ -1,4 +1,3 @@
-import numba
 import ctypes
 import platform
 
@@ -13,13 +12,3 @@ else:
 
 clock = ctypes.CDLL(lib).clock
 clock.argtypes = []
-
-scale = 1
-if platform.system() == 'Linux':
-    scale = 1000
-
-
-@numba.njit()
-def time():
-    value = clock()
-    return value / scale
