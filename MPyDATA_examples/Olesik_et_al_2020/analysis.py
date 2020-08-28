@@ -76,7 +76,8 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
             rh = output[coord]["grid"]['rh']
             analytical.append(discretised_analytical_solution(
                 rh.magnitude,
-                lambda r: pdf_t(r * rh.units).magnitude
+                lambda r: pdf_t(r * rh.units).magnitude,
+                midpoint_value=True
             ) * pdf_t(rh[0]).units)   # TODO ? * coord.x (r * rh.units)
         output[coord]["analytical"] = analytical
 
@@ -134,3 +135,17 @@ def rel_disp(r, psi, psi_coord):
     std = np.sqrt(mom2/mom0 - mu**2)
     d = std/mu
     return d
+
+def bin_mass(r, psi, psi_coord):
+    mom0 = 0
+    mom3 = 0
+    for i in range(len(psi)):
+        psi_i = psi[i]
+        dp_i = psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        integral_i = psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 3) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3)
+        bin_mom0 = psi_i * dp_i
+        bin_mom3 = psi_i * integral_i
+        mom0 += bin_mom0
+        mom3 += bin_mom3
+    result = mom3 / mom0
+    return result
