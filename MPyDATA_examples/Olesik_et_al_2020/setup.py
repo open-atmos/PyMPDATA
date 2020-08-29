@@ -3,10 +3,20 @@ from MPyDATA_examples.Olesik_et_al_2020.physics import East_and_Marshall_1954
 from scipy import integrate
 import numpy as np
 import pint
+from scipy import optimize
 
 default_nr = 64
 default_GC_max = .5
-default_mixing_ratios_g_kg = np.array([1, 2, 4, 10])
+default_mixing_ratios_g_kg = np.array([1, 4, 10])
+default_opt_set = (
+    {'n_iters': 1},
+    {'n_iters': 2},
+    {'n_iters': 2, 'infinite_gauge': True},
+    {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True},
+    {'n_iters': 3, 'third_order_terms': True},
+    {'n_iters': 3},
+    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
+)
 
 
 # based on Fig. 3 from East 1957
@@ -26,6 +36,18 @@ class Setup:
         self.size_distribution = East_and_Marshall_1954.SizeDistribution(si)
 
         self.C = (1 * si.gram / si.kilogram) / self.mixing_ratio(self.size_distribution.pdf)
+        self.out_times = self.find_out_steps()
+
+    def find_out_steps(self):
+        out_steps = []
+        for mr in self.mixing_ratios:
+            def findroot(ti):
+                return (mr - self.mixing_ratio(
+                    equilibrium_drop_growth.PdfEvolver(self.pdf, self.drdt, ti * t_unit))).magnitude
+            t_unit = self.si.second
+            t = optimize.brentq(findroot, 0, (1 * self.si.hour).to(t_unit).magnitude)
+            out_steps.append(t)
+        return out_steps
 
     def mixing_ratio(self, pdf):
         # TODO!!!
@@ -35,18 +57,19 @@ class Setup:
         # def fmgn(fun, unit):
         #     return lambda x: fun(x * xunit).to(unit).magnitude
 
-        r_min = .1 * self.si.micrometre
+        r_min = .1 * self.si.um
         while not np.isfinite(pdf(r_min).magnitude):
             r_min *= 1.01
 
         def pdfarg(r_nounit):
             r = r_nounit * xunit
-            result =  pdf(r) * r**3
+            result = pdf(r) * r ** 3
             return result.to(yunit * xunit ** 3).magnitude
+
         I = integrate.quad(pdfarg,
-            r_min.to(xunit).magnitude,
-            np.inf #, epsrel=1e-06
-        )[0] * yunit * xunit ** 4
+                           r_min.to(xunit).magnitude,
+                           np.inf
+                           )[0] * yunit * xunit ** 4
         return (I * 4 / 3 * np.pi * self.rho_w / self.rho_a).to(self.si.gram / self.si.kilogram)
 
     def pdf(self, r):
@@ -54,4 +77,3 @@ class Setup:
 
     def cdf(self, r):
         return self.C * self.size_distribution.cdf(r)
-

@@ -13,9 +13,7 @@ from .arakawa_c.scalar_field import ScalarField
 from .solver import Solver
 from .options import Options
 from MPyDATA.stepper import Stepper
-from .arakawa_c.discretisation import nondivergent_vector_field_2d, discretised_analytical_solution
-from .arakawa_c.boundary_condition.extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
-from .arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
+from .arakawa_c.discretisation import nondivergent_vector_field_2d
 from .arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
 
 
@@ -78,61 +76,3 @@ class Factories:
                       advector=VectorField((np.full(grid[0]+1, advector, dtype=options.dtype),), halo=options.n_halo, boundary_conditions=boundary_conditions)
                       )
 
-    # TODO: move to Olesik_et_al_2020 example?
-    @staticmethod
-    def condensational_growth(nr, r_min, r_max, GC_max, grid_layout, psi_coord, pdf_of_r, drdt_of_r, opts: Options):
-        # psi = psi(p)
-        dp_dr = psi_coord.dx_dr
-        dx_dr = grid_layout.dx_dr
-
-        xh, dx = np.linspace(
-            grid_layout.x(r_min),
-            grid_layout.x(r_max),
-            nr + 1,
-            retstep=True
-        )
-        rh = grid_layout.r(xh)
-
-        x = np.linspace(
-            xh[0] + dx / 2,
-            xh[-1] - dx / 2,
-            nr
-        )
-        r = grid_layout.r(x)
-
-        def pdf_of_r_over_psi(r):
-            return pdf_of_r(r)/ psi_coord.dx_dr(r)
-
-        psi = discretised_analytical_solution(rh, pdf_of_r_over_psi)
-
-        dp_dt = drdt_of_r(rh) * dp_dr(rh)
-        G = dp_dr(r) / dx_dr(r)
-
-        # C = dr_dt * dt / dr
-        # GC = dp_dr / dx_dr * dr_dt * dt / dr =
-        #        \       \_____ / _..____/
-        #         \_____.._____/    \_ dt/dx
-        #               |
-        #             dp_dt
-
-        dt = GC_max * dx / np.amax(dp_dt)
-        GCh = dp_dt * dt / dx
-
-        # CFL condition
-        np.testing.assert_array_less(np.abs(GCh), 1)
-
-        g_factor = ScalarField(G.astype(dtype=opts.dtype), halo=opts.n_halo, boundary_conditions=(ExtrapolatedBoundaryCondition(),))
-        state = ScalarField(psi.astype(dtype=opts.dtype), halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0),))
-        GC_field = VectorField([GCh.astype(dtype=opts.dtype)], halo=opts.n_halo, boundary_conditions=(ConstantBoundaryCondition(0),))
-        stepper = Stepper(
-            options=opts,
-            n_dims=1,
-            non_unit_g_factor=True
-        )
-        return (
-            Solver(stepper=stepper, g_factor=g_factor, advectee=state, advector=GC_field),
-            r,
-            rh,
-            dx,
-            dt
-        )
