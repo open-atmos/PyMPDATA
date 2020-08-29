@@ -4,15 +4,19 @@ from MPyDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from MPyDATA import Options
 import numpy as np
 import pathlib
+import platform, os
 
 
 grid_layout_set = (x_log_of_pn(r0=1,base=2),)
 opt_set = default_opt_set
 
+rtol = .25
+if platform.system() != 'Linux' and 'TRAVIS' in os.environ:
+    rtol = .75
 
-def test_wall_time(n_runs=4, mrats=[10, ], generate=False, print_tab=True, rtol=.4):
-    setup = Setup(nr=default_nr * 15, mixing_ratios_g_kg=np.array(mrats))
-    print("nt=", setup.out_times[0])
+
+def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
+    setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
         for opts in opt_set:
@@ -28,8 +32,6 @@ def test_wall_time(n_runs=4, mrats=[10, ], generate=False, print_tab=True, rtol=
             if opts == {'n_iters': 1}:
                 norm = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
-
-            print("for travis testing upwind time", norm)
             table_data["values"].append(round(selected_value / norm, 1))
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
     compare_refdata(data=table_data["values"], rtol=rtol, generate=generate)

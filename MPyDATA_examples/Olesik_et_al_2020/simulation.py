@@ -27,9 +27,9 @@ class Simulation:
         r = grid_layout.r(x)
 
         def pdf_of_r_over_psi(r):
-            return pdf_of_r(r)/ psi_coord.dx_dr(r)
+            return pdf_of_r(r) / psi_coord.dx_dr(r)
 
-        psi = discretised_analytical_solution(rh, pdf_of_r_over_psi, midpoint_value=True)
+        psi = discretised_analytical_solution(rh, pdf_of_r_over_psi, midpoint_value=True, r=r)
 
         dp_dt = drdt_of_r(rh) * dp_dr(rh)
         G = dp_dr(r) / dx_dr(r)
@@ -125,7 +125,6 @@ class Simulation:
 
     @property
     def dp_dr(self):
-        # TODO: shouldn't be returned from simulation, rather something like n_of_x really
         return self.psi_coord.dx_dr(self.__r)
 
 

@@ -1,6 +1,5 @@
 from MPyDATA_examples.Olesik_et_al_2020.physics import equilibrium_drop_growth
 from MPyDATA_examples.Olesik_et_al_2020.physics import East_and_Marshall_1954
-from MPyDATA.arakawa_c.discretisation import discretised_analytical_solution
 from scipy import integrate
 import numpy as np
 import pint

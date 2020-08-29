@@ -87,11 +87,15 @@ def z_vec_coord(grid):
     return xX, zZ
 
 
-def discretised_analytical_solution(rh, pdf_t, midpoint_value=False):
+def discretised_analytical_solution(rh, pdf_t, midpoint_value=False, r=None):
+    if midpoint_value:
+        assert r is not None
+    else:
+        assert r is None
     output = np.empty(rh.shape[0]-1)
     for i in range(output.shape[0]):
         if midpoint_value:
-            output[i] = pdf_t((rh[i]+rh[i+1])/2)
+            output[i] = pdf_t(r[i])
         else:
             dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO: handle other output values
             output[i] = dcdf / (rh[i + 1] - rh[i])
