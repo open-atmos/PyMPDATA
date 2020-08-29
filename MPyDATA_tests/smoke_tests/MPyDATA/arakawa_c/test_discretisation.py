@@ -50,7 +50,7 @@ def test_size_distribution(grid, coord, plot=False):
 def test_quad_vs_midpoint():
     # Arrange
     x = np.linspace(0, np.pi, 3)
-    a = discretised_analytical_solution(x, np.sin, midpoint_value=True)
+    a = discretised_analytical_solution(x, np.sin, midpoint_value=True, r=x[:-1] + np.diff(x)/2)
     b = discretised_analytical_solution(x, np.sin, midpoint_value=False)
     test_val = np.abs((a - b)/a)
     # Assert
