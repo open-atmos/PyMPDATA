@@ -69,7 +69,7 @@ script:
   - |
     if [[ $EXAMPLES == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user
-      for i in MPyDATA_examples/*/demo*.ipynb; do
+      for i in MPyDATA_examples/Olesik_et_al_2020/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
         travis_wait 30 jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
@@ -80,7 +80,7 @@ script:
       if [[ $CODECOV == 'TRUE' ]]; then
         python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests;
       else
-        python$PY_SFX -m pytest MPyDATA_tests;
+        python$PY_SFX -m pytest MPyDATA_tests/smoke_tests/Olesik_et_al_2020;
       fi;
     fi;
 
