@@ -11,6 +11,7 @@ class Options:
                  divergent_flow: bool = False,
                  flux_corrected_transport: bool = False,
                  third_order_terms: bool = False,
+                 DPDC: bool = False,
                  epsilon: float = 1e-15,
                  non_zero_mu_coeff: bool = False,
                  dtype: np.floating = np.float64
@@ -18,11 +19,13 @@ class Options:
         self._values = {'n_iters': n_iters, 'infinite_gauge': infinite_gauge, 'epsilon': epsilon,
                         'divergent_flow': divergent_flow, 'flux_corrected_transport': flux_corrected_transport,
                         'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff,
-                        'dtype': dtype}
+                        'dtype': dtype, 'DPDC': DPDC}
 
         if flux_corrected_transport and n_iters < 2:
             raise ValueError()
         if n_iters < 1:
+            raise ValueError()
+        if n_iters > 2 and DPDC:
             raise ValueError()
 
     @property
@@ -53,6 +56,10 @@ class Options:
     def third_order_terms(self):
         return self._values['third_order_terms']
 
+    @property
+    def DPDC(self):
+        return self._values['DPDC']
+    
     @property
     def non_zero_mu_coeff(self):
         return self._values['non_zero_mu_coeff']

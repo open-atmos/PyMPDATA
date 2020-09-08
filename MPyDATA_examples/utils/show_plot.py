@@ -14,7 +14,7 @@ def show_plot(filename=None):
         )
     else:
         tempfile_path = os.path.join(outdir, filename)
-    pyplot.savefig(tempfile_path, type='pdf')
+    pyplot.savefig(tempfile_path, type='pdf', bbox_inches='tight')
 
     output = Output()
     with output:

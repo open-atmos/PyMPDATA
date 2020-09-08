@@ -6,7 +6,8 @@ from MPyDATA.options import Options
 import pytest
 import numpy as np
 
-grid_layout_set = (x_id(), x_p2(), x_log_of_pn(n=1))
+setup=Setup()
+grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))
 opt_set = (
     {'n_iters': 1},
     {'n_iters': 2, 'flux_corrected_transport': True},
@@ -22,18 +23,17 @@ def data():
     return result
 
 
-@pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(n=1)])
-@pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_pn(n=3)])
+@pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(r0=1 * setup.si.um, n=1)])
+@pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_pn(r0=1, n=3)])
 @pytest.mark.parametrize("flux_corrected_transport", [False, True])
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
     opts = Options(flux_corrected_transport=flux_corrected_transport)
-    setup = Setup()
     # Act
     simulation = Simulation(setup, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
     simulation.step(1)
     # Asserts for array shapes
-    assert simulation.n.shape[0] == setup.nr
+    assert simulation.n_of_r.shape[0] == setup.nr
 
     # Asserts for Jacobian
     G_with_halo = simulation.solver.g_factor.data

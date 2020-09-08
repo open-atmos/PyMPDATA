@@ -1,6 +1,7 @@
 from matplotlib import pyplot
 import numpy as np
 from .distributions import n_n
+from scipy import integrate
 
 
 class Plotter:
@@ -97,3 +98,4 @@ class Plotter:
                 n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm,
                 where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth=linewidth
             )
+
