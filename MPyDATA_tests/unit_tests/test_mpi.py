@@ -24,7 +24,7 @@ class TestMPI:
 
     @staticmethod
     @pytest.mark.parametrize("snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)])
-    @pytest.mark.parametrize("dt", [np.intc, np.float32, np.float64, np.uint8])
+    @pytest.mark.parametrize("dt", [np.float64])
     def test_send_recv(snd, rcv, dt):
         src = np.array([1, 2, 3, 4, 5], dtype=dt)
         dst_tst = np.empty(5, dtype=dt)
