@@ -1,7 +1,7 @@
 from matplotlib import pyplot
 import numpy as np
 from .distributions import n_n
-from scipy import integrate
+import matplotlib
 
 
 class Plotter:
@@ -16,10 +16,15 @@ class Plotter:
         self.cdfarg *= setup.r_min.units
         self.dcdfarg *= setup.r_max.units
 
+        matplotlib.rcParams.update({'font.size': 16})
         if len(plots) == 1:
-            self.figsize = (14,9)
+            # matplotlib.rcParams.update({'font.size': 20})
+            # self.figsize = (14,10)
+            self.figsize = (10,6)
         else:
-            self.figsize = (9,9)
+            # matplotlib.rcParams.update({'font.size': 14})
+            # self.figsize = (9,8)
+            self.figsize = (10,11)
         self.fig, self.axs = pyplot.subplots(len(plots), 1, figsize=self.figsize)
         if len(plots) == 1:
             self.axs = (self.axs,)
@@ -82,6 +87,7 @@ class Plotter:
                 n_n.to_n_n(y, r1, r2),
                 where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth = linewidth
             )
+            self.xlim('n')
 
         # surface distribution # TODO: norm
         if 's' in self.plots:
@@ -90,6 +96,7 @@ class Plotter:
                 n_n.to_n_s(y, r1, r2),
                 where='mid', label=lbl, linestyle=self.style_dict[label], color=color
             )
+            self.xlim('s')
 
         # normalised mass distribution
         if 'm' in self.plots:
@@ -98,4 +105,10 @@ class Plotter:
                 n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm,
                 where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth=linewidth
             )
+            self.xlim('m')
+
+    def xlim(self, plot):
+        self.axs[self.plots.index(plot)].set_xlim(
+            (0, self.setup.r_max.magnitude)
+        )
 
