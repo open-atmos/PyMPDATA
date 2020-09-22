@@ -107,7 +107,7 @@ MPI_UNSIGNED               = 0x4c000406
 MPI_LONG                   = 0x4c000407
 MPI_UNSIGNED_LONG          = 0x4c000408
 MPI_LONG_LONG_INT          = 0x4c000809
-MPI_LONG_LONG              = MPI_LONG_LONG_INT,
+MPI_LONG_LONG              = MPI_LONG_LONG_INT
 MPI_FLOAT                  = 0x4c00040a
 MPI_DOUBLE                 = 0x4c00080b
 MPI_LONG_DOUBLE            = 0x4c00080c
@@ -148,7 +148,7 @@ MPI_COMPLEX4               = MPI_DATATYPE_NULL
 MPI_INTEGER2               = 0x4c00022f
 MPI_INTEGER4               = 0x4c000430
 MPI_INTEGER8               = 0x4c000831
-MPI_INTEGER16              = MPI_DATATYPE_NULL,
+MPI_INTEGER16              = MPI_DATATYPE_NULL
 MPI_INT8_T                 = 0x4c000133
 MPI_INT16_T                = 0x4c000234
 MPI_INT32_T                = 0x4c000435
@@ -210,7 +210,7 @@ for k, v in _TYPES_NP2MPI_RAW.items():
 
 @numba.njit
 def _MPI_get_type_as_int(dtype):
-    return int(_TYPES_NP2MPI[dtype.num])
+    return _TYPES_NP2MPI[dtype.num].ctypes.data
 
 # int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag,  MPI_Comm comm)
 @numba.njit
@@ -221,5 +221,5 @@ def send(data, dest, tag):
 #int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status * status)
 @numba.njit()
 def recv(data, source, tag):
-    status = np.empty(5, dtype=np.intc)
+    status = np.empty((5,), dtype=np.intc)
     result = _MPI_Recv(x.ctypes.data, x.size, _MPI_get_type_as_int(x.dtype), source, tag, _MPI_Comm_world(), status.ctypes.data)
