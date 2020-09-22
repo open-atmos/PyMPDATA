@@ -78,9 +78,18 @@ script:
       done;
     else
       if [[ $CODECOV == 'TRUE' ]]; then
-        python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests;
+        python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=MPyDATA MPyDATA_tests;
       else
-        mpirun -n 2 python$PY_SFX -m pytest MPyDATA_tests;
+        python$PY_SFX -m pytest MPyDATA_tests -k "not test_mpi";
+      fi;
+      if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
+        mpiexec /np 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests;
+      else
+        if [[ $MPI == 'mpich' ]]; then
+          mpiexec -n 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests;
+        else
+          mpirun -n 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests;
+        fi;
       fi;
     fi;
 
