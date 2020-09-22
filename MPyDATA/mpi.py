@@ -10,6 +10,7 @@ if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
 else:
     _MPI_Comm_t = ctypes.c_void_p
 _MPI_Datatype_t = ctypes.c_int
+_MPI_Status_ptr_t = ctypes.c_void_p
 
 if platform.system() == 'Linux':
     lib = 'libmpi.so'
