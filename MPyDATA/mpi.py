@@ -9,7 +9,12 @@ if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
     _MPI_Comm_t = ctypes.c_int
 else:
     _MPI_Comm_t = ctypes.c_void_p
-_MPI_Datatype_t = ctypes.c_void_p
+
+if MPI._sizeof(MPI.Datatype) == ctypes.sizeof(ctypes.c_int):
+    _MPI_Datatype_t = ctypes.c_int
+else:
+    _MPI_Datatype_t = ctypes.c_void_p
+
 _MPI_Status_ptr_t = ctypes.c_void_p
 
 if platform.system() == 'Linux':
@@ -124,3 +129,4 @@ def send(data, dest, tag):
 def recv(data, source, tag):
     status = np.empty(5, dtype=np.intc)
     result = _MPI_Recv(data.ctypes.data, data.size, _MPI_Double(), source, tag, _MPI_Comm_world(), status.ctypes.data)
+    assert result == 0
