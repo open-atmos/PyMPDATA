@@ -40,7 +40,7 @@ jobs:
       os: windows
       before_install:
         - choco install python --version 3.8.2
-      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+      env: PATH=/c/Python38:/c/Python38/Scripts:/c/"Microsoft MPI"/Bin:/c/"Program Files"/"Microsoft MPI"/Bin:$PATH
 
 install:
   - |
@@ -83,7 +83,7 @@ script:
         python$PY_SFX -m pytest MPyDATA_tests -k "not test_mpi";
       fi;
       if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
-        mpiexec.exe /np 2 python$PY_SFX.exe -m pytest -k "test_mpi" MPyDATA_tests;
+        mpiexec /np 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests;
       else
         if [[ $MPI == 'mpich' ]]; then
           mpiexec -n 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests;
