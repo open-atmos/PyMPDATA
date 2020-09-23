@@ -61,6 +61,7 @@ install:
       curl -L $WEB_ADDRESS/msmpisdk.msi -o msmpisdk.msi
       ./msmpisetup.exe
       msiexec //i msmpisdk.msi
+      export PATH=/c/Program\ Files/Microsoft\ MPI/bin:$PATH
     fi;
   - pip$PY_SFX install -U -r requirements.txt
 
