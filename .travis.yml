@@ -40,7 +40,7 @@ jobs:
       os: windows
       before_install:
         - choco install python --version 3.8.2
-      env: PATH=/c/Python38:/c/Python38/Scripts:/c/"Microsoft MPI"/Bin:/c/"Program Files"/"Microsoft MPI"/Bin:$PATH
+      env: PATH=/c/Python38:/c/Python38/Scripts:/c/Microsoft MPI/Bin:/c/Program Files/Microsoft MPI/Bin:$PATH
 
 install:
   - |
