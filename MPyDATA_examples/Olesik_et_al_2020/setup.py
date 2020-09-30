@@ -7,7 +7,7 @@ from scipy import optimize
 
 default_nr = 64
 default_GC_max = .5
-default_mixing_ratios_g_kg = np.array([1, 4, 10])
+default_mixing_ratios_g_kg = np.array([1, 2, 4, 6, 8, 10])
 default_opt_set = {
     'a': {'n_iters': 1},
     'b': {'n_iters': 2},
@@ -18,6 +18,8 @@ default_opt_set = {
     'g': {'n_iters': 3},
     'h': {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True},
 }
+colors = ['red', 'blue', 'crimson', 'orange', 'olive', 'navy', 'green', 'blueviolet']
+colors = {key: colors.pop(0) for key in default_opt_set.keys()}
 
 
 # based on Fig. 3 from East 1957

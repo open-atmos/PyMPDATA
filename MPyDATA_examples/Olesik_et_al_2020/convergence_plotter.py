@@ -28,7 +28,7 @@ def polar_plot(nr, cour, values, name):
     ax = plt.subplot(111, projection='polar')
     cnt = ax.contourf(X, Y, Z, levels, cmap='jet')
     plt.contour(X, Y, Z, levels, colors='black', linewidth=.3)
-    ax.scatter(X, Y, alpha=.2, s=10)
+    ax.scatter(X, Y, alpha=.8, s=10)
     legend = plt.colorbar(cnt, ax=ax, pad=0.1)
 
     ax.set_thetalim(min(theta_array),max(theta_array))

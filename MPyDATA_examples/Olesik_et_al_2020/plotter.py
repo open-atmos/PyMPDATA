@@ -70,42 +70,41 @@ class Plotter:
             y_mass = y * x**3 * 4 / 3 * np.pi * self.setup.rho_w / self.setup.rho_a / mnorm
             self.axs[self.plots.index('m')].plot(x, y_mass, color=color, linestyle=':')
 
-    def pdf_histogram(self, x, y, bin_boundaries, label, mnorm, color='black', linewidth = 1):
-        lbl = label
+    def _plot(self, index, x, y, fill, label, color, linewidth):
+        lbl = '' + label
         if label not in self.style_dict:
             self.style_dict[label] = self.style_palette[len(self.style_dict)]
         else:
             lbl = ''
 
+        if fill:
+            self.axs[self.plots.index(index)].fill_between(
+                x,
+                y,
+                step='mid', label=lbl, color='gainsboro', alpha = 1)
+        else:
+            self.axs[self.plots.index(index)].step(
+                x,
+                y,
+                where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth=linewidth
+            )
+        self.xlim(index)
+
+    def pdf_histogram(self, x, y, bin_boundaries, label, mnorm, color='black', linewidth = 1, fill=True):
         r1 = bin_boundaries[:-1]
         r2 = bin_boundaries[1:]
 
         # number distribution
         if 'n' in self.plots:
-            self.axs[self.plots.index('n')].step(
-                x,
-                n_n.to_n_n(y, r1, r2),
-                where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth = linewidth
-            )
-            self.xlim('n')
+            self._plot('n', x, n_n.to_n_n(y, r1, r2), fill=fill, label=label, color=color, linewidth=linewidth)
 
         # surface distribution # TODO: norm
         if 's' in self.plots:
-            self.axs[self.plots.index('s')].step(
-                x,
-                n_n.to_n_s(y, r1, r2),
-                where='mid', label=lbl, linestyle=self.style_dict[label], color=color
-            )
-            self.xlim('s')
+            self._plot('s', x, n_n.to_n_s(y, r1, r2), fill=fill, label=label, color=color, linewidth=linewidth)
 
         # normalised mass distribution
         if 'm' in self.plots:
-            self.axs[self.plots.index('m')].step(
-                x,
-                n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm,
-                where='mid', label=lbl, linestyle=self.style_dict[label], color=color, linewidth=linewidth
-            )
-            self.xlim('m')
+            self._plot('m', x, n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm, fill=fill, label=label, color=color, linewidth=linewidth)
 
     def xlim(self, plot):
         self.axs[self.plots.index(plot)].set_xlim(
