@@ -22,6 +22,18 @@ colors = ['red', 'blue', 'crimson', 'orange', 'olive', 'navy', 'green', 'bluevio
 colors = {key: colors.pop(0) for key in default_opt_set.keys()}
 
 
+def option_string(opts):
+    str_repl = [["'n_iters': 1", "upwind"],
+                ["'n_iters': 2", "MPDATA 2 iterations"],
+                ["'n_iters': 3", "MPDATA 3 iterations"],
+                ["'", ""],
+                [": True", ""],
+                ["_", " "],
+                ["{", ""], ["}", ""], [",", ""], ["flux corrected transport", "non-oscillatory"]]
+    for repl in str_repl:
+        opts = opts.replace(repl[0], repl[1])
+    return opts
+
 # based on Fig. 3 from East 1957
 class Setup:
     def __init__(self, nr=default_nr, mixing_ratios_g_kg=default_mixing_ratios_g_kg):
