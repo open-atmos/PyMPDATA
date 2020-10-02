@@ -8,7 +8,7 @@ import platform, os
 
 
 grid_layout_set = (x_log_of_pn(r0=1,base=2),)
-opt_set = default_opt_set.items()
+opt_set = default_opt_set.values()
 
 rtol = .25
 if platform.system() != 'Linux' and 'TRAVIS' in os.environ:
@@ -34,7 +34,7 @@ def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
             table_data["values"].append(round(selected_value / norm, 1))
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
-    compare_refdata(data=table_data["values"], rtol=rtol, generate=generate)
+    compare_refdata(data=table_data, rtol=rtol, generate=generate)
 
 
 def make_data(setup, grid, opts):
@@ -65,9 +65,12 @@ def make_textable(data, generate=False, print_tab=False):
 
 
 def compare_refdata(data, rtol, generate=False):
+    delimiter=';'
     path = pathlib.Path(__file__).parent.joinpath("wall_time_refdata.txt")
     if generate:
-        np.savetxt(path, data, delimiter=',')
+        table = np.char.array(np.concatenate([data['opts'], data['values']])).reshape(len(data['values']),2).T
+        np.savetxt(path, table, delimiter=delimiter, fmt="%s")
     else:
-        refdata = np.loadtxt(path, delimiter=',')[:len(data)]
-        np.testing.assert_allclose(actual=data, desired=refdata, rtol=rtol)
+        table = np.loadtxt(path, delimiter=delimiter, dtype=str)
+        np.testing.assert_allclose(actual=data['values'], desired=np.array(table[:,1].astype(float)), rtol=rtol)
+        np.testing.assert_array_equal(data['opts'], table[:,0])
