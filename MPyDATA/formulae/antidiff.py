@@ -38,6 +38,9 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms
     epsilon = options.epsilon
+    DPDC = options.DPDC
+    
+    # TODO: does DPDC + other options combination make sense?
 
     # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
@@ -69,7 +72,12 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
     @numba.njit(**options.jit_flags)
     def antidiff_basic(psi, GC, _):
         # eq. 13 in Smolarkiewicz 1984
-        result = (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * A(psi)
+        tmp = A(psi)
+        result = (np.abs(atv(*GC, .5, 0)) - atv(*GC, +.5, 0) ** 2) * tmp
+        if DPDC:  # TODO n_dims > 1
+            a = (1 / (1 - np.abs(tmp)))
+            b = - (tmp*a)/(1 - tmp**2)
+            result = result * (result * b + a) 
         if n_dims == 1:
             return result
         else:
