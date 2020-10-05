@@ -41,8 +41,8 @@ def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor):
     @numba.njit(**jit_flags)
     def A(advectee, _, __):
         return -2 * (
-            at(*advectee, 1) - at(*advectee, 0)
+            at(*advectee, 1, 0) - at(*advectee, 0, 0)
         ) / (
-            at(*advectee, 1) + at(*advectee, 0) + epsilon
+            at(*advectee, 1, 0) + at(*advectee, 0, 0) + epsilon
         )
     return A
