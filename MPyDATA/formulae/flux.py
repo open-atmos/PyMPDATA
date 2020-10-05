@@ -69,11 +69,11 @@ def __make_flux(jit_flags, atv, at, first_pass, infinite_gauge):
     if not first_pass and infinite_gauge:
         @numba.njit(**jit_flags)
         def flux(_, advector, __):
-            return atv(*advector, +.5, 0, 0)
+            return atv(*advector, +.5)
     else:
         @numba.njit(**jit_flags)
         def flux(advectee, advector, __):
             return \
-                maximum_0(atv(*advector, +.5, 0, 0)) * at(*advectee, 0, 0, 0) + \
-                minimum_0(atv(*advector, +.5, 0, 0)) * at(*advectee, 1, 0, 0)
+                maximum_0(atv(*advector, +.5)) * at(*advectee, 0) + \
+                minimum_0(atv(*advector, +.5)) * at(*advectee, 1)
     return flux

@@ -45,26 +45,26 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
     # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
     def A(psi):
-        result = at(*psi, 1, 0, 0) - at(*psi, 0, 0, 0)
+        result = at(*psi, 1) - at(*psi, 0)
         if infinite_gauge:
             result /= 2
         else:
-            result /= (at(*psi, 1, 0, 0) + at(*psi, 0, 0, 0) + epsilon)
+            result /= (at(*psi, 1) + at(*psi, 0) + epsilon)
         return result
 
     # eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
     def B(psi):
         result = (
-                at(*psi, 1, 1, 0) + at(*psi, 0, 1, 0) -
-                at(*psi, 1, -1, 0) - at(*psi, 0, -1, 0)
+                at(*psi, 1, 1) + at(*psi, 0, 1) -
+                at(*psi, 1, -1) - at(*psi, 0, -1)
         )
         if infinite_gauge:
             result /= 4
         else:
             result /= (
-                    at(*psi, 1, 1, 0) + at(*psi, 0, 1, 0) +
-                    at(*psi, 1, -1, 0) + at(*psi, 0, -1, 0) +
+                    at(*psi, 1, 1) + at(*psi, 0, 1) +
+                    at(*psi, 1, -1) + at(*psi, 0, -1) +
                     epsilon
             )
         return result
@@ -73,7 +73,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
     def antidiff_basic(psi, GC, _):
         # eq. 13 in Smolarkiewicz 1984
         tmp = A(psi)
-        result = (np.abs(atv(*GC, .5, 0, 0)) - atv(*GC, +.5, 0, 0) ** 2) * tmp
+        result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
         if DPDC:  # TODO n_dims > 1
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
@@ -82,8 +82,8 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
             return result
         else:
             result -= (
-                0.5 * atv(*GC, .5, 0, 0) *
-                0.25 * (atv(*GC, 1., +.5, 0) + atv(*GC, 0., +.5, 0) + atv(*GC, 1., -.5, 0) + atv(*GC, 0., -.5, 0)) *
+                0.5 * atv(*GC, .5) *
+                0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
                 B(psi)
             )
         return result
@@ -93,23 +93,23 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
         # eq. 13 in Smolarkiewicz 1984
         result = antidiff_basic(psi, GC, G)
 
-        G_bar = (at(*G, 1, 0, 0) + at(*G, 0, 0, 0)) / 2 if non_unit_g_factor else 1
+        G_bar = (at(*G, 1) + at(*G, 0)) / 2 if non_unit_g_factor else 1
 
         # third-order terms
         if third_order_terms:
             # assert psi.dimension < 3  # TODO
             tmp = (
-              3 * atv(*GC, .5, 0, 0) * np.abs(atv(*GC, .5, 0, 0)) / G_bar
-              - 2 * atv(*GC, .5, 0, 0) ** 3 / G_bar ** 2
-              - atv(*GC, .5, 0, 0)
+              3 * atv(*GC, .5) * np.abs(atv(*GC, .5)) / G_bar
+              - 2 * atv(*GC, .5) ** 3 / G_bar ** 2
+              - atv(*GC, .5)
             ) / 6
 
-            tmp *= 2 * (at(*psi, 2, 0, 0) - at(*psi, 1, 0, 0) - at(*psi, 0, 0, 0) + at(*psi, -1, 0, 0))
+            tmp *= 2 * (at(*psi, 2) - at(*psi, 1) - at(*psi, 0) + at(*psi, -1))
 
             if infinite_gauge:
                 tmp /= (1 + 1 + 1 + 1)
             else:
-                tmp /= at(*psi, 2, 0, 0) + at(*psi, 1, 0, 0) + at(*psi, 0, 0, 0) + at(*psi, -1, 0, 0) + epsilon
+                tmp /= at(*psi, 2) + at(*psi, 1) + at(*psi, 0) + at(*psi, -1) + epsilon
 
             result += tmp
 
@@ -137,11 +137,11 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if divergent_flow:
             # assert psi.dimension == 1  # TODO!
-            tmp = -.25 * atv(*GC, .5, 0, 0) * (atv(*GC, 1.5, 0, 0) - atv(*GC, -.5, 0, 0))
+            tmp = -.25 * atv(*GC, .5) * (atv(*GC, 1.5) - atv(*GC, -.5))
             if non_unit_g_factor:
                 tmp /= G_bar
             if infinite_gauge:
-                tmp *= .5 * at(*psi, 1, 0, 0) + at(*psi, 0, 0, 0)
+                tmp *= .5 * at(*psi, 1) + at(*psi, 0)
 
             result += tmp
         return result
