@@ -5,6 +5,8 @@ from .meta import META_HALO_VALID
 from .enumerations import OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_START, RNG_STOP, INVALID_INDEX
 
 
+j=-1
+
 def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
                        boundary_cond_vector, boundary_cond_scalar):
     set = indexers[n_dims].set
@@ -25,17 +27,17 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spa
 
             vec_arg1_tpl = (vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner)
             for i in range(rng_outer[RNG_START] + halo, rng_outer[RNG_STOP] + halo) if n_dims > 1 else (INVALID_INDEX,):
-                for j in range(rng_mid3d[RNG_START] + halo, rng_mid3d[RNG_STOP] + halo) if n_dims > 2 else (INVALID_INDEX,):
-                    for k in range(rng_inner[RNG_START] + halo, rng_inner[RNG_STOP] + halo):
-                        focus = (i, j, k)
-                        if n_dims > 1:
-                            set(out, i, j, k, fun_outer(get(out, i, j, k), (focus, vec_arg1_tpl),
-                                                 (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
-                            if n_dims > 2:
-                                set(out, i, j, k, fun_mid3d(get(out, i, j, k), (focus, vec_arg1_tpl),
-                                                            (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
-                        set(out, i, j, k, fun_inner(get(out, i, j, k), (focus, vec_arg1_tpl),
+                #for j in range(rng_mid3d[RNG_START] + halo, rng_mid3d[RNG_STOP] + halo) if n_dims > 2 else (INVALID_INDEX,):
+                for k in range(rng_inner[RNG_START] + halo, rng_inner[RNG_STOP] + halo):
+                    focus = (i, j, k)
+                    if n_dims > 1:
+                        set(out, i, j, k, fun_outer(get(out, i, j, k), (focus, vec_arg1_tpl),
                                              (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
+                        if n_dims > 2:
+                            set(out, i, j, k, fun_mid3d(get(out, i, j, k), (focus, vec_arg1_tpl),
+                                                        (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
+                    set(out, i, j, k, fun_inner(get(out, i, j, k), (focus, vec_arg1_tpl),
+                                         (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
     else:
         @numba.njit(**jit_flags)
         def apply_scalar_impl(thread_id, out_meta,
@@ -51,11 +53,11 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spa
 
             vec_arg1_tpl = (vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner)
             for i in range(rng_outer[RNG_START] + halo, rng_outer[RNG_STOP] + halo) if n_dims > 1 else (INVALID_INDEX,):
-                for j in (INVALID_INDEX,):  # TODO
-                    for k in range(rng_inner[RNG_START] + halo, rng_inner[RNG_STOP] + halo):
-                        focus = (i, j, k)
-                        set(out, i, j, k, fun(get(out, i, j, k), (focus, vec_arg1_tpl),
-                                             (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
+                #for j in (INVALID_INDEX,):  # TODO
+                for k in range(rng_inner[RNG_START] + halo, rng_inner[RNG_STOP] + halo):
+                    focus = (i, j, k)
+                    set(out, i, j, k, fun(get(out, i, j, k), (focus, vec_arg1_tpl),
+                                         (focus, scal_arg2), (focus, scal_arg3), (focus, scal_arg4)))
 
     @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
     def apply_scalar(fun_outer, fun_mid3d, fun_inner,
@@ -102,26 +104,26 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner):
         if n_dims > 1:
             if thread_id == 0:
                 for i in range(halo - 1, - 1, -1):  # note: reverse order assumes in Extrapolated!
-                    for j in (INVALID_INDEX,):  # TODO
-                        for k in range(0, span[INNER] + 2 * halo):
-                            focus = (i, j, k)
-                            set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_LEFT))
+                    #for j in (INVALID_INDEX,):  # TODO
+                    for k in range(0, span[INNER] + 2 * halo):
+                        focus = (i, j, k)
+                        set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_LEFT))
             if last_thread:
                 for i in range(span[OUTER] + halo, span[OUTER] + 2 * halo):  # note: non-reverse order assumed in Extrapolated
-                    for j in (INVALID_INDEX,):  # TODO
-                        for k in range(0, span[INNER] + 2 * halo):
-                            focus = (i, j, k)
-                            set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_RIGHT))
+                    #for j in (INVALID_INDEX,):  # TODO
+                    for k in range(0, span[INNER] + 2 * halo):
+                        focus = (i, j, k)
+                        set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_RIGHT))
 
         for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
-            for j in (INVALID_INDEX,):  # TODO
-                for k in range(0, halo):
-                    focus = (i, j, k)
-                    set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_LEFT))
+            #for j in (INVALID_INDEX,):  # TODO
+            for k in range(0, halo):
+                focus = (i, j, k)
+                set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_LEFT))
         for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
-            for j in (INVALID_INDEX,):  # TODO
-                for k in range(span[INNER] + halo, span[INNER] + 2 * halo):
-                    focus = (i, j, k)
-                    set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_RIGHT))
+            #for j in (INVALID_INDEX,):  # TODO
+            for k in range(span[INNER] + halo, span[INNER] + 2 * halo):
+                focus = (i, j, k)
+                set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_RIGHT))
 
     return boundary_cond_scalar
