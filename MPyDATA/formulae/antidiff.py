@@ -101,7 +101,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
             tmp = (
               3 * atv(*GC, .5, 0, 0) * np.abs(atv(*GC, .5, 0, 0)) / G_bar
               - 2 * atv(*GC, .5, 0, 0) ** 3 / G_bar ** 2
-              - atv(*GC, .5, 0)
+              - atv(*GC, .5, 0, 0)
             ) / 6
 
             tmp *= 2 * (at(*psi, 2, 0, 0) - at(*psi, 1, 0, 0) - at(*psi, 0, 0, 0) + at(*psi, -1, 0, 0))
