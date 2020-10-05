@@ -35,9 +35,9 @@ def __make_upwind(jit_flags, atv, at, nug):
     @numba.njit(**jit_flags)
     def upwind(init, flux, g_factor, _, __):
         result = \
-               + atv(*flux, -.5, 0) \
-               - atv(*flux, .5, 0)
+               + atv(*flux, -.5, 0, 0) \
+               - atv(*flux, .5, 0, 0)
         if nug:
-            result /= at(*g_factor, 0, 0)
+            result /= at(*g_factor, 0, 0, 0)
         return init + result
     return upwind

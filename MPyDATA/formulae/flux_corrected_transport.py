@@ -34,11 +34,11 @@ def __make_psi_extremum(jit_flags, n_dims, at, extremum):
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, _1, psi, _3, _4):
-            return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0))
+            return extremum(at(*psi, 0, 0, 0), at(*psi, -1, 0, 0), at(*psi, 1, 0, 0))
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, _1, psi, _3, _4):
-            return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0), at(*psi, 0, -1), at(*psi, 0, 1))
+            return extremum(at(*psi, 0, 0, 0), at(*psi, -1, 0, 0), at(*psi, 1, 0, 0), at(*psi, 0, -1, 0), at(*psi, 0, 1, 0))
     elif n_dims == 3:
         def psi_extremum(_0, _1, psi, _3, _4):
             return extremum(
@@ -85,13 +85,13 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def denominator(flux):
-            return max(atv(*flux, -.5 * sign, 0), 0) - min(atv(*flux, +.5 * sign, 0), 0) + epsilon
+            return max(atv(*flux, -.5 * sign, 0, 0), 0) - min(atv(*flux, +.5 * sign, 0, 0), 0) + epsilon
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def denominator(flux):
             return (
-                max(atv(*flux, -.5 * sign, 0), 0) - min(atv(*flux, +.5 * sign, 0), 0) +
-                max(atv(*flux, 0, -.5 * sign), 0) - min(atv(*flux, 0, +.5 * sign), 0) +
+                max(atv(*flux, -.5 * sign, 0, 0), 0) - min(atv(*flux, +.5 * sign, 0, 0), 0) +
+                max(atv(*flux, 0, -.5 * sign, 0), 0) - min(atv(*flux, 0, +.5 * sign, 0), 0) +
                 epsilon
             )
     elif n_dims == 3:
@@ -109,7 +109,7 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
     if non_unit_g_factor:
         @numba.njit(**jit_flags)
         def G(g_factor):
-            return at(*g_factor, 0, 0)
+            return at(*g_factor, 0, 0, 0)
     else:
         @numba.njit(**jit_flags)
         def G(_):
@@ -118,18 +118,18 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, flux, psi, psi_ext, g_factor):
-            return ((extremum(at(*psi_ext, 0, 0), at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0))
-                     - at(*psi, 0, 0)) * sign * G(g_factor)
+            return ((extremum(at(*psi_ext, 0, 0, 0), at(*psi, 0, 0, 0), at(*psi, -1, 0, 0), at(*psi, 1, 0, 0))
+                     - at(*psi, 0, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux)
 
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def psi_extremum(_0, flux, psi, psi_ext, g_factor):
-            return ((extremum(at(*psi_ext, 0, 0),
-                              at(*psi, 0, 0),
-                              at(*psi, -1, 0), at(*psi, 1, 0),
-                              at(*psi, 0, -1), at(*psi, 0, 1))
-                     - at(*psi, 0, 0)) * sign * G(g_factor)
+            return ((extremum(at(*psi_ext, 0, 0, 0),
+                              at(*psi, 0, 0, 0),
+                              at(*psi, -1, 0, 0), at(*psi, 1, 0, 0),
+                              at(*psi, 0, -1, 0), at(*psi, 0, 1, 0))
+                     - at(*psi, 0, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux)
     elif n_dims == 3:
         @numba.njit(**jit_flags)
@@ -139,7 +139,7 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum
                               at(*psi, -1, 0, 0), at(*psi, 1, 0, 0),
                               at(*psi, 0, -1, 0), at(*psi, 0, 1, 0),
                               at(*psi, 0, 0, -1), at(*psi, 0, 0, 1))
-                     - at(*psi, 0, 0)) * sign * G(g_factor)
+                     - at(*psi, 0, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux)
     else:
         raise NotImplementedError()
@@ -172,9 +172,9 @@ def make_correction(options, traversals):
 def __make_correction(jit_flags, at, atv):
     @numba.njit(**jit_flags)
     def correction(beta_down, GC, beta_up):
-        a = min(1, at(*beta_down, 0, 0), at(*beta_up, 1, 0))
-        b = min(1, at(*beta_up, 0, 0), at(*beta_down, 1, 0))
-        c = atv(*GC, +.5, 0)
+        a = min(1, at(*beta_down, 0, 0, 0), at(*beta_up, 1, 0, 0))
+        b = min(1, at(*beta_up, 0, 0, 0), at(*beta_down, 1, 0, 0))
+        c = atv(*GC, +.5, 0, 0)
         return (c + np.abs(c)) / 2 * a + (c - np.abs(c)) / 2 * b
 
     return correction

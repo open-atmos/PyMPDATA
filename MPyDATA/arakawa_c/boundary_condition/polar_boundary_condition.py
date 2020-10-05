@@ -6,6 +6,9 @@ import numba
 from ..enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 
 
+X = -1  # TODO
+
+
 class PolarBoundaryCondition:
     def __init__(self, grid, longitude_idx, latitude_idx):
         assert SIGN_RIGHT == -1
@@ -37,13 +40,13 @@ class PolarBoundaryCondition:
                 step = (lat - right_edge_idx) * 2 + 1
 
             return at(*psi, sign * step,
-                      nlon_half * (-1 if lon > nlon_half else 1))
+                      nlon_half * (-1 if lon > nlon_half else 1), X)
 
         return fill_halos
 
     def make_vector(self, at):
         @numba.njit()
         def fill_halos(psi, _, __):
-            return at(*psi, 0, 0)  # TODO!
+            return at(*psi, 0, 0, X)  # TODO!
 
         return fill_halos

@@ -3,7 +3,7 @@ Created at 12.03.2020
 """
 
 import numba
-from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
+from .enumerations import INNER, OUTER, MID3D
 
 
 @numba.njit([numba.boolean(numba.float64),
@@ -13,42 +13,42 @@ def _is_integral(n):
 
 
 @numba.njit()
-def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
+def at_1d(focus, arr, k, _, __):
     return arr[focus[INNER] + k]
 
 
 @numba.njit()
-def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
+def at_2d_axis0(focus, arr, i, k, _):
     return arr[focus[OUTER] + i, focus[INNER] + k]
 
 
 @numba.njit()
-def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
+def at_2d_axis1(focus, arr, k, i, _):
     return arr[focus[OUTER] + i, focus[INNER] + k]
 
 
 @numba.njit()
-def at_3d_axis0(focus, arr, i, j=0, k=0):
+def at_3d_axis0(focus, arr, i, j, k):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
 @numba.njit()
-def at_3d_axis1(focus, arr, j, k=0, i=0):
+def at_3d_axis1(focus, arr, j, k, i):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
 @numba.njit()
-def at_3d_axis1(focus, arr, k, i=0, j=0):
+def at_3d_axis1(focus, arr, k, i, j):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
 @numba.njit()
-def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
+def atv_1d(focus, arrs, k, _, __):
     return arrs[INNER][focus[INNER] + int(k - .5)]
 
 
 @numba.njit()
-def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
+def atv_2d_axis0(focus, arrs, i, k, _):
     if _is_integral(i):
         d, ii, kk = INNER, int(i), int(k - .5)
     else:
@@ -57,7 +57,7 @@ def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
 
 
 @numba.njit()
-def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
+def atv_2d_axis1(focus, arrs, k, i, _):
     if _is_integral(i):
         d, ii, kk = INNER, int(i), int(k - .5)
     else:
@@ -66,7 +66,7 @@ def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
 
 
 @numba.njit()
-def atv_3d_axis0(focus, arrs, i, j=0, k=0):
+def atv_3d_axis0(focus, arrs, i, j, k):
     if not _is_integral(i):
         d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
     elif not _is_integral(j):
@@ -77,7 +77,7 @@ def atv_3d_axis0(focus, arrs, i, j=0, k=0):
 
 
 @numba.njit()
-def atv_3d_axis1(focus, arrs, j, k=0, i=0):
+def atv_3d_axis1(focus, arrs, j, k, i):
     if not _is_integral(i):
         d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
     elif not _is_integral(j):
@@ -88,7 +88,7 @@ def atv_3d_axis1(focus, arrs, j, k=0, i=0):
 
 
 @numba.njit()
-def atv_3d_axis2(focus, arrs, k, i=0, j=0):
+def atv_3d_axis2(focus, arrs, k, i, j):
     if not _is_integral(i):
         d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
     elif not _is_integral(j):

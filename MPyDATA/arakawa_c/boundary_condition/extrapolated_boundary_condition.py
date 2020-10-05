@@ -16,20 +16,20 @@ class ExtrapolatedBoundaryCondition:
         def fill_halos_scalar(psi, n, sign):
             if sign == SIGN_LEFT:
                 edg = halo - psi[ARG_FOCUS][INNER]
-                nom = at(*psi, edg + 1, X) - at(*psi, edg, X)
-                den = at(*psi, edg + 2, X) - at(*psi, edg + 1, X)
+                nom = at(*psi, edg + 1, X, X) - at(*psi, edg, X, X)
+                den = at(*psi, edg + 2, X, X) - at(*psi, edg + 1, X, X)
                 cnst = nom / den if abs(den) > eps else 0
-                return max(at(*psi, 1, X) - (at(*psi, 2, X) - at(*psi, 1, X)) * cnst, 0)
+                return max(at(*psi, 1, X, X) - (at(*psi, 2, X, X) - at(*psi, 1, X, X)) * cnst, 0)
             else:
                 edg = n + halo - 1 - psi[ARG_FOCUS][INNER]
-                den = at(*psi, edg - 1, X) - at(*psi, edg - 2, X)
-                nom = at(*psi, edg, X) - at(*psi, edg - 1, X)
+                den = at(*psi, edg - 1, X, X) - at(*psi, edg - 2, X, X)
+                nom = at(*psi, edg, X, X) - at(*psi, edg - 1, X, X)
                 cnst = nom/den if abs(den) > eps else 0
-                return max(at(*psi, - 1, X) + (at(*psi, -1, X) - at(*psi, -2, X)) * cnst, 0)
+                return max(at(*psi, - 1, X, X) + (at(*psi, -1, X, X) - at(*psi, -2, X, X)) * cnst, 0)
         return fill_halos_scalar
 
     def make_vector(self, at):
         @numba.njit()
         def fill_halos(psi, _, sign):
-            return at(*psi, sign, 0)
+            return at(*psi, sign, X, X)
         return fill_halos
