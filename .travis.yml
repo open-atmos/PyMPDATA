@@ -61,6 +61,7 @@ install:
       curl -L $WEB_ADDRESS/msmpisdk.msi -o msmpisdk.msi
       ./msmpisetup.exe
       msiexec //i msmpisdk.msi
+      export PATH=/c/Program\ Files/Microsoft\ MPI/bin:$PATH
     fi;
   - pip$PY_SFX install -U -r requirements.txt
 
@@ -78,14 +79,15 @@ script:
       done;
     else
       if [[ $CODECOV == 'TRUE' ]]; then
-        python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests;
+        python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=MPyDATA MPyDATA_tests || exit 1;
       else
-        python$PY_SFX -m pytest MPyDATA_tests;
+        python$PY_SFX -m pytest MPyDATA_tests -k "not test_mpi" || exit 1;
       fi;
+      mpiexec -n 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests || exit 1;
     fi;
 
 after_success:
   - |
     if [[ $CODECOV == 'TRUE' ]]; then
-      codecov;
+      codecov || exit 1;
     fi;

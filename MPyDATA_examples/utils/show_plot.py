@@ -5,7 +5,6 @@ from matplotlib import pyplot
 
 
 def show_plot(filename=None):
-    pyplot.legend(loc = 'best')
     outdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output')
     if filename is None:
         _, tempfile_path = tempfile.mkstemp(

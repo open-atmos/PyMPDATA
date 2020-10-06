@@ -7,17 +7,32 @@ from scipy import optimize
 
 default_nr = 64
 default_GC_max = .5
-default_mixing_ratios_g_kg = np.array([1, 4, 10])
-default_opt_set = (
-    {'n_iters': 1},
-    {'n_iters': 2},
-    {'n_iters': 2, 'infinite_gauge': True},
-    {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True},
-    {'n_iters': 3, 'third_order_terms': True},
-    {'n_iters': 3},
-    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
-)
+default_mixing_ratios_g_kg = np.array([1, 2, 4, 6, 8, 10])
+default_opt_set = {
+    'a': {'n_iters': 1},
+    'b': {'n_iters': 2},
+    'c': {'n_iters': 2, 'infinite_gauge': True},
+    'd': {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True},
+    'e': {'n_iters': 2, 'DPDC': True, 'infinite_gauge': True, 'flux_corrected_transport': True},
+    'f': {'n_iters': 3, 'third_order_terms': True},
+    'g': {'n_iters': 3},
+    'h': {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True},
+}
+colors = ['red', 'blue', 'crimson', 'orange', 'olive', 'navy', 'green', 'blueviolet']
+colors = {key: colors.pop(0) for key in default_opt_set.keys()}
 
+
+def option_string(opts):
+    str_repl = [["'n_iters': 1", "upwind"],
+                ["'n_iters': 2", "MPDATA 2 iterations"],
+                ["'n_iters': 3", "MPDATA 3 iterations"],
+                ["'", ""],
+                [": True", ""],
+                ["_", " "],
+                ["{", ""], ["}", ""], [",", ""], ["flux corrected transport", "non-oscillatory"]]
+    for repl in str_repl:
+        opts = opts.replace(repl[0], repl[1])
+    return opts
 
 # based on Fig. 3 from East 1957
 class Setup:
