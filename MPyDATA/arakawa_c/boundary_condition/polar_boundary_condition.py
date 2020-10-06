@@ -3,6 +3,7 @@ Created at 20.03.2020
 """
 
 import numba
+from functools import lru_cache # TODO
 
 
 class PolarBoundaryCondition:
