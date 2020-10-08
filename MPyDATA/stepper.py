@@ -89,6 +89,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     flux_first_pass = make_flux_first_pass(options, traversals)
     flux_subsequent = make_flux_subsequent(options, traversals)
     antidiff = make_antidiff(non_unit_g_factor, options, traversals)
+    antidiff_last_pass = make_antidiff(non_unit_g_factor, options, traversals, last_pass=True)
     laplacian = make_laplacian(non_unit_g_factor, options, traversals)
     fct_psi_min = make_psi_extremum(min, options, traversals)
     fct_psi_max = make_psi_extremum(max, options, traversals)
@@ -148,7 +149,10 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                         advector_oscilatory = vectmp_b
                         advector_nonoscilatory = vectmp_a
                         flux = vectmp_b
-                    antidiff(advector_nonoscilatory, advectee, advectee_bc, advector_oscilatory, vec_bc, g_factor, g_factor_bc)
+                    if it < n_iters - 1:
+                        antidiff(advector_nonoscilatory, advectee, advectee_bc, advector_oscilatory, vec_bc, g_factor, g_factor_bc)
+                    else:
+                        antidiff_last_pass(advector_nonoscilatory, advectee, advectee_bc, advector_oscilatory, vec_bc, g_factor, g_factor_bc)
                     flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                     if flux_corrected_transport:
                         fct_beta_down(beta_down, flux, vec_bc, advectee, advectee_bc, psi_min, psi_min_bc, g_factor, g_factor_bc)
