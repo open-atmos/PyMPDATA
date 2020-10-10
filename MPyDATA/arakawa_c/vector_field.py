@@ -3,9 +3,10 @@ Created at 03.2020
 """
 
 import numpy as np
-from .indexers import make_null, indexers, MAX_DIM_NUM
+from .indexers import indexers
+from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
 from .scalar_field import ScalarField
-from .meta import meta_halo_valid, make_meta
+from .meta import META_HALO_VALID, make_meta
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
 
@@ -27,19 +28,25 @@ class VectorField:
         dims = range(self.n_dims)
         halos = [[(halo - (d == c)) for c in dims] for d in dims]
         shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
-        self.data = [np.full(shape_with_halo[d], np.nan, dtype=self.dtype) for d in dims]
+        self.data = [np.full(shape_with_halo[d], INVALID_INIT_VALUE, dtype=self.dtype) for d in dims]
         self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
         for d in dims:
             assert data[d].dtype == self.dtype
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
-        self.fill_halos = tuple(
-            [(boundary_conditions[i] if i < self.n_dims else ConstantBoundaryCondition(np.nan)).make_vector(indexers[self.n_dims].at[i])
-             for i in range(MAX_DIM_NUM)])
+
+        # TODO: code repeated in ScalarField
+        fill_halos = [None] * MAX_DIM_NUM
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
+        fill_halos[INNER] = boundary_conditions[INNER]
+        self.fill_halos = tuple([fh.make_vector(indexers[self.n_dims].at[i]) for i, fh in enumerate(fill_halos)])
+
         grid = tuple([data[d].shape[d] - 1 for d in dims])
         self.meta = make_meta(False, grid)
-        self.comp_0 = self.data[0]
-        self.comp_1 = self.data[1] if self.n_dims > 1 else make_null()
+        self.comp_outer = self.data[0] if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
+        self.comp_mid3d = self.data[1] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
+        self.comp_inner = self.data[-1]
 
     @staticmethod
     def clone(field):
@@ -56,19 +63,19 @@ class VectorField:
                 diff_sum = tmp
             else:
                 diff_sum += tmp
-        result = ScalarField(diff_sum, halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * len(grid_step))
+        result = ScalarField(diff_sum, halo=0, boundary_conditions=[ConstantBoundaryCondition(INVALID_HALO_VALUE)] * len(grid_step))
         return result
 
     @property
     def impl(self):
-        return (self.meta, self.comp_0, self.comp_1), self.fill_halos
+        return (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), self.fill_halos
 
     @staticmethod
     def make_null(n_dims):
         null = VectorField(
-            [np.full([1] * n_dims, np.nan)] * n_dims,
+            [np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims,
             halo=1,
-            boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims
+            boundary_conditions=[ConstantBoundaryCondition(INVALID_HALO_VALUE)] * n_dims
         )
-        null.meta[meta_halo_valid] = True
+        null.meta[META_HALO_VALID] = True
         return null

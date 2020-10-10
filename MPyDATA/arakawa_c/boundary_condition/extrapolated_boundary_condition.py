@@ -1,26 +1,26 @@
 import numba
+from ..enumerations import ARG_FOCUS, INNER, SIGN_LEFT
 from functools import lru_cache
 
 # TODO: 1D only
-X = -1
 
 
 @lru_cache()
 def _make_scalar(eps, at, halo):
     @numba.njit()
     def fill_halos_scalar(psi, n, sign):
-        if sign > 0:  # left
-            edg = halo - psi[0][0]
-            nom = at(*psi, edg + 1, X) - at(*psi, edg, X)
-            den = at(*psi, edg + 2, X) - at(*psi, edg + 1, X)
+        if sign == SIGN_LEFT:
+            edg = halo - psi[ARG_FOCUS][INNER]
+            nom = at(*psi, edg + 1) - at(*psi, edg)
+            den = at(*psi, edg + 2) - at(*psi, edg + 1)
             cnst = nom / den if abs(den) > eps else 0
-            return max(at(*psi, 1, X) - (at(*psi, 2, X) - at(*psi, 1, X)) * cnst, 0)
-        else:  # right
-            edg = n + halo - 1 - psi[0][0]
-            den = at(*psi, edg - 1, X) - at(*psi, edg - 2, X)
-            nom = at(*psi, edg, X) - at(*psi, edg - 1, X)
-            cnst = nom / den if abs(den) > eps else 0
-            return max(at(*psi, - 1, X) + (at(*psi, -1, X) - at(*psi, -2, X)) * cnst, 0)
+            return max(at(*psi, 1) - (at(*psi, 2) - at(*psi, 1)) * cnst, 0)
+        else:
+            edg = n + halo - 1 - psi[ARG_FOCUS][INNER]
+            den = at(*psi, edg - 1) - at(*psi, edg - 2)
+            nom = at(*psi, edg) - at(*psi, edg - 1)
+            cnst = nom/den if abs(den) > eps else 0
+            return max(at(*psi, - 1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
     return fill_halos_scalar
 
 
@@ -28,7 +28,7 @@ def _make_scalar(eps, at, halo):
 def _make_vector(at):
     @numba.njit()
     def fill_halos(psi, _, sign):
-        return at(*psi, sign, 0)
+        return at(*psi, sign)
     return fill_halos
 
 

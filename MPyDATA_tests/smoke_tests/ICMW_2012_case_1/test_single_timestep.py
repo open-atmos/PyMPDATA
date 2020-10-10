@@ -51,7 +51,7 @@ def test_single_timestep(options):
 
     # Act
     for mpdata in mpdatas.values():
-        mpdata.advance(1)
+        mpdata.advance(nt=1)
 
     # Assert
     for k, v in mpdatas.items():

@@ -8,7 +8,8 @@ Created at 11.10.2019
 
 import numpy as np
 import numba
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
+from ..arakawa_c.indexers import indexers
+from ..arakawa_c.enumerations import MAX_DIM_NUM
 
 
 def make_flux_first_pass(options, traversals):
@@ -17,7 +18,7 @@ def make_flux_first_pass(options, traversals):
 
     formulae_flux_first_pass = tuple([
         __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
-        if i < traversals.n_dims else None
+        if idx.at[i] is not None else None
         for i in range(MAX_DIM_NUM)
     ])
 
@@ -40,10 +41,11 @@ def make_flux_subsequent(options, traversals):
         idx = indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_flux_subsequent = (
-            __make_flux(options.jit_flags, idx.atv[0], idx.at[0], first_pass=False, infinite_gauge=options.infinite_gauge),
-            __make_flux(options.jit_flags, idx.atv[1], idx.at[1], first_pass=False, infinite_gauge=options.infinite_gauge)
-        )
+        formulae_flux_subsequent = tuple([
+            __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=False, infinite_gauge=options.infinite_gauge)
+            if idx.at[i] is not None else None
+            for i in range(MAX_DIM_NUM)
+        ])
 
         @numba.njit(**options.jit_flags)
         def apply(flux, psi, psi_bc, GC_corr, vec_bc):
@@ -67,11 +69,11 @@ def __make_flux(jit_flags, atv, at, first_pass, infinite_gauge):
     if not first_pass and infinite_gauge:
         @numba.njit(**jit_flags)
         def flux(_, advector, __):
-            return atv(*advector, +.5, 0)
+            return atv(*advector, +.5)
     else:
         @numba.njit(**jit_flags)
         def flux(advectee, advector, __):
             return \
-                maximum_0(atv(*advector, +.5, 0)) * at(*advectee, 0, 0) + \
-                minimum_0(atv(*advector, +.5, 0)) * at(*advectee, 1, 0)
+                maximum_0(atv(*advector, +.5)) * at(*advectee, 0) + \
+                minimum_0(atv(*advector, +.5)) * at(*advectee, 1)
     return flux
