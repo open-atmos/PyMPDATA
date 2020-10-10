@@ -3,11 +3,15 @@ Created at 20.03.2020
 """
 
 import numba
+from ..enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 from functools import lru_cache # TODO
 
 
 class PolarBoundaryCondition:
     def __init__(self, grid, longitude_idx, latitude_idx):
+        assert SIGN_RIGHT == -1
+        assert SIGN_LEFT == +1
+
         self.nlon = grid[longitude_idx]
         self.nlat = grid[latitude_idx]
         assert self.nlon % 2 == 0
@@ -25,9 +29,9 @@ class PolarBoundaryCondition:
         right_edge_idx = nlat + halo
 
         @numba.njit()
-        def fill_halos(psi, n, sign):
-            lon = psi[0][lon_idx]
-            lat = psi[0][lat_idx]
+        def fill_halos(psi, _, sign):
+            lon = psi[ARG_FOCUS][lon_idx]
+            lat = psi[ARG_FOCUS][lat_idx]
             if lat <= left_edge_idx:
                 step = (left_edge_idx - lat) * 2 + 1
             if lat >= right_edge_idx:
@@ -41,6 +45,6 @@ class PolarBoundaryCondition:
     def make_vector(self, at):
         @numba.njit()
         def fill_halos(psi, _, __):
-            return at(*psi, 0, 0)  # TODO!
+            return at(*psi, 0)  # TODO!
 
         return fill_halos

@@ -7,15 +7,15 @@ MPyDATA is a high-performance **Numba-accelerated Pythonic implementation of the
   algorithm of Smolarkiewicz et al.** for numerically solving generalised transport equations -
   partial differential equations used to model conservation/balance laws, scalar-transport problems,
   convection-diffusion phenomena (in geophysical fluid dynamics and beyond).
-As of the current (early) version, MPyDATA supports homogeneous transport
-  in 1D and 2D using structured meshes, optionally
+As of the current version, MPyDATA supports homogeneous transport
+  in 1D, 2D and 3D using structured meshes, optionally
   generalised by employment of a Jacobian of coordinate transformation. 
 MPyDATA includes implementation of a set of MPDATA **variants including
   flux-corrected transport (FCT), infinite-gauge, divergent-flow and 
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
-In 2D simulations, domain-decomposition is used for multi-threaded parallelism.
+In 2D and 3D simulations, domain-decomposition is used for multi-threaded parallelism.
 
 MPyDATA is engineered purely in Python targeting both performance and usability,
     the latter encompassing research users', developers' and maintainers' perspectives.
@@ -30,13 +30,14 @@ From developers' and maintainers' perspective, MPyDATA offers wide unit-test cov
 MPyDATA design features
   a **custom-built multi-dimensional Arakawa-C grid layer** allowing
   to concisely represent multi-dimensional stencil operations.
-The grid layer is built on top of NumPy's ndarrays using Numba's @njit
-  functionality and has been carefully profiled for performance.
+The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
+  using Numba's @njit functionality for high-performance array traversals.
 It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 
 MPyDATA ships with a set of **examples/demos offered as github-hosted Jupyer notebooks
-  offering single-click deployment in the cloud using [mybinder.org](https://mybinder.org)**.
+  offering single-click deployment in the cloud using [mybinder.org](https://mybinder.org)**
+  or using [colab.research.google.com](https://colab.research.google.com/).
 The examples/demos reproduce results from several published
   works on MPDATA and its applications, and provide a validation of the implementation
   and its performance.
@@ -45,8 +46,6 @@ The examples/demos reproduce results from several published
 
 MPyDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
 and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/requirements.txt) file.  
-
-The stringest constraint is likely the requirement of Numba 0.49 (released in April 2020).
  
 To install MPyDATA, one may use:
 ```bash
@@ -204,7 +203,7 @@ enabling handling of the G factor term which can be used to
 represent coordinate transformations and/or variable fluid density. 
 
 Optionally, the number of threads to use for domain decomposition
-in first (non-contiguous) dimension during 2D calculations
+in first (non-contiguous) dimension during 2D and 3D calculations
 may be specified using the optional ``n_threads`` argument with a
 default value of ``numba.get_num_threads()``. The multi-threaded
 logic of MPyDATA depends thus on settings of numba, namely on the
@@ -244,7 +243,7 @@ of embracing Numba is that it can be easily switched off. This
 brings multiple-order-of-magnitude drop in performance, yet 
 it also make the entire code of the library susceptible to
 interactive debugging, one way of enabling it is by setting the 
-following environment variable:
+following environment variable before importing MPyDATA:
 
 ```python
 import os

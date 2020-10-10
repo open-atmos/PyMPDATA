@@ -3,14 +3,7 @@ Created at 12.03.2020
 """
 
 import numba
-import numpy as np
-
-MAX_DIM_NUM = 2
-
-
-f_i = 0
-f_j = f_i + 1
-f_d = f_j + 1
+from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
 
 
 @numba.njit([numba.boolean(numba.float64),
@@ -20,87 +13,140 @@ def _is_integral(n):
 
 
 @numba.njit()
-def at_1d(focus, arr, i, _):
-    return arr[focus[f_i] + i]
+def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
+    return arr[focus[INNER] + k]
 
 
 @numba.njit()
-def at_2d_axis0(focus, arr, i, j):
-    return arr[focus[f_i] + i, focus[f_j] + j]
+def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
+    return arr[focus[OUTER] + i, focus[INNER] + k]
 
 
 @numba.njit()
-def at_2d_axis1(focus, arr, i, j):
-    return arr[focus[f_i] + j, focus[f_j] + i]
+def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
+    return arr[focus[OUTER] + i, focus[INNER] + k]
 
 
 @numba.njit()
-def atv_1d(focus, arrs, i, _):
-    return arrs[0][focus[f_i] + int(i - .5)]
+def at_3d_axis0(focus, arr, i, j=0, k=0):
+    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
 @numba.njit()
-def atv_2d_axis0(focus, arrs, i, j):
+def at_3d_axis1(focus, arr, j, k=0, i=0):
+    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+
+
+@numba.njit()
+def at_3d_axis1(focus, arr, k, i=0, j=0):
+    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+
+
+@numba.njit()
+def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
+    return arrs[INNER][focus[INNER] + int(k - .5)]
+
+
+@numba.njit()
+def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
     if _is_integral(i):
-        d = 1
-        ii = int(i)
-        jj = int(j - .5)
+        d, ii, kk = INNER, int(i), int(k - .5)
     else:
-        d = 0
-        ii = int(i - .5)
-        jj = int(j)
-    return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
+        d, ii, kk = OUTER, int(i - .5), int(k)
+    return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
 
 
 @numba.njit()
-def atv_2d_axis1(focus, arrs, i, j):
-    if _is_integral(j):
-        d = 1
-        ii = int(j)
-        jj = int(i - .5)
+def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
+    if _is_integral(i):
+        d, ii, kk = INNER, int(i), int(k - .5)
     else:
-        d = 0
-        ii = int(j - .5)
-        jj = int(i)
-    return arrs[d][focus[f_i] + ii, focus[f_j] + jj]
+        d, ii, kk = OUTER, int(i - .5), int(k)
+    return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
 
 
 @numba.njit()
-def set_1d(arr, i, _, value):
-    arr[i] = value
+def atv_3d_axis0(focus, arrs, i, j=0, k=0):
+    if not _is_integral(i):
+        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+    elif not _is_integral(j):
+        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+    else:
+        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
 
 
 @numba.njit()
-def set_2d(arr, i, j, value):
-    arr[i, j] = value
+def atv_3d_axis1(focus, arrs, j, k=0, i=0):
+    if not _is_integral(i):
+        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+    elif not _is_integral(j):
+        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+    else:
+        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
 
 
 @numba.njit()
-def get_1d(arr, i, _):
-    return arr[i]
+def atv_3d_axis2(focus, arrs, k, i=0, j=0):
+    if not _is_integral(i):
+        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+    elif not _is_integral(j):
+        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+    else:
+        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
 
 
 @numba.njit()
-def get_2d(arr, i, j):
-    return arr[i, j]
+def set_1d(arr, _, __, k, value):
+    arr[k] = value
 
 
-def make_null():
-    return np.empty(0, dtype=np.float64)
+@numba.njit()
+def set_2d(arr, i, _, k, value):
+    arr[i, k] = value
+
+
+@numba.njit()
+def set_3d(arr, i, j, k, value):
+    arr[i, j, k] = value
+
+
+@numba.njit()
+def get_1d(arr, _, __, k):
+    return arr[k]
+
+
+@numba.njit()
+def get_2d(arr, i, _, k):
+    return arr[i, k]
+
+
+@numba.njit()
+def get_3d(arr, i, j, k):
+    return arr[i, j, k]
 
 
 class Indexers1d:
-    at = (at_1d, None)
-    atv = (atv_1d, None)
+    at = (None, None, at_1d)
+    atv = (None, None, atv_1d)
     set = set_1d
     get = get_1d
 
 
 class Indexers2d:
-    at = (at_2d_axis0, at_2d_axis1)
-    atv = (atv_2d_axis0, atv_2d_axis1)
+    at = (at_2d_axis0, None, at_2d_axis1)
+    atv = (atv_2d_axis0, None, atv_2d_axis1)
     set = set_2d
     get = get_2d
 
 
-indexers = (None, Indexers1d, Indexers2d)
+class Indexers3d:
+    at = (at_3d_axis0, at_3d_axis1, atv_3d_axis2)
+    atv = (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2)
+    set = set_3d
+    get = get_3d
+
+
+indexers = (None, Indexers1d, Indexers2d, Indexers3d)

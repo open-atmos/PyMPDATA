@@ -3,12 +3,11 @@ Created at 20.03.2020
 """
 
 import numba
-from MPyDATA.arakawa_c.indexers import indexers, MAX_DIM_NUM
-from MPyDATA.arakawa_c.traversals import Traversals
-from MPyDATA.options import Options
+from ..arakawa_c.indexers import indexers
+from ..arakawa_c.enumerations import MAX_DIM_NUM
+from ..arakawa_c.traversals import Traversals
+from ..options import Options
 
-
-# TODO: anisotropy
 
 def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):
     if not options.non_zero_mu_coeff:
@@ -21,7 +20,7 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
 
         formulae_laplacian = tuple([
             __make_laplacian(options.jit_flags, idx.at[i], options.epsilon, non_unit_g_factor)
-            if i < traversals.n_dims else None
+            if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
         ])
 
@@ -42,8 +41,8 @@ def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor):
     @numba.njit(**jit_flags)
     def A(advectee, _, __):
         return -2 * (
-            at(*advectee, 1, 0) - at(*advectee, 0, 0)
+            at(*advectee, 1) - at(*advectee, 0)
         ) / (
-            at(*advectee, 1, 0) + at(*advectee, 0, 0) + epsilon
+            at(*advectee, 1) + at(*advectee, 0) + epsilon
         )
     return A
