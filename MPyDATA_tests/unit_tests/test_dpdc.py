@@ -1,13 +1,15 @@
 from MPyDATA.factories import Factories
 from MPyDATA.options import Options
 import numpy as np
+import pytest
 
 
-def test_DPDC():
+@pytest.mark.parametrize("n_iters", [2, 3, 4])
+def test_DPDC(n_iters):
     state = np.array([0, 1, 0])
     C = .5
 
-    mpdata = Factories.constant_1d(state, C, Options(n_iters=2, DPDC=True, flux_corrected_transport=True))
+    mpdata = Factories.constant_1d(state, C, Options(n_iters=n_iters, DPDC=True, flux_corrected_transport=True))
     nt = 1
 
     conserved = np.sum(mpdata.advectee.get())

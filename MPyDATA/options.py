@@ -25,8 +25,6 @@ class Options:
             raise ValueError()
         if n_iters < 1:
             raise ValueError()
-        if n_iters > 2 and DPDC:
-            raise ValueError()
 
     @property
     def dtype(self):

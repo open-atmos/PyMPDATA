@@ -8,7 +8,7 @@ from ..arakawa_c.indexers import indexers
 from ..arakawa_c.enumerations import MAX_DIM_NUM
 
 
-def make_antidiff(non_unit_g_factor, options, traversals):
+def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
     if options.n_iters <= 1:
         @numba.njit(**options.jit_flags)
         def apply(_1, _2, _3, _4, _5, _6, _7):
@@ -21,7 +21,8 @@ def make_antidiff(non_unit_g_factor, options, traversals):
             __make_antidiff(idx.atv[i], idx.at[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
-                            n_dims=traversals.n_dims)
+                            n_dims=traversals.n_dims,
+                            last_pass=last_pass)
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)])
 
@@ -33,7 +34,7 @@ def make_antidiff(non_unit_g_factor, options, traversals):
     return apply
 
 
-def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
+def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
     infinite_gauge = options.infinite_gauge
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms
@@ -74,7 +75,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims):
         # eq. 13 in Smolarkiewicz 1984
         tmp = A(psi)
         result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
-        if DPDC:  # TODO n_dims > 1
+        if DPDC and last_pass:  # TODO n_dims > 1
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
             result = result * (result * b + a) 
