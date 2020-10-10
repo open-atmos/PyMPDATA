@@ -70,7 +70,7 @@ script:
   - |
     if [[ $EXAMPLES == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user
-      for i in MPyDATA_examples/*/demo*.ipynb; do
+      for i in PyMPDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
         travis_wait 30 jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
@@ -79,11 +79,11 @@ script:
       done;
     else
       if [[ $CODECOV == 'TRUE' ]]; then
-        python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=MPyDATA MPyDATA_tests || exit 1;
+        python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=PyMPDATA PyMPDATA_tests || exit 1;
       else
-        python$PY_SFX -m pytest MPyDATA_tests -k "not test_mpi" || exit 1;
+        python$PY_SFX -m pytest PyMPDATA_tests -k "not test_mpi" || exit 1;
       fi;
-      mpiexec -n 2 python$PY_SFX -m pytest -k "test_mpi" MPyDATA_tests || exit 1;
+      mpiexec -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
     fi;
 
 after_success:
