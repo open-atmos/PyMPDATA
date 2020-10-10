@@ -1,33 +1,33 @@
-[![Build Status](https://travis-ci.org/atmos-cloud-sim-uj/MPyDATA.svg?branch=master)](https://travis-ci.org/atmos-cloud-sim-uj/MPyDATA)
-[![Coverage Status](https://img.shields.io/codecov/c/github/atmos-cloud-sim-uj/MPyDATA/master.svg)](https://codecov.io/github/atmos-cloud-sim-uj/MPyDATA?branch=master)
+[![Build Status](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA.svg?branch=master)](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA)
+[![Coverage Status](https://img.shields.io/codecov/c/github/atmos-cloud-sim-uj/PyMPDATA/master.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)
 
-# MPyDATA
+# PyMPDATA
 
-MPyDATA is a high-performance **Numba-accelerated Pythonic implementation of the MPDATA 
+PyMPDATA is a high-performance **Numba-accelerated Pythonic implementation of the MPDATA 
   algorithm of Smolarkiewicz et al.** for numerically solving generalised transport equations -
   partial differential equations used to model conservation/balance laws, scalar-transport problems,
   convection-diffusion phenomena (in geophysical fluid dynamics and beyond).
-As of the current version, MPyDATA supports homogeneous transport
+As of the current version, PyMPDATA supports homogeneous transport
   in 1D, 2D and 3D using structured meshes, optionally
   generalised by employment of a Jacobian of coordinate transformation. 
-MPyDATA includes implementation of a set of MPDATA **variants including
+PyMPDATA includes implementation of a set of MPDATA **variants including
   flux-corrected transport (FCT), infinite-gauge, divergent-flow and 
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
 In 2D and 3D simulations, domain-decomposition is used for multi-threaded parallelism.
 
-MPyDATA is engineered purely in Python targeting both performance and usability,
+PyMPDATA is engineered purely in Python targeting both performance and usability,
     the latter encompassing research users', developers' and maintainers' perspectives.
-From researcher's perspective, MPyDATA offers **hassle-free installation on multitude
+From researcher's perspective, PyMPDATA offers **hassle-free installation on multitude
   of platforms including Linux, OSX and Windows**, and eliminates compilation stage
   from the perspective of the user.
-From developers' and maintainers' perspective, MPyDATA offers wide unit-test coverage, 
+From developers' and maintainers' perspective, PyMPDATA offers wide unit-test coverage, 
   multi-platform continuous integration setup,
   seamless integration with Python debugging and profiling tools, and robust susceptibility
   to static code analysis within integrated development environments.
 
-MPyDATA design features
+PyMPDATA design features
   a **custom-built multi-dimensional Arakawa-C grid layer** allowing
   to concisely represent multi-dimensional stencil operations.
 The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
@@ -35,7 +35,7 @@ The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
 It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 
-MPyDATA ships with a set of **examples/demos offered as github-hosted Jupyer notebooks
+PyMPDATA ships with a set of **examples/demos offered as github-hosted Jupyer notebooks
   offering single-click deployment in the cloud using [mybinder.org](https://mybinder.org)**
   or using [colab.research.google.com](https://colab.research.google.com/).
 The examples/demos reproduce results from several published
@@ -44,52 +44,52 @@ The examples/demos reproduce results from several published
  
 ## Dependencies and installation
 
-MPyDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
-and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/requirements.txt) file.  
+PyMPDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
+and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/requirements.txt) file.  
  
-To install MPyDATA, one may use:
+To install PyMPDATA, one may use:
 ```bash
-pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git
+pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git
 ```
  
 ## Examples/Demos:
 
-MPyDATA ships with several demos that reproduce results from the literature, including:
+PyMPDATA ships with several demos that reproduce results from the literature, including:
 - [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)    
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA.git/master?filepath=PyMPDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb) 
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)    
   (1D homogeneous cases depicting infinite-gauge and flux-corrected transport cases)
 - [Arabas & Farhat 2020](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1 
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FArabas_and_Farhat_2020/demo.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/Arabas_and_Farhat_2020/demo.ipynb)    
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA.git/master?filepath=PyMPDATA_examples%2FArabas_and_Farhat_2020/demo.ipynb) 
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA_examples/Arabas_and_Farhat_2020/demo.ipynb)    
   (1D advection-diffusion example based on Black-Scholes equation)
 - Olesik et al. 2020 (in preparation) 
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FOlesik_et_al_2020/)
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/Olesik_et_al_2020/demo_make_plots.ipynb)   
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA.git/master?filepath=PyMPDATA_examples%2FOlesik_et_al_2020/)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA_examples/Olesik_et_al_2020/demo_make_plots.ipynb)   
   (1D particle population condensational growth problem with coordinate transformations)
 - Molenkamp test (as in [Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 12)
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/)      
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA.git/master?filepath=PyMPDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/)      
   (2D solid-body rotation test)
 - 1D advection-diffusion example with animation
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/MPyDATA.git/master?filepath=MPyDATA_examples%2Fadvection_diffusion_1d/demo.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA_examples/advection_diffusion_1d/demo.ipynb)    
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA.git/master?filepath=PyMPDATA_examples%2Fadvection_diffusion_1d/demo.ipynb) 
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA_examples/advection_diffusion_1d/demo.ipynb)    
   
   
   
 ## Package structure and API:
 
-MPyDATA is designed as a simple library in the spirit of "Do One Thing And Do It Well", namely to numerically solve the following equation:
+PyMPDATA is designed as a simple library in the spirit of "Do One Thing And Do It Well", namely to numerically solve the following equation:
 
 ![\partial_t (G \psi) + \nabla \cdot (Gu \psi) = 0](https://render.githubusercontent.com/render/math?math=%5Cpartial_t%20(G%20%5Cpsi)%20%2B%20%5Cnabla%20%5Ccdot%20(Gu%20%5Cpsi)%20%3D%200)
 
 where scalar field ![\psi](https://render.githubusercontent.com/render/math?math=%5Cpsi) is referred to as the advectee,
 vector field u is referred to as advector, and the G factor corresponds to optional coordinate transformation. 
 
-The key classes constituting the MPyDATA interface are summarised below:
+The key classes constituting the PyMPDATA interface are summarised below:
 
 #### Options class
 
-The [``Options``](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA/options.py) class
+The [``Options``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/options.py) class
 groups both algorithm variant options as well as some implementation-related
 flags that need to be set at the first place. All are set at the time
 of instantiation using the following keyword arguments of the constructor 
@@ -104,10 +104,10 @@ of instantiation using the following keyword arguments of the constructor
 
 For a discussion of the above options, see e.g., [Smolarkiewicz & Margolin 1998](https://doi.org/10.1006/jcph.1998.5901).
 
-In most use cases of MPyDATA, the first thing to do is to instantiate the Options class 
+In most use cases of PyMPDATA, the first thing to do is to instantiate the Options class 
 with arguments suiting the problem at hand, e.g.:
 ```python
-from MPyDATA import Options
+from PyMPDATA import Options
 options = Options(n_iters=3, infinite_gauge=True, flux_corrected_transport=True)
 ```
 
@@ -119,13 +119,13 @@ in which:
 - scalar fields are discretised onto cell-center points,
 - vector fields are discretised onto cell-boundary points.
 
-In MPyDATA, the solution domain is assumed to extend from the
+In PyMPDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus
 first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
 
 From the user perspective, the two key classes with their init methods are:
-- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA/arakawa_c/scalar_field.py)
-- [``VectorField(data, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/MPyDATA/blob/master/MPyDATA/arakawa_c/vector_field.py)
+- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/arakawa_c/scalar_field.py)
+- [``VectorField(data, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/arakawa_c/vector_field.py)
 
 The ``data`` parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
 The ``halo`` parameter is the extent of ghost-cell region that will surround the
@@ -137,9 +137,9 @@ As an example, the code below shows how to instantiate a scalar
 and a vector field given a 2D constant-velocity problem,
 using a grid of 100x100 points and cyclic boundary conditions (with all values set to zero):
 ```python
-from MPyDATA import ScalarField
-from MPyDATA import VectorField
-from MPyDATA import PeriodicBoundaryCondition
+from PyMPDATA import ScalarField
+from PyMPDATA import VectorField
+from PyMPDATA import PeriodicBoundaryCondition
 import numpy as np
 
 nx, ny = 100, 100
@@ -161,20 +161,20 @@ of the velocity field are different than the shape of
 the scalar field array due to employment of the staggered grid.
 
 Besides the exemplified ``Cyclic`` class representing 
-periodic boundary conditions, MPyDATA supports 
+periodic boundary conditions, PyMPDATA supports 
 ``Extrapolated`` and ``Constant`` boundary conditions.
 
 #### Stepper
 
 The logic of the MPDATA iterative solver is represented
-in MPyDATA by the ``Stepper`` class.
+in PyMPDATA by the ``Stepper`` class.
 
 When instantiating the ``Stepper``, the user has a choice 
 of either supplying just the
 number of dimensions or specialising the stepper for
 a given grid:
 ```python
-from MPyDATA import Stepper
+from PyMPDATA import Stepper
 
 stepper = Stepper(options=options, n_dims=2)
 ```
@@ -206,7 +206,7 @@ Optionally, the number of threads to use for domain decomposition
 in first (non-contiguous) dimension during 2D and 3D calculations
 may be specified using the optional ``n_threads`` argument with a
 default value of ``numba.get_num_threads()``. The multi-threaded
-logic of MPyDATA depends thus on settings of numba, namely on the
+logic of PyMPDATA depends thus on settings of numba, namely on the
 selected threading layer (either via ``NUMBA_THREADING_LAYER`` env 
 var or via ``numba.config.THREADING_LAYER``) and the selected size of the 
 thread pool (``NUMBA_NUM_THREADS`` env var or ``numba.config.NUMBA_NUM_THREADS``).
@@ -229,7 +229,7 @@ Solution state is accessible through the ``Solver.advectee`` property.
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
 ```python
-from MPyDATA import Solver
+from PyMPDATA import Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
 state = solver.advectee.get()
@@ -237,13 +237,13 @@ state = solver.advectee.get()
 
 #### Debugging
 
-MPyDATA relies heavily on Numba to provide high-performance 
+PyMPDATA relies heavily on Numba to provide high-performance 
 number crunching operations. Arguably, one of the key advantage 
 of embracing Numba is that it can be easily switched off. This
 brings multiple-order-of-magnitude drop in performance, yet 
 it also make the entire code of the library susceptible to
 interactive debugging, one way of enabling it is by setting the 
-following environment variable before importing MPyDATA:
+following environment variable before importing PyMPDATA:
 
 ```python
 import os
@@ -251,11 +251,10 @@ os.environ["NUMBA_DISABLE_JIT"] = "1"
 ```
 
 ## Credits:
-Development of MPyDATA is supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
+Development of PyMPDATA is supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
 
 copyright: Jagiellonian University   
-code licence: GPL v3   
-tutorials licence: CC-BY
+licence: GPL v3   
 
 ## Other open-source MPDATA implementations:
 - mpdat_2d in babyEULAG (FORTRAN)
