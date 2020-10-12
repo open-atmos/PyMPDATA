@@ -1,10 +1,10 @@
-from MPyDATA.options import Options
+from PyMPDATA.options import Options
 # options = Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True)
 
-from MPyDATA.stepper import Stepper
+from PyMPDATA.stepper import Stepper
 # stepper = Stepper(options=options, grid=(ny, nx))
 
-from MPyDATA.solver import Solver
+from PyMPDATA.solver import Solver
 # solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 
 class mpdata_wrapper:

@@ -23,7 +23,6 @@ llvmlite==0.33.0
 MarkupSafe==1.1.1
 matplotlib==3.2.2
 mistune==0.8.4
-MPyDATA @ git+https://github.com/pawel-rozwoda/MPyDATA.git
 nbconvert==5.6.1
 nbformat==5.0.7
 notebook==6.0.3
@@ -39,6 +38,7 @@ prompt-toolkit==3.0.5
 ptyprocess==0.6.0
 pycparser==2.20
 Pygments==2.6.1
+PyMPDATA @ git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git@9275825281eefb3f79949bcbacb7b995c5e1113d
 pyparsing==2.4.7
 pyrsistent==0.16.0
 python-dateutil==2.8.1
