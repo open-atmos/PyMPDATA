@@ -63,6 +63,7 @@ install:
       msiexec //i msmpisdk.msi
       export PATH=/c/Program\ Files/Microsoft\ MPI/bin:$PATH
     fi;
+  - pip$PY_SFX install -U ipykernel pytest pytest-cov pytest-benchmark codecov nbconvert jupyter_client
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
