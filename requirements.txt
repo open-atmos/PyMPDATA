@@ -4,7 +4,7 @@ matplotlib>=3.2.1
 ipywidgets>=7.5.1
 scipy>=1.4.1
 pint>=0.9
-joblib>=0.14.1
+joblib>=0.17
 mpi4py
 sympy>=1.6.1
 icc-rt
