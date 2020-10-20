@@ -5,10 +5,11 @@ jobs:
   include:
     - name: "Linux, Python 3.8-dev, default MPI, newest packages, tests"
       python: "3.8-dev"
+      dist: xenial
       before_install:
         - sudo `which pip` install --upgrade pip
         - pip install numpy
-        - sudo apt-get install --no-install-recommends llvm
+#        - sudo apt-get install --no-install-recommends llvm
 #        - git clone --depth 1 git://github.com/numba/numba.git
 #        - cd numba
 #        - python setup.py install
