@@ -9,7 +9,11 @@ import numba
 import numpy as np
 
 jit_flags = Options().jit_flags
-
+n_threads = (1, 2, 3)
+try:
+    numba.parfors.parfor.ensure_parallel_support()
+except numba.core.errors.UnsupportedParforsError:
+    n_threads = (1,)
 
 @numba.njit(**jit_flags)
 def cell_id(i, j, k):
@@ -44,7 +48,7 @@ def _cell_id_vector(arg_1, arg_2, arg_3):
 
 class TestTraversals:
     @staticmethod
-    @pytest.mark.parametrize("n_threads", (1, 2, 3))
+    @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
     @pytest.mark.parametrize("loop", (True, False))
@@ -93,7 +97,7 @@ class TestTraversals:
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
 
     @staticmethod
-    @pytest.mark.parametrize("n_threads", (1, 2, 3))
+    @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
     def test_apply_vector(n_threads, halo, grid):
