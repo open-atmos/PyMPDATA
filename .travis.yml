@@ -8,10 +8,12 @@ jobs:
       before_install:
         - sudo `which pip` install --upgrade pip
         - pip install numpy
-        - git clone --depth 1 git://github.com/numba/numba.git
-        - cd numba
-        - python setup.py install
-        - cd ..
+#        - git clone --depth 1 git://github.com/numba/numba.git
+#        - cd numba
+#        - python setup.py install
+#        - cd ..
+        - pip install --pre git+https://github.com/numba/llvmlite.git
+        - pip install --pre git+https://github.com/numba/numba.git
         - sed -i '/numba/d' requirements.txt
       before_script:
         - pip install -U $(pip freeze | grep -v numba | cut -d '=' -f 1)
