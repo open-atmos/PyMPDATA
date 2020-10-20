@@ -12,7 +12,7 @@ jobs:
 #        - cd numba
 #        - python setup.py install
 #        - cd ..
-        - pip install --pre git+https://github.com/numba/llvmlite.git
+#        - pip install --pre git+https://github.com/numba/llvmlite.git
         - pip install --pre git+https://github.com/numba/numba.git
         - sed -i '/numba/d' requirements.txt
       before_script:
