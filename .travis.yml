@@ -82,7 +82,7 @@ script:
       else
         python$PY_SFX -m pytest PyMPDATA_tests -k "not test_mpi" || exit 1;
       fi;
-      mpiexec --oversubscribe -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
+      mpiexec $([ "$MPI" == 'openmpi' ] && echo "--oversubscribe") -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
     fi;
 
 after_success:
