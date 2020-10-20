@@ -3,22 +3,20 @@ os: linux
 
 jobs:
   include:
-    - name: "Linux, Python 3.8-dev, default MPI, newest packages, tests"
+    - name: "Linux, Python 3.8-dev, OpenMPI, newest packages, tests"
       python: "3.8-dev"
+      dist: focal
       before_install:
         - sudo `which pip` install --upgrade pip
         - pip install numpy
-        - git clone --depth 1 git://github.com/numba/numba.git
-        - cd numba
-        - python setup.py install
-        - cd ..
-        - sed -i '/numba/d' requirements.txt
+        #- pip install --pre git+https://github.com/numba/numba.git
+        #- sed -i '/numba/d' requirements.txt
       before_script:
-        - pip install -U $(pip freeze | grep -v numba | cut -d '=' -f 1)
+        - pip install -U $(cat requirements.txt | awk -F '==|>=' {'print $1'})
         - export NUMBA_THREADING_LAYER=omp
         - python -m numba -s
         - python -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
-      env: MPI=default
+      env: MPI=openmpi
     - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
       env: CODECOV=TRUE MPI=openmpi
@@ -47,7 +45,6 @@ install:
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
       if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt; fi
-      if [[ $MPI == 'default' ]]; then $apt_get_install mpi-default-bin mpi-default-dev; fi
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
 
@@ -84,7 +81,7 @@ script:
       else
         python$PY_SFX -m pytest PyMPDATA_tests -k "not test_mpi" || exit 1;
       fi;
-      mpiexec -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
+      mpiexec $([ "$MPI" == 'openmpi' ] && echo "--oversubscribe") -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
     fi;
 
 after_success:
