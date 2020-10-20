@@ -1,5 +1,9 @@
-[![Build Status](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA.svg?branch=master)](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA)
+[![Travis Build Status](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA.svg?branch=master)](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA)
+[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/Build%20Status/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
+[![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
 [![Coverage Status](https://img.shields.io/codecov/c/github/atmos-cloud-sim-uj/PyMPDATA/master.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-3.0.en.html)
+
 
 # PyMPDATA
 
