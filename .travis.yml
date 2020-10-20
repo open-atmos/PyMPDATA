@@ -9,7 +9,7 @@ jobs:
       before_install:
         - sudo `which pip` install --upgrade pip
         - pip install numpy
-        - sudo apt-get install --no-install-recommends llvm-10
+        - sudo apt-get install --no-install-recommends llvm
 #        - git clone --depth 1 git://github.com/numba/numba.git
 #        - cd numba
 #        - python setup.py install
