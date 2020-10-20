@@ -9,7 +9,3 @@ joblib>=0.14.1
 sympy>=1.6.1
 
 mpi4py
-
-# TODO (better issue appropriate warnings)
-#icc-rt
-#tbb
