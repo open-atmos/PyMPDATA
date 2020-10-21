@@ -78,6 +78,13 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
+concurrency_str = ("threads", "serial")
+try:
+    numba.parfors.parfor.ensure_parallel_support()
+except numba.core.errors.UnsupportedParforsError:
+    concurrency_str = ("serial")
+
+
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
@@ -86,7 +93,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
-@pytest.mark.parametrize("concurrency_str", ("threads", "serial"))
+@pytest.mark.parametrize("concurrency_str", concurrency_str)
 def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, plot=False):
     if grid_static_str == "static":
         grid_static = True
