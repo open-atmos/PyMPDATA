@@ -25,14 +25,14 @@ jobs:
       env: MPI=mpich
     - name: "Linux, Python 3.8, no MPI, required packages, examples"
       python: 3.8
-      env: EXAMPLES=TRUE MPI=none
+      env: EXAMPLES_ONLY=TRUE MPI=none
     - name: "OSX, Python 3.8, OpenMPI, required packages, tests"
       language: shell
       os: osx
-      before_install:
-        - export PY_SFX=3
-        - export HOMEBREW_NO_INSTALL_CLEANUP=1
-        - export HOMEBREW_NO_AUTO_UPDATE=1
+    - name: "OSX, Python 3.8, no MPI, required packages, examples"
+      language: shell
+      os: osx
+      env: EXAMPLES_ONLY=TRUE MPI=none
     - name: "Windows, Python 3.8, MS-MPI, required packages, tests"
       language: shell
       os: windows
@@ -41,15 +41,23 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
+  - if [ $TRAVIS_OS_NAME == osx ]; then export SEDCMD="sed -i ''"; fi 
+  - if [ $TRAVIS_OS_NAME == linux ]; then export SEDCMD="sed -i"; fi 
+  - if [[ $MPI == 'none' ]]; then $SEDCMD '/mpi4py/d' requirements.txt || exit 1; fi
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
-      if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt || exit 1; fi
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev || exit 1; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev || exit 1; fi
       $apt_get_install ffmpeg || exit 1;
     fi;
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install open-mpi; fi
+  - |
+    if [[ $TRAVIS_OS_NAME == 'osx' ]]; then 
+      export PY_SFX=3
+      export HOMEBREW_NO_INSTALL_CLEANUP=1
+      export HOMEBREW_NO_AUTO_UPDATE=1
+      if [[ $MPI == 'openmpi' ]]; then brew install open-mpi; fi;
+    fi;
   - |
     if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
       WEB_ADDRESS=https://github.com/microsoft/Microsoft-MPI/releases/download/v10.1.1
@@ -65,7 +73,7 @@ install:
 script:
   - python$PY_SFX -m numba -s
   - |
-    if [[ $EXAMPLES == 'TRUE' ]]; then
+    if [[ $EXAMPLES_ONLY == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user
       for i in PyMPDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
