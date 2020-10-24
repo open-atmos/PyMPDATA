@@ -48,10 +48,7 @@ and listed in the project's [requirements.txt](https://github.com/atmos-cloud-si
 
 The stringest constraint is likely the requirement of Numba 0.49 (released in April 2020).
  
-To install MPyDATA, one may use:
-```bash
-pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git
-```
+To install MPyDATA, one may use: ``pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/MPyDATA.git``
  
 ## Examples/Demos:
 
