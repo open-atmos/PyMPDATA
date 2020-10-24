@@ -1,0 +1,13 @@
+\begin{table}[]
+\begin{tabular}{| l | l |}
+\hline Variant  & Elapsed Real Time (wrt upwind) \\ \hline
+\hline {'n_iters': 1}(x_log_of_pn) & 1.0 \\ \hline
+\hline {'n_iters': 2}(x_log_of_pn) & 2.5 \\ \hline
+\hline {'n_iters': 2, 'infinite_gauge': True}(x_log_of_pn) & 2.2 \\ \hline
+\hline {'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn) & 5.9 \\ \hline
+\hline {'n_iters': 2, 'DPDC': True, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn) & 6.2 \\ \hline
+\hline {'n_iters': 3, 'third_order_terms': True}(x_log_of_pn) & 5.7 \\ \hline
+\hline {'n_iters': 3}(x_log_of_pn) & 4.1 \\ \hline
+\hline {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn) & 10.9 \\ \hline
+\end{tabular} 
+ \end{table}

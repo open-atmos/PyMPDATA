@@ -3,22 +3,20 @@ os: linux
 
 jobs:
   include:
-    - name: "Linux, Python 3.8-dev, default MPI, newest packages, tests"
+    - name: "Linux, Python 3.8-dev, OpenMPI, newest packages, tests"
       python: "3.8-dev"
+      dist: focal
       before_install:
         - sudo `which pip` install --upgrade pip
         - pip install numpy
-        - git clone --depth 1 git://github.com/numba/numba.git
-        - cd numba
-        - python setup.py install
-        - cd ..
-        - sed -i '/numba/d' requirements.txt
+        #- pip install --pre git+https://github.com/numba/numba.git
+        #- sed -i '/numba/d' requirements.txt
       before_script:
-        - pip install -U $(pip freeze | grep -v numba | cut -d '=' -f 1)
+        - pip install -U $(cat requirements.txt | awk -F '==|>=' {'print $1'})
         - export NUMBA_THREADING_LAYER=omp
         - python -m numba -s
         - python -c 'import numba; assert numba.get_num_threads() > 1 and numba.threading_layer() != "workqueue"'
-      env: MPI=default
+      env: MPI=openmpi
     - name: "Linux, Python 3.8, OpenMPI, required packages, tests and codecov"
       python: 3.8
       env: CODECOV=TRUE MPI=openmpi
@@ -46,22 +44,22 @@ install:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
-      if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt; fi
-      if [[ $MPI == 'default' ]]; then $apt_get_install mpi-default-bin mpi-default-dev; fi
-      if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev; fi
-      if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev; fi
-
-      $apt_get_install ffmpeg
+      if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt || exit 1; fi
+      if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev || exit 1; fi
+      if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev || exit 1; fi
+      $apt_get_install ffmpeg || exit 1;
     fi;
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install open-mpi; fi
   - |
     if [[ $TRAVIS_OS_NAME == 'windows' ]]; then
       WEB_ADDRESS=https://github.com/microsoft/Microsoft-MPI/releases/download/v10.1.1
-      curl -L $WEB_ADDRESS/msmpisetup.exe -o msmpisetup.exe
-      curl -L $WEB_ADDRESS/msmpisdk.msi -o msmpisdk.msi
-      ./msmpisetup.exe
-      msiexec //i msmpisdk.msi
+      curl -L $WEB_ADDRESS/msmpisetup.exe -o msmpisetup.exe || exit 1;
+      curl -L $WEB_ADDRESS/msmpisdk.msi -o msmpisdk.msi || exit 1;
+      ./msmpisetup.exe || exit 1;
+      msiexec //i msmpisdk.msi || exit 1;
+      export PATH=/c/Program\ Files/Microsoft\ MPI/bin:$PATH
     fi;
+  - pip$PY_SFX install -U ipykernel pytest pytest-cov pytest-benchmark codecov nbconvert jupyter_client
   - pip$PY_SFX install -U -r requirements.txt
 
 script:
@@ -69,7 +67,7 @@ script:
   - |
     if [[ $EXAMPLES == 'TRUE' ]]; then
       python$PY_SFX -m ipykernel install --user
-      for i in MPyDATA_examples/*/demo*.ipynb; do
+      for i in PyMPDATA_examples/*/demo*.ipynb; do
         jupyter nbconvert --to markdown --stdout $i > $i.md.repo;
         travis_wait 30 jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to markdown --execute --stdout $i || exit 1;
         # TEMPORARILY disabled before we find a solution for generated graphics causing diffs to differ
@@ -78,10 +76,11 @@ script:
       done;
     else
       if [[ $CODECOV == 'TRUE' ]]; then
-        python$PY_SFX -m pytest --cov-report term --cov=MPyDATA MPyDATA_tests;
+        python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=PyMPDATA PyMPDATA_tests || exit 1;
       else
-        python$PY_SFX -m pytest MPyDATA_tests;
+        python$PY_SFX -m pytest PyMPDATA_tests -k "not test_mpi" || exit 1;
       fi;
+      mpiexec $([ "$MPI" == 'openmpi' ] && echo "--oversubscribe") -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
     fi;
   # execute Python lines from README.md
   - awk < README.md 'BEGIN {cmt=1; swp=0;} {swp=(substr($0,1,3)=="```"); if (swp && !cmt) {cmt=1; swp=0} if (cmt) print("#" $0); else print $0; if (swp && cmt) {cmt=0; swp=0}}' | python$PY_SFX
@@ -89,5 +88,5 @@ script:
 after_success:
   - |
     if [[ $CODECOV == 'TRUE' ]]; then
-      codecov;
+      codecov || exit 1;
     fi;

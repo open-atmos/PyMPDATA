@@ -1,0 +1,8 @@
+{'n_iters': 1}(x_log_of_pn);1.0
+{'n_iters': 2}(x_log_of_pn);2.5
+{'n_iters': 2, 'infinite_gauge': True}(x_log_of_pn);2.2
+{'n_iters': 2, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn);5.9
+{'n_iters': 2, 'DPDC': True, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn);6.2
+{'n_iters': 3, 'third_order_terms': True}(x_log_of_pn);5.7
+{'n_iters': 3}(x_log_of_pn);4.1
+{'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}(x_log_of_pn);10.9

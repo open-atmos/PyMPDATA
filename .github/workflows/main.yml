@@ -1,0 +1,36 @@
+name: Build Status
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+
+      - run: | # TODO !!!
+          sed -i -e '/^mpi4py/d' requirements.txt
+          rm PyMPDATA_tests/unit_tests/test_mpi.py
+      - run: |
+          pip install pytest pytest-benchmark
+      - run: |
+          pip install -r requirements.txt
+      - run: |
+          PYTHONPATH=. pytest
