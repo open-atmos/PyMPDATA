@@ -51,10 +51,7 @@ The examples/demos reproduce results from several published
 PyMPDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
 and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/requirements.txt) file.  
  
-To install PyMPDATA, one may use:
-```bash
-pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git
-```
+To install PyMPDATA, one may use: ``pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git``
  
 ## Examples/Demos:
 
