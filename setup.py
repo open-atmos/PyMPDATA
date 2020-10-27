@@ -11,5 +11,5 @@ setup(
     ],
     license='GPL v3',
     long_description='Numba-accelerated Pythonic implementation of MPDATA with Jupyter examples',
-    setup_requires=['tbb; sys_platform != "darwin"']
+    install_requires=('tbb>=2020.3.254; sys_platform != "darwin"',)
 )
