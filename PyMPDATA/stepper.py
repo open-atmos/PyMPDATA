@@ -45,10 +45,11 @@ class Stepper:
 
         self.n_threads = 1 if n_dims == 1 else n_threads
         if self.n_threads > 1:
-            if numba.threading_layer() == 'workqueue':
-                warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
-                              " to ``omp'' or ``tbb'' for higher parallel performance"
-                              " (see https://numba.pydata.org/numba-doc/latest/user/threading-layer.html)")
+# TODO            
+#             if numba.threading_layer() == 'workqueue':
+#                 warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
+#                               " to ``omp'' or ``tbb'' for higher parallel performance"
+#                               " (see https://numba.pydata.org/numba-doc/latest/user/threading-layer.html)")
             try:
                 numba.parfors.parfor.ensure_parallel_support()
             except numba.core.errors.UnsupportedParforsError:
