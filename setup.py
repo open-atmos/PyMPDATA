@@ -2,7 +2,7 @@ from distutils.core import setup
 from platform import system, architecture
 
 install_requires = []
-if architecture()[0] == '64bit' and system() in ('Linux', 'Windows'): 
+if architecture()[0] == '64bit' and system() == 'Windows': 
   install_requires += ['tbb>=2020.3.254']
 # TODO: intel-openmp for OSX, icc_rt
 
