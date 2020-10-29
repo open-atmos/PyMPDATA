@@ -1,9 +1,19 @@
-[![Travis Build Status](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA.svg?branch=master)](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA)
+![Python 3](https://img.shields.io/static/v1?label=Python&logo=Python&color=3776AB&message=3)
+![Linux OK](https://img.shields.io/static/v1?label=Linux&logo=Linux&color=yellow&message=%E2%9C%93)
+![OSX OK](https://img.shields.io/static/v1?label=OSX&logo=Apple&color=silver&message=%E2%9C%93)
+![Windows OK](https://img.shields.io/static/v1?label=Windows&logo=Windows&color=white&message=%E2%9C%93)
+![Jupyter](https://img.shields.io/static/v1?label=Jupyter&logo=Jupyter&color=f37626&message=%E2%9C%93)   
+[![Travis Build Status](https://img.shields.io/travis/atmos-cloud-sim-uj/PyMPDATA/master.svg?logo=travis)](https://travis-ci.org/atmos-cloud-sim-uj/PyMPDATA)
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/Build%20Status/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
 [![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
-[![Coverage Status](https://img.shields.io/codecov/c/github/atmos-cloud-sim-uj/PyMPDATA/master.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-3.0.en.html)
-
+[![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)   
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![GitHub issues](https://img.shields.io/github/issues/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)
+[![GitHub issues](https://img.shields.io/github/issues-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)
+[![OpenHub](https://www.openhub.net/p/atmos-cloud-sim-uj-PyMPDATA/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/atmos-cloud-sim-uj-PyMPDATA)   
+[![EU Funding](https://img.shields.io/static/v1?label=EU%20Funding%20by&color=103069&message=FNP&logoWidth=25&logo=image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAeCAYAAABTwyyaAAAEzklEQVRYw9WYS2yUVRiGn3P5ZzozpZ3aUsrNgoKlKBINmkhpCCwwxIAhsDCpBBIWhmCMMYTEhSJ4i9EgBnSBEm81MRrFBhNXEuUSMCopiRWLQqEGLNgr085M5//POS46NNYFzHQ6qGc1i5nzP/P973m/9ztCrf7A8T9csiibCocUbvTzfxLcAcaM3cY3imXz25lT3Y34G7gQYAKV3+bFAHcATlBTPogJNADG92iY28FHW97kyPbnuW/W7xgzAhukQ9xe04PJeOT0HkQRwK0TlEeGWb/kOO9v3kdD3a8YK9GhDMfa6mg9fxunOm/lWPtcpDI4K7n/jnN8+uQbrFrUSiwU/DtSEUB/MsKKBT+zYslJqiYNgVE4JwhHkzy86wlWvrKVWDSZ/YFjZlU39yw4y/rGoyQGowWB67zl4QQue+jssMdXrQvZ/00jyeHwqCgDKwnsiJjSvkYAxsG5K9WsenYbJdqAtAjhCIxCSZt/4fK1w5A2WCvxrUAKCHwNVoA2aGmvq11jJQQapEXrgMBKqmJJugejKGWLIxXrBPFoigfv/omd675gRkU/xgqUDlAhH3UDaAAlLSqUQekAYyVTyhLs3tDMsvntlIYzOFcEcOcEGd9jx9oDbGs6QO0t/Tijxi9S4bhzxiWaVh5m94Zm0n7oui4ybo0raUlcncQnxx+g+WgDF/vLoYDmoqSl/dJUnt7XRCoTZjij0Z6Pc2LiNS4EBBkNvoeOJXN+yPWWSZeANOhwJq/98nKVwNdoL8B5AROxBKBL0gjh8DMhdCh3eJnrA0yqhLpplwmyup6IajvAOIGfKGVx3VmCRGnOMpe5QAdG0bT8CAeeep0d6z6nqjSJnQiZWEllLMWrmz6k+fE9rGk8MVqYgsGv5ZH2i1Opr+9kajzB5d74hKQ+KS3d/WVMLhtgdu1lriRiOR/4nDVunaR24x7qp3UV5Cb/fJvC83nv26W81LIK58SYNFmwq4hsGx/5BwKlzYRma2NUthgOJSew4i7ru9nJYCQF5tApb2yvjiDQKJV/IfJKh0o6qssSLKv/jcAoRKHQQzE2Lj2OMV5OkWFc4MZIpsev8uXWXRx6ZicbGk8QZLxxgwe+x/rlR3h3816+f2E7lbEU+ZDn3vKVpePCdFovzCISHqbl5EIoQOteKMPB1rto65zNyfOz+KOrGl06lHPQyi/WOohH0/T0l1MZH6A3GUEKl7Pmr2la6wBrBWWRDP2DUcqjKVKBGom9RZmABAykwnglafpSJSPQvsfiOR0EQ7ExVmazA8cY6N4K1iw6RdAXRwi4mgrheT5Dvs4LeuS81a15Ll/3dQisFVSVpnj7sf1sX/sZvhAc+6UOrQyBVUQ8gx/orFmDsZqtaw/y1qZ9zKjp5vDpenyjcNe+cLNmTiUdf/bEOddVQ0VpgsOn54ET+EYxvWKALSu+5tGG76it7MNaiZKGQ23zCIcMfUMxBnrjN3fmHHvCAlp+vJcXWx6itqoXpAEnUNLx8iMfo5Xh1i17R3PJYCpC2cZ3qK3sQ8WGEDDuXlAQuFKGHzpmopXhTNfk0bmxs7uC1w6uJul79AxFkMIiBJy5UoUWjrZLU5DCFdTARDHuDqVw+OkSwI0MCEW4gtNF2BPrBCo8fKNbtILWX9aUDqFqHnn7AAAAAElFTkSuQmCC)](https://www.fnp.org.pl/en/)
+[![Copyright](https://img.shields.io/static/v1?label=Copyright&color=249fe2&message=Jagiellonian%20University&)](https://www.uj.edu.pl/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 # PyMPDATA
 
@@ -15,7 +25,7 @@ As of the current version, PyMPDATA supports homogeneous transport
   in 1D, 2D and 3D using structured meshes, optionally
   generalised by employment of a Jacobian of coordinate transformation. 
 PyMPDATA includes implementation of a set of MPDATA **variants including
-  flux-corrected transport (FCT), infinite-gauge, divergent-flow and 
+  the non-oscillatory option, infinite-gauge, divergent-flow, double-pass donor cell (DPDC) and 
   third-order-terms options**. 
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
@@ -49,9 +59,10 @@ The examples/demos reproduce results from several published
 ## Dependencies and installation
 
 PyMPDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
-and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/requirements.txt) file.  
+and listed in the project's [requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/requirements.txt) 
+and [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) files.  
  
-To install PyMPDATA, one may use: ``pip3 install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git``
+To install PyMPDATA, one may use: ``pip install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git``
  
 ## Examples/Demos:
 
@@ -95,13 +106,15 @@ groups both algorithm variant options as well as some implementation-related
 flags that need to be set at the first place. All are set at the time
 of instantiation using the following keyword arguments of the constructor 
 (all having default values indicated below):
-- ``n_iters:int = 2``: number of iterations (2 means upwind + one corrective iteration)
+- ``n_iters: int = 2``: number of iterations (2 means upwind + one corrective iteration)
 - ``infinite_gauge: bool = False``: flag enabling the infinite-gauge option (does not maintain sign of the advected field, thus in practice implies switching flux corrected transport on)
 - ``divergent_flow: bool = False``: flag enabling divergent-flow terms when calculating antidiffusive velocity
 - ``flux_corrected_transport: bool = False``: flag enabling flux-corrected transport (FCT) logic (a.k.a. non-oscillatory or monotone variant)
 - ``third_order_terms: bool = False``: flag enabling third-order terms
 - ``epsilon: float = 1e-15``: value added to potentially zero-valued denominators 
 - ``non_zero_mu_coeff: bool = False``: flag indicating if code for handling the Fickian term is to be optimised out
+- ``DPDC: bool = False``: flag enabling double-pass donor cell option (recursive pseudovelocities)
+- ``dtype: np.floating = np.float64``: floating point precision
 
 For a discussion of the above options, see e.g., [Smolarkiewicz & Margolin 1998](https://doi.org/10.1006/jcph.1998.5901).
 
@@ -267,4 +280,4 @@ licence: GPL v3
 - libmpdata++ (C++):
   https://github.com/igfuw/libmpdataxx
 - AtmosFOAM:
-  https://github.com/AtmosFOAM/AtmosFOAM/blob/MPDATA/applications/solvers/advection/MPDATAadvectionFoam/MPDATAadvectionFoam.C
+  https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
