@@ -1,5 +1,5 @@
 from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.simulation import Simulation
-from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
+from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.settings import Settings
 from PyMPDATA.options import Options
 import numpy as np
 import pytest
@@ -12,7 +12,7 @@ class TestSmolarkiewicz2006:
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig3(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Setup("cosine"), Options(n_iters=1, dtype=dtype))
+        simulation = Simulation(Settings("cosine"), Options(n_iters=1, dtype=dtype))
         psi0 = simulation.state
 
         # Act
@@ -31,7 +31,7 @@ class TestSmolarkiewicz2006:
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig4(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Setup("cosine"), Options(n_iters=2, dtype=dtype))
+        simulation = Simulation(Settings("cosine"), Options(n_iters=2, dtype=dtype))
         psi0 = simulation.state
 
         # Act
@@ -50,7 +50,7 @@ class TestSmolarkiewicz2006:
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig10(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Setup("cosine"), Options(infinite_gauge=True, n_iters=2, dtype=dtype))
+        simulation = Simulation(Settings("cosine"), Options(infinite_gauge=True, n_iters=2, dtype=dtype))
 
         # Act
         simulation.run()
@@ -65,7 +65,7 @@ class TestSmolarkiewicz2006:
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig11(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Setup("rect"), Options(infinite_gauge=True, n_iters=2, dtype=dtype))
+        simulation = Simulation(Settings("rect"), Options(infinite_gauge=True, n_iters=2, dtype=dtype))
 
         # Act
         simulation.run()
@@ -80,7 +80,7 @@ class TestSmolarkiewicz2006:
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig12(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Setup("rect"), Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True, dtype=dtype))
+        simulation = Simulation(Settings("rect"), Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True, dtype=dtype))
 
         # Act
         simulation.run()

@@ -1,5 +1,5 @@
 from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation import Simulation
-from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.setup import Setup
+from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings import Settings
 from PyMPDATA import Options
 from joblib import Parallel, delayed
 
@@ -13,8 +13,8 @@ options = {
 
 
 def compute_panel(panel):
-    setup = Setup(n_rotations=6)
-    simulation = Simulation(setup, options[panel])
+    settings = Settings(n_rotations=6)
+    simulation = Simulation(settings, options[panel])
     if panel == 'upwind':
         return simulation.state
     simulation.run()

@@ -7,38 +7,38 @@ import numba
 
 
 class Simulation:
-    def __init__(self, setup):
-        self.setup = setup
+    def __init__(self, settings):
+        self.settings = settings
 
-        sigma2 = pow(setup.sigma, 2)
-        dx_opt = abs(setup.C_opt / (.5 * sigma2 - setup.r) * setup.l2_opt * sigma2)
-        dt_opt = pow(dx_opt, 2) / sigma2 / setup.l2_opt
+        sigma2 = pow(settings.sigma, 2)
+        dx_opt = abs(settings.C_opt / (.5 * sigma2 - settings.r) * settings.l2_opt * sigma2)
+        dt_opt = pow(dx_opt, 2) / sigma2 / settings.l2_opt
     
         # adjusting dt so that nt is integer
-        self.dt = setup.T
+        self.dt = settings.T
         self.nt = 0
         while self.dt > dt_opt:
             self.nt += 1
-            self.dt = setup.T / self.nt
+            self.dt = settings.T / self.nt
     
         # adjusting dx to match requested l^2
-        dx = np.sqrt(setup.l2_opt * self.dt) * setup.sigma
+        dx = np.sqrt(settings.l2_opt * self.dt) * settings.sigma
 
         # calculating actual u number and lambda
-        self.C = - (.5 * sigma2 - setup.r) * (-self.dt) / dx
+        self.C = - (.5 * sigma2 - settings.r) * (-self.dt) / dx
         self.l2 = dx * dx / sigma2 / self.dt
     
         # adjusting nx and setting S_beg, S_end
-        S_beg = setup.S_match
+        S_beg = settings.S_match
         self.nx = 1
-        while S_beg > setup.S_min:
+        while S_beg > settings.S_min:
             self.nx += 1
-            S_beg = np.exp(np.log(setup.S_match) - self.nx * dx)
+            S_beg = np.exp(np.log(settings.S_match) - self.nx * dx)
 
         self.ix_match = self.nx
     
-        S_end = setup.S_match
-        while S_end < setup.S_max:
+        S_end = settings.S_match
+        while S_end < settings.S_max:
             self.nx += 1
             S_end = np.exp(np.log(S_beg) + (self.nx-1) * dx)
 
@@ -48,25 +48,25 @@ class Simulation:
         self.mu_coeff = (0.5 / self.l2,)
         self.solvers = {}
         self.solvers[1] = Factories.advection_diffusion_1d(
-            advectee=setup.payoff(self.S),
+            advectee=settings.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, non_zero_mu_coeff=True),
             boundary_conditions=(ExtrapolatedBoundaryCondition(),)
         )
         self.solvers[2] = Factories.advection_diffusion_1d(
-            advectee=setup.payoff(self.S),
+            advectee=settings.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS),
             boundary_conditions=(ExtrapolatedBoundaryCondition(),)
         )
 
     def run(self, n_iters: int):
-        if self.setup.amer:
+        if self.settings.amer:
             psi = self.solvers[n_iters].advectee.data
             f_T = np.empty_like(psi)
-            f_T[:] = psi[:] / np.exp(-self.setup.r * self.setup.T)
-            T = self.setup.T
-            r = self.setup.r
+            f_T[:] = psi[:] / np.exp(-self.settings.r * self.settings.T)
+            T = self.settings.T
+            r = self.settings.r
             dt = self.dt
 
             @numba.njit(**self.solvers[n_iters].options.jit_flags)

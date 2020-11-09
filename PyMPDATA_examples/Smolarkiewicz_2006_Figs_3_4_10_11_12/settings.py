@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Setup:
+class Settings:
     nt = 1600
     dt = 1
     nx = 500
@@ -11,9 +11,9 @@ class Setup:
 
     def __init__(self, shape: str):
         if shape == "cosine":
-            self.cdf = Setup.cdf_cosine
+            self.cdf = Settings.cdf_cosine
         elif shape == "rect":
-            self.cdf = Setup.cdf_rect
+            self.cdf = Settings.cdf_rect
         else:
             raise ValueError()
 

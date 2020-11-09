@@ -22,7 +22,7 @@ xc = .5 * grid[0] * dx
 yc = .5 * grid[1] * dy
 
 
-class Setup:
+class Settings:
     def __init__(self, n_rotations=6):
         self.n_rotations = n_rotations
 
@@ -107,8 +107,8 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
     else:
         numba.set_num_threads(numba.config.NUMBA_NUM_THREADS)
 
-    setup = Setup(n_rotations=6)
-    _, __, z = from_pdf_2d(setup.pdf, xrange=setup.xrange, yrange=setup.yrange, gridsize=setup.grid)
+    settings = Settings(n_rotations=6)
+    _, __, z = from_pdf_2d(settings.pdf, xrange=settings.xrange, yrange=settings.yrange, gridsize=settings.grid)
 
     C = (-.5, .25)
     grid = z.shape
@@ -129,7 +129,7 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
     def set_z():
         solver.advectee.get()[:] = z
 
-    benchmark.pedantic(solver.advance, (setup.nt,), setup=set_z, warmup_rounds=1, rounds=3)
+    benchmark.pedantic(solver.advance, (settings.nt,), setup=set_z, warmup_rounds=1, rounds=3)
 
     if options.n_iters == 1 or options.flux_corrected_transport:
         np.testing.assert_almost_equal(np.amin(solver.advectee.get()), h0)

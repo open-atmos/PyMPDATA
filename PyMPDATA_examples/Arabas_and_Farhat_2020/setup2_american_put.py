@@ -3,7 +3,7 @@ import PyMPDATA_examples.Arabas_and_Farhat_2020.Bjerksund_and_Stensland_1993 as 
 import numpy as np
 
 
-class Setup:
+class Settings:
     amer = True
     l2_opt = 2.05
     S_min = .05

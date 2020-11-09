@@ -1,5 +1,5 @@
 from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
-from PyMPDATA_examples.Olesik_et_al_2020.setup import Setup, default_mixing_ratios_g_kg
+from PyMPDATA_examples.Olesik_et_al_2020.settings import Settings, default_mixing_ratios_g_kg
 from PyMPDATA import Options
 from PyMPDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from PyMPDATA_examples.Olesik_et_al_2020.physics.equilibrium_drop_growth import PdfEvolver
@@ -10,10 +10,10 @@ from copy import deepcopy
 import numpy as np
 
 
-def analysis(setup, grid_layout, psi_coord, options_dict, GC_max):
+def analysis(settings, grid_layout, psi_coord, options_dict, GC_max):
     options_str = str(options_dict)
     options = Options(**options_dict)
-    simulation = Simulation(setup, grid_layout,  psi_coord, options, GC_max)
+    simulation = Simulation(settings, grid_layout, psi_coord, options, GC_max)
     result = {"n": [], "n_analytical": [], "error_norm_L2": [], "wall_time":[]}
     last_step = 0
     for n_steps in simulation.out_steps:
@@ -39,10 +39,10 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
                         opt_set=({'n_iters': 1},),
                         mixing_ratios_g_kg=default_mixing_ratios_g_kg
                         ):
-    setup = Setup(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
+    settings = Settings(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
     with parallel_backend('threading', n_jobs=-2):
         results = Parallel(verbose=10)(
-            delayed(analysis)(setup, grid_layout, psi_coord, options, GC_max)
+            delayed(analysis)(settings, grid_layout, psi_coord, options, GC_max)
             for grid_layout in grid_layouts
             for options in deepcopy(opt_set)
         )
@@ -72,7 +72,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
     for coord, case in cases.items():
         analytical = []
         for t in [case.dt * nt for nt in case.out_steps]:
-            pdf_t = PdfEvolver(setup.pdf, setup.drdt, t)
+            pdf_t = PdfEvolver(settings.pdf, settings.drdt, t)
             rh = output[coord]["grid"]['rh']
             analytical.append(discretised_analytical_solution(
                 rh.magnitude,
@@ -96,7 +96,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
             for opts in output[coord]["numerical"]:
                 output[coord]["wall_time"][opts] = data["wall_time"]
 
-    return output, setup
+    return output, settings
 
 
 class Result:

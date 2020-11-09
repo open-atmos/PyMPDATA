@@ -1,12 +1,12 @@
 from PyMPDATA_examples.Olesik_et_al_2020.simulation import Simulation
-from PyMPDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_GC_max
+from PyMPDATA_examples.Olesik_et_al_2020.settings import Settings, default_nr, default_GC_max
 from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 from PyMPDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from PyMPDATA.options import Options
 import pytest
 import numpy as np
 
-setup=Setup()
+settings=Settings()
 grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))
 opt_set = (
     {'n_iters': 1},
@@ -23,17 +23,17 @@ def data():
     return result
 
 
-@pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(r0=1 * setup.si.um, n=1)])
+@pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(r0=1 * settings.si.um, n=1)])
 @pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_pn(r0=1, n=3)])
 @pytest.mark.parametrize("flux_corrected_transport", [False, True])
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
     opts = Options(flux_corrected_transport=flux_corrected_transport)
     # Act
-    simulation = Simulation(setup, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
+    simulation = Simulation(settings, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
     simulation.step(1)
     # Asserts for array shapes
-    assert simulation.n_of_r.shape[0] == setup.nr
+    assert simulation.n_of_r.shape[0] == settings.nr
 
     # Asserts for Jacobian
     G_with_halo = simulation.solver.g_factor.data
