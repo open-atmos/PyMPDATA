@@ -12,7 +12,7 @@ opt_set = default_opt_set.values()
 
 # TODO!
 rtol = .99
-if platform.system() == 'Windows' and 'TRAVIS' in os.environ:
+if platform.system() == 'Windows' and 'CI' in os.environ:
     rtol = 1.99
 
 def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
