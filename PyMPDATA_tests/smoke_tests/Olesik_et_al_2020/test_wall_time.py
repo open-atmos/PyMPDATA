@@ -13,7 +13,7 @@ opt_set = default_opt_set.values()
 
 rtol = .5
 
-@pytest.mark.skipif(platform.system() == 'Windows' and 'TRAVIS' in os.environ)
+@pytest.mark.skipif("platform.system() == 'Windows' and 'TRAVIS' in os.environ")
 def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
     settings = Settings(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
