@@ -29,8 +29,8 @@ jobs:
           sed -i -e '/^mpi4py/d' requirements.txt
           rm PyMPDATA_tests/unit_tests/test_mpi.py
       - run: |
-          pip install pytest pytest-benchmark
+          pip install pytest pytest-benchmark pytest-parallel
       - run: |
           pip install -r requirements.txt
       - run: |
-          PYTHONPATH=. pytest
+          PYTHONPATH=. pytest --workers auto
