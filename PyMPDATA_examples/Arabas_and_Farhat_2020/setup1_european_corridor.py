@@ -2,7 +2,7 @@ import PyMPDATA_examples.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS73
 import numpy as np
 
 
-class Setup:
+class Settings:
     S0 = 55
     T = 0.5
     amer = False

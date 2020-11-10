@@ -1,5 +1,5 @@
 from PyMPDATA.options import Options
-from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.setup import Setup
+from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.settings import Settings
 from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.simulation import Simulation
 import pytest
 import numpy as np
@@ -24,7 +24,7 @@ import numpy as np
     Options(n_iters=3, third_order_terms=True)
 ])
 def test_timing_1d(benchmark, options):
-    simulation = Simulation(Setup("cosine"), options)
+    simulation = Simulation(Settings("cosine"), options)
     psi0 = simulation.stepper.advectee.get().copy()
 
     def set_psi():

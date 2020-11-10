@@ -1,4 +1,4 @@
-from PyMPDATA_examples.Olesik_et_al_2020.setup import Setup, default_nr, default_GC_max, default_opt_set
+from PyMPDATA_examples.Olesik_et_al_2020.settings import Settings, default_nr, default_GC_max, default_opt_set
 from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn
 from PyMPDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from PyMPDATA import Options
@@ -16,14 +16,14 @@ if platform.system() == 'Windows' and 'CI' in os.environ:
     rtol = 1.99
 
 def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
-    setup = Setup(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
+    settings = Settings(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
         for opts in opt_set:
             i = 0
             minimum_values = []
             while i < n_runs:
-                result = make_data(setup, grid, opts)
+                result = make_data(settings, grid, opts)
                 wall_times = result['wall_time']
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
@@ -37,9 +37,9 @@ def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=
     compare_refdata(data=table_data, rtol=rtol, generate=generate)
 
 
-def make_data(setup, grid, opts):
+def make_data(settings, grid, opts):
     options = Options(**opts)
-    simulation = Simulation(setup=setup, grid_layout=grid, psi_coord=x_id(), opts=options, GC_max=default_GC_max)
+    simulation = Simulation(settings=settings, grid_layout=grid, psi_coord=x_id(), opts=options, GC_max=default_GC_max)
     result = {"wall_time": []}
     last_step = 0
     for n_steps in simulation.out_steps:

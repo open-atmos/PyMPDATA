@@ -5,16 +5,16 @@ import matplotlib
 
 
 class Plotter:
-    def __init__(self, setup, plots=('n', 'm')):
-        self.setup = setup
+    def __init__(self, settings, plots=('n', 'm')):
+        self.settings = settings
         self.plots = plots
         self.cdfarg, self.dcdfarg = np.linspace(
-            setup.r_min.magnitude,
-            setup.r_max.magnitude,
+            settings.r_min.magnitude,
+            settings.r_max.magnitude,
             512, retstep=True
         )
-        self.cdfarg *= setup.r_min.units
-        self.dcdfarg *= setup.r_max.units
+        self.cdfarg *= settings.r_min.units
+        self.dcdfarg *= settings.r_max.units
 
         matplotlib.rcParams.update({'font.size': 16})
         if len(plots) == 1:
@@ -28,15 +28,15 @@ class Plotter:
         self.style_dict = {}
         self.style_palette = ['-','-', '-', '-', '-.']
 
-        self.setup.si.setup_matplotlib()
+        self.settings.si.setup_matplotlib()
 
         if 'n' in plots:
-            self.axs[plots.index('n')].yaxis.set_units(1 / self.setup.si.micrometre / self.setup.si.centimetre ** 3)
+            self.axs[plots.index('n')].yaxis.set_units(1 / self.settings.si.micrometre / self.settings.si.centimetre ** 3)
         if 'm' in plots:
-            self.axs[plots.index('m')].yaxis.set_units(1 / self.setup.si.micrometre)
+            self.axs[plots.index('m')].yaxis.set_units(1 / self.settings.si.micrometre)
 
         for i in range(len(plots)):
-            self.axs[i].xaxis.set_units(self.setup.si.micrometre)
+            self.axs[i].xaxis.set_units(self.settings.si.micrometre)
             self.axs[i].grid()
 
         if 'm' in plots:
@@ -50,7 +50,7 @@ class Plotter:
 
         # normalised mass distribution
         if 'm' in self.plots:
-            y_mass = y * x**3 * 4 / 3 * np.pi * self.setup.rho_w / self.setup.rho_a / mnorm
+            y_mass = y * x ** 3 * 4 / 3 * np.pi * self.settings.rho_w / self.settings.rho_a / mnorm
             self.axs[self.plots.index('m')].plot(x, y_mass, color=color, linestyle=':')
 
         # number distribution
@@ -87,10 +87,10 @@ class Plotter:
 
         # normalised mass distribution
         if 'm' in self.plots:
-            self._plot('m', x, n_n.to_n_v(y, r1, r2) * self.setup.rho_w / self.setup.rho_a / mnorm, fill=fill, color=color, linewidth=linewidth, lbl=lbl)
+            self._plot('m', x, n_n.to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm, fill=fill, color=color, linewidth=linewidth, lbl=lbl)
 
     def xlim(self, plot):
         self.axs[self.plots.index(plot)].set_xlim(
-            (0, self.setup.r_max.magnitude)
+            (0, self.settings.r_max.magnitude)
         )
 

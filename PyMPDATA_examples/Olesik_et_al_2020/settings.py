@@ -35,7 +35,7 @@ def option_string(opts):
     return opts
 
 # based on Fig. 3 from East 1957
-class Setup:
+class Settings:
     def __init__(self, nr=default_nr, mixing_ratios_g_kg=default_mixing_ratios_g_kg):
         si = pint.UnitRegistry()
         self.si = si

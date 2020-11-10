@@ -69,30 +69,30 @@ class Simulation:
     def __mgn(quantity, unit):
         return quantity.to(unit).magnitude
 
-    def __init__(self, setup, grid_layout, psi_coord, opts, GC_max):
-        self.setup = setup
+    def __init__(self, settings, grid_layout, psi_coord, opts, GC_max):
+        self.settings = settings
         self.psi_coord = psi_coord
         self.grid_layout = grid_layout
 
         # units of calculation
-        self.__t_unit = self.setup.si.seconds
-        self.__r_unit = self.setup.si.micrometre
+        self.__t_unit = self.settings.si.seconds
+        self.__r_unit = self.settings.si.micrometre
         self.__p_unit = psi_coord.x(self.__r_unit)
-        self.__n_of_r_unit = self.setup.si.centimetres ** -3 / self.setup.si.micrometre
+        self.__n_of_r_unit = self.settings.si.centimetres ** -3 / self.settings.si.micrometre
 
         self.solver, self.__r, self.__rh, self.dx, dt, self._g_factor = Simulation.make_condensational_growth_solver(
-            self.setup.nr,
-            self.__mgn(self.setup.r_min, self.__r_unit),
-            self.__mgn(self.setup.r_max, self.__r_unit),
+            self.settings.nr,
+            self.__mgn(self.settings.r_min, self.__r_unit),
+            self.__mgn(self.settings.r_max, self.__r_unit),
             GC_max,
             grid_layout,
             psi_coord,
-            lambda r: self.__mgn(self.setup.pdf(r * self.__r_unit), self.__n_of_r_unit),
-            lambda r: self.__mgn(self.setup.drdt(r * self.__r_unit), self.__r_unit / self.__t_unit),
+            lambda r: self.__mgn(self.settings.pdf(r * self.__r_unit), self.__n_of_r_unit),
+            lambda r: self.__mgn(self.settings.drdt(r * self.__r_unit), self.__r_unit / self.__t_unit),
             opts
         )
 
-        self.out_steps = tuple([math.ceil(t/dt) for t in setup.out_times])
+        self.out_steps = tuple([math.ceil(t/dt) for t in settings.out_times])
         self.dt = dt * self.__t_unit
 
     def step(self, nt):
