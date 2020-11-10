@@ -75,11 +75,8 @@ script:
         # diff $i.md.repo $i.md.travis
       done;
     else
-      if [[ $CODECOV == 'TRUE' ]]; then
-        python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=PyMPDATA PyMPDATA_tests || exit 1;
-      else
-        python$PY_SFX -m pytest PyMPDATA_tests -k "not test_mpi" || exit 1;
-      fi;
+      NUMBA_DISABLE_JIT=1 python$PY_SFX -m pytest -k "not test_mpi" --cov-report term --cov=PyMPDATA PyMPDATA_tests || exit 1;
+      python$PY_SFX -m pytest PyMPDATA_tests -k "not test_mpi" || exit 1;
       mpiexec $([ "$MPI" == 'openmpi' ] && echo "--oversubscribe") -n 2 python$PY_SFX -m pytest -k "test_mpi" PyMPDATA_tests || exit 1;
     fi;
   # execute Python lines from README.md
