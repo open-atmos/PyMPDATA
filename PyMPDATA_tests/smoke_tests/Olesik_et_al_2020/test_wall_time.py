@@ -5,16 +5,15 @@ from PyMPDATA import Options
 import numpy as np
 import pathlib
 import platform, os
+import pytest
 
 
 grid_layout_set = (x_log_of_pn(r0=1,base=2),)
 opt_set = default_opt_set.values()
 
-# TODO!
-rtol = .99
-if platform.system() == 'Windows' and 'CI' in os.environ:
-    rtol = 1.99
+rtol = .5
 
+@pytest.mark.skipif(platform.system() == 'Windows' and 'TRAVIS' in os.environ)
 def test_wall_time(n_runs=3, mrats=[10, ], generate=False, print_tab=True, rtol=rtol):
     settings = Settings(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
