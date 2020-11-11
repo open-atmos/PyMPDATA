@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 
+@pytest.mark.skipif("numba.config.DISABLE_JIT")
 class TestMPI:
     @staticmethod
     @pytest.mark.parametrize("sut", [mpi.initialized, mpi.initialized.py_func])
