@@ -2,6 +2,7 @@ import PyMPDATA.mpi as mpi
 from mpi4py.MPI import COMM_WORLD
 import numpy as np
 import pytest
+import numba
 
 
 @pytest.mark.skipif("numba.config.DISABLE_JIT")
