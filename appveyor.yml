@@ -41,5 +41,5 @@ install:
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 test_script:
   - ps: |
-      iex "$env:PYTHON -m pytest"
+      iex "$env:PYTHON -m pytest -We"
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
