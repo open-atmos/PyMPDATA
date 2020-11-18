@@ -55,7 +55,7 @@ def make_textable(data, generate=False, print_tab=False):
     for opt, value in zip(data["opts"], data["values"]):
         latex_data += r"\hline" + f" {opt} & {value} " + r"\\ \hline" + "\n"
     latex_start = r"\begin{table}[]" + "\n" + r"\begin{tabular}{| l | l |}" + "\n"
-    latex_end = "\end{tabular} \n \end{table}"
+    latex_end = r"\end{tabular}" + "\n" + r"\end{table}"
     latex_table = latex_start + latex_data + latex_end
     if print_tab:
         print(latex_table)
