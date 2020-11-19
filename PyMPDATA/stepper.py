@@ -14,8 +14,8 @@ from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
 from .options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
-import warnings
 from .clock import clock
+import sys
 
 
 warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
@@ -53,7 +53,7 @@ class Stepper:
             try:
                 numba.parfors.parfor.ensure_parallel_support()
             except numba.core.errors.UnsupportedParforsError:
-                warnings.warn("forcing n_threads=1 as numba.parfors.parfor.ensure_parallel_support() raised UnsupportedParforsError")
+                print("forcing n_threads=1 as numba.parfors.parfor.ensure_parallel_support() raised UnsupportedParforsError", file=sys.stderr)
                 self.n_threads = 1
 
                 
