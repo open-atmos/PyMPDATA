@@ -18,9 +18,6 @@ from .clock import clock
 import sys
 
 
-warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-
-
 class Stepper:
     def __init__(self, *,
                  options: Options,
