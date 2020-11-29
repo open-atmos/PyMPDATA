@@ -51,6 +51,7 @@ class Settings:
         self.size_distribution = East_and_Marshall_1954.SizeDistribution(si)
 
         self.C = (1 * si.gram / si.kilogram) / self.mixing_ratio(self.size_distribution.pdf)
+        np.testing.assert_approx_equal(self.C.to(si.dimensionless).magnitude, 1, 4)
         self.out_times = self.find_out_steps()
 
     def find_out_steps(self):

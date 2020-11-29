@@ -40,7 +40,7 @@ class Plotter:
             self.axs[i].grid()
 
         if 'm' in plots:
-            self.axs[plots.index('m')].set_title('$(dM/dr)/M_0$')
+            self.axs[plots.index('m')].set_title('$(dM/dr)/M$')
         if 'n' in plots:
             self.axs[plots.index('n')].set_title('$dN/dr$')
 
