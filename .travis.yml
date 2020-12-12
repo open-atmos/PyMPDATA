@@ -44,7 +44,7 @@ install:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
-      if [[ $MPI == 'none'    ]]; then sed -i '/mpi4py/d' requirements.txt || exit 1; fi
+      if [[ $MPI == 'none'    ]]; then sed -i '/numba-mpi/d' requirements.txt || exit 1; fi
       if [[ $MPI == 'mpich'   ]]; then $apt_get_install mpich libmpich-dev || exit 1; fi
       if [[ $MPI == 'openmpi' ]]; then $apt_get_install openmpi-bin libopenmpi-dev || exit 1; fi
       $apt_get_install ffmpeg || exit 1;
