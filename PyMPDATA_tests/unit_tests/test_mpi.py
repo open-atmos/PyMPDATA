@@ -1,4 +1,4 @@
-import PyMPDATA.mpi as mpi
+import numba_mpi as mpi
 from mpi4py.MPI import COMM_WORLD
 import numpy as np
 import pytest

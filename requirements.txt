@@ -8,4 +8,4 @@ pint>=0.16.1
 joblib>=0.14.1
 sympy>=1.6.1
 
-mpi4py
+git+git://github.com/atmos-cloud-sim-uj/numba-mpi#egg=numba-mpi
