@@ -10,15 +10,17 @@ authors:
   - name: Sylwester Arabas
     orcid: 0000-0003-0361-0082
     affiliation: "1"
+  - name: Jakub Banaśkiewicz
+    affiliation: "1"
   - name: Piotr Bartman
     orcid: 0000-0003-0265-6428
     affiliation: "1"
+  - name: Szymon Drenda
+    affiliation: "1"
+  - name: Maciej Manna
+    affiliation: "1"
   - name: Michael Olesik
     orcid: 0000-0002-6319-9358
-    affiliation: "1"
-  - name: Jakub Banaśkiewicz
-    affiliation: "1"
-  - name: Szymon Drenda
     affiliation: "1"
   - name: Paweł Rozwoda
     affiliation: "1"
