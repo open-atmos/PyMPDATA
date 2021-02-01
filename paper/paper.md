@@ -1,5 +1,5 @@
 ---
-title: 'MPyDATA: Numba-accelerated Pythonic implementation of MPDATA with Jupyter examples'
+title: 'MPyDATA: Numba-accelerated Pythonic implementation of MPDATA for solutions of nonlinear conservation laws with Jupyter, Matlab and Julia examples'
 tags:
   - Python
   - pde-solver 
