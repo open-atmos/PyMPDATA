@@ -43,10 +43,11 @@ Travis
 finite volume/finite difference
 dimensionality
 systems
-parallelisation
+parallelisation (with a formula-transparent indirection layer for halo-filling/barriers)
 boundary cond
 structured mesh
 hyperbolic
+stencil
 
 # Statement of need 
 
