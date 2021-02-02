@@ -1,5 +1,5 @@
 ---
-title: 'MPyDATA: Numba-accelerated Pythonic implementation of MPDATA for solutions of nonlinear conservation laws with Jupyter, Matlab and Julia examples'
+title: 'MPyDATA: Numba-accelerated Pythonic implementation of MPDATA for solutions of multidimensional nonlinear conservation laws with Jupyter, Matlab and Julia examples'
 tags:
   - Python
   - pde-solver 
@@ -39,6 +39,14 @@ bibliography: paper.bib
 TODO
 Linux, OSX, Windows
 Travis
+
+finite volume/finite difference
+dimensionality
+systems
+parallelisation
+boundary cond
+structured mesh
+hyperbolic
 
 # Statement of need 
 
