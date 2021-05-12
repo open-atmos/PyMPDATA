@@ -1,4 +1,4 @@
-name: Build Status
+name: PyMPDATA
 
 defaults:
   run:
@@ -9,28 +9,38 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  schedule:
+    - cron: '0 13 * * 4'
 
 jobs:
   build:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.7, 3.8, 3.9]
     runs-on: ${{ matrix.platform }}
-
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python-version }}
 
-
-      - run: | # TODO !!!
-          sed -i -e '/numba-mpi/d' requirements.txt
-          rm PyMPDATA_tests/unit_tests/test_mpi.py
       - run: |
-          pip install pytest pytest-benchmark
+          pip install -e .
+      - run: |
+          python -We -c "import PyMPDAT"
+      # note: this installs PyMPDATA-examples including its dependencies which inclde PyMPDATA itself...
       - run: |
           pip install -r requirements.txt
+      # note: ... hence reverting to the currently tested version
       - run: |
-          PYTHONPATH=. pytest
+          pip install -e .
+      # TODO #184 (https://github.com/numba/numba/issues/6350#issuecomment-728174860)
+      - if: matrix.platform == 'ubuntu-latest'
+        env:
+          NUMBA_THREADING_LAYER: omp
+        run: pytest -p no:unraisableexception -We
+
+      - if: matrix.platform != 'ubuntu-latest'
+        run: pytest -p no:unraisableexception -We
