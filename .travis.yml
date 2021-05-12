@@ -31,7 +31,7 @@ install:
       export apt_get_install="sudo apt-get install --no-install-recommends"
       $apt_get_install ffmpeg || exit 1;
     fi;
-  - pip$PY_SFX install -U pytest pytest-cov pytest-benchmark codecov
+  - pip$PY_SFX install -U pytest-cov codecov
   - pip$PY_SFX install -U -r requirements.txt
 
 script:

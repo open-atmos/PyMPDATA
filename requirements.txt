@@ -2,6 +2,7 @@
 matplotlib>=3.2.2
 ghapi
 pytest
+pytest-benchmark
 
 # note: if cloning both PyMPDATA and PyMPDATA examples, consider "pip install -e"
 git+git://github.com/slayoo/PyMPDATA-examples@db6a868#egg=PyMPDATA-examples
