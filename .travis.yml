@@ -33,6 +33,7 @@ install:
     fi;
   - pip$PY_SFX install -U pytest-cov codecov
   - pip$PY_SFX install -U -r requirements.txt
+  - pip$PY_SFX install -e .
 
 script:
   - python$PY_SFX -m numba -s
