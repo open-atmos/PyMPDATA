@@ -14,6 +14,7 @@ setup(
     setup_requires=['setuptools_scm'],
     install_requires=['numba==0.53.1',
                       'numpy>=1.20.2',
+                      'scipy>=1.6.3'
                       'ghapi'],
     author='https://github.com/atmos-cloud-sim-uj/PyMPDATA/graphs/contributors',
     license="GPL-3.0",
