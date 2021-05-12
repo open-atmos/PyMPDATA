@@ -18,3 +18,10 @@ from .arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBo
 from .arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 from .arakawa_c.boundary_condition.extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
 from .arakawa_c.boundary_condition.polar_boundary_condition import PolarBoundaryCondition
+
+from pkg_resources import get_distribution, DistributionNotFound
+try:
+    __version__ = get_distribution(__name__).version
+except DistributionNotFound:
+    # package is not installed
+    pass

@@ -1,26 +1,36 @@
-from distutils.core import setup
-from platform import system, architecture
+from setuptools import setup, find_packages
 
-install_requires = []
-if architecture()[0] == '64bit' and system() == 'Windows': # TODO: also available for Linux but hangs GithubActions!
-  install_requires += ['tbb>=2020.3.254']
-#if architecture()[0] == '64bit' and system() == 'Linux': # TODO: hangs colab!
-#  install_requires += ['icc_rt>=2020.0.133']
-if architecture()[0] == '64bit' and system() == 'Linux': 
-  install_requires += ['intel-openmp>=2020.0.133']
-if architecture()[0] == '64bit' and system() == 'Darwin': 
-  install_requires += ['intel-openmp>=2019.0']
+
+def get_long_description():
+    with open("README.md", "r", encoding="utf8") as file:
+        long_description = file.read()
+    return long_description
+
 
 setup(
     name='PyMPDATA',
-    version='0.0.0',
-    packages=[
-        'PyMPDATA',
-        'PyMPDATA/formulae',
-        'PyMPDATA/arakawa_c',
-        'PyMPDATA/arakawa_c/boundary_condition',
+    description='Numba-accelerated Pythonic implementation of MPDATA with Jupyter examples',
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
+    install_requires=['numba==0.53.1',
+                      'numpy>=1.20.2',
+                      'ghapi'],
+    author='https://github.com/atmos-cloud-sim-uj/PyMPDATA/graphs/contributors',
+    license="GPL-3.0",
+    packages=find_packages(include=['PyMPDATA', 'PyMPDATA.*']),
+    long_description=get_long_description(),
+    long_description_content_type = "text/markdown",
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Atmospheric Science',
+        'Topic :: Scientific/Engineering :: Mathematics',
+        'Topic :: Scientific/Engineering :: Physics',
+        'Topic :: Software Development :: Libraries'
     ],
-    license='GPL v3',
-    long_description='Numba-accelerated Pythonic implementation of MPDATA with Jupyter examples',
-    install_requires=install_requires
+    keywords='atmospheric-modelling, numba, numerical-integration, advection, pde-solver, advection-diffusion'
 )
