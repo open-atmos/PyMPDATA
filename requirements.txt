@@ -4,4 +4,4 @@ ghapi
 pytest
 
 # note: if cloning both PyMPDATA and PyMPDATA examples, consider "pip install -e"
-git+git://github.com/atmos-cloud-sim-uj/PyMPDATA-examples@e079337#egg=PyMPDATA-examples
+git+git://github.com/slayoo/PyMPDATA-examples@1649dfc#egg=PyMPDATA-examples
