@@ -26,7 +26,7 @@ install:
       $apt_get_install ffmpeg || exit 1;
     fi;
   - pip$PY_SFX install -U pytest-cov codecov
-  - pip$PY_SFX install -U -r requirements.txt
+  - pip$PY_SFX install -U -r test-time-test-time-requirements.txt
   - pip$PY_SFX install -e .
 
 script:
