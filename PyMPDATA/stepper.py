@@ -18,9 +18,6 @@ import warnings
 from .clock import clock
 
 
-warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-
-
 class Stepper:
     def __init__(self, *,
                  options: Options,
@@ -72,17 +69,19 @@ class Stepper:
                  beta_up, beta_up_bc,
                  beta_down, beta_down_bc):
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
-        return self.__call(nt, mu_coeff, post_step,
-                           advectee, advectee_bc,
-                           advector, advector_bc,
-                           g_factor, g_factor_bc,
-                           vectmp_a, vectmp_a_bc,
-                           vectmp_b, vectmp_b_bc,
-                           vectmp_c, vectmp_c_bc,
-                           psi_min, psi_min_bc,
-                           psi_max, psi_max_bc,
-                           beta_up, beta_up_bc,
-                           beta_down, beta_down_bc)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
+            return self.__call(nt, mu_coeff, post_step,
+                               advectee, advectee_bc,
+                               advector, advector_bc,
+                               g_factor, g_factor_bc,
+                               vectmp_a, vectmp_a_bc,
+                               vectmp_b, vectmp_b_bc,
+                               vectmp_c, vectmp_c_bc,
+                               psi_min, psi_min_bc,
+                               psi_max, psi_max_bc,
+                               beta_up, beta_up_bc,
+                               beta_down, beta_down_bc)
 
 
 @lru_cache()
