@@ -29,7 +29,7 @@ jobs:
       - run: |
           pip install -e .
       - run: |
-          python -c "import PyMPDATA"
+          python -We -c "import PyMPDATA"
       # note: this installs PyMPDATA-examples including its dependencies which inclde PyMPDATA itself...
       - run: |
           pip install -r test-time-requirements.txt
@@ -40,7 +40,7 @@ jobs:
       - if: matrix.platform == 'ubuntu-latest'
         env:
           NUMBA_THREADING_LAYER: omp
-        run: pytest -p no:unraisableexception
+        run: pytest -p no:unraisableexception -We
 
       - if: matrix.platform != 'ubuntu-latest'
-        run: pytest -p no:unraisableexception
+        run: pytest -p no:unraisableexception -We
