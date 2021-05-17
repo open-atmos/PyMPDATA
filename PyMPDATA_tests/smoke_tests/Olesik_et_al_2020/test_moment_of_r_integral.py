@@ -14,7 +14,7 @@ def test_moment_of_r_integral(k, coord):
     r1 = 4 * si.um
 
     # Act
-    with np.errstate(divide='ignore'):
+    with np.errstate(divide='ignore', invalid='ignore'):
         integral = coord.moment_of_r_integral(coord.x(r1), k) - coord.moment_of_r_integral(coord.x(r0), k)
 
     # Assert
