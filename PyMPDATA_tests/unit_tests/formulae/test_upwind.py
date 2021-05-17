@@ -1,7 +1,9 @@
 from PyMPDATA.formulae.upwind import make_upwind
 from PyMPDATA.arakawa_c.traversals import Traversals
 from PyMPDATA import Options, ScalarField, VectorField, PeriodicBoundaryCondition
+from numba.core.errors import NumbaExperimentalFeatureWarning
 import numpy as np
+import warnings
 
 
 class TestUpwind:
@@ -22,7 +24,9 @@ class TestUpwind:
         null_impl = ScalarField.make_null(len(psi_data.shape)).impl
 
         # Act
-        upwind(psi_impl[0], *flux_impl, *null_impl)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
+            upwind(psi_impl[0], *flux_impl, *null_impl)
 
         # Assert
         np.testing.assert_array_equal(psi.get(), np.roll(psi_data, 1))
