@@ -37,8 +37,8 @@ class PolarBoundaryCondition:
             if lat >= right_edge_idx:
                 step = (lat - right_edge_idx) * 2 + 1
 
-            return at(*psi, sign * step,
-                      nlon_half * (-1 if lon > nlon_half else 1))
+            val = nlon_half * (-1 if lon > nlon_half else 1)
+            return at(*psi, sign * step, val)
 
         return fill_halos
 

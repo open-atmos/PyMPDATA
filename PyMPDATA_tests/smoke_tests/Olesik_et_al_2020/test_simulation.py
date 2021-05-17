@@ -6,7 +6,7 @@ from PyMPDATA.options import Options
 import pytest
 import numpy as np
 
-settings=Settings()
+settings = Settings()
 grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))
 opt_set = (
     {'n_iters': 1},
@@ -29,9 +29,11 @@ def data():
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
     opts = Options(flux_corrected_transport=flux_corrected_transport)
+
     # Act
     simulation = Simulation(settings, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
     simulation.step(1)
+
     # Asserts for array shapes
     assert simulation.n_of_r.shape[0] == settings.nr
 

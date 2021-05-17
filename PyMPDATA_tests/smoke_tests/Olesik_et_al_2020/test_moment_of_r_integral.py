@@ -24,7 +24,3 @@ def test_moment_of_r_integral(k, coord):
         assert integral.check(f'[length]**{k+2}')
     elif coord.__class__==x_log_of_pn:
         assert integral.check(f'[length]**{k}')
-
-
-
-
