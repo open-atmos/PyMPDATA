@@ -24,6 +24,7 @@ install:
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       export apt_get_install="sudo apt-get install --no-install-recommends"
       $apt_get_install ffmpeg || exit 1;
+      export NUMBA_THREADING_LAYER=omp
     fi;
   - pip$PY_SFX install -U pytest-cov codecov
   - pip$PY_SFX install -U -r test-time-requirements.txt
