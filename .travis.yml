@@ -3,15 +3,15 @@ os: linux
 
 jobs:
   include:
-    - name: "Linux, Python 3.8, required packages, tests and codecov"
+    - name: "Linux, Python 3.8, required packages, codecov"
       python: 3.8
       env: CODECOV=TRUE
-    - name: "Linux, Python 3.8, required packages, tests"
+    - name: "Linux, Python 3.8, required packages, parallel"
       python: 3.8
-    - name: "Linux, Python 3.8, required packages, examples"
+    - name: "Linux, Python 3.8, required packages, serial"
       python: 3.8
-      env: EXAMPLES=TRUE
-    - name: "OSX, Python 3.8, required packages, tests"
+      env: NUMBA_NUM_THREADS=1
+    - name: "OSX, Python 3.8, required packages"
       language: shell
       os: osx
       before_install:

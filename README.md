@@ -6,7 +6,7 @@
 [![Jupyter](https://img.shields.io/static/v1?label=Jupyter&logo=Jupyter&color=f37626&message=%E2%9C%93)](https://jupyter.org/)
 [![Travis Build Status](https://img.shields.io/travis/atmos-cloud-sim-uj/PyMPDATA/master.svg?logo=travis)](https://travis-ci.com/atmos-cloud-sim-uj/PyMPDATA)
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/PyMPDATA/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
-[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/workflows/PyMPDATA-examples/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/actions)
+[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/workflows/PyMPDATA-examples/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/actions)
 [![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
 [![Dependabot](https://img.shields.io/static/v1?label=Dependabot&logo=dependabot&color=blue&message=on)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/network/updates)
 [![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)
@@ -63,11 +63,13 @@ The examples/demos reproduce results from several published
  
 ## Dependencies and installation
 
-PyMPDATA has Python-only dependencies, all available through [PyPi](https://pypi.org/) 
-and listed in the project's [test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) 
-and [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) files.  
+PyMPDATA depends on NumPy, Numba and SciPy which are all listed as project dependencies 
+within the project's [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) file.  
  
 To install PyMPDATA, one may use: ``pip install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git``
+
+Running the tests shipped with the package requires additional packages listed in the 
+[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file.
  
 ## Examples/Demos:
 
@@ -90,7 +92,6 @@ PyMPDATA ships with several demos that reproduce results from the literature, in
 - 1D advection-diffusion example with animation
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/master?filepath=PyMPDATA_examples%2Fadvection_diffusion_1d/demo.ipynb) 
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/master/PyMPDATA_examples/advection_diffusion_1d/demo.ipynb)    
-  
   
   
 ## Package structure and API:
