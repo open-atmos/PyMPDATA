@@ -4,6 +4,7 @@ Created at 03.2020
 
 import numpy as np
 
+
 class Options:
     def __init__(self, *,
                  n_iters: int = 2,

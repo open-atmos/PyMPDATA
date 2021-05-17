@@ -6,7 +6,7 @@ import numpy as np
 from .indexers import indexers
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
 from .scalar_field import ScalarField
-from .meta import META_HALO_VALID, make_meta
+from .meta import META_HALO_VALID, make_meta, META_IS_NULL
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
 
@@ -78,4 +78,5 @@ class VectorField:
             boundary_conditions=[ConstantBoundaryCondition(INVALID_HALO_VALUE)] * n_dims
         )
         null.meta[META_HALO_VALID] = True
+        null.meta[META_IS_NULL] = True
         return null

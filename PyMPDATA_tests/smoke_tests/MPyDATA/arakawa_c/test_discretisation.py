@@ -27,7 +27,7 @@ def test_size_distribution(grid, coord, plot=False):
     dx_dr = coord.dx_dr
     numpdfx = x[1:] - diff(x) / 2
     pdf_t = lambda r:  sd.pdf(r * r_unit).to(n_unit).magnitude / dx_dr(r * r_unit).magnitude
-    numpdfy = discretised_analytical_solution(rh=x.magnitude, pdf_t= pdf_t) * n_unit
+    numpdfy = discretised_analytical_solution(rh=x.magnitude, pdf_t=pdf_t) * n_unit
 
     # Plot
     if plot:
@@ -44,7 +44,7 @@ def test_size_distribution(grid, coord, plot=False):
     from scipy import integrate
     integratedpdf, _ = integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude)
     print(totalpdf, integratedpdf)
-    np.testing.assert_array_almost_equal(totalpdf,integratedpdf)
+    np.testing.assert_array_almost_equal(totalpdf.magnitude, integratedpdf)
 
 
 def test_quad_vs_midpoint():

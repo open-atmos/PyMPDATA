@@ -1,6 +1,7 @@
 from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 import pint
 import pytest
+import numpy as np
 
 si = pint.UnitRegistry()
 
@@ -13,8 +14,8 @@ def test_moment_of_r_integral(k, coord):
     r1 = 4 * si.um
 
     # Act
-    integral = coord.moment_of_r_integral(coord.x(r1), k) - coord.moment_of_r_integral(
-        coord.x(r0), k)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        integral = coord.moment_of_r_integral(coord.x(r1), k) - coord.moment_of_r_integral(coord.x(r0), k)
 
     # Assert
     if coord.__class__==x_id:
