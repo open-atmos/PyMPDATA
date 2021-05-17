@@ -36,7 +36,7 @@ jobs:
       # note: ... hence reverting to the currently tested version
       - run: |
           pip install -e .
-      # TODO #184 (https://github.com/numba/numba/issues/6350#issuecomment-728174860)
+      # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
         env:
           NUMBA_THREADING_LAYER: omp
