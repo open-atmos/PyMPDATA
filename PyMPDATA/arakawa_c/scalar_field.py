@@ -5,7 +5,7 @@ Created at 03.2020
 import numpy as np
 from .indexers import indexers
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
-from .meta import META_HALO_VALID, make_meta
+from .meta import META_HALO_VALID, make_meta, META_IS_NULL
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
 
@@ -51,4 +51,5 @@ class ScalarField:
     def make_null(n_dims):
         null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
         null.meta[META_HALO_VALID] = True
+        null.meta[META_IS_NULL] = True
         return null

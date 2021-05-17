@@ -9,6 +9,7 @@ Created at 25.09.2019
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .stepper import Stepper
+from .arakawa_c.meta import META_IS_NULL
 import numba
 
 
@@ -46,6 +47,8 @@ class Solver:
 
     def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff
+        if mu_coeff != 0 and not self.g_factor.meta[META_IS_NULL]:
+            raise NotImplementedError()
         wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step,
                                               *self.advectee.impl,
                                               *self.advector.impl,
