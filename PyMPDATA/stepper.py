@@ -1,7 +1,8 @@
 """
 Created at 20.03.2020
 """
-
+import sys
+import warnings
 import numba
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux_first_pass, make_flux_subsequent
@@ -14,7 +15,6 @@ from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
 from .options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
-import warnings
 from .clock import clock
 
 
@@ -50,9 +50,10 @@ class Stepper:
             try:
                 numba.parfors.parfor.ensure_parallel_support()
             except numba.core.errors.UnsupportedParforsError:
-                warnings.warn("forcing n_threads=1 as numba.parfors.parfor.ensure_parallel_support() raised UnsupportedParforsError")
+                print(
+                    "forcing n_threads=1 as numba.parfors.parfor.ensure_parallel_support() raised UnsupportedParforsError",
+                    file=sys.stderr)
                 self.n_threads = 1
-
                 
         self.n_dims = n_dims
         self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
