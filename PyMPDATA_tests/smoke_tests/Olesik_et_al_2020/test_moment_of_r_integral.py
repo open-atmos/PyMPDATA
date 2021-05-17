@@ -3,13 +3,13 @@ import pint
 import pytest
 import numpy as np
 
+si = pint.UnitRegistry()
+
 
 @pytest.mark.parametrize("k", [0,1,2,3])
 @pytest.mark.parametrize("coord", [x_id(), x_log_of_pn(r0=1 * si.um, n=1), x_p2()])
 def test_moment_of_r_integral(k, coord):
     # Arrange
-    si = pint.UnitRegistry()
-
     r0 = 2 * si.um
     r1 = 4 * si.um
 
