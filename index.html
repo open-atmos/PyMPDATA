@@ -51,10 +51,10 @@ from .arakawa_c.boundary_condition.constant_boundary_condition import ConstantBo
 from .arakawa_c.boundary_condition.extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
 from .arakawa_c.boundary_condition.polar_boundary_condition import PolarBoundaryCondition
 
-from pkg_resources import get_distribution, DistributionNotFound
+from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
 try:
     __version__ = get_distribution(__name__).version
-except DistributionNotFound:
+except (DistributionNotFound, VersionConflict):
     # package is not installed
     pass</code></pre>
 </details>
