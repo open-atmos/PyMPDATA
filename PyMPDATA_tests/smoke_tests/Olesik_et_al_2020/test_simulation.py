@@ -5,6 +5,8 @@ from PyMPDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from PyMPDATA.options import Options
 import pytest
 import numpy as np
+import warnings
+from numba.core.errors import NumbaExperimentalFeatureWarning
 
 settings = Settings()
 grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))
@@ -17,9 +19,11 @@ opt_set = (
 
 @pytest.fixture(scope='module')
 def data():
-    result, _ = compute_figure_data(nr=default_nr, GC_max=default_GC_max, psi_coord=x_id(),
-                        grid_layouts=grid_layout_set,
-                        opt_set=opt_set)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
+        result, _ = compute_figure_data(nr=default_nr, GC_max=default_GC_max, psi_coord=x_id(),
+                            grid_layouts=grid_layout_set,
+                            opt_set=opt_set)
     return result
 
 
