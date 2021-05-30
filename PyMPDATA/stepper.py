@@ -39,7 +39,7 @@ class Stepper:
 
         self.n_threads = 1 if n_dims == 1 else n_threads
         if self.n_threads > 1:
-# TODO            
+# TODO #166
 #             if numba.threading_layer() == 'workqueue':
 #                 warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
 #                               " to ``omp'' or ``tbb'' for higher parallel performance"
@@ -104,7 +104,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     fct_beta_up = make_beta(max, non_unit_g_factor, options, traversals)
     fct_correction = make_correction(options, traversals)
 
-    # TODO: move to formulae
+    # TODO #224: move to formulae
     @numba.njit(**options.jit_flags)
     def axpy(out_meta, out_outer, out_mid3d, out_inner, a,
              x_meta, x_outer, x_mid3d, x_inner,

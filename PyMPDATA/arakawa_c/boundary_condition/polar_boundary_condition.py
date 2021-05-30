@@ -40,6 +40,6 @@ class PolarBoundaryCondition:
     def make_vector(self, at):
         @numba.njit()
         def fill_halos(psi, _, __):
-            return at(*psi, 0)  # TODO!
+            return at(*psi, 0)  # TODO #120
 
         return fill_halos

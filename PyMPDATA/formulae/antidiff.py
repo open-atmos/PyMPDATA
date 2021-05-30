@@ -37,7 +37,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
     epsilon = options.epsilon
     DPDC = options.DPDC
     
-    # TODO: does DPDC + other options combination make sense?
+    # TODO #225: does DPDC + other options combination make sense?
 
     # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
@@ -71,7 +71,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         # eq. 13 in Smolarkiewicz 1984
         tmp = A(psi)
         result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
-        if DPDC and last_pass:  # TODO n_dims > 1
+        if DPDC and last_pass:  # TODO #225 n_dims > 1
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
             result = result * (result * b + a) 
@@ -94,7 +94,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
         # third-order terms
         if third_order_terms:
-            # assert psi.dimension < 3  # TODO
+            # assert psi.dimension < 3  # TODO #96
             tmp = (
               3 * atv(*GC, .5) * np.abs(atv(*GC, .5)) / G_bar
               - 2 * atv(*GC, .5) ** 3 / G_bar ** 2
@@ -110,6 +110,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
             result += tmp
 
+            # TODO #93
             # if psi.dimension > 1:
             #     GC1_bar = (
             #                       GC.at(1, .5) +
@@ -133,7 +134,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         # divergent flow option
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if divergent_flow:
-            # assert psi.dimension == 1  # TODO!
+            # assert psi.dimension == 1  # TODO #94
             tmp = -.25 * atv(*GC, .5) * (atv(*GC, 1.5) - atv(*GC, -.5))
             if non_unit_g_factor:
                 tmp /= G_bar

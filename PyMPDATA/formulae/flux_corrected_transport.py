@@ -2,6 +2,7 @@ import numpy as np
 import numba
 from ..arakawa_c.indexers import indexers
 from ..arakawa_c.enumerations import MAX_DIM_NUM, INNER, OUTER
+# TODO #133: rename file
 
 
 def make_psi_extremum(extremum, options, traversals):
@@ -75,7 +76,6 @@ def make_beta(extremum, non_unit_g_factor, options, traversals):
     return apply
 
 
-# TODO: shorte using inline ifs?
 def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon, extremum):
     sign = -1 if extremum == min else 1
     if n_dims == 1:
