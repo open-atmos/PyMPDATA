@@ -1,11 +1,3 @@
-"""
-Created at 11.10.2019
-
-@author: Piotr Bartman
-@author: Michael Olesik
-@author: Sylwester Arabas
-"""
-
 import numpy as np
 import numba
 from ..arakawa_c.indexers import indexers

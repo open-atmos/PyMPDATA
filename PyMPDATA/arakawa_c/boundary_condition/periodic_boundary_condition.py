@@ -1,9 +1,3 @@
-"""
-Created at 20.03.2020
-
-@author: Piotr Bartman
-"""
-
 import numba
 from ..enumerations import SIGN_RIGHT, SIGN_LEFT
 from functools import lru_cache

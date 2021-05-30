@@ -1,7 +1,3 @@
-"""
-Created at 03.2020
-"""
-
 import numpy as np
 from .indexers import indexers
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
@@ -39,7 +35,7 @@ class ScalarField:
     def clone(field):
         return ScalarField(field.get(), field.halo, field.boundary_conditions)
 
-    def get(self) -> np.ndarray:
+    def get(self) -> np.ndarray:  # note: actually a view is returned
         results = self.data[self.domain]
         return results
 

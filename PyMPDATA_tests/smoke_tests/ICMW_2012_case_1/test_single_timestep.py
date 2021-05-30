@@ -4,19 +4,17 @@ import numpy as np
 import pytest
 
 
-# TODO: work in progress
 @pytest.mark.parametrize(
     "options", [
-        # TODO
-        # Options(n_iters=1),
-        # Options(n_iters=2),
-        # Options(n_iters=2, flux_corrected_transport=True),
-        # Options(n_iters=3, flux_corrected_transport=True),
+        Options(n_iters=1),
+        Options(n_iters=2),
+        Options(n_iters=2, flux_corrected_transport=True),
+        Options(n_iters=3, flux_corrected_transport=True),
         Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True),
-        # Options(nug=True, fct=True, iga=True, tot=True),
-        # Options(nug=True, fct=False, iga=True),
-        # Options(nug=True, fct=False, tot=True),
-        # Options(nug=True, fct=False, iga=True, tot=True)
+        Options(flux_corrected_transport=True, infinite_gauge=True, third_order_terms=True),
+        Options(flux_corrected_transport=False, infinite_gauge=True),
+        Options(flux_corrected_transport=False, third_order_terms=True),
+        Options(flux_corrected_transport=False, infinite_gauge=True, third_order_terms=True)
     ]
 )
 def test_single_timestep(options):

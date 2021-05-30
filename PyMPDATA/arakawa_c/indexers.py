@@ -1,7 +1,3 @@
-"""
-Created at 12.03.2020
-"""
-
 import numba
 from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
 

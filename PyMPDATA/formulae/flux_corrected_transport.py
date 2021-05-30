@@ -1,7 +1,3 @@
-"""
-Created at 25.03.2020
-"""
-
 import numpy as np
 import numba
 from ..arakawa_c.indexers import indexers

@@ -1,7 +1,3 @@
-"""
-Created at 21.10.2019
-"""
-
 import numpy as np
 
 from .stepper import Stepper
@@ -50,10 +46,12 @@ class Factories:
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor: np.ndarray, options: Options):
         stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
         advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-        g_factor = ScalarField(g_factor.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        g_factor = ScalarField(g_factor.astype(dtype=options.dtype), halo=options.n_halo,
+                               boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
         mpdatas = {}
         for k, v in field_values.items():
-            advectee = ScalarField(np.full(grid, v, dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+            advectee = ScalarField(np.full(grid, v, dtype=options.dtype), halo=options.n_halo,
+                                   boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
             mpdatas[k] = Solver(stepper=stepper, advectee=advectee, advector=advector, g_factor=g_factor)
         return advector, mpdatas
 

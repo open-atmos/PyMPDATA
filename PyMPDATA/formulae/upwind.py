@@ -1,11 +1,3 @@
-"""
-Created at 11.10.2019
-
-@author: Piotr Bartman
-@author: Michael Olesik
-@author: Sylwester Arabas
-"""
-
 import numba
 from ..arakawa_c.enumerations import MAX_DIM_NUM
 from ..arakawa_c.indexers import indexers

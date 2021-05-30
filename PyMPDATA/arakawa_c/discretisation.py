@@ -1,7 +1,3 @@
-"""
-Created at 20.03.2020
-"""
-
 import numpy as np
 from scipy import integrate
 from .vector_field import VectorField
