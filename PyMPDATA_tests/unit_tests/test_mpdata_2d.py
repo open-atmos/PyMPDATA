@@ -1,7 +1,3 @@
-"""
-Created at 11.10.2019
-"""
-
 from PyMPDATA.factories import Factories
 from PyMPDATA.options import Options
 import pytest

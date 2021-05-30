@@ -1,7 +1,3 @@
-"""
-Created at 20.03.2020
-"""
-
 from .grid import make_chunk, make_domain
 from .traversals_impl_scalar import _make_apply_scalar, _make_fill_halos_scalar
 from .traversals_impl_vector import _make_apply_vector, _make_fill_halos_vector

@@ -1,10 +1,5 @@
-"""
-Created at 20.03.2020
-"""
-
 import numba
 from ..enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
-from functools import lru_cache # TODO
 
 
 class PolarBoundaryCondition:
@@ -45,6 +40,6 @@ class PolarBoundaryCondition:
     def make_vector(self, at):
         @numba.njit()
         def fill_halos(psi, _, __):
-            return at(*psi, 0)  # TODO!
+            return at(*psi, 0)  # TODO #120
 
         return fill_halos

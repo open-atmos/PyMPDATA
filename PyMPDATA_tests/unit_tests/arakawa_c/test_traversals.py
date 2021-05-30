@@ -15,6 +15,7 @@ try:
 except numba.core.errors.UnsupportedParforsError:
     n_threads = (1,)
 
+
 @numba.njit(**jit_flags)
 def cell_id(i, j, k):
     if i == INVALID_INDEX:
@@ -50,7 +51,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
+    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO #96: 3d
     @pytest.mark.parametrize("loop", (True, False))
     def test_apply_scalar(n_threads, halo, grid, loop):
         n_dims = len(grid)
@@ -99,7 +100,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO: 3d
+    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO #96 - 3d
     def test_apply_vector(n_threads, halo, grid):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -120,7 +121,7 @@ class TestTraversals:
                 np.zeros((grid[0], grid[1]+1))
             )
         elif n_dims == 3:
-            pass  # TODO
+            pass  # TODO #96
         else:
             raise NotImplementedError()
 
@@ -168,5 +169,3 @@ class TestTraversals:
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-
-# TODO: test boundary conditions

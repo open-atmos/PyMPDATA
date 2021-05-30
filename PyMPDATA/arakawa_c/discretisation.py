@@ -1,7 +1,3 @@
-"""
-Created at 20.03.2020
-"""
-
 import numpy as np
 from scipy import integrate
 from .vector_field import VectorField
@@ -30,7 +26,7 @@ def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
     return x, y
 
 
-# TODO: handle dtype
+# TODO #95: handle dtype
 def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo):
     dx = size[0] / grid[0]
     dz = size[1] / grid[1]
@@ -57,7 +53,7 @@ def nondivergent_vector_field_2d(grid, size, dt, stream_function: callable, halo
     return result
 
 
-# TODO: move asserts to a unit test
+# TODO #95: move asserts to a unit test
 def x_vec_coord(grid):
     nx = grid[0]+1
     nz = grid[1]
@@ -72,7 +68,7 @@ def x_vec_coord(grid):
     return xX, zZ
 
 
-# TODO: move asserts to a unit test
+# TODO #95: move asserts to a unit test
 def z_vec_coord(grid):
     nx = grid[0]
     nz = grid[1]+1
@@ -97,7 +93,7 @@ def discretised_analytical_solution(rh, pdf_t, midpoint_value=False, r=None):
         if midpoint_value:
             output[i] = pdf_t(r[i])
         else:
-            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO: handle other output values
+            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO #95: handle other output values
             output[i] = dcdf / (rh[i + 1] - rh[i])
     return output
 

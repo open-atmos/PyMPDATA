@@ -1,7 +1,3 @@
-"""
-Created at 03.2020
-"""
-
 import numpy as np
 from .indexers import indexers
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
@@ -35,7 +31,7 @@ class VectorField:
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
 
-        # TODO: code repeated in ScalarField
+        # TODO #226: code repeated in ScalarField
         fill_halos = [None] * MAX_DIM_NUM
         fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
         fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else ConstantBoundaryCondition(INVALID_HALO_VALUE)

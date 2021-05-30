@@ -1,11 +1,3 @@
-"""
-Created at 25.09.2019
-
-@author: Piotr Bartman
-@author: Michael Olesik
-@author: Sylwester Arabas
-"""
-
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .stepper import Stepper

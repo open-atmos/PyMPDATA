@@ -1,7 +1,3 @@
-"""
-Created at 03.2020
-"""
-
 import numpy as np
 
 
@@ -63,7 +59,6 @@ class Options:
     def non_zero_mu_coeff(self):
         return self._values['non_zero_mu_coeff']
 
-    
     def __str__(self):
         return str(self._values)
     

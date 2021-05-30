@@ -1,7 +1,3 @@
-"""
-Created at 20.03.2020
-"""
-
 import numba
 from ..arakawa_c.indexers import indexers
 from ..arakawa_c.enumerations import MAX_DIM_NUM
