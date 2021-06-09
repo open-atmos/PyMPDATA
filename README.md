@@ -230,6 +230,27 @@ in PyMPDATA by the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/s
 
 When instantiating the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html), the user has a choice 
 of either supplying just the  number of dimensions or specialising the stepper for a given grid:
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+Stepper = pyimport("PyMPDATA").Stepper
+
+stepper = Stepper(options=options, n_dims=2)
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+Stepper = py.importlib.import_module('PyMPDATA').Stepper;
+
+steper = Stepper(pyargs(...
+  'options', options, ...
+  'n_dims', 2 ...
+));
+```
+</details>
 <details open>
 <summary>Python</summary>
 
@@ -240,6 +261,23 @@ stepper = Stepper(options=options, n_dims=2)
 ```
 </details>
 or
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+stepper = Stepper(options=options, grid=(nx, ny))
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+stepper = Stepper(pyargs(...
+  'options', options, ...
+  'grid', py.tuple({nx, ny}) ...
+))
+```
+</details>
 <details open>
 <summary>Python</summary>
 
