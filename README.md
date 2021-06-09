@@ -310,7 +310,7 @@ or
 <summary>Julia (click to expand)</summary>
 
 ```Julia
-stepper = Stepper(options=options, grid=py.tuple({nx, ny}))
+stepper = Stepper(options=options, grid=(nx, ny))
 ```
 </details>
 <details>
