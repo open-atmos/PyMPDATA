@@ -92,7 +92,8 @@ PyMPDATA ships with several demos that reproduce results from the literature, in
 - 1D advection-diffusion example with animation
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/master?filepath=PyMPDATA_examples%2Fadvection_diffusion_1d/demo.ipynb) 
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/master/PyMPDATA_examples/advection_diffusion_1d/demo.ipynb)    
-  
+- 2D advection on a sphere (setup based on [Williamson and Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2))  
+![animation](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/files/sphere_upwind.gif)  
   
 ## Package structure and API:
 
