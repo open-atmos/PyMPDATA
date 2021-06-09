@@ -215,6 +215,23 @@ advector = VectorField(
 <summary>Matlab (click to expand)</summary>
 
 ```Matlab
+ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
+VectorField = py.importlib.import_module('PyMPDATA').VectorField;
+PeriodicBoundaryCondition = py.importlib.import_module('PyMPDATA').PeriodicBoundaryCondition
+
+nx = 100;
+ny = 100;
+halo = options.n_halo;
+advectee = ScalarField(pyargs(...
+    'data', zeros((nx, ny)), ... 
+    'halo', halo, ...
+    'boundary_conditions', py.tuple({PeriodicBoundaryCondition(), PeriodicBoundaryCondition()}) ...
+));
+advector = VectorField(pyargs(...
+    'data', py.tuple({zeros((nx+1, ny)), zeros((nx, ny+1))}), ...
+    'halo', halo, ...
+    'boundary_conditions', py.tuple({PeriodicBoundaryCondition(), PeriodicBoundaryCondition()}) ...
+));
 ```
 </details>
 <details open>
@@ -373,7 +390,10 @@ state = solver.advectee.get()
 <summary>Matlab (click to expand)</summary>
 
 ```Matlab
-
+Solver = py.importlib.import_module('PyMPDATA').Solver;
+solver = Solver(pyargs('stepper', stepper, 'advectee', advectee, 'advector', advector));
+solver.advance(pyargs('nt', 1));
+state = solver.advectee.get();
 ```
 </details>
 <details open>
