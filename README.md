@@ -136,6 +136,8 @@ with arguments suiting the problem at hand, e.g.:
 <summary>Julia (click to expand)</summary>
 
 ```Julia
+using Pkg
+Pkg.add("PyCall")
 using PyCall
 Options = pyimport("PyMPDATA").Options
 options = Options(n_iters=3, infinite_gauge=true, flux_corrected_transport=true)
@@ -187,6 +189,51 @@ can be easily obtained using the ``Options.n_halo`` property.
 As an example, the code below shows how to instantiate a scalar
 and a vector field given a 2D constant-velocity problem,
 using a grid of 100x100 points and cyclic boundary conditions (with all values set to zero):
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+ScalarField = pyimport("PyMPDATA").ScalarField
+VectorField = pyimport("PyMPDATA").VectorField
+PeriodicBoundaryCondition = pyimport("PyMPDATA").PeriodicBoundaryCondition
+
+nx, ny = 100, 100
+halo = options.n_halo
+advectee = ScalarField(
+    data=zeros((nx, ny)), 
+    halo=halo, 
+    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+)
+advector = VectorField(
+    data=(zeros((nx+1, ny)), zeros((nx, ny+1))),
+    halo=halo,
+    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())    
+)
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
+VectorField = py.importlib.import_module('PyMPDATA').VectorField;
+PeriodicBoundaryCondition = py.importlib.import_module('PyMPDATA').PeriodicBoundaryCondition;
+
+nx = int32(100);
+ny = int32(100);
+halo = options.n_halo;
+advectee = ScalarField(pyargs(...
+    'data', py.numpy.zeros(int32([nx ny])), ... 
+    'halo', halo, ...
+    'boundary_conditions', py.tuple({PeriodicBoundaryCondition(), PeriodicBoundaryCondition()}) ...
+));
+advector = VectorField(pyargs(...
+    'data', py.tuple({py.numpy.zeros(int32([nx+1 ny])), py.numpy.zeros(int32([nx ny+1]))}), ...
+    'halo', halo, ...
+    'boundary_conditions', py.tuple({PeriodicBoundaryCondition(), PeriodicBoundaryCondition()}) ...
+));
+```
+</details>
 <details open>
 <summary>Python</summary>
 
@@ -228,6 +275,27 @@ in PyMPDATA by the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/s
 
 When instantiating the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html), the user has a choice 
 of either supplying just the  number of dimensions or specialising the stepper for a given grid:
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+Stepper = pyimport("PyMPDATA").Stepper
+
+stepper = Stepper(options=options, n_dims=2)
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+Stepper = py.importlib.import_module('PyMPDATA').Stepper;
+
+steper = Stepper(pyargs(...
+  'options', options, ...
+  'n_dims', int32(2) ...
+));
+```
+</details>
 <details open>
 <summary>Python</summary>
 
@@ -238,6 +306,23 @@ stepper = Stepper(options=options, n_dims=2)
 ```
 </details>
 or
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+stepper = Stepper(options=options, grid=(nx, ny))
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+stepper = Stepper(pyargs(...
+  'options', options, ...
+  'grid', py.tuple({nx, ny}) ...
+))
+```
+</details>
 <details open>
 <summary>Python</summary>
 
@@ -291,6 +376,26 @@ Solution state is accessible through the ``Solver.advectee`` property.
 
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+Solver = pyimport("PyMPDATA").Solver
+solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
+solver.advance(nt=1)
+state = solver.advectee.get()
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+Solver = py.importlib.import_module('PyMPDATA').Solver;
+solver = Solver(pyargs('stepper', stepper, 'advectee', advectee, 'advector', advector));
+solver.advance(pyargs('nt', 1));
+state = solver.advectee.get();
+```
+</details>
 <details open>
 <summary>Python</summary>
 
