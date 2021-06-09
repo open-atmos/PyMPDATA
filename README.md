@@ -219,8 +219,8 @@ ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
 VectorField = py.importlib.import_module('PyMPDATA').VectorField;
 PeriodicBoundaryCondition = py.importlib.import_module('PyMPDATA').PeriodicBoundaryCondition;
 
-nx = 100;
-ny = 100;
+nx = int32(100);
+ny = int32(100);
 halo = options.n_halo;
 advectee = ScalarField(pyargs(...
     'data', py.numpy.zeros(int32([nx ny])), ... 
@@ -310,7 +310,7 @@ or
 <summary>Julia (click to expand)</summary>
 
 ```Julia
-stepper = Stepper(options=options, grid=(nx, ny))
+stepper = Stepper(options=options, grid=py.tuple({nx, ny}))
 ```
 </details>
 <details>
