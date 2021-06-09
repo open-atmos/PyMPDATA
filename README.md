@@ -189,6 +189,34 @@ can be easily obtained using the ``Options.n_halo`` property.
 As an example, the code below shows how to instantiate a scalar
 and a vector field given a 2D constant-velocity problem,
 using a grid of 100x100 points and cyclic boundary conditions (with all values set to zero):
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+ScalarField = pyimport("PyMPDATA").ScalarField
+VectorField = pyimport("PyMPDATA").VectorField
+PeriodicBoundaryCondition = pyimport("PyMPDATA").PeriodicBoundaryCondition
+
+nx, ny = 100, 100
+halo = options.n_halo
+advectee = ScalarField(
+    data=zeros((nx, ny)), 
+    halo=halo, 
+    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+)
+advector = VectorField(
+    data=(zeros((nx+1, ny)), zeros((nx, ny+1))),
+    halo=halo,
+    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())    
+)
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+```
+</details>
 <details open>
 <summary>Python</summary>
 
@@ -331,6 +359,23 @@ Solution state is accessible through the ``Solver.advectee`` property.
 
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
+<details>
+<summary>Julia (click to expand)</summary>
+
+```Julia
+Solver = pyimport("PyMPDATA.physics").Solver
+solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
+solver.advance(nt=1)
+state = solver.advectee.get()
+```
+</details>
+<details>
+<summary>Matlab (click to expand)</summary>
+
+```Matlab
+
+```
+</details>
 <details open>
 <summary>Python</summary>
 
