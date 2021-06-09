@@ -363,7 +363,7 @@ a solver and making one integration step looks as follows:
 <summary>Julia (click to expand)</summary>
 
 ```Julia
-Solver = pyimport("PyMPDATA.physics").Solver
+Solver = pyimport("PyMPDATA").Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 solver.advance(nt=1)
 state = solver.advectee.get()
