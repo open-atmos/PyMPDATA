@@ -136,6 +136,8 @@ with arguments suiting the problem at hand, e.g.:
 <summary>Julia (click to expand)</summary>
 
 ```Julia
+using Pkg
+Pkg.add("PyCall")
 using PyCall
 Options = pyimport("PyMPDATA").Options
 options = Options(n_iters=3, infinite_gauge=true, flux_corrected_transport=true)
