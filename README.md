@@ -84,8 +84,6 @@ jupyter-notebook
 
 ## Examples:
 
-https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Arabas_and_Shima_2017/fig_5.ipynb
-
 PyMPDATA ships with several demos that reproduce results from literature, including:
 - [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12    
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb) 
