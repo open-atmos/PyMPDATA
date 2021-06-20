@@ -69,8 +69,20 @@ To install PyMPDATA, one may use: ``pip install --pre git+https://github.com/atm
 
 Running the tests shipped with the package requires additional packages listed in the 
 [test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file.
- 
-## Examples/Demos:
+
+PyMPDATA examples listed below are hosted in a separate repository and constitute 
+the [``PyMPDATA_examples``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples) package.
+The examples have additional dependencies listed in [``PyMPDATA_examples`` package ``setup.py``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/setup.py) file.
+Running the examples requires the ``PyMPDATA_examples`` package to be installed.
+Since the examples package includes Jupyter notebooks (and their execution requires write access), the suggested install and launch steps are:
+```
+git clone https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples.git
+cd PyMPDATA-examples
+pip install -e .
+jupyter-notebook
+```
+
+## Examples:
 
 https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PySDM-examples.git/main?urlpath=lab/tree/PySDM_examples/Arabas_and_Shima_2017/fig_5.ipynb
 
