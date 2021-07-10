@@ -64,7 +64,8 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
     third_order_terms = options.third_order_terms
     epsilon = options.epsilon
     DPDC = options.DPDC
-    
+    dimensionally_split = options.dimensionally_split
+
     # TODO #225: does DPDC + other options combination make sense?
 
     # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz &amp; Margolin 1998
@@ -103,7 +104,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
             result = result * (result * b + a) 
-        if n_dims == 1:
+        if n_dims == 1 or dimensionally_split:
             return result
         else:
             result -= (
