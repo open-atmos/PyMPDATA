@@ -70,10 +70,14 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spa
             boundary_cond_scalar(thread_id, scal_arg2_meta, scal_arg_2, scal_arg2_bc_outer, scal_arg2_bc_mid3d, scal_arg2_bc_inner)
             boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg_3, scal_arg3_bc_outer, scal_arg3_bc_mid3d, scal_arg3_bc_inner)
             boundary_cond_scalar(thread_id, scal_arg4_meta, scal_arg_4, scal_arg4_bc_outer, scal_arg4_bc_mid3d, scal_arg4_bc_inner)
-        vec_arg1_meta[META_HALO_VALID] = True
-        scal_arg2_meta[META_HALO_VALID] = True
-        scal_arg3_meta[META_HALO_VALID] = True
-        scal_arg4_meta[META_HALO_VALID] = True
+        if not vec_arg1_meta[META_HALO_VALID]:
+            vec_arg1_meta[META_HALO_VALID] = True
+        if not scal_arg2_meta[META_HALO_VALID]:
+            scal_arg2_meta[META_HALO_VALID] = True
+        if not scal_arg3_meta[META_HALO_VALID]:
+            scal_arg3_meta[META_HALO_VALID] = True
+        if not scal_arg4_meta[META_HALO_VALID]:
+            scal_arg4_meta[META_HALO_VALID] = True
 
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             apply_scalar_impl(
