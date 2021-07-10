@@ -1,6 +1,8 @@
 import numpy as np
+from pystrict import strict
 
 
+@strict
 class Options:
     def __init__(self, *,
                  n_iters: int = 2,
@@ -11,14 +13,16 @@ class Options:
                  DPDC: bool = False,
                  epsilon: float = 1e-15,
                  non_zero_mu_coeff: bool = False,
+                 dimensionally_split: bool = False,
                  dtype: np.floating = np.float64
                  ):
         self._values = {'n_iters': n_iters, 'infinite_gauge': infinite_gauge, 'epsilon': epsilon,
                         'divergent_flow': divergent_flow, 'flux_corrected_transport': flux_corrected_transport,
                         'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff,
+                        'dimensionally_split': dimensionally_split,
                         'dtype': dtype, 'DPDC': DPDC}
 
-        if flux_corrected_transport and n_iters < 2:
+        if (infinite_gauge or divergent_flow or flux_corrected_transport or third_order_terms or DPDC) and n_iters < 2:
             raise ValueError()
         if n_iters < 1:
             raise ValueError()
@@ -58,6 +62,10 @@ class Options:
     @property
     def non_zero_mu_coeff(self):
         return self._values['non_zero_mu_coeff']
+
+    @property
+    def dimensionally_split(self):
+        return self._values['dimensionally_split']
 
     def __str__(self):
         return str(self._values)
