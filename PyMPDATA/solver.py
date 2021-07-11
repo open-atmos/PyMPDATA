@@ -6,8 +6,17 @@ import numba
 
 
 @numba.njit()
-def post_step_null(psi, it):
+def post_step_null(psi, t):
     pass
+
+
+@numba.experimental.jitclass()
+class PostIterNull:
+    def __init__(self):
+        pass
+
+    def __call__(self, flux, g_factor, t, it):
+        pass
 
 
 class Solver:
@@ -37,11 +46,14 @@ class Solver:
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null):
+    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff
         if mu_coeff != 0 and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
-        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step,
+
+        post_iter = post_iter or PostIterNull()
+
+        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
                                               *self.advectee.impl,
                                               *self.advector.impl,
                                               *self.g_factor.impl,
