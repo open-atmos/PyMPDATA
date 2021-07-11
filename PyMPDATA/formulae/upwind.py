@@ -6,6 +6,7 @@ from ..arakawa_c.indexers import indexers
 def make_upwind(options, non_unit_g_factor, traversals):
     apply_scalar = traversals.apply_scalar(loop=True)
     idx = indexers[traversals.n_dims]
+    null_scalarfield, null_scalarfield_bc = traversals.null_scalar_field.impl
 
     formulae_upwind = tuple([
         __make_upwind(options.jit_flags, idx.atv[i], idx.at[i], non_unit_g_factor)
@@ -15,10 +16,8 @@ def make_upwind(options, non_unit_g_factor, traversals):
 
     @numba.njit(**options.jit_flags)
     def apply(psi, flux, vec_bc, g_factor, g_factor_bc):
-        null_scalfield = g_factor
-        null_scalfield_bc = g_factor_bc
         return apply_scalar(*formulae_upwind, *psi, *flux, *vec_bc, *g_factor, *g_factor_bc,
-                            *null_scalfield, *null_scalfield_bc, *null_scalfield, *null_scalfield_bc)
+                            *null_scalarfield, *null_scalarfield_bc, *null_scalarfield, *null_scalarfield_bc)
 
     return apply
 

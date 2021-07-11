@@ -7,6 +7,7 @@ from ..arakawa_c.enumerations import MAX_DIM_NUM
 def make_flux_first_pass(options, traversals):
     idx = indexers[traversals.n_dims]
     apply_vector = traversals.apply_vector()
+    null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
     formulae_flux_first_pass = tuple([
         __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
@@ -16,8 +17,6 @@ def make_flux_first_pass(options, traversals):
 
     @numba.njit(**options.jit_flags)
     def apply(vectmp_a, advector, advectee, advectee_bc, vec_bc):
-        null_scalarfield = advectee
-        null_bc = vec_bc
         return apply_vector(*formulae_flux_first_pass, *vectmp_a, *advectee, *advectee_bc, *advector, *vec_bc,
                             *null_scalarfield, *null_bc)
 
@@ -39,10 +38,10 @@ def make_flux_subsequent(options, traversals):
             for i in range(MAX_DIM_NUM)
         ])
 
+        null_scalarfield, null_bc = traversals.null_scalar_field.impl
+
         @numba.njit(**options.jit_flags)
         def apply(flux, psi, psi_bc, GC_corr, vec_bc):
-            null_scalarfield = psi
-            null_bc = vec_bc
             return apply_vector(*formulae_flux_subsequent, *flux, *psi, *psi_bc, *GC_corr, *vec_bc,
                                 *null_scalarfield, *null_bc)
 

@@ -2,6 +2,8 @@ from .grid import make_chunk, make_domain
 from .traversals_impl_scalar import _make_apply_scalar, _make_fill_halos_scalar
 from .traversals_impl_vector import _make_apply_vector, _make_fill_halos_vector
 from .enumerations import INNER, MID3D, OUTER
+from .scalar_field import ScalarField
+from .vector_field import VectorField
 
 
 class Traversals:
@@ -33,6 +35,8 @@ class Traversals:
                                                 n_threads=n_threads, spanner=domain, chunker=chunk,
                                                 boundary_cond_vector=self._fill_halos_vector,
                                                 boundary_cond_scalar=self._fill_halos_scalar)
+        self.null_scalar_field = ScalarField.make_null(self.n_dims)
+        self.null_vector_field = VectorField.make_null(self.n_dims)
 
     def apply_scalar(self, *, loop):
         if loop:

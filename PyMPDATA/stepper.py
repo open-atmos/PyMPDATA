@@ -9,6 +9,7 @@ from .formulae.flux_corrected_transport import make_psi_extremum, make_beta, mak
 from .arakawa_c.traversals import Traversals
 from .arakawa_c.meta import META_HALO_VALID
 from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
+from .arakawa_c.vector_field import VectorField
 from .options import Options
 from functools import lru_cache
 from numba.core.errors import NumbaExperimentalFeatureWarning
@@ -104,6 +105,8 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     fct_beta_up = make_beta(max, non_unit_g_factor, options, traversals)
     fct_correction = make_correction(options, traversals)
 
+    null_vecfield, null_vecfield_bc = VectorField.make_null(n_dims).impl
+
     # TODO #224: move to formulae
     @numba.njit(**options.jit_flags)
     def axpy(out_meta, out_outer, out_mid3d, out_inner, a,
@@ -130,8 +133,6 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
              beta_down, beta_down_bc
              ):
         vec_bc = advector_bc
-        null_vecfield = advector
-        null_vecfield_bc = vec_bc
 
         time = clock()
         for _ in range(nt):
