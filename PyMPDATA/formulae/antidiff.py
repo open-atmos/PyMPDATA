@@ -111,26 +111,25 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
             result += tmp
 
-            # TODO #93
-            # if psi.dimension > 1:
-            #     GC1_bar = (
-            #                       GC.at(1, .5) +
-            #                       GC.at(0, .5) +
-            #                       GC.at(1, -.5) +
-            #                       GC.at(0, -.5)
-            #               ) / 4
-            #     tmp = GC1_bar / (2 * G_bar) * (
-            #             np.abs(GC.at(.5)) - 2 * GC.at(.5) ** 2 / G_bar
-            #     )
-            #
-            #     tmp *= 2 * (psi.at(1, 1) - psi.at(0, 1) - psi.at(1, -1) + psi.at(0, -1))
-            #
-            #     if infinite_gauge:
-            #         tmp /= (1 + 1 + 1 + 1)
-            #     else:
-            #         tmp /= (psi.at(1, 1) + psi.at(0, 1) + psi.at(1, -1) + psi.at(0, -1))
-            #
-            #     result += tmp
+            if n_dims > 1:
+                GC1_bar = (
+                                  atv(*GC, 1, .5) +
+                                  atv(*GC, 0, .5) +
+                                  atv(*GC, 1, -.5) +
+                                  atv(*GC, 0, -.5)
+                          ) / 4
+                tmp = GC1_bar / (2 * G_bar) * (
+                        np.abs(atv(*GC, .5)) - 2 * atv(*GC, .5) ** 2 / G_bar
+                )
+
+                tmp *= 2 * (at(*psi, 1, 1) - at(*psi, 0, 1) - at(*psi, 1, -1) + at(*psi, 0, -1))
+
+                if infinite_gauge:
+                    tmp /= (1 + 1 + 1 + 1)
+                else:
+                    tmp /= (at(*psi, 1, 1) + at(*psi, 0, 1) + at(*psi, 1, -1) + at(*psi, 0, -1))
+
+                result += tmp
 
         # divergent flow option
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
