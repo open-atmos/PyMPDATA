@@ -80,9 +80,12 @@ def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, 
             boundary_cond_scalar(thread_id, scal_arg1_meta, scal_arg1, scal_arg1_bc_outer, scal_arg1_bc_mid3d, scal_arg1_bc_inner)
             boundary_cond_vector(thread_id, vec_arg2_meta, vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner, vec_arg2_bc_outer, vec_arg2_bc_mid3d, vec_arg2_bc_inner)
             boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg3, scal_arg3_bc_outer, scal_arg3_bc_mid3d, scal_arg3_bc_inner)
-        scal_arg1_meta[META_HALO_VALID] = True
-        vec_arg2_meta[META_HALO_VALID] = True
-        scal_arg3_meta[META_HALO_VALID] = True
+        if not scal_arg1_meta[META_HALO_VALID]:
+            scal_arg1_meta[META_HALO_VALID] = True
+        if not vec_arg2_meta[META_HALO_VALID]:
+            vec_arg2_meta[META_HALO_VALID] = True
+        if not scal_arg3_meta[META_HALO_VALID]:
+            scal_arg3_meta[META_HALO_VALID] = True
 
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             apply_vector_impl(

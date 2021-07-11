@@ -45,10 +45,10 @@ def make_psi_extremum(extremum, options, traversals):
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (__make_psi_extremum(options.jit_flags, traversals.n_dims, idx.at[at_idx], extremum), None, None)
 
+        null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
+
         @numba.njit(**options.jit_flags)
         def apply(psi_extremum, psi, psi_bc, null_vecfield, null_vecfield_bc):
-            null_scalfield = psi
-            null_scalfield_bc = psi_bc
             return apply_scalar(*formulae, *psi_extremum, *null_vecfield, *null_vecfield_bc, *psi, *psi_bc,
                                 *null_scalfield, *null_scalfield_bc, *null_scalfield, *null_scalfield_bc)
 
@@ -300,10 +300,10 @@ def __make_correction(jit_flags, at, atv):
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (__make_psi_extremum(options.jit_flags, traversals.n_dims, idx.at[at_idx], extremum), None, None)
 
+        null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
+
         @numba.njit(**options.jit_flags)
         def apply(psi_extremum, psi, psi_bc, null_vecfield, null_vecfield_bc):
-            null_scalfield = psi
-            null_scalfield_bc = psi_bc
             return apply_scalar(*formulae, *psi_extremum, *null_vecfield, *null_vecfield_bc, *psi, *psi_bc,
                                 *null_scalfield, *null_scalfield_bc, *null_scalfield, *null_scalfield_bc)
 
