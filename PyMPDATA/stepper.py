@@ -55,7 +55,7 @@ class Stepper:
         self.n_dims = n_dims
         self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
-    def __call__(self, nt, mu_coeff, post_step,
+    def __call__(self, nt, mu_coeff, post_step, post_iter,
                  advectee, advectee_bc,
                  advector, advector_bc,
                  g_factor, g_factor_bc,
@@ -69,7 +69,7 @@ class Stepper:
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-            return self.__call(nt, mu_coeff, post_step,
+            return self.__call(nt, mu_coeff, post_step, post_iter,
                                advectee, advectee_bc,
                                advector, advector_bc,
                                g_factor, g_factor_bc,
@@ -119,7 +119,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
         out_meta[META_HALO_VALID] = False
 
     @numba.njit(**options.jit_flags)
-    def step(nt, mu_coeff, post_step,
+    def step(nt, mu_coeff, post_step, post_iter,
              advectee, advectee_bc,
              advector, advector_bc,
              g_factor, g_factor_bc,
@@ -172,6 +172,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                         fct_correction(advector_nonoscilatory, vec_bc, beta_down, beta_down_bc, beta_up, beta_up_bc)
                         flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
+                post_iter.__call__(flux, g_factor, _, it)
             if non_zero_mu_coeff:
                 advector = advector_orig
             post_step(advectee[ARG_DATA], _)
