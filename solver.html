@@ -34,8 +34,17 @@ import numba
 
 
 @numba.njit()
-def post_step_null(psi, it):
+def post_step_null(psi, t):
     pass
+
+
+@numba.experimental.jitclass()
+class PostIterNull:
+    def __init__(self):
+        pass
+
+    def __call__(self, flux, g_factor, t, it):
+        pass
 
 
 class Solver:
@@ -65,11 +74,14 @@ class Solver:
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null):
+    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff
         if mu_coeff != 0 and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
-        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step,
+
+        post_iter = post_iter or PostIterNull()
+
+        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
                                               *self.advectee.impl,
                                               *self.advector.impl,
                                               *self.g_factor.impl,
@@ -92,7 +104,7 @@ class Solver:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="PyMPDATA.solver.post_step_null"><code class="name flex">
-<span>def <span class="ident">post_step_null</span></span>(<span>psi, it)</span>
+<span>def <span class="ident">post_step_null</span></span>(<span>psi, t)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -101,7 +113,7 @@ class Solver:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@numba.njit()
-def post_step_null(psi, it):
+def post_step_null(psi, t):
     pass</code></pre>
 </details>
 </dd>
@@ -147,11 +159,14 @@ def post_step_null(psi, it):
         self.beta_up = scalar_field() if fct else null_scalar_field()
         self.beta_down = scalar_field() if fct else null_scalar_field()
 
-    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null):
+    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff
         if mu_coeff != 0 and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
-        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step,
+
+        post_iter = post_iter or PostIterNull()
+
+        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
                                               *self.advectee.impl,
                                               *self.advector.impl,
                                               *self.g_factor.impl,
@@ -168,7 +183,7 @@ def post_step_null(psi, it):
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.solver.Solver.advance"><code class="name flex">
-<span>def <span class="ident">advance</span></span>(<span>self, nt: int, mu_coeff: float = 0.0, post_step=CPUDispatcher(&lt;function post_step_null&gt;))</span>
+<span>def <span class="ident">advance</span></span>(<span>self, nt: int, mu_coeff: float = 0.0, post_step=CPUDispatcher(&lt;function post_step_null&gt;), post_iter=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -176,11 +191,14 @@ def post_step_null(psi, it):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null):
+<pre><code class="python">def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
     assert mu_coeff == 0. or self.options.non_zero_mu_coeff
     if mu_coeff != 0 and not self.g_factor.meta[META_IS_NULL]:
         raise NotImplementedError()
-    wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step,
+
+    post_iter = post_iter or PostIterNull()
+
+    wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
                                           *self.advectee.impl,
                                           *self.advector.impl,
                                           *self.g_factor.impl,
