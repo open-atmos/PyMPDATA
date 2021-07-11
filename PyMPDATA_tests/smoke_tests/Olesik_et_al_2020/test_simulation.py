@@ -44,7 +44,7 @@ def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Asserts for Jacobian
     G_with_halo = simulation.solver.g_factor.data
     assert np.isfinite(G_with_halo).all()
-    if type(psi_coord)  == type(grid_layout):
+    if type(psi_coord) == type(grid_layout):
         np.testing.assert_array_almost_equal(np.diff(G_with_halo), 0)
     else:
         assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) <= 0).all()
