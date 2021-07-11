@@ -89,7 +89,9 @@ except numba.core.errors.UnsupportedParforsError:
     Options(n_iters=1),
     Options(n_iters=2),
     Options(n_iters=3, infinite_gauge=True),
-    Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True)
+    Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),
+    Options(n_iters=3, infinite_gauge=False, third_order_terms=True),
+    Options(n_iters=3, infinite_gauge=True, third_order_terms=True, flux_corrected_transport=True),
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
