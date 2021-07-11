@@ -104,13 +104,13 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner):
             pass  # TODO #96
         if n_dims > 1:
             if thread_id == 0:
-                for i in range(halo - 1, - 1, -1):  # note: reverse order assumes in Extrapolated!
+                for i in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated!
                     for j in (INVALID_INDEX,):  # TODO #96
                         for k in range(0, span[INNER] + 2 * halo):
                             focus = (i, j, k)
                             set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_LEFT))
             if last_thread:
-                for i in range(span[OUTER] + halo, span[OUTER] + 2 * halo):  # note: non-reverse order assumed in Extrapolated
+                for i in range(span[OUTER] + halo, span[OUTER] + 2 * halo):  # note: non-reversed order assumed in Extrapolated
                     for j in (INVALID_INDEX,):  # TODO #96
                         for k in range(0, span[INNER] + 2 * halo):
                             focus = (i, j, k)
@@ -118,7 +118,7 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner):
 
         for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
             for j in (INVALID_INDEX,):  # TODO #96
-                for k in range(0, halo):
+                for k in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated!
                     focus = (i, j, k)
                     set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_LEFT))
         for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
