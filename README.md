@@ -463,6 +463,27 @@ os.environ["NUMBA_DISABLE_JIT"] = "1"
 ```
 </details>
 
+## Contributing, reporting issues, seeking support 
+
+Submitting new code to the project, please preferably use [GitHub pull requests](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls) 
+(or the [PyMPDATA-examples PR site](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/pulls) if working on examples) - it helps to keep record of code authorship, 
+track and archive the code review workflow and allows to benefit
+from the continuous integration setup which automates execution of tests 
+with the newly added code. 
+
+Developing the code, we follow [The Way of Python](https://www.python.org/dev/peps/pep-0020/) and 
+the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle).
+
+Issues regarding any incorrect, unintuitive or undocumented bahaviour of
+PyMPDATA are best to be reported on the [GitHub issue tracker](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues/new).
+Feature requests are recorded in the "Ideas..." [PyMPDATA wiki page](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/Ideas-for-new-features-and-examples).
+
+We encourage to use the [GitHub Discussions](https://github.com/atmos-cloud-sim-uj/PyMPDATA/discussions) feature
+(rather than the issue tracker) for seeking support in understanding, using and extending PyMPDATA code.
+
+Please use the PyMPDATA issue-tracking and dicsussion infrastructure for `PyMPDATA-examples` as well.
+We look forward to your contributions and feedback.
+
 ## Credits:
 Development of PyMPDATA is supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
 
@@ -480,3 +501,7 @@ licence: GPL v3
   https://github.com/igfuw/libmpdataxx
 - AtmosFOAM:
   https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
+
+## Other Python packages for hyperbolic transport equations
+
+...
