@@ -31,6 +31,7 @@
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/workflows/PyMPDATA-examples/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/actions)    
 [![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PyMPDATA-examples.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/pulls?q=)
 [![GitHub issues](https://img.shields.io/github/issues-pr-closed/atmos-cloud-sim-uj/PyMPDATA-examples.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/pulls?q=is:closed)    
+[![PyPI version](https://badge.fury.io/py/PyMPDATA-examples.svg)](https://pypi.org/project/PyMPDATA-examples)
 
 PyMPDATA is a high-performance **Numba-accelerated Pythonic implementation of the MPDATA 
   algorithm of Smolarkiewicz et al.** for numerically solving generalised transport equations -
