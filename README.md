@@ -108,7 +108,7 @@ PyMPDATA ships with several demos that reproduce results from literature, includ
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FOlesik_et_al_2020/)
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Olesik_et_al_2020/demo_make_plots.ipynb)   
   (1D particle population condensational growth problem with coordinate transformations)
-- [Shipway and Hill 2012 (KiD-1D)](https://doi.org/10.1002/qj.1913)
+- [Shipway and Hill 2012 (KiD-1D)](https://doi.org/10.1002/qj.1913)    
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FShipway_and_Hill_2012/)
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Shipway_and_Hill_2012/fig_1.ipynb)    
   (2D spectral-spatial problem of droplet condensational growth in a column of air)    
