@@ -108,6 +108,12 @@ PyMPDATA ships with several demos that reproduce results from literature, includ
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FOlesik_et_al_2020/)
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Olesik_et_al_2020/demo_make_plots.ipynb)   
   (1D particle population condensational growth problem with coordinate transformations)
+- [Shipway and Hill 2012 (KiD-1D)](https://doi.org/10.1002/qj.1913)
+  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FShipway_and_Hill_2012/)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Shipway_and_Hill_2012/fig_1.ipynb)    
+  (2D spectral-spatial problem of droplet condensational growth in a column of air)    
+![animation](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/files/KiD-1D_PyMPDATA_n_iters=1.gif)
+![animation](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/files/KiD-1D_PyMPDATA_n_iters=3.gif)
 - Molenkamp 2D solid-body rotation test (as in [Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 12)    
   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb)
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb)
@@ -473,8 +479,15 @@ track and archive the code review workflow and allows to benefit
 from the continuous integration setup which automates execution of tests 
 with the newly added code. 
 
+As of now, the copyright to the entire PyMPDATA codebase is with the Jagiellonian
+University, and code contributions are assumed to imply transfer of copyright.
+Should there be a need to make an exception, please indicate it when creating
+a pull request or contributing code in any other way. In any case, 
+the license of the contributed code must be compatible with GPL v3.
+
 Developing the code, we follow [The Way of Python](https://www.python.org/dev/peps/pep-0020/) and 
 the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle).
+The codebase has greatly benefited from [PyCharm code inspections](https://www.jetbrains.com/help/pycharm/code-inspection.html).
 
 Issues regarding any incorrect, unintuitive or undocumented bahaviour of
 PyMPDATA are best to be reported on the [GitHub issue tracker](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues/new).
