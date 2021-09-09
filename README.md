@@ -17,7 +17,6 @@
 #### [core package](https://github.com/atmos-cloud-sim-uj/PyMPDATA)
 
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/PyMPDATA/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
-[![Travis Build Status](https://img.shields.io/travis/atmos-cloud-sim-uj/PyMPDATA/master.svg?logo=travis)](https://travis-ci.com/atmos-cloud-sim-uj/PyMPDATA)
 [![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
 [![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)    
 [![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=)
@@ -25,6 +24,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)
 [![GitHub issues](https://img.shields.io/github/issues-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)    
 [![PyPI version](https://badge.fury.io/py/PyMPDATA.svg)](https://pypi.org/project/PyMPDATA)
+[![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://atmos-cloud-sim-uj.github.io/PyMPDATA/)
 
 #### [examples package](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples)
 
