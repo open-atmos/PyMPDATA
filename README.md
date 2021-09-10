@@ -72,15 +72,13 @@ The examples/demos reproduce results from several published
  
 ## Dependencies and installation
 
-PyMPDATA depends on NumPy, Numba and SciPy which are all listed as project dependencies 
-within the project's [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) file.  
- 
-To install PyMPDATA, one may use: ``pip install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git``
+To install PyMPDATA, one may use: ``pip install PyMPDAT`` (or 
+``pip install git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git`` to get updates beyond the latest release).
 
-Running the tests shipped with the package requires additional packages listed in the 
-[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file.
+PyMPDATA depends on ``NumPy``, ``Numba`` and ``SciPy`` which are all listed as project dependencies 
+within the project's [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) file.
 
-PyMPDATA examples listed below are hosted in a separate repository and constitute 
+PyMPDATA examples are hosted in a separate repository and constitute 
 the [``PyMPDATA_examples``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples) package.
 The examples have additional dependencies listed in [``PyMPDATA_examples`` package ``setup.py``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/setup.py) file.
 Running the examples requires the ``PyMPDATA_examples`` package to be installed.
@@ -91,6 +89,12 @@ cd PyMPDATA-examples
 pip install -e .
 jupyter-notebook
 ```
+Alternatively, one can also install the examples package from pypi.org by using ``pip install PyMPDATA-examples``.
+
+Running the tests shipped with the package requires additional packages listed in the 
+[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file
+(which include ``PyMPDATA-examples``).
+
 
 ## Examples (Jupyter notebooks reproducing results from literature):
 
