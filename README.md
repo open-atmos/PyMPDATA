@@ -16,7 +16,6 @@
 #### [core package](https://github.com/atmos-cloud-sim-uj/PyMPDATA)
 
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/PyMPDATA/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
-[![Travis Build Status](https://img.shields.io/travis/atmos-cloud-sim-uj/PyMPDATA/master.svg?logo=travis)](https://travis-ci.com/atmos-cloud-sim-uj/PyMPDATA)
 [![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
 [![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)    
 [![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=)
@@ -24,6 +23,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)
 [![GitHub issues](https://img.shields.io/github/issues-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)    
 [![PyPI version](https://badge.fury.io/py/PyMPDATA.svg)](https://pypi.org/project/PyMPDATA)
+[![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://atmos-cloud-sim-uj.github.io/PyMPDATA/)
 
 #### [examples package](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples)
 
@@ -72,15 +72,13 @@ The examples/demos reproduce results from several published
  
 ## Dependencies and installation
 
-PyMPDATA depends on NumPy, Numba and SciPy which are all listed as project dependencies 
-within the project's [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) file.  
- 
-To install PyMPDATA, one may use: ``pip install --pre git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git``
+To install PyMPDATA, one may use: ``pip install PyMPDAT`` (or 
+``pip install git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git`` to get updates beyond the latest release).
 
-Running the tests shipped with the package requires additional packages listed in the 
-[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file.
+PyMPDATA depends on ``NumPy``, ``Numba`` and ``SciPy`` which are all listed as project dependencies 
+within the project's [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) file.
 
-PyMPDATA examples listed below are hosted in a separate repository and constitute 
+PyMPDATA examples are hosted in a separate repository and constitute 
 the [``PyMPDATA_examples``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples) package.
 The examples have additional dependencies listed in [``PyMPDATA_examples`` package ``setup.py``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/setup.py) file.
 Running the examples requires the ``PyMPDATA_examples`` package to be installed.
@@ -91,38 +89,16 @@ cd PyMPDATA-examples
 pip install -e .
 jupyter-notebook
 ```
+Alternatively, one can also install the examples package from pypi.org by using ``pip install PyMPDATA-examples``.
 
-## Examples:
+Running the tests shipped with the package requires additional packages listed in the 
+[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file
+(which include ``PyMPDATA-examples``).
 
-PyMPDATA ships with several demos that reproduce results from literature, including:
-- [Smolarkiewicz 2006](http://doi.org/10.1002/fld.1071) Figs 3,4,10,11 & 12    
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FSmolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb)    
-  (1D homogeneous cases depicting infinite-gauge and flux-corrected transport cases)
-- [Arabas & Farhat 2020](https://doi.org/10.1016/j.cam.2019.05.023) Figs 1-3 & Tab. 1     
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FArabas_and_Farhat_2020/demo.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Arabas_and_Farhat_2020/demo.ipynb)    
-  (1D advection-diffusion example based on Black-Scholes equation)
-- [Olesik et al. 2020](https://arxiv.org/abs/2011.14726)    
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FOlesik_et_al_2020/)
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Olesik_et_al_2020/demo_make_plots.ipynb)   
-  (1D particle population condensational growth problem with coordinate transformations)
-- [Shipway and Hill 2012 (KiD-1D)](https://doi.org/10.1002/qj.1913)    
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-simm-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FShipway_and_Hill_2012/)
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Shipway_and_Hill_2012/fig_1.ipynb)    
-  (2D spectral-spatial problem of droplet condensational growth in a column of air)    
-![animation](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/files/KiD-1D_PyMPDATA_n_iters=1.gif)
-![animation](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/files/KiD-1D_PyMPDATA_n_iters=3.gif)
-- Molenkamp 2D solid-body rotation test (as in [Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 12)    
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FMolenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb)
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb)
-- 1D advection-diffusion example with animation    
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2Fadvection_diffusion_1d/demo.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/advection_diffusion_1d/demo.ipynb)    
-- 2D advection on a sphere (**upwind-only** setup depicting coordinate transformation based on [Williamson and Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2))  
-  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/atmos-cloud-sim-uj/PyMPDATA-examples.git/main?urlpath=lab/tree/PyMPDATA_examples%2FWilliamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/demo_over_the_pole.ipynb) 
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/demo_over_the_pole.ipynb)    
-![animation](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/files/sphere_upwind.gif)  
+
+## Examples (Jupyter notebooks reproducing results from literature):
+
+Examples are maintained at the `PyMPDATA-examples` repository, see [PyMPDATA-examples README.md](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/README.md) file for details.
   
 ## Package structure and API:
 
