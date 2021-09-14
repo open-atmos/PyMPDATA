@@ -163,7 +163,7 @@ options = Options(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python</summary>
+<summary>Python (click to expand)</summary>
 
 ```python
 from PyMPDATA import Options
@@ -242,7 +242,7 @@ advector = VectorField(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python</summary>
+<summary>Python (click to expand)</summary>
 
 ```python
 from PyMPDATA import ScalarField
@@ -304,7 +304,7 @@ steper = Stepper(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python</summary>
+<summary>Python (click to expand)</summary>
 
 ```python
 from PyMPDATA import Stepper
@@ -331,7 +331,7 @@ stepper = Stepper(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python</summary>
+<summary>Python (click to expand)</summary>
 
 ```python
 stepper = Stepper(options=options, grid=(nx, ny))
@@ -404,7 +404,7 @@ state = solver.advectee.get();
 ```
 </details>
 <details open>
-<summary>Python</summary>
+<summary>Python (click to expand)</summary>
 
 ```python
 from PyMPDATA import Solver
@@ -438,7 +438,7 @@ setenv('NUMBA_DISABLE_JIT', '1');
 ```
 </details>
 <details open>
-<summary>Python</summary>
+<summary>Python (click to expand)</summary>
 
 ```python
 import os
