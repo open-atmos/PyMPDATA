@@ -10,7 +10,7 @@ def get_long_description():
 
 setup(
     name='PyMPDATA',
-    description='Numba-accelerated Pythonic implementation of MPDATA with Jupyter examples',
+    description='Numba-accelerated Pythonic implementation of MPDATA with examples in Python, Julia and Matlab',
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     install_requires=[
@@ -20,6 +20,7 @@ setup(
         'pystrict'
     ],
     author='https://github.com/atmos-cloud-sim-uj/PyMPDATA/graphs/contributors',
+    author_email='sylwester.arabas@uj.edu.pl',
     license="GPL-3.0",
     packages=find_packages(include=['PyMPDATA', 'PyMPDATA.*']),
     long_description=get_long_description(),
