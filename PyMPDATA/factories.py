@@ -11,15 +11,6 @@ from .arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBo
 
 class Factories:
     @staticmethod
-    def constant_1d(data: np.ndarray, C: float, options: Options):
-        solver = Solver(
-            stepper=Stepper(options=options, n_dims=len(data.shape), non_unit_g_factor=False),
-            advectee=ScalarField(data.astype(options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),)),
-            advector=VectorField((np.full(data.shape[0] + 1, C, dtype=options.dtype),), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(),))
-        )
-        return solver
-
-    @staticmethod
     def constant_2d(data: np.ndarray, C, options: Options, grid_static=True):
         grid = data.shape
         advector_data = [
@@ -34,13 +25,6 @@ class Factories:
             stepper = Stepper(options=options, n_dims=2, non_unit_g_factor=False)
         mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
         return mpdata
-
-    @staticmethod
-    def stream_function_2d_basic(grid, size, dt, stream_function, field: np.ndarray, options: Options):
-        stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
-        advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-        advectee = ScalarField(field.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-        return Solver(stepper=stepper, advectee=advectee, advector=advector)
 
     @staticmethod
     def stream_function_2d(grid, size, dt, stream_function, field_values, g_factor: np.ndarray, options: Options):
@@ -69,4 +53,3 @@ class Factories:
                       advectee=ScalarField(advectee.astype(dtype=options.dtype), halo=options.n_halo, boundary_conditions=boundary_conditions),
                       advector=VectorField((np.full(grid[0]+1, advector, dtype=options.dtype),), halo=options.n_halo, boundary_conditions=boundary_conditions)
                       )
-
