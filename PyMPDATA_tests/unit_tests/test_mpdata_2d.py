@@ -1,4 +1,4 @@
-from PyMPDATA.factories import Factories
+from PyMPDATA import VectorField, PeriodicBoundaryCondition, ScalarField, Stepper, Solver
 from PyMPDATA.options import Options
 import pytest
 import numpy as np
@@ -148,11 +148,22 @@ class TestMPDATA2D:
             "output": case[8]
         }
         # Arrange
-        sut = Factories.constant_2d(
-            case["input"].reshape((case["nx"], case["ny"])),
-            [case["Cx"], case["Cy"]],
-            options=Options(n_iters=case["ni"], dimensionally_split=case["dimsplit"])
-        )
+        data = case["input"].reshape((case["nx"], case["ny"]))
+        c = [case["Cx"], case["Cy"]]
+        options = Options(n_iters=case["ni"], dimensionally_split=case["dimsplit"])
+        grid = data.shape
+        advector_data = [
+            np.full((grid[0] + 1, grid[1]), c[0], dtype=options.dtype),
+            np.full((grid[0], grid[1] + 1), c[1], dtype=options.dtype)
+        ]
+        bcs = (PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+        advector = VectorField(advector_data, halo=options.n_halo,
+                               boundary_conditions=bcs)
+        advectee = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo,
+                               boundary_conditions=bcs)
+        stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
+        mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
+        sut = mpdata
 
         # Act
         sut.advance(nt=case["nt"])
