@@ -36,7 +36,7 @@ def discretised_analytical_solution(rh, pdf_t, midpoint_value=False, r=None):
         if midpoint_value:
             output[i] = pdf_t(r[i])
         else:
-            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO #95: handle other output values
+            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO #206: handle other output values
             output[i] = dcdf / (rh[i + 1] - rh[i])
     return output
 
