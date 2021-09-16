@@ -13,7 +13,7 @@ jobs:
         pip --use-deprecated=legacy-resolver install -e .
         pip --use-deprecated=legacy-resolver install -r test-time-requirements.txt
         pip --use-deprecated=legacy-resolver install pytest-cov
-        pytest PyMPDATA_tests/unit_tests --cov-report=xml --cov=PyMPDATA
+        pytest tests/unit_tests --cov-report=xml --cov=PyMPDATA
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
