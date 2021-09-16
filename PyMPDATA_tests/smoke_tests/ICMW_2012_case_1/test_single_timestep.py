@@ -1,4 +1,5 @@
-from PyMPDATA.factories import Factories
+from PyMPDATA import Stepper, ScalarField, PeriodicBoundaryCondition, Solver
+from PyMPDATA.arakawa_c.discretisation import nondivergent_vector_field_2d
 from PyMPDATA.options import Options
 import numpy as np
 import pytest
@@ -37,15 +38,16 @@ def test_single_timestep(options):
         axis=0
     )
 
-    GC, mpdatas = Factories.stream_function_2d(
-        grid=grid, size=size, dt=dt,
-        stream_function=stream_function,
-        field_values={'th': np.full(grid, 300), 'qv': np.full(grid, .001)},
-        g_factor=rhod,
-        options=options
-    )
-
-    # Plot
+    values = {'th': np.full(grid, 300), 'qv': np.full(grid, .001)}
+    stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
+    advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
+    g_factor = ScalarField(rhod.astype(dtype=options.dtype), halo=options.n_halo,
+                           boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    mpdatas = {}
+    for k1, v1 in values.items():
+        advectee = ScalarField(np.full(grid, v1, dtype=options.dtype), halo=options.n_halo,
+                               boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+        mpdatas[k1] = Solver(stepper=stepper, advectee=advectee, advector=advector, g_factor=g_factor)
 
     # Act
     for mpdata in mpdatas.values():

@@ -2,7 +2,6 @@ from .options import Options
 from .solver import Solver
 from .stepper import Stepper
 
-from .factories import Factories
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 

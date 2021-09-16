@@ -1,9 +1,4 @@
-from PyMPDATA.arakawa_c.scalar_field import ScalarField
-from PyMPDATA.arakawa_c.vector_field import VectorField
-from PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
-from PyMPDATA.factories import Stepper
-from PyMPDATA.options import Options
-from PyMPDATA.solver import Solver
+from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField, PeriodicBoundaryCondition
 import pytest
 import numpy as np
 
