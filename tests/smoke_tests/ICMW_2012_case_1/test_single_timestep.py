@@ -1,6 +1,5 @@
-from PyMPDATA import Stepper, ScalarField, PeriodicBoundaryCondition, Solver
-from PyMPDATA.arakawa_c.discretisation import nondivergent_vector_field_2d
-from PyMPDATA.options import Options
+from PyMPDATA import Stepper, ScalarField, PeriodicBoundaryCondition, Solver, Options, VectorField
+from PyMPDATA_examples.utils import nondivergent_vector_field_2d
 import numpy as np
 import pytest
 
