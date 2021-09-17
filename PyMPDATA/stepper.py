@@ -107,7 +107,6 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
 
     null_vecfield, null_vecfield_bc = traversals.null_vector_field.impl
 
-    # TODO #224: move to formulae
     @numba.njit(**options.jit_flags)
     def axpy(out_meta, out_outer, out_mid3d, out_inner, a,
              x_meta, x_outer, x_mid3d, x_inner,
