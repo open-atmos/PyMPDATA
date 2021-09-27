@@ -26,7 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numba
+<pre><code class="python">from collections import namedtuple
+import numba
 from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
 
 
@@ -152,28 +153,29 @@ def get_3d(arr, i, j, k):
     return arr[i, j, k]
 
 
-class Indexers1d:
-    at = (None, None, at_1d)
-    atv = (None, None, atv_1d)
-    set = set_1d
-    get = get_1d
+Indexers = namedtuple(&#39;Indexers&#39;, (&#39;at&#39;, &#39;atv&#39;, &#39;set&#39;, &#39;get&#39;))
 
-
-class Indexers2d:
-    at = (at_2d_axis0, None, at_2d_axis1)
-    atv = (atv_2d_axis0, None, atv_2d_axis1)
-    set = set_2d
-    get = get_2d
-
-
-class Indexers3d:
-    at = (at_3d_axis0, at_3d_axis1, atv_3d_axis2)
-    atv = (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2)
-    set = set_3d
-    get = get_3d
-
-
-indexers = (None, Indexers1d, Indexers2d, Indexers3d)</code></pre>
+indexers = (
+    None,
+    Indexers(
+        (None, None, at_1d),
+        (None, None, atv_1d),
+        set_1d,
+        get_1d
+    ),
+    Indexers(
+        (at_2d_axis0, None, at_2d_axis1),
+        (atv_2d_axis0, None, atv_2d_axis1),
+        set_2d,
+        get_2d
+    ),
+    Indexers(
+        (at_3d_axis0, at_3d_axis1, atv_3d_axis2),
+        (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
+        set_3d,
+        get_3d
+    )
+)</code></pre>
 </details>
 </section>
 <section>
@@ -452,177 +454,33 @@ def set_3d(arr, i, j, k, value):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers1d"><code class="flex name class">
-<span>class <span class="ident">Indexers1d</span></span>
+<dt id="PyMPDATA.arakawa_c.indexers.Indexers"><code class="flex name class">
+<span>class <span class="ident">Indexers</span></span>
+<span>(</span><span>at, atv, set, get)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Indexers1d:
-    at = (None, None, at_1d)
-    atv = (None, None, atv_1d)
-    set = set_1d
-    get = get_1d</code></pre>
-</details>
-<h3>Class variables</h3>
+<div class="desc"><p>Indexers(at, atv, set, get)</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
 <dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers1d.at"><code class="name">var <span class="ident">at</span></code></dt>
+<dt id="PyMPDATA.arakawa_c.indexers.Indexers.at"><code class="name">var <span class="ident">at</span></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Alias for field number 0</p></div>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers1d.atv"><code class="name">var <span class="ident">atv</span></code></dt>
+<dt id="PyMPDATA.arakawa_c.indexers.Indexers.atv"><code class="name">var <span class="ident">atv</span></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Alias for field number 1</p></div>
 </dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers1d.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>arr, _, __, k)</span>
-</code></dt>
+<dt id="PyMPDATA.arakawa_c.indexers.Indexers.get"><code class="name">var <span class="ident">get</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def get_1d(arr, _, __, k):
-    return arr[k]</code></pre>
-</details>
+<div class="desc"><p>Alias for field number 3</p></div>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers1d.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>arr, _, __, k, value)</span>
-</code></dt>
+<dt id="PyMPDATA.arakawa_c.indexers.Indexers.set"><code class="name">var <span class="ident">set</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def set_1d(arr, _, __, k, value):
-    arr[k] = value</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers2d"><code class="flex name class">
-<span>class <span class="ident">Indexers2d</span></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Indexers2d:
-    at = (at_2d_axis0, None, at_2d_axis1)
-    atv = (atv_2d_axis0, None, atv_2d_axis1)
-    set = set_2d
-    get = get_2d</code></pre>
-</details>
-<h3>Class variables</h3>
-<dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers2d.at"><code class="name">var <span class="ident">at</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers2d.atv"><code class="name">var <span class="ident">atv</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers2d.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>arr, i, _, k)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def get_2d(arr, i, _, k):
-    return arr[i, k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers2d.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>arr, i, _, k, value)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def set_2d(arr, i, _, k, value):
-    arr[i, k] = value</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers3d"><code class="flex name class">
-<span>class <span class="ident">Indexers3d</span></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Indexers3d:
-    at = (at_3d_axis0, at_3d_axis1, atv_3d_axis2)
-    atv = (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2)
-    set = set_3d
-    get = get_3d</code></pre>
-</details>
-<h3>Class variables</h3>
-<dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers3d.at"><code class="name">var <span class="ident">at</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers3d.atv"><code class="name">var <span class="ident">atv</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers3d.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>arr, i, j, k)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def get_3d(arr, i, j, k):
-    return arr[i, j, k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers3d.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>arr, i, j, k, value)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def set_3d(arr, i, j, k, value):
-    arr[i, j, k] = value</code></pre>
-</details>
+<div class="desc"><p>Alias for field number 2</p></div>
 </dd>
 </dl>
 </dd>
@@ -664,30 +522,12 @@ def set_3d(arr, i, j, k, value):
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PyMPDATA.arakawa_c.indexers.Indexers1d" href="#PyMPDATA.arakawa_c.indexers.Indexers1d">Indexers1d</a></code></h4>
+<h4><code><a title="PyMPDATA.arakawa_c.indexers.Indexers" href="#PyMPDATA.arakawa_c.indexers.Indexers">Indexers</a></code></h4>
 <ul class="">
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers1d.at" href="#PyMPDATA.arakawa_c.indexers.Indexers1d.at">at</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers1d.atv" href="#PyMPDATA.arakawa_c.indexers.Indexers1d.atv">atv</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers1d.get" href="#PyMPDATA.arakawa_c.indexers.Indexers1d.get">get</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers1d.set" href="#PyMPDATA.arakawa_c.indexers.Indexers1d.set">set</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="PyMPDATA.arakawa_c.indexers.Indexers2d" href="#PyMPDATA.arakawa_c.indexers.Indexers2d">Indexers2d</a></code></h4>
-<ul class="">
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers2d.at" href="#PyMPDATA.arakawa_c.indexers.Indexers2d.at">at</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers2d.atv" href="#PyMPDATA.arakawa_c.indexers.Indexers2d.atv">atv</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers2d.get" href="#PyMPDATA.arakawa_c.indexers.Indexers2d.get">get</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers2d.set" href="#PyMPDATA.arakawa_c.indexers.Indexers2d.set">set</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="PyMPDATA.arakawa_c.indexers.Indexers3d" href="#PyMPDATA.arakawa_c.indexers.Indexers3d">Indexers3d</a></code></h4>
-<ul class="">
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers3d.at" href="#PyMPDATA.arakawa_c.indexers.Indexers3d.at">at</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers3d.atv" href="#PyMPDATA.arakawa_c.indexers.Indexers3d.atv">atv</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers3d.get" href="#PyMPDATA.arakawa_c.indexers.Indexers3d.get">get</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers3d.set" href="#PyMPDATA.arakawa_c.indexers.Indexers3d.set">set</a></code></li>
+<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.at" href="#PyMPDATA.arakawa_c.indexers.Indexers.at">at</a></code></li>
+<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.atv" href="#PyMPDATA.arakawa_c.indexers.Indexers.atv">atv</a></code></li>
+<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.get" href="#PyMPDATA.arakawa_c.indexers.Indexers.get">get</a></code></li>
+<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.set" href="#PyMPDATA.arakawa_c.indexers.Indexers.set">set</a></code></li>
 </ul>
 </li>
 </ul>

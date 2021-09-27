@@ -26,9 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numba
+<pre><code class="python">from functools import lru_cache
+import numba
 from ..enumerations import SIGN_RIGHT, SIGN_LEFT
-from functools import lru_cache
 
 
 @lru_cache()

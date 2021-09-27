@@ -31,14 +31,14 @@ import platform
 
 if platform.system() == &#39;Windows&#39;:
     from ctypes.util import find_msvcrt
-    lib = find_msvcrt()
-    if lib is None:
-        lib = &#39;msvcrt.dll&#39;
+    __LIB = find_msvcrt()
+    if __LIB is None:
+        __LIB = &#39;msvcrt.dll&#39;
 else:
     from ctypes.util import find_library
-    lib = find_library(&#39;c&#39;)
+    __LIB = find_library(&#39;c&#39;)
 
-clock = ctypes.CDLL(lib).clock
+clock = ctypes.CDLL(__LIB).clock
 clock.argtypes = []</code></pre>
 </details>
 </section>
