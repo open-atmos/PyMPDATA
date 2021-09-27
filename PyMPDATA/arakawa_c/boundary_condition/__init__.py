@@ -1,3 +1,4 @@
+""" classes representing boundary conditions """
 from .constant_boundary_condition import ConstantBoundaryCondition
 from .extrapolated_boundary_condition import ExtrapolatedBoundaryCondition
 from .polar_boundary_condition import PolarBoundaryCondition

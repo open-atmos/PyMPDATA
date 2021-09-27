@@ -1,6 +1,6 @@
+from functools import lru_cache
 import numba
 from ..enumerations import ARG_FOCUS, INNER, SIGN_LEFT
-from functools import lru_cache
 
 
 @lru_cache()

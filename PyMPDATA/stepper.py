@@ -1,6 +1,8 @@
+from functools import lru_cache
 import sys
 import warnings
 import numba
+from numba.core.errors import NumbaExperimentalFeatureWarning
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux_first_pass, make_flux_subsequent
 from .formulae.laplacian import make_laplacian
@@ -10,8 +12,6 @@ from .arakawa_c.traversals import Traversals
 from .arakawa_c.meta import META_HALO_VALID
 from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
 from .options import Options
-from functools import lru_cache
-from numba.core.errors import NumbaExperimentalFeatureWarning
 from .clock import clock
 
 

@@ -40,9 +40,9 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
     # TODO #225: does DPDC + other options combination make sense?
 
-    # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
     def A(psi):
+        """ eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998 """
         result = at(*psi, 1) - at(*psi, 0)
         if infinite_gauge:
             result /= 2
@@ -50,9 +50,9 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
             result /= (at(*psi, 1) + at(*psi, 0) + epsilon)
         return result
 
-    # eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
     def B(psi):
+        """ eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998 """
         result = (
                 at(*psi, 1, 1) + at(*psi, 0, 1) -
                 at(*psi, 1, -1) - at(*psi, 0, -1)
@@ -87,7 +87,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def antidiff_variants(psi, GC, G):
-        # eq. 13 in Smolarkiewicz 1984
+        """ eq. 13 in Smolarkiewicz 1984 """
         result = antidiff_basic(psi, GC, G)
 
         G_bar = (at(*G, 1) + at(*G, 0)) / 2 if non_unit_g_factor else 1

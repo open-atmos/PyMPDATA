@@ -1,8 +1,8 @@
+import numba
 from .arakawa_c.scalar_field import ScalarField
 from .arakawa_c.vector_field import VectorField
 from .stepper import Stepper
 from .arakawa_c.meta import META_IS_NULL
-import numba
 
 
 @numba.njit()

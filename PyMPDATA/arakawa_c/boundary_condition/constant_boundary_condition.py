@@ -1,5 +1,5 @@
-import numba
 from functools import lru_cache
+import numba
 
 
 @lru_cache()

@@ -136,15 +136,15 @@ def case_data(request):
 
 def test_Arabas_et_al_2014_sanity(case_data):
     case = {
-        "nx": case[0],
-        "ny": case[1],
-        "Cx": case[2],
-        "Cy": case[3],
-        "nt": case[4],
-        "ni": case[5],
-        "dimsplit": case[6],
-        "input": case[7],
-        "output": case[8]
+        "nx": case_data[0],
+        "ny": case_data[1],
+        "Cx": case_data[2],
+        "Cy": case_data[3],
+        "nt": case_data[4],
+        "ni": case_data[5],
+        "dimsplit": case_data[6],
+        "input": case_data[7],
+        "output": case_data[8]
     }
     # Arrange
     data = case["input"].reshape((case["nx"], case["ny"]))

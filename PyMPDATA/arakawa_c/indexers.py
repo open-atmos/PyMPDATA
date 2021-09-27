@@ -1,3 +1,4 @@
+from collections import namedtuple
 import numba
 from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
 
@@ -124,25 +125,26 @@ def get_3d(arr, i, j, k):
     return arr[i, j, k]
 
 
-class Indexers1d:
-    at = (None, None, at_1d)
-    atv = (None, None, atv_1d)
-    set = set_1d
-    get = get_1d
+Indexers = namedtuple('Indexers', ('at', 'atv', 'set', 'get'))
 
-
-class Indexers2d:
-    at = (at_2d_axis0, None, at_2d_axis1)
-    atv = (atv_2d_axis0, None, atv_2d_axis1)
-    set = set_2d
-    get = get_2d
-
-
-class Indexers3d:
-    at = (at_3d_axis0, at_3d_axis1, atv_3d_axis2)
-    atv = (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2)
-    set = set_3d
-    get = get_3d
-
-
-indexers = (None, Indexers1d, Indexers2d, Indexers3d)
+indexers = (
+    None,
+    Indexers(
+        (None, None, at_1d),
+        (None, None, atv_1d),
+        set_1d,
+        get_1d
+    ),
+    Indexers(
+        (at_2d_axis0, None, at_2d_axis1),
+        (atv_2d_axis0, None, atv_2d_axis1),
+        set_2d,
+        get_2d
+    ),
+    Indexers(
+        (at_3d_axis0, at_3d_axis1, atv_3d_axis2),
+        (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
+        set_3d,
+        get_3d
+    )
+)

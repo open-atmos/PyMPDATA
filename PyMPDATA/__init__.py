@@ -1,3 +1,8 @@
+"""
+Numba-accelerated Pythonic implementation of Multidimensional Positive Definite
+Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab
+"""
+# pylint: disable=invalid-name
 from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
 
 from .options import Options
