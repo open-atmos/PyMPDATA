@@ -133,7 +133,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         # divergent flow option
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if divergent_flow:
-            # assert psi.dimension == 1  # TODO #94
+            # assert psi.dimension == 1
             tmp = -.25 * atv(*GC, .5) * (atv(*GC, 1.5) - atv(*GC, -.5))
             if non_unit_g_factor:
                 tmp /= G_bar
