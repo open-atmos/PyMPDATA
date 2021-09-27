@@ -1,6 +1,6 @@
+from functools import lru_cache
 import numba
 from ..enumerations import SIGN_RIGHT, SIGN_LEFT
-from functools import lru_cache
 
 
 @lru_cache()

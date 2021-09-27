@@ -38,11 +38,9 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
     DPDC = options.DPDC
     dimensionally_split = options.dimensionally_split
 
-    # TODO #225: does DPDC + other options combination make sense?
-
-    # eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
     def A(psi):
+        """ eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998 """
         result = at(*psi, 1) - at(*psi, 0)
         if infinite_gauge:
             result /= 2
@@ -50,9 +48,9 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
             result /= (at(*psi, 1) + at(*psi, 0) + epsilon)
         return result
 
-    # eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998
     @numba.njit(**options.jit_flags)
     def B(psi):
+        """ eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998 """
         result = (
                 at(*psi, 1, 1) + at(*psi, 0, 1) -
                 at(*psi, 1, -1) - at(*psi, 0, -1)
@@ -69,26 +67,25 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def antidiff_basic(psi, GC, _):
-        # eq. 13 in Smolarkiewicz 1984
+        """ eq. 13 in Smolarkiewicz 1984 """
         tmp = A(psi)
         result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
-        if DPDC and last_pass:  # TODO #225 n_dims > 1
+        if DPDC and last_pass:
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
             result = result * (result * b + a) 
         if n_dims == 1 or dimensionally_split:
             return result
-        else:
-            result -= (
-                0.5 * atv(*GC, .5) *
-                0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
-                B(psi)
-            )
+        result -= (
+            0.5 * atv(*GC, .5) *
+            0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
+            B(psi)
+        )
         return result
 
     @numba.njit(**options.jit_flags)
     def antidiff_variants(psi, GC, G):
-        # eq. 13 in Smolarkiewicz 1984
+        """ eq. 13 in Smolarkiewicz 1984 """
         result = antidiff_basic(psi, GC, G)
 
         G_bar = (at(*G, 1) + at(*G, 0)) / 2 if non_unit_g_factor else 1
@@ -134,7 +131,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         # divergent flow option
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if divergent_flow:
-            # assert psi.dimension == 1  # TODO #94
+            # assert psi.dimension == 1
             tmp = -.25 * atv(*GC, .5) * (atv(*GC, 1.5) - atv(*GC, -.5))
             if non_unit_g_factor:
                 tmp /= G_bar

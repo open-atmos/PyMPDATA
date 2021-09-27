@@ -1,7 +1,7 @@
-from PyMPDATA import VectorField, PeriodicBoundaryCondition, ScalarField, Stepper, Solver
-from PyMPDATA.options import Options
 import pytest
 import numpy as np
+from PyMPDATA import VectorField, PeriodicBoundaryCondition, ScalarField, Stepper, Solver
+from PyMPDATA.options import Options
 
 # test data by Dorota Jarecka
 # see http://dx.doi.org/10.3233/SPR-140379
@@ -130,43 +130,47 @@ params = (
 
 
 @pytest.fixture(params=params)
-def case(request):
+def case_data(request):
     return request.param
 
 
-class TestMPDATA2D:
-    def test_Arabas_et_al_2014_sanity(self, case):
-        case = {
-            "nx": case[0],
-            "ny": case[1],
-            "Cx": case[2],
-            "Cy": case[3],
-            "nt": case[4],
-            "ni": case[5],
-            "dimsplit": case[6],
-            "input": case[7],
-            "output": case[8]
-        }
-        # Arrange
-        data = case["input"].reshape((case["nx"], case["ny"]))
-        c = [case["Cx"], case["Cy"]]
-        options = Options(n_iters=case["ni"], dimensionally_split=case["dimsplit"])
-        grid = data.shape
-        advector_data = [
-            np.full((grid[0] + 1, grid[1]), c[0], dtype=options.dtype),
-            np.full((grid[0], grid[1] + 1), c[1], dtype=options.dtype)
-        ]
-        bcs = (PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
-        advector = VectorField(advector_data, halo=options.n_halo,
-                               boundary_conditions=bcs)
-        advectee = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo,
-                               boundary_conditions=bcs)
-        stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
-        mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
-        sut = mpdata
+# pylint: disable-next=redefined-outer-name
+def test_Arabas_et_al_2014_sanity(case_data):
+    case = {
+        "nx": case_data[0],
+        "ny": case_data[1],
+        "Cx": case_data[2],
+        "Cy": case_data[3],
+        "nt": case_data[4],
+        "ni": case_data[5],
+        "dimsplit": case_data[6],
+        "input": case_data[7],
+        "output": case_data[8]
+    }
+    # Arrange
+    data = case["input"].reshape((case["nx"], case["ny"]))
+    c = [case["Cx"], case["Cy"]]
+    options = Options(n_iters=case["ni"], dimensionally_split=case["dimsplit"])
+    grid = data.shape
+    advector_data = [
+        np.full((grid[0] + 1, grid[1]), c[0], dtype=options.dtype),
+        np.full((grid[0], grid[1] + 1), c[1], dtype=options.dtype)
+    ]
+    bcs = (PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+    advector = VectorField(advector_data, halo=options.n_halo,
+                           boundary_conditions=bcs)
+    advectee = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo,
+                           boundary_conditions=bcs)
+    stepper = Stepper(options=options, grid=grid, non_unit_g_factor=False)
+    mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
+    sut = mpdata
 
-        # Act
-        sut.advance(nt=case["nt"])
+    # Act
+    sut.advance(nt=case["nt"])
 
-        # Assert
-        np.testing.assert_almost_equal(sut.advectee.get(), case["output"].reshape(case["nx"], case["ny"]), decimal=4)
+    # Assert
+    np.testing.assert_almost_equal(
+        sut.advectee.get(),
+        case["output"].reshape(case["nx"], case["ny"]),
+        decimal=4
+    )

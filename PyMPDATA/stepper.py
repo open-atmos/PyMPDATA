@@ -1,6 +1,8 @@
+from functools import lru_cache
 import sys
 import warnings
 import numba
+from numba.core.errors import NumbaExperimentalFeatureWarning
 from .formulae.upwind import make_upwind
 from .formulae.flux import make_flux_first_pass, make_flux_subsequent
 from .formulae.laplacian import make_laplacian
@@ -10,8 +12,6 @@ from .arakawa_c.traversals import Traversals
 from .arakawa_c.meta import META_HALO_VALID
 from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
 from .options import Options
-from functools import lru_cache
-from numba.core.errors import NumbaExperimentalFeatureWarning
 from .clock import clock
 
 
@@ -33,18 +33,13 @@ class Stepper:
             grid = tuple([-1] * n_dims)
         if n_dims is None:
             n_dims = len(grid)
-        # if n_dims == 1 and options.dimensionally_split:
-        #     raise ValueError()
+        if n_dims > 1 and options.DPDC:
+            raise NotImplementedError()
         if n_threads is None:
             n_threads = numba.get_num_threads()
 
         self.n_threads = 1 if n_dims == 1 else n_threads
         if self.n_threads > 1:
-# TODO #166
-#             if numba.threading_layer() == 'workqueue':
-#                 warnings.warn("Numba is using the ``workqueue'' threading layer, switch"
-#                               " to ``omp'' or ``tbb'' for higher parallel performance"
-#                               " (see https://numba.pydata.org/numba-doc/latest/user/threading-layer.html)")
             try:
                 numba.parfors.parfor.ensure_parallel_support()
             except numba.core.errors.UnsupportedParforsError:

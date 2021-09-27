@@ -1,6 +1,6 @@
-from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField, PeriodicBoundaryCondition
 import pytest
 import numpy as np
+from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField, PeriodicBoundaryCondition
 
 
 @pytest.mark.parametrize("shape, ij0, out, C", [

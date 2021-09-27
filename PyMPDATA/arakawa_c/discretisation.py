@@ -1,7 +1,5 @@
 import numpy as np
 from scipy import integrate
-from .vector_field import VectorField
-from .boundary_condition.periodic_boundary_condition import PeriodicBoundaryCondition
 
 
 def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
