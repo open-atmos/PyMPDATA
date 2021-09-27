@@ -38,8 +38,6 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
     DPDC = options.DPDC
     dimensionally_split = options.dimensionally_split
 
-    # TODO #225: does DPDC + other options combination make sense?
-
     @numba.njit(**options.jit_flags)
     def A(psi):
         """ eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998 """
@@ -72,7 +70,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         """ eq. 13 in Smolarkiewicz 1984 """
         tmp = A(psi)
         result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
-        if DPDC and last_pass:  # TODO #225 n_dims > 1
+        if DPDC and last_pass:
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
             result = result * (result * b + a) 

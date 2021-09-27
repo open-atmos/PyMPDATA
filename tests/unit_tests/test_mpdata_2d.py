@@ -134,6 +134,7 @@ def case_data(request):
     return request.param
 
 
+# pylint: disable-next=redefined-outer-name
 def test_Arabas_et_al_2014_sanity(case_data):
     case = {
         "nx": case_data[0],

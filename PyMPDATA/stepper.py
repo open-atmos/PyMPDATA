@@ -33,8 +33,8 @@ class Stepper:
             grid = tuple([-1] * n_dims)
         if n_dims is None:
             n_dims = len(grid)
-        # if n_dims == 1 and options.dimensionally_split:
-        #     raise ValueError()
+        if n_dims > 1 and options.DPDC:
+            raise NotImplementedError()
         if n_threads is None:
             n_threads = numba.get_num_threads()
 
