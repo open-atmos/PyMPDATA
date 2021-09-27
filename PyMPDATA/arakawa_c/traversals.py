@@ -41,8 +41,7 @@ class Traversals:
     def apply_scalar(self, *, loop):
         if loop:
             return self._apply_scalar_loop
-        else:
-            return self._apply_scalar
+        return self._apply_scalar
 
     def apply_vector(self):
         return self._apply_vector

@@ -1,7 +1,7 @@
-from PyMPDATA import Solver, Stepper, ScalarField, PeriodicBoundaryCondition, VectorField
-from PyMPDATA.options import Options
 import numpy as np
 import pytest
+from PyMPDATA import Solver, Stepper, ScalarField, PeriodicBoundaryCondition, VectorField
+from PyMPDATA.options import Options
 
 
 @pytest.mark.parametrize("n_iters", [2, 3, 4])
@@ -21,6 +21,5 @@ def test_DPDC(n_iters):
 
     conserved = np.sum(mpdata.advectee.get())
     mpdata.advance(nt)
-    print(mpdata.advectee.get())
 
     assert np.sum(mpdata.advectee.get()) == conserved

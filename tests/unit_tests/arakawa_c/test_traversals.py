@@ -1,12 +1,14 @@
+import pytest
+import numba
+import numpy as np
 from PyMPDATA.arakawa_c.traversals import Traversals
 from PyMPDATA.arakawa_c.meta import META_HALO_VALID
 from PyMPDATA import Options, ScalarField, VectorField, ConstantBoundaryCondition
 from PyMPDATA.arakawa_c.indexers import indexers
-from PyMPDATA.arakawa_c.enumerations import MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC, \
+from PyMPDATA.arakawa_c.enumerations import (
+    MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC,
     META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
-import pytest
-import numba
-import numpy as np
+)
 
 jit_flags = Options().jit_flags
 n_threads = (1, 2, 3)

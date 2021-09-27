@@ -69,7 +69,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def antidiff_basic(psi, GC, _):
-        # eq. 13 in Smolarkiewicz 1984
+        """ eq. 13 in Smolarkiewicz 1984 """
         tmp = A(psi)
         result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
         if DPDC and last_pass:  # TODO #225 n_dims > 1
@@ -78,12 +78,11 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
             result = result * (result * b + a) 
         if n_dims == 1 or dimensionally_split:
             return result
-        else:
-            result -= (
-                0.5 * atv(*GC, .5) *
-                0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
-                B(psi)
-            )
+        result -= (
+            0.5 * atv(*GC, .5) *
+            0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
+            B(psi)
+        )
         return result
 
     @numba.njit(**options.jit_flags)

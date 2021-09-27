@@ -13,12 +13,11 @@ def _make_scalar(dim, eps, at, halo):
             den = at(*psi, edg + 2) - at(*psi, edg + 1)
             cnst = nom / den if abs(den) > eps else 0
             return max(at(*psi, 1) - (at(*psi, 2) - at(*psi, 1)) * cnst, 0)
-        else:
-            edg = n + halo - 1 - psi[ARG_FOCUS][dim]
-            den = at(*psi, edg - 1) - at(*psi, edg - 2)
-            nom = at(*psi, edg) - at(*psi, edg - 1)
-            cnst = nom/den if abs(den) > eps else 0
-            return max(at(*psi, -1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
+        edg = n + halo - 1 - psi[ARG_FOCUS][dim]
+        den = at(*psi, edg - 1) - at(*psi, edg - 2)
+        nom = at(*psi, edg) - at(*psi, edg - 1)
+        cnst = nom/den if abs(den) > eps else 0
+        return max(at(*psi, -1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
     return fill_halos_scalar
 
 
