@@ -53,7 +53,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO #96: 3d
+    @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     @pytest.mark.parametrize("loop", (True, False))
     def test_apply_scalar(n_threads, halo, grid, loop):
         n_dims = len(grid)
@@ -92,7 +92,7 @@ class TestTraversals:
                     elif n_dims == 2:
                         ijk = (i, k, INVALID_INDEX)
                     else:
-                        raise NotImplementedError()
+                        ijk = (i, j, k)
                     value = indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
                     assert (n_dims if loop else 1) * cell_id(i, j, k) == value
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
@@ -102,7 +102,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
-    @pytest.mark.parametrize("grid", ((5, 6), (11,)))  # TODO #96 - 3d
+    @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     def test_apply_vector(n_threads, halo, grid):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -123,7 +123,11 @@ class TestTraversals:
                 np.zeros((grid[0], grid[1]+1))
             )
         elif n_dims == 3:
-            pass  # TODO #96
+            data = (
+                np.zeros((grid[0]+1, grid[1], grid[2])),
+                np.zeros((grid[0], grid[1]+1, grid[2])),
+                np.zeros((grid[0], grid[1], grid[2]+1)),
+            )
         else:
             raise NotImplementedError()
 
@@ -149,7 +153,7 @@ class TestTraversals:
         elif n_dims == 2:
             dims = (OUTER, INNER)
         else:
-            raise NotImplementedError()
+            dims = (OUTER, MID3D, INNER)
         for d in dims:
             print("DIM", d)
             data = out.get_component(d)
@@ -163,7 +167,7 @@ class TestTraversals:
                         elif n_dims == 2:
                             ijk = (i, k, INVALID_INDEX)
                         else:
-                            raise NotImplementedError()
+                            ijk = (i, j, k)
                         print("check at", i, j, k)
                         value = indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
                         assert cell_id(i, j, k) == value
