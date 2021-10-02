@@ -31,7 +31,7 @@ def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, 
         arg2 = (vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner)
 
         for i in range(rng_outer[RNG_START] + halos[OUTER][OUTER], rng_outer[RNG_STOP] + halos[OUTER][OUTER] + (ONE_FOR_STAGGERED_GRID if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
-            for j in (INVALID_INDEX,):  # TODO #96
+            for j in range(rng_mid3d[RNG_START] + halos[MID3D][MID3D], rng_mid3d[RNG_STOP] + ONE_FOR_STAGGERED_GRID + halos[MID3D][MID3D]) if n_dims > 2 else (INVALID_INDEX,):
                 for k in range(rng_inner[RNG_START] + halos[INNER][INNER], rng_inner[RNG_STOP] + ONE_FOR_STAGGERED_GRID + halos[INNER][INNER]):
                     focus = (i, j, k)
                     if n_dims > 1:
