@@ -101,7 +101,18 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner):
         last_thread = rng_outer[RNG_STOP] == span[OUTER]
 
         if n_dims > 2:
-            pass  # TODO #96
+            for i in range(rng_outer[RNG_START],
+                           rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)):
+                for k in range(0, span[INNER] + 2 * halo):
+                    for j in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated!
+                        focus = (i, j, k)
+                        set(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_LEFT))
+            for i in range(rng_outer[RNG_START],
+                           rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)):
+                for k in range(0, span[INNER] + 2 * halo):
+                    for j in range(span[MID3D] + halo, span[MID3D] + 2 * halo):
+                        focus = (i, j, k)
+                        set(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_RIGHT))
 
         if n_dims > 1:
             if thread_id == 0:

@@ -60,9 +60,6 @@ class TestPeriodicBoundaryCondition:
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
-        if n_dims == 3:
-            return  # TODO #96
-
         for dim in range(n_dims):
             if side == LEFT:
                 np.testing.assert_array_equal(
