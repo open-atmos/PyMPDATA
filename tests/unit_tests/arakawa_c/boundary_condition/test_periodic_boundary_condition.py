@@ -86,7 +86,12 @@ class TestPeriodicBoundaryCondition:
                     [21, 22, 23, 24],
                     [31, 32, 33, 34]
                 ]),
-            )  # TODO #96: 3D
+            ),
+            (
+                np.arange(4 * 4 * 5).reshape((3+1, 4, 5)),
+                np.arange(3 * 5 * 5).reshape((3, 4+1, 5)),
+                np.arange(3 * 4 * 6).reshape((3, 4, 5+1))
+            )
     ))
     @pytest.mark.parametrize("halo", [1, 2, 3])
     @pytest.mark.parametrize("side", [LEFT, RIGHT])
@@ -106,26 +111,32 @@ class TestPeriodicBoundaryCondition:
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
+        if n_dims > 2:
+            return  # TODO #96
         for dim in range(n_dims):
             if n_dims == 1 and halo == 1:
                 np.testing.assert_array_equal(field.data[dim], data[dim])
             if side == LEFT:
                 np.testing.assert_array_equal(
-                    field.data[dim][shift(indices((None, halo - 1), (halo, -halo))[:n_dims], dim)],
-                    data[dim][shift(indices((-(halo - 1), None), (None, None))[:n_dims], dim)]
+                    field.data[dim][shift(indices((None, halo - 1), (halo, -halo), (halo, -halo))[:n_dims], dim)],
+                    data[dim][shift(indices((-(halo - 1), None), (None, None), (None, None))[:n_dims], dim)]
                 )
                 if n_dims > 1:
                     np.testing.assert_array_equal(
-                        field.data[dim][shift(indices((halo-1, -(halo-1)), (None, halo))[:n_dims], dim)],
-                        data[dim][shift(indices((None, None), (-halo, None))[:n_dims], dim)]
+                        field.data[dim][shift(indices((halo-1, -(halo-1)), (None, halo), (halo, -halo))[:n_dims], dim)],
+                        data[dim][shift(indices((None, None), (-halo, None), (None, None))[:n_dims], dim)]
                     )
+                    if n_dims > 2:
+                        pass  # TODO #96
             else:
                 np.testing.assert_array_equal(
-                    field.data[dim][shift(indices((-(halo - 1), None), (halo, -halo))[:n_dims], dim)],
-                    data[dim][shift(indices((None, halo - 1), (None, None))[:n_dims], dim)]
+                    field.data[dim][shift(indices((-(halo - 1), None), (halo, -halo), (halo, -halo))[:n_dims], dim)],
+                    data[dim][shift(indices((None, halo - 1), (None, None), (None, None))[:n_dims], dim)]
                 )
                 if n_dims > 1:
                     np.testing.assert_array_equal(
-                        field.data[dim][shift(indices((halo - 1, -(halo - 1)), (-halo, None))[:n_dims], dim)],
-                        data[dim][shift(indices((None, None), (None, halo))[:n_dims], dim)]
+                        field.data[dim][shift(indices((halo - 1, -(halo - 1)), (-halo, None), (halo, -halo))[:n_dims], dim)],
+                        data[dim][shift(indices((None, None), (None, halo), (None, None))[:n_dims], dim)]
                     )
+                    if n_dims > 2:
+                        pass  # TODO #96

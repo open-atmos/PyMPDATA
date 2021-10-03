@@ -92,25 +92,26 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
         rng_outer = chunker(meta, thread_id)
         last_thread = rng_outer[RNG_STOP] == span[OUTER]
 
-        if n_dims > 2:
-            pass  # TODO #96
         if n_dims > 1:
+            if n_dims > 2:
+                pass  # TODO #96
+
             if thread_id == 0:
                 for i in range(halos[OUTER][OUTER] - 1, -1, -1):  # note: non-reverse order assumed in Extrapolated
-                    for j in (INVALID_INDEX,):  # TODO #96
+                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                         for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
                             focus = (i, j, k)
                             set(comp_outer, i, j, k, fun_outer((focus, comp_outer), span[OUTER] + 1, SIGN_LEFT))
             if last_thread:
                 for i in range(span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
                                span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]):  # note: non-reverse order assumed in Extrapolated
-                    for j in (INVALID_INDEX,):  # TODO #96
+                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                         for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
                             focus = (i, j, k)
                             set(comp_outer, i, j, k, fun_outer((focus, comp_outer), span[OUTER] + 1, SIGN_RIGHT))
 
         for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
-            for j in (INVALID_INDEX,):
+            for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                 for k in range(0, halos[INNER][INNER]):
                     focus = (i, j, k)
                     set(comp_inner, i, j, k, fun_inner((focus, comp_inner), span[INNER] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT))
@@ -120,7 +121,7 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
 
         if n_dims > 1:
             for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + ((ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0)):
-                for j in (INVALID_INDEX,):
+                for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                     for k in range(0, halos[OUTER][INNER]):
                         focus = (i, j, k)
                         set(comp_outer, i, j, k, fun_inner((focus, comp_outer), span[INNER], SIGN_LEFT))
@@ -131,13 +132,13 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
         if n_dims > 1:
             if thread_id == 0:
                 for i in range(0, halos[INNER][OUTER]):
-                    for j in (INVALID_INDEX,):  # TODO #96
+                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                         for k in range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                             focus = (i, j, k)
                             set(comp_inner, i, j, k, fun_outer((focus, comp_inner), span[OUTER], SIGN_LEFT))
             if last_thread:
                 for i in range(span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]):
-                    for j in (INVALID_INDEX,):  # TODO #96
+                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                         for k in range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                             focus = (i, j, k)
                             set(comp_inner, i, j, k, fun_outer((focus, comp_inner), span[OUTER], SIGN_RIGHT))
