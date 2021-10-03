@@ -63,7 +63,7 @@ def at_3d_axis1(focus, arr, j, k=0, i=0):
 
 
 @numba.njit()
-def at_3d_axis1(focus, arr, k, i=0, j=0):
+def at_3d_axis2(focus, arr, k, i=0, j=0):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
@@ -170,7 +170,7 @@ indexers = (
         get_2d
     ),
     Indexers(
-        (at_3d_axis0, at_3d_axis1, atv_3d_axis2),
+        (at_3d_axis0, at_3d_axis1, at_3d_axis2),
         (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
         set_3d,
         get_3d
@@ -242,7 +242,7 @@ def at_3d_axis0(focus, arr, i, j=0, k=0):
 </details>
 </dd>
 <dt id="PyMPDATA.arakawa_c.indexers.at_3d_axis1"><code class="name flex">
-<span>def <span class="ident">at_3d_axis1</span></span>(<span>focus, arr, k, i=0, j=0)</span>
+<span>def <span class="ident">at_3d_axis1</span></span>(<span>focus, arr, j, k=0, i=0)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -251,7 +251,21 @@ def at_3d_axis0(focus, arr, i, j=0, k=0):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@numba.njit()
-def at_3d_axis1(focus, arr, k, i=0, j=0):
+def at_3d_axis1(focus, arr, j, k=0, i=0):
+    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA.arakawa_c.indexers.at_3d_axis2"><code class="name flex">
+<span>def <span class="ident">at_3d_axis2</span></span>(<span>focus, arr, k, i=0, j=0)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@numba.njit()
+def at_3d_axis2(focus, arr, k, i=0, j=0):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
 </details>
 </dd>
@@ -505,6 +519,7 @@ def set_3d(arr, i, j, k, value):
 <li><code><a title="PyMPDATA.arakawa_c.indexers.at_2d_axis1" href="#PyMPDATA.arakawa_c.indexers.at_2d_axis1">at_2d_axis1</a></code></li>
 <li><code><a title="PyMPDATA.arakawa_c.indexers.at_3d_axis0" href="#PyMPDATA.arakawa_c.indexers.at_3d_axis0">at_3d_axis0</a></code></li>
 <li><code><a title="PyMPDATA.arakawa_c.indexers.at_3d_axis1" href="#PyMPDATA.arakawa_c.indexers.at_3d_axis1">at_3d_axis1</a></code></li>
+<li><code><a title="PyMPDATA.arakawa_c.indexers.at_3d_axis2" href="#PyMPDATA.arakawa_c.indexers.at_3d_axis2">at_3d_axis2</a></code></li>
 <li><code><a title="PyMPDATA.arakawa_c.indexers.atv_1d" href="#PyMPDATA.arakawa_c.indexers.atv_1d">atv_1d</a></code></li>
 <li><code><a title="PyMPDATA.arakawa_c.indexers.atv_2d_axis0" href="#PyMPDATA.arakawa_c.indexers.atv_2d_axis0">atv_2d_axis0</a></code></li>
 <li><code><a title="PyMPDATA.arakawa_c.indexers.atv_2d_axis1" href="#PyMPDATA.arakawa_c.indexers.atv_2d_axis1">atv_2d_axis1</a></code></li>
