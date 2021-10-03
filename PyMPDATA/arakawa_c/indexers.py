@@ -35,7 +35,7 @@ def at_3d_axis1(focus, arr, j, k=0, i=0):
 
 
 @numba.njit()
-def at_3d_axis1(focus, arr, k, i=0, j=0):
+def at_3d_axis2(focus, arr, k, i=0, j=0):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
@@ -142,7 +142,7 @@ indexers = (
         get_2d
     ),
     Indexers(
-        (at_3d_axis0, at_3d_axis1, atv_3d_axis2),
+        (at_3d_axis0, at_3d_axis1, at_3d_axis2),
         (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
         set_3d,
         get_3d
