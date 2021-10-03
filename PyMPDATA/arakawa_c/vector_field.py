@@ -2,18 +2,24 @@ import numpy as np
 from .indexers import indexers
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
 from .scalar_field import ScalarField
-from .meta import META_HALO_VALID, make_meta, META_IS_NULL
+from .meta import META_HALO_VALID, META_IS_NULL
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
 import inspect
+from .field import Field
 
 
-class VectorField:
+class VectorField(Field):
     def __init__(self, data, halo, boundary_conditions):
         assert len(data) == len(boundary_conditions)
-        for field in data:
+
+        super().__init__(grid=tuple([data[d].shape[d] - 1 for d, _ in enumerate(data)]))
+
+        for comp, field in enumerate(data):
             assert len(field.shape) == len(data)
-            for dim_length in field.shape:
+            for dim, dim_length in enumerate(field.shape):
                 assert halo <= dim_length
+                if not (np.asarray(self.grid) == 0).all():
+                    assert dim_length == self.grid[dim] + (dim==comp)
         for bc in boundary_conditions:
             assert not inspect.isclass(bc)
 
@@ -37,8 +43,6 @@ class VectorField:
         fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_vector(indexers[self.n_dims].at[i]) for i, fh in enumerate(fill_halos)])
 
-        grid = tuple([data[d].shape[d] - 1 for d in dims])
-        self.meta = make_meta(False, grid)
         self.comp_outer = self.data[0] if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_mid3d = self.data[1] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_inner = self.data[-1]

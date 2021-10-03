@@ -1,14 +1,18 @@
 import numpy as np
 from .indexers import indexers
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
-from .meta import META_HALO_VALID, make_meta, META_IS_NULL
+from .meta import META_HALO_VALID, META_IS_NULL
 from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
+from .field import Field
 import inspect
 
 
-class ScalarField:
+class ScalarField(Field):
     def __init__(self, data: np.ndarray, halo: int, boundary_conditions):
         assert len(data.shape) == len(boundary_conditions)
+
+        super().__init__(grid=data.shape)
+
         for dim_length in data.shape:
             assert halo <= dim_length
         for bc in boundary_conditions:
@@ -29,7 +33,6 @@ class ScalarField:
         self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
 
         self.boundary_conditions = boundary_conditions
-        self.meta = make_meta(False, data.shape)
 
     @staticmethod
     def clone(field):

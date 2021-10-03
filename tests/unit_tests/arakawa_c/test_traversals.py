@@ -9,13 +9,9 @@ from PyMPDATA.arakawa_c.enumerations import (
     MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC,
     META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
 )
+from .n_threads_fixture import n_threads
 
 jit_flags = Options().jit_flags
-n_threads = (1, 2, 3)
-try:
-    numba.parfors.parfor.ensure_parallel_support()
-except numba.core.errors.UnsupportedParforsError:
-    n_threads = (1,)
 
 
 @numba.njit(**jit_flags)
@@ -51,7 +47,6 @@ def _cell_id_vector(arg_1, arg_2, arg_3):
 
 class TestTraversals:
     @staticmethod
-    @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     @pytest.mark.parametrize("loop", (True, False))
@@ -100,7 +95,6 @@ class TestTraversals:
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
 
     @staticmethod
-    @pytest.mark.parametrize("n_threads", n_threads)
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     def test_apply_vector(n_threads, halo, grid):
