@@ -1,11 +1,12 @@
-from PyMPDATA import ScalarField, VectorField, PeriodicBoundaryCondition
-from PyMPDATA.arakawa_c.traversals import Traversals
 import numpy as np
 import pytest
+from PyMPDATA import ScalarField, VectorField, PeriodicBoundaryCondition
+from PyMPDATA.arakawa_c.traversals import Traversals
 from ..n_threads_fixture import n_threads
 
 
 LEFT, RIGHT = 'left', 'right'
+
 
 def shift(tup, n):
     if not tup or not n:
@@ -13,11 +14,13 @@ def shift(tup, n):
     n %= len(tup)
     return tup[n:] + tup[:n]
 
+
 def indices(a, b, c, d):
     return (
         slice(a if a else None, b if b else None),
         slice(c if c else None, d if d else None)
     )
+
 
 class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("data", (np.array([1, 2, 3]), np.array([[1,2,3],[4,5,6],[7,8,9]])))
@@ -116,5 +119,5 @@ class TestPeriodicBoundaryCondition:
                         field.data[dim][shift(indices((halo - 1), -(halo - 1), -halo, None), dim)],
                         data[dim][shift(indices(None, None, None, halo), dim)]
                     )
-        else:
-            raise NotImplementedError()
+            else:
+                raise NotImplementedError()
