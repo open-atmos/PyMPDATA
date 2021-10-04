@@ -1,5 +1,4 @@
 import numba
-
 from .indexers import indexers
 from .meta import META_HALO_VALID
 from .enumerations import OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_START, RNG_STOP, INVALID_INDEX
