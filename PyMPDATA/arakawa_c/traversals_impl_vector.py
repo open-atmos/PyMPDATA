@@ -84,6 +84,80 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
     )
 
     @numba.njit(**jit_flags)
+    def outer_outer(span, comp, fun, first_thread, last_thread):
+        if first_thread:
+            for i in range(halos[OUTER][OUTER] - 1, -1, -1):  # note: non-reverse order assumed in Extrapolated
+                for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
+                        focus = (i, j, k)
+                        set(comp, i, j, k, fun((focus, comp), span[OUTER] + 1, SIGN_LEFT))
+        if last_thread:
+            for i in range(span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
+                           span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][
+                               OUTER]):  # note: non-reverse order assumed in Extrapolated
+                for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
+                        focus = (i, j, k)
+                        set(comp, i, j, k, fun((focus, comp), span[OUTER] + 1, SIGN_RIGHT))
+
+    @numba.njit(**jit_flags)
+    def inner_inner(span, comp, fun, last_thread, rng_outer):
+        for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
+            for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                for k in range(0, halos[INNER][INNER]):
+                    focus = (i, j, k)
+                    set(comp, i, j, k, fun((focus, comp), span[INNER] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT))
+                for k in range(span[INNER] + 1 + halos[INNER][INNER], span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
+                    focus = (i, j, k)
+                    set(comp, i, j, k, fun((focus, comp), span[INNER] + ONE_FOR_STAGGERED_GRID, SIGN_RIGHT))
+
+    @numba.njit(**jit_flags)
+    def outer_inner(span, comp, fun, rng_outer, last_thread):
+        for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + ((ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0)):
+            for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                for k in range(0, halos[OUTER][INNER]):
+                    focus = (i, j, k)
+                    set(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
+                for k in range(span[INNER] + halos[OUTER][INNER], span[INNER] + 2 * halos[OUTER][INNER]):
+                    focus = (i, j, k)
+                    set(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
+
+    @numba.njit(**jit_flags)
+    def inner_outer(span, comp, fun, first_thread, last_thread):
+        if first_thread:
+            for i in range(0, halos[INNER][OUTER]):
+                for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
+                        focus = (i, j, k)
+                        set(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT))
+        if last_thread:
+            for i in range(span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]):
+                for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
+                        focus = (i, j, k)
+                        set(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT))
+
+    @numba.njit(**jit_flags)
+    def inner_mid3d():
+        pass
+
+    @numba.njit(**jit_flags)
+    def outer_mid3d():
+        pass
+
+    @numba.njit(**jit_flags)
+    def mid3d_inner():
+        pass
+
+    @numba.njit(**jit_flags)
+    def mid3d_mid3d():
+        pass
+
+    @numba.njit(**jit_flags)
+    def mid3d_outer():
+        pass
+
+    @numba.njit(**jit_flags)
     def boundary_cond_vector(thread_id, meta, comp_outer, comp_mid3d, comp_inner, fun_outer, fun_mid3d, fun_inner):
         if meta[META_HALO_VALID]:
             return
@@ -91,56 +165,23 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
         span = spanner(meta)
         rng_outer = chunker(meta, thread_id)
         last_thread = rng_outer[RNG_STOP] == span[OUTER]
+        first_thread = thread_id == 0
 
+        inner_inner(span, comp_inner, fun_inner, last_thread, rng_outer)
         if n_dims > 1:
             if n_dims > 2:
-                pass  # TODO #96
+                inner_mid3d()
+            inner_outer(span, comp_inner, fun_outer, first_thread, last_thread)
 
-            if thread_id == 0:
-                for i in range(halos[OUTER][OUTER] - 1, -1, -1):  # note: non-reverse order assumed in Extrapolated
-                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                        for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
-                            focus = (i, j, k)
-                            set(comp_outer, i, j, k, fun_outer((focus, comp_outer), span[OUTER] + 1, SIGN_LEFT))
-            if last_thread:
-                for i in range(span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
-                               span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]):  # note: non-reverse order assumed in Extrapolated
-                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                        for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
-                            focus = (i, j, k)
-                            set(comp_outer, i, j, k, fun_outer((focus, comp_outer), span[OUTER] + 1, SIGN_RIGHT))
-
-        for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
-            for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                for k in range(0, halos[INNER][INNER]):
-                    focus = (i, j, k)
-                    set(comp_inner, i, j, k, fun_inner((focus, comp_inner), span[INNER] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT))
-                for k in range(span[INNER] + 1 + halos[INNER][INNER], span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
-                    focus = (i, j, k)
-                    set(comp_inner, i, j, k, fun_inner((focus, comp_inner), span[INNER] + ONE_FOR_STAGGERED_GRID, SIGN_RIGHT))
+        if n_dims > 2:
+            mid3d_inner()
+            mid3d_mid3d()
+            mid3d_outer()
 
         if n_dims > 1:
-            for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + ((ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0)):
-                for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                    for k in range(0, halos[OUTER][INNER]):
-                        focus = (i, j, k)
-                        set(comp_outer, i, j, k, fun_inner((focus, comp_outer), span[INNER], SIGN_LEFT))
-                    for k in range(span[INNER] + halos[OUTER][INNER], span[INNER] + 2 * halos[OUTER][INNER]):
-                        focus = (i, j, k)
-                        set(comp_outer, i, j, k, fun_inner((focus, comp_outer), span[INNER], SIGN_RIGHT))
-
-        if n_dims > 1:
-            if thread_id == 0:
-                for i in range(0, halos[INNER][OUTER]):
-                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                        for k in range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
-                            focus = (i, j, k)
-                            set(comp_inner, i, j, k, fun_outer((focus, comp_inner), span[OUTER], SIGN_LEFT))
-            if last_thread:
-                for i in range(span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]):
-                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                        for k in range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
-                            focus = (i, j, k)
-                            set(comp_inner, i, j, k, fun_outer((focus, comp_inner), span[OUTER], SIGN_RIGHT))
+            outer_inner(span, comp_outer, fun_inner, rng_outer, last_thread)
+            if n_dims > 2:
+                outer_mid3d()
+            outer_outer(span, comp_outer, fun_outer, first_thread, last_thread)
 
     return boundary_cond_vector
