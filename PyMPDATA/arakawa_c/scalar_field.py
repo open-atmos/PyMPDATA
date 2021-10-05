@@ -35,8 +35,10 @@ class ScalarField(Field):
         self.boundary_conditions = boundary_conditions
 
     @staticmethod
-    def clone(field):
-        return ScalarField(field.get(), field.halo, field.boundary_conditions)
+    def clone(field, dtype=None):
+        dtype = dtype or field.dtype
+        # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
+        return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)
 
     def get(self) -> np.ndarray:  # note: actually a view is returned
         results = self.data[self.domain]
