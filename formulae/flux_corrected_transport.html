@@ -65,6 +65,7 @@ def __make_psi_extremum(jit_flags, n_dims, at, extremum):
         def psi_extremum(_0, _1, psi, _3, _4):
             return extremum(at(*psi, 0, 0), at(*psi, -1, 0), at(*psi, 1, 0), at(*psi, 0, -1), at(*psi, 0, 1))
     elif n_dims == 3:
+        @numba.njit(**jit_flags)
         def psi_extremum(_0, _1, psi, _3, _4):
             return extremum(
                 at(*psi, 0, 0, 0),
