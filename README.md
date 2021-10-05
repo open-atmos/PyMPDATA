@@ -28,7 +28,7 @@ PyMPDATA is a high-performance **Numba-accelerated Pythonic implementation of th
   partial differential equations used to model conservation/balance laws, scalar-transport problems,
   convection-diffusion phenomena (in geophysical fluid dynamics and beyond).
 As of the current version, PyMPDATA supports homogeneous transport
-  in 1D, 2D and 3D (work in progress) using structured meshes, optionally
+  in 1D, 2D and 3D using structured meshes, optionally
   generalised by employment of a Jacobian of coordinate transformation. 
 PyMPDATA includes implementation of a set of MPDATA **variants including
   the non-oscillatory option, infinite-gauge, divergent-flow, double-pass donor cell (DPDC) and 
