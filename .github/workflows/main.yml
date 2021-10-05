@@ -39,4 +39,7 @@ jobs:
         run: pytest -p no:unraisableexception -We
 
       - if: matrix.platform != 'ubuntu-latest'
-        run: pytest -p no:unraisableexception -We
+        run: |
+          pytest -p no:unraisableexception -We tests/unit_tests
+          pytest -p no:unraisableexception -We tests/smoke_tests
+          pytest -p no:unraisableexception -We tests/devops_tests
