@@ -23,12 +23,6 @@ install:
       {
         $env:PYTHON="C:\Python38-x64\python"
       }
-  - ps: |
-      Set-Content -Path "requirements.txt" -Value (get-content -Path "requirements.txt" | Select-String -Pattern 'mpi4py' -NotMatch)
-      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
-
-      Remove-Item -Path PyMPDATA_tests/unit_tests/test_mpi.py
-      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
   - ps: |
       iex "$env:PYTHON -m pip install --upgrade pip"
