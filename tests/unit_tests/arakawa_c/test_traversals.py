@@ -1,6 +1,7 @@
 import pytest
 import numba
 import numpy as np
+from functools import lru_cache
 from PyMPDATA.arakawa_c.traversals import Traversals
 from PyMPDATA.arakawa_c.meta import META_HALO_VALID
 from PyMPDATA import Options, ScalarField, VectorField, ConstantBoundaryCondition
@@ -9,9 +10,16 @@ from PyMPDATA.arakawa_c.enumerations import (
     MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC,
     META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
 )
+
+# noinspection PyUnresolvedReferences
 from .n_threads_fixture import n_threads
 
 jit_flags = Options().jit_flags
+
+
+@lru_cache()
+def make_traversals(grid, halo, n_threads):
+    return Traversals(grid=grid, halo=halo, jit_flags=jit_flags, n_threads=n_threads)
 
 
 @numba.njit(**jit_flags)
@@ -56,7 +64,7 @@ class TestTraversals:
             return
 
         # arrange
-        traversals = Traversals(grid, halo, jit_flags, n_threads)
+        traversals = make_traversals(grid, halo, n_threads)
         sut = traversals.apply_scalar(loop=loop)
 
         scl_null_arg_impl = ScalarField.make_null(n_dims).impl
@@ -103,7 +111,7 @@ class TestTraversals:
             return
 
         # arrange
-        traversals = Traversals(grid, halo, jit_flags, n_threads)
+        traversals = make_traversals(grid, halo, n_threads)
         sut = traversals.apply_vector()
 
         scl_null_arg_impl = ScalarField.make_null(n_dims).impl
