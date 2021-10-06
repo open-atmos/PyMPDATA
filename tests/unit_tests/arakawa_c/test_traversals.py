@@ -32,13 +32,15 @@ def cell_id(i, j, k):
 
 
 @numba.njit(**jit_flags)
-def _cell_id_scalar(value, arg_1_vec, arg_2_scl, arg_3_scl, arg_4_scl):
+def _cell_id_scalar(value, arg_1_vec, arg_2_scl, arg_3_scl, arg_4_scl, arg_5_scl):
     focus = arg_1_vec[ARG_FOCUS]
     if focus != arg_2_scl[ARG_FOCUS]:
         raise Exception()
     if focus != arg_3_scl[ARG_FOCUS]:
         raise Exception()
     if focus != arg_4_scl[ARG_FOCUS]:
+        raise Exception()
+    if focus != arg_5_scl[ARG_FOCUS]:
         raise Exception()
     return value + cell_id(*focus)
 
@@ -78,6 +80,7 @@ class TestTraversals:
             _cell_id_scalar if loop else None,
             *out.impl[IMPL_META_AND_DATA],
             *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
+            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
             *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
