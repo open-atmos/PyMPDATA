@@ -133,7 +133,7 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
 
     benchmark.pedantic(solver.advance, (settings.nt,), setup=set_z, warmup_rounds=1, rounds=3)
 
-    if options.n_iters == 1 or options.flux_corrected_transport:
+    if options.n_iters == 1 or options.nonoscillatory:
         np.testing.assert_almost_equal(np.amin(solver.advectee.get()), h0)
     assert np.amax(solver.advectee.get()) < 10 * h
 
