@@ -50,7 +50,7 @@ class PostIterNull:
 class Solver:
     def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
                  g_factor: [ScalarField, None] = None):
-        scalar_field = lambda: ScalarField.clone(advectee)
+        scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
         null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims)
         vector_field = lambda: VectorField.clone(advector)
         null_vector_field = lambda: VectorField.make_null(advector.n_dims)
@@ -69,10 +69,8 @@ class Solver:
         self._vectmp_b = vector_field()
         self._vectmp_c = vector_field() if self.options.non_zero_mu_coeff else null_vector_field()
         fct = self.options.flux_corrected_transport
-        self.advectee_min = scalar_field() if fct else null_scalar_field()
-        self.advectee_max = scalar_field() if fct else null_scalar_field()
-        self.beta_up = scalar_field() if fct else null_scalar_field()
-        self.beta_down = scalar_field() if fct else null_scalar_field()
+        self.nonosc_xtrm = scalar_field(dtype=complex) if fct else null_scalar_field()
+        self.nonosc_beta = scalar_field(dtype=complex) if fct else null_scalar_field()
 
     def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff
@@ -88,10 +86,8 @@ class Solver:
                                               *self._vectmp_a.impl,
                                               *self._vectmp_b.impl,
                                               *self._vectmp_c.impl,
-                                              *self.advectee_min.impl,
-                                              *self.advectee_max.impl,
-                                              *self.beta_up.impl,
-                                              *self.beta_down.impl
+                                              *self.nonosc_xtrm.impl,
+                                              *self.nonosc_beta.impl
                                               )
         return wall_time_per_timestep</code></pre>
 </details>
@@ -135,7 +131,7 @@ def post_step_null(psi, t):
 <pre><code class="python">class Solver:
     def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
                  g_factor: [ScalarField, None] = None):
-        scalar_field = lambda: ScalarField.clone(advectee)
+        scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
         null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims)
         vector_field = lambda: VectorField.clone(advector)
         null_vector_field = lambda: VectorField.make_null(advector.n_dims)
@@ -154,10 +150,8 @@ def post_step_null(psi, t):
         self._vectmp_b = vector_field()
         self._vectmp_c = vector_field() if self.options.non_zero_mu_coeff else null_vector_field()
         fct = self.options.flux_corrected_transport
-        self.advectee_min = scalar_field() if fct else null_scalar_field()
-        self.advectee_max = scalar_field() if fct else null_scalar_field()
-        self.beta_up = scalar_field() if fct else null_scalar_field()
-        self.beta_down = scalar_field() if fct else null_scalar_field()
+        self.nonosc_xtrm = scalar_field(dtype=complex) if fct else null_scalar_field()
+        self.nonosc_beta = scalar_field(dtype=complex) if fct else null_scalar_field()
 
     def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff
@@ -173,10 +167,8 @@ def post_step_null(psi, t):
                                               *self._vectmp_a.impl,
                                               *self._vectmp_b.impl,
                                               *self._vectmp_c.impl,
-                                              *self.advectee_min.impl,
-                                              *self.advectee_max.impl,
-                                              *self.beta_up.impl,
-                                              *self.beta_down.impl
+                                              *self.nonosc_xtrm.impl,
+                                              *self.nonosc_beta.impl
                                               )
         return wall_time_per_timestep</code></pre>
 </details>
@@ -205,10 +197,8 @@ def post_step_null(psi, t):
                                           *self._vectmp_a.impl,
                                           *self._vectmp_b.impl,
                                           *self._vectmp_c.impl,
-                                          *self.advectee_min.impl,
-                                          *self.advectee_max.impl,
-                                          *self.beta_up.impl,
-                                          *self.beta_down.impl
+                                          *self.nonosc_xtrm.impl,
+                                          *self.nonosc_beta.impl
                                           )
     return wall_time_per_timestep</code></pre>
 </details>

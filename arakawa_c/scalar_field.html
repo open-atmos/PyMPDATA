@@ -63,8 +63,10 @@ class ScalarField(Field):
         self.boundary_conditions = boundary_conditions
 
     @staticmethod
-    def clone(field):
-        return ScalarField(field.get(), field.halo, field.boundary_conditions)
+    def clone(field, dtype=None):
+        dtype = dtype or field.dtype
+        # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
+        return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
         results = self.data[self.domain]
@@ -129,8 +131,10 @@ class ScalarField(Field):
         self.boundary_conditions = boundary_conditions
 
     @staticmethod
-    def clone(field):
-        return ScalarField(field.get(), field.halo, field.boundary_conditions)
+    def clone(field, dtype=None):
+        dtype = dtype or field.dtype
+        # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
+        return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
         results = self.data[self.domain]
@@ -154,7 +158,7 @@ class ScalarField(Field):
 <h3>Static methods</h3>
 <dl>
 <dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField.clone"><code class="name flex">
-<span>def <span class="ident">clone</span></span>(<span>field)</span>
+<span>def <span class="ident">clone</span></span>(<span>field, dtype=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -163,8 +167,10 @@ class ScalarField(Field):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def clone(field):
-    return ScalarField(field.get(), field.halo, field.boundary_conditions)</code></pre>
+def clone(field, dtype=None):
+    dtype = dtype or field.dtype
+    # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
+    return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField.make_null"><code class="name flex">
