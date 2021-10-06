@@ -1,5 +1,5 @@
-from PyMPDATA import ScalarField, VectorField, Periodic, Solver, Stepper
-from PyMPDATA.options import Options
+from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
+from PyMPDATA.boundary_conditions import Periodic
 import numpy as np
 import numba
 from matplotlib import pyplot
