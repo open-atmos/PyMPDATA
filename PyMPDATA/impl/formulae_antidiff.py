@@ -1,7 +1,7 @@
 import numba
 import numpy as np
-from ..arakawa_c.indexers import indexers
-from ..arakawa_c.enumerations import MAX_DIM_NUM
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
 def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):

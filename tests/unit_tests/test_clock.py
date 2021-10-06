@@ -1,5 +1,5 @@
 import numba
-from PyMPDATA.clock import clock
+from PyMPDATA.impl.clock import clock
 import time
 
 

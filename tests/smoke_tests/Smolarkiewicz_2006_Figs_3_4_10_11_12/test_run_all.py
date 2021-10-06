@@ -80,7 +80,7 @@ class TestSmolarkiewicz2006:
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig12(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Settings("rect"), Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True, dtype=dtype))
+        simulation = Simulation(Settings("rect"), Options(n_iters=2, infinite_gauge=True, nonoscillatory=True, dtype=dtype))
 
         # Act
         simulation.run()

@@ -3,16 +3,16 @@ import sys
 import warnings
 import numba
 from numba.core.errors import NumbaExperimentalFeatureWarning
-from .formulae.upwind import make_upwind
-from .formulae.flux import make_flux_first_pass, make_flux_subsequent
-from .formulae.laplacian import make_laplacian
-from .formulae.antidiff import make_antidiff
-from .formulae.flux_corrected_transport import make_psi_extrema, make_beta, make_correction
-from .arakawa_c.traversals import Traversals
-from .arakawa_c.meta import META_HALO_VALID
-from .arakawa_c.enumerations import INNER, MID3D, OUTER, ARG_DATA
+from .impl.formulae_upwind import make_upwind
+from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
+from .impl.formulae_laplacian import make_laplacian
+from .impl.formulae_antidiff import make_antidiff
+from .impl.formulae_nonoscillatory import make_psi_extrema, make_beta, make_correction
+from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA.impl.meta import META_HALO_VALID
+from PyMPDATA.impl.enumerations import INNER, MID3D, OUTER, ARG_DATA
 from .options import Options
-from .clock import clock
+from PyMPDATA.impl.clock import clock
 
 
 class Stepper:
@@ -81,7 +81,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     n_dims = len(grid)
     halo = options.n_halo
     non_zero_mu_coeff = options.non_zero_mu_coeff
-    flux_corrected_transport = options.flux_corrected_transport
+    nonoscillatory = options.nonoscillatory
 
     traversals = Traversals(grid, halo, options.jit_flags, n_threads=n_threads)
 
@@ -91,11 +91,9 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     antidiff = make_antidiff(non_unit_g_factor, options, traversals)
     antidiff_last_pass = make_antidiff(non_unit_g_factor, options, traversals, last_pass=True)
     laplacian = make_laplacian(non_unit_g_factor, options, traversals)
-    fct_psi_extrema = make_psi_extrema(options, traversals)
-    fct_beta = make_beta(non_unit_g_factor, options, traversals)
-    fct_correction = make_correction(options, traversals)
-
-    null_vecfield, null_vecfield_bc = traversals.null_vector_field.impl
+    nonoscillatory_psi_extrema = make_psi_extrema(options, traversals)
+    nonoscillatory_beta = make_beta(non_unit_g_factor, options, traversals)
+    nonoscillatory_correction = make_correction(options, traversals)
 
     @numba.njit(**options.jit_flags)
     def axpy(out_meta, out_outer, out_mid3d, out_inner, a,
@@ -128,10 +126,10 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 advector = vectmp_c
             for it in range(n_iters):
                 if it == 0:
-                    if flux_corrected_transport:
-                        fct_psi_extrema(psi_extrema, advectee, advectee_bc, null_vecfield, null_vecfield_bc)
+                    if nonoscillatory:
+                        nonoscillatory_psi_extrema(psi_extrema, advectee, advectee_bc)
                     if non_zero_mu_coeff:
-                        laplacian(advector, advectee, advectee_bc, null_vecfield_bc)
+                        laplacian(advector, advectee, advectee_bc)
                         axpy(*advector, mu_coeff, *advector, *advector_orig)
                     flux_first_pass(vectmp_a, advector, advectee, advectee_bc, vec_bc)
                     flux = vectmp_a
@@ -149,13 +147,23 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                         advector_nonoscilatory = vectmp_a
                         flux = vectmp_b
                     if it < n_iters - 1:
-                        antidiff(advector_nonoscilatory, advectee, advectee_bc, advector_oscilatory, vec_bc, g_factor, g_factor_bc)
+                        antidiff(advector_nonoscilatory,
+                                 advectee, advectee_bc,
+                                 advector_oscilatory, vec_bc,
+                                 g_factor, g_factor_bc)
                     else:
-                        antidiff_last_pass(advector_nonoscilatory, advectee, advectee_bc, advector_oscilatory, vec_bc, g_factor, g_factor_bc)
+                        antidiff_last_pass(advector_nonoscilatory,
+                                           advectee, advectee_bc,
+                                           advector_oscilatory, vec_bc,
+                                           g_factor, g_factor_bc)
                     flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
-                    if flux_corrected_transport:
-                        fct_beta(beta, flux, vec_bc, advectee, advectee_bc, psi_extrema, psi_extrema_bc, g_factor, g_factor_bc)
-                        fct_correction(advector_nonoscilatory, vec_bc, beta, beta_bc)
+                    if nonoscillatory:
+                        nonoscillatory_beta(beta,
+                                            flux, vec_bc,
+                                            advectee, advectee_bc,
+                                            psi_extrema, psi_extrema_bc,
+                                            g_factor, g_factor_bc)
+                        nonoscillatory_correction(advector_nonoscilatory, vec_bc, beta, beta_bc)
                         flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
                 post_iter.__call__(flux, g_factor, _, it)

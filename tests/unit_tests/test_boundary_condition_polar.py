@@ -1,7 +1,7 @@
-from PyMPDATA import ScalarField, VectorField, \
-    PolarBoundaryCondition, PeriodicBoundaryCondition
-from PyMPDATA.arakawa_c.traversals import Traversals
-from PyMPDATA.arakawa_c.enumerations import OUTER, INNER
+from PyMPDATA import ScalarField, VectorField
+from PyMPDATA.boundary_conditions import Polar, Periodic
+from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA.impl.enumerations import OUTER, INNER
 import numpy as np
 import numba
 import pytest
@@ -21,8 +21,8 @@ class TestPolarBoundaryCondition:
             ], dtype=float
         )
         bc = (
-            PeriodicBoundaryCondition(),
-            PolarBoundaryCondition(grid=data.shape, longitude_idx=OUTER, latitude_idx=INNER)
+            Periodic(),
+            Polar(grid=data.shape, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = ScalarField(data, halo, bc)
         meta_and_data, fill_halos = field.impl
@@ -64,8 +64,8 @@ class TestPolarBoundaryCondition:
             ], dtype=float)
         )
         bc = (
-            PeriodicBoundaryCondition(),
-            PolarBoundaryCondition(grid=grid, longitude_idx=OUTER, latitude_idx=INNER)
+            Periodic(),
+            Polar(grid=grid, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = VectorField(data, halo, bc)
         meta_and_data, fill_halos = field.impl

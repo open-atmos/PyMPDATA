@@ -8,7 +8,7 @@ class Options:
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
                  divergent_flow: bool = False,
-                 flux_corrected_transport: bool = False,
+                 nonoscillatory: bool = False,
                  third_order_terms: bool = False,
                  DPDC: bool = False,
                  epsilon: float = 1e-15,
@@ -17,12 +17,12 @@ class Options:
                  dtype: np.floating = np.float64
                  ):
         self._values = {'n_iters': n_iters, 'infinite_gauge': infinite_gauge, 'epsilon': epsilon,
-                        'divergent_flow': divergent_flow, 'flux_corrected_transport': flux_corrected_transport,
+                        'divergent_flow': divergent_flow, 'nonoscillatory': nonoscillatory,
                         'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff,
                         'dimensionally_split': dimensionally_split,
                         'dtype': dtype, 'DPDC': DPDC}
 
-        if (infinite_gauge or divergent_flow or flux_corrected_transport or third_order_terms or DPDC) and n_iters < 2:
+        if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters < 2:
             raise ValueError()
         if n_iters < 1:
             raise ValueError()
@@ -48,8 +48,8 @@ class Options:
         return self._values['divergent_flow']
 
     @property
-    def flux_corrected_transport(self):
-        return self._values['flux_corrected_transport']
+    def nonoscillatory(self):
+        return self._values['nonoscillatory']
 
     @property
     def third_order_terms(self):
@@ -79,7 +79,7 @@ class Options:
 
     @property
     def n_halo(self):
-        if self.divergent_flow or self.flux_corrected_transport or self.third_order_terms:
+        if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         else:
             return 1

@@ -1,14 +1,13 @@
 import numpy as np
 import numba
-from ..arakawa_c.indexers import indexers
-from ..arakawa_c.enumerations import MAX_DIM_NUM, INNER, OUTER, META_AND_DATA_META, META_AND_DATA_DATA
-# TODO #133: rename file
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM, INNER, OUTER, META_AND_DATA_META, META_AND_DATA_DATA
 
 
 def make_psi_extrema(options, traversals):
-    if not options.flux_corrected_transport:
+    if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
-        def apply(_psi_extrema, _psi, _psi_bc, _null_vecfield, _null_vecfield_bc):
+        def apply(_psi_extrema, _psi, _psi_bc):
             return
     else:
         idx = indexers[traversals.n_dims]
@@ -18,9 +17,10 @@ def make_psi_extrema(options, traversals):
         formulae = (__make_psi_extrema(options.jit_flags, traversals.n_dims, idx.at[at_idx]), None, None)
 
         null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
+        null_vecfield, null_vecfield_bc = traversals.null_vector_field.impl
 
         @numba.njit(**options.jit_flags)
-        def apply(psi_extrema, psi, psi_bc, null_vecfield, null_vecfield_bc):
+        def apply(psi_extrema, psi, psi_bc):
             return apply_scalar(*formulae,
                                 *psi_extrema,
                                 *null_vecfield, *null_vecfield_bc,
@@ -72,7 +72,7 @@ def __make_psi_extrema(jit_flags, n_dims, at):
 
 
 def make_beta(non_unit_g_factor, options, traversals):
-    if not options.flux_corrected_transport:
+    if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
         def apply(_beta, _flux, _flux_bc, _psi, _psi_bc, _psi_extrema, _psi_extrema_bc,
                   _g_factor, _g_factor_bc):
@@ -180,7 +180,7 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon):
 
 
 def make_correction(options, traversals):
-    if not options.flux_corrected_transport:
+    if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
         def apply(_GC_corr, _vec_bc, _beta, _beta_bc):
             return

@@ -32,7 +32,7 @@ def data():
 @pytest.mark.parametrize("flux_corrected_transport", [False, True])
 def test_init(grid_layout, psi_coord, flux_corrected_transport):
     # Arrange
-    opts = Options(flux_corrected_transport=flux_corrected_transport)
+    opts = Options(nonoscillatory=flux_corrected_transport)
 
     # Act
     simulation = Simulation(settings, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)

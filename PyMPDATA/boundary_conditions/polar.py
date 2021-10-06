@@ -1,8 +1,8 @@
 import numba
-from ..enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
+from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 
 
-class PolarBoundaryCondition:
+class Polar:
     def __init__(self, grid, longitude_idx, latitude_idx):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1

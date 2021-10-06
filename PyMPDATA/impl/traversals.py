@@ -1,9 +1,9 @@
 from .grid import make_chunk, make_domain
-from .traversals_impl_scalar import _make_apply_scalar, _make_fill_halos_scalar
-from .traversals_impl_vector import _make_apply_vector, _make_fill_halos_vector
+from .traversals_scalar import _make_apply_scalar, _make_fill_halos_scalar
+from .traversals_vector import _make_apply_vector, _make_fill_halos_vector
 from .enumerations import INNER, MID3D, OUTER
-from .scalar_field import ScalarField
-from .vector_field import VectorField
+from PyMPDATA.scalar_field import ScalarField
+from PyMPDATA.vector_field import VectorField
 
 
 class Traversals:

@@ -1,5 +1,5 @@
 from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings import Settings, h, h0
-from PyMPDATA.arakawa_c.discretisation import from_pdf_2d
+from PyMPDATA.impl.discretisation import from_pdf_2d
 from matplotlib import pyplot
 
 

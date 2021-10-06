@@ -1,4 +1,4 @@
-from PyMPDATA import ScalarField, VectorField, PeriodicBoundaryCondition, Solver, Stepper
+from PyMPDATA import ScalarField, VectorField, Periodic, Solver, Stepper
 from PyMPDATA.options import Options
 import numpy as np
 import numba
@@ -89,9 +89,9 @@ except numba.core.errors.UnsupportedParforsError:
     Options(n_iters=1),
     Options(n_iters=2),
     Options(n_iters=3, infinite_gauge=True),
-    Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),
+    Options(n_iters=2, infinite_gauge=True, nonoscillatory=True),
     Options(n_iters=3, infinite_gauge=False, third_order_terms=True),
-    Options(n_iters=3, infinite_gauge=True, third_order_terms=True, flux_corrected_transport=True),
+    Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
@@ -119,9 +119,9 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
         np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
     ]
     advector = VectorField(advector_data, halo=options.n_halo,
-                     boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                           boundary_conditions=(Periodic(), Periodic()))
     advectee = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
-                        boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                           boundary_conditions=(Periodic(), Periodic()))
     if grid_static:
         stepper = Stepper(options=options, grid=grid)
     else:

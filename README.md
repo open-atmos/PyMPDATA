@@ -23,51 +23,63 @@
 [![PyPI version](https://badge.fury.io/py/PyMPDATA.svg)](https://pypi.org/project/PyMPDATA)
 [![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://atmos-cloud-sim-uj.github.io/PyMPDATA/)
 
-PyMPDATA is a high-performance **Numba-accelerated Pythonic implementation of the MPDATA 
-  algorithm of Smolarkiewicz et al.** for numerically solving generalised transport equations -
+PyMPDATA is a high-performance Numba-accelerated Pythonic implementation of the MPDATA 
+  algorithm of Smolarkiewicz et al. used in geophysical fluid dynamics and beyond.
+MPDATA numerically solves generalised transport equations -
   partial differential equations used to model conservation/balance laws, scalar-transport problems,
-  convection-diffusion phenomena (in geophysical fluid dynamics and beyond).
+  convection-diffusion phenomena.
 As of the current version, PyMPDATA supports homogeneous transport
   in 1D, 2D and 3D using structured meshes, optionally
   generalised by employment of a Jacobian of coordinate transformation. 
-PyMPDATA includes implementation of a set of MPDATA **variants including
+PyMPDATA includes implementation of a set of MPDATA variants including
   the non-oscillatory option, infinite-gauge, divergent-flow, double-pass donor cell (DPDC) and 
-  third-order-terms options**. 
+  third-order-terms options.
 It also features support for integration of Fickian-terms in advection-diffusion
   problems using the pseudo-transport velocity approach.
 In 2D and 3D simulations, domain-decomposition is used for multi-threaded parallelism.
 
 PyMPDATA is engineered purely in Python targeting both performance and usability,
     the latter encompassing research users', developers' and maintainers' perspectives.
-From researcher's perspective, PyMPDATA offers **hassle-free installation on multitude
-  of platforms including Linux, OSX and Windows**, and eliminates compilation stage
+From researcher's perspective, PyMPDATA offers hassle-free installation on multitude
+  of platforms including Linux, OSX and Windows, and eliminates compilation stage
   from the perspective of the user.
 From developers' and maintainers' perspective, PyMPDATA offers a suite of unit tests, 
   multi-platform continuous integration setup,
   seamless integration with Python development aids including debuggers and profilers.
 
 PyMPDATA design features
-  a **custom-built multi-dimensional Arakawa-C grid layer** allowing
-  to concisely represent multi-dimensional stencil operations.
+  a custom-built multi-dimensional Arakawa-C grid layer allowing
+  to concisely represent multi-dimensional stencil operations on both
+  scalar and vector fields.
 The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
-  using Numba's @njit functionality for high-performance array traversals.
+  using the Numba's ```@njit``` functionality for high-performance array traversals.
 It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
+Numba ``prange()`` functionality is used for implementing multi-threading 
+  (it offers analogous functionality to OpenMP parallel loop execution directives).
+A separate project called [``numba-mpi``](pypi.org/project/numba-mpi) 
+  has been developed with the intention to 
+  set the stage for future MPI distributed memory parallelism in PyMPDATA.
 
-PyMPDATA ships with a set of **examples/demos offered as github-hosted Jupyer notebooks
-  offering single-click deployment in the cloud using [mybinder.org](https://mybinder.org)**
+The [``PyMPDATA-examples``](https://pypi.org/project/PyMPDATA-examples/) 
+  package covers a set of examples presented in the form of Jupyer notebooks
+  offering single-click deployment in the cloud using [mybinder.org](https://mybinder.org)
   or using [colab.research.google.com](https://colab.research.google.com/).
-The examples/demos reproduce results from several published
+The examples reproduce results from several published
   works on MPDATA and its applications, and provide a validation of the implementation
   and its performance.
  
 ## Dependencies and installation
 
-To install PyMPDATA, one may use: ``pip install PyMPDAT`` (or 
+To install PyMPDATA, one may use: ``pip install PyMPDATA`` (or 
 ``pip install git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git`` to get updates beyond the latest release).
+PyMPDATA depends on ``NumPy`` and ``Numba``.
 
-PyMPDATA depends on ``NumPy``, ``Numba`` and ``SciPy`` which are all listed as project dependencies 
-within the project's [setup.py](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/setup.py) file.
+Running the tests shipped with the package requires additional packages listed in the 
+[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file
+(which include ``PyMPDATA-examples``, see below).
+
+## Examples (Jupyter notebooks reproducing results from literature):
 
 PyMPDATA examples are hosted in a separate repository and constitute 
 the [``PyMPDATA_examples``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples) package.
@@ -81,15 +93,6 @@ pip install -e .
 jupyter-notebook
 ```
 Alternatively, one can also install the examples package from pypi.org by using ``pip install PyMPDATA-examples``.
-
-Running the tests shipped with the package requires additional packages listed in the 
-[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file
-(which include ``PyMPDATA-examples``).
-
-
-## Examples (Jupyter notebooks reproducing results from literature):
-
-Examples are maintained at the `PyMPDATA-examples` repository, see [PyMPDATA-examples README.md](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/README.md) file for details.
   
 ## Package structure and API:
 
@@ -115,7 +118,7 @@ of instantiation using the following keyword arguments of the constructor
 - ``n_iters: int = 2``: number of iterations (2 means upwind + one corrective iteration)
 - ``infinite_gauge: bool = False``: flag enabling the infinite-gauge option (does not maintain sign of the advected field, thus in practice implies switching flux corrected transport on)
 - ``divergent_flow: bool = False``: flag enabling divergent-flow terms when calculating antidiffusive velocity
-- ``flux_corrected_transport: bool = False``: flag enabling flux-corrected transport (FCT) logic (a.k.a. non-oscillatory or monotone variant)
+- ``nonoscillatory: bool = False``: flag enabling the non-oscillatory or monotone variant (a.k.a flux-corrected transport option, FCT)
 - ``third_order_terms: bool = False``: flag enabling third-order terms
 - ``epsilon: float = 1e-15``: value added to potentially zero-valued denominators 
 - ``non_zero_mu_coeff: bool = False``: flag indicating if code for handling the Fickian term is to be optimised out
@@ -138,7 +141,7 @@ using Pkg
 Pkg.add("PyCall")
 using PyCall
 Options = pyimport("PyMPDATA").Options
-options = Options(n_iters=3, infinite_gauge=true, flux_corrected_transport=true)
+options = Options(n_iters=3, infinite_gauge=true, nonoscillatory=true)
 ```
 </details>
 <details>
@@ -149,7 +152,7 @@ Options = py.importlib.import_module('PyMPDATA').Options;
 options = Options(pyargs(...
   'n_iters', 3, ...
   'infinite_gauge', true, ...
-  'flux_corrected_transport', true ...
+  'nonoscillatory', true ...
 ));
 ```
 </details>
@@ -158,29 +161,29 @@ options = Options(pyargs(...
 
 ```python
 from PyMPDATA import Options
-options = Options(n_iters=3, infinite_gauge=True, flux_corrected_transport=True)
+options = Options(n_iters=3, infinite_gauge=True, nonoscillatory=True)
 ```
 </details>
 
 #### Arakawa-C grid layer and boundary conditions
 
-The [``arakawa_c``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/index.html) subpackage contains modules implementing the
-[Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) 
+The [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
+and [``VectorField`](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html) classes implementing the
+[Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) logic
 in which:
 - scalar fields are discretised onto cell-center points,
 - vector fields are discretised onto cell-boundary points.
-
 In PyMPDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus
 first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
 
-From the user perspective, the two key classes with their init methods are:
-- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/arakawa_c/scalar_field.py)
-- [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/arakawa_c/vector_field.py)
-
+The init methods have the following signatures:
+- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/scalar_field.py)
+- [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/vector_field.py)
 The ``data`` parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
 The ``halo`` parameter is the extent of ghost-cell region that will surround the
-data and will be used to implement boundary conditions. Its value (in practice 1 or 2) is
+data and will be used to implement boundary conditions. 
+Its value (in practice 1 or 2) is
 dependent on maximal stencil extent for the MPDATA variant used and
 can be easily obtained using the ``Options.n_halo`` property.
 
@@ -193,19 +196,19 @@ using a grid of 100x100 points and cyclic boundary conditions (with all values s
 ```Julia
 ScalarField = pyimport("PyMPDATA").ScalarField
 VectorField = pyimport("PyMPDATA").VectorField
-PeriodicBoundaryCondition = pyimport("PyMPDATA").PeriodicBoundaryCondition
+Periodic = pyimport("PyMPDATA.boundary_conditions").Periodic
 
 nx, ny = 100, 100
 halo = options.n_halo
 advectee = ScalarField(
     data=zeros((nx, ny)), 
     halo=halo, 
-    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+    boundary_conditions=(Periodic(), Periodic())
 )
 advector = VectorField(
     data=(zeros((nx+1, ny)), zeros((nx, ny+1))),
     halo=halo,
-    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())    
+    boundary_conditions=(Periodic(), Periodic())    
 )
 ```
 </details>
@@ -215,7 +218,7 @@ advector = VectorField(
 ```Matlab
 ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
 VectorField = py.importlib.import_module('PyMPDATA').VectorField;
-PeriodicBoundaryCondition = py.importlib.import_module('PyMPDATA').PeriodicBoundaryCondition;
+Periodic = py.importlib.import_module('PyMPDATA.boundary_conditions').Periodic;
 
 nx = int32(100);
 ny = int32(100);
@@ -223,7 +226,7 @@ halo = options.n_halo;
 advectee = ScalarField(pyargs(...
     'data', py.numpy.zeros(int32([nx ny])), ... 
     'halo', halo, ...
-    'boundary_conditions', py.tuple({PeriodicBoundaryCondition(), PeriodicBoundaryCondition()}) ...
+    'boundary_conditions', py.tuple({Periodic(), Periodic()}) ...
 ));
 advector = VectorField(pyargs(...
     'data', py.tuple({py.numpy.zeros(int32([nx+1 ny])), py.numpy.zeros(int32([nx ny+1]))}), ...
@@ -238,20 +241,20 @@ advector = VectorField(pyargs(...
 ```python
 from PyMPDATA import ScalarField
 from PyMPDATA import VectorField
-from PyMPDATA import PeriodicBoundaryCondition
+from PyMPDATA.boundary_conditions import Periodic
 import numpy as np
 
 nx, ny = 100, 100
 halo = options.n_halo
 advectee = ScalarField(
-    data=np.zeros((nx, ny)), 
-    halo=halo, 
-    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+  data=np.zeros((nx, ny)),
+  halo=halo,
+  boundary_conditions=(Periodic(), Periodic())
 )
 advector = VectorField(
-    data=(np.zeros((nx+1, ny)), np.zeros((nx, ny+1))),
-    halo=halo,
-    boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition())    
+  data=(np.zeros((nx + 1, ny)), np.zeros((nx, ny + 1))),
+  halo=halo,
+  boundary_conditions=(Periodic(), Periodic())
 )
 ```
 </details>
@@ -260,11 +263,12 @@ Note that the shapes of arrays representing components
 of the velocity field are different than the shape of
 the scalar field array due to employment of the staggered grid.
 
-Besides the exemplified [``PeriodicBoundaryCondition``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/periodic_boundary_condition.html) class representing 
+Besides the exemplified [``Periodic``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/periodic.html) class representing 
 periodic boundary conditions, PyMPDATA supports 
-[``ExtrapolatedBoundaryCondition``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/extrapolated_boundary_condition.html), 
-[``ConstantBoundaryCondition``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/constant_boundary_condition.html) and
-[``PolarBoundaryCondition``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/polar_boundary_condition.html).
+[``Extrapolated``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/extrapolated.html), 
+[``Constant``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/constant.html) and
+[``Polar``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/polar_boundary_condition.html) 
+boundary conditions.
 
 #### Stepper
 
@@ -337,7 +341,7 @@ will take longer, yet same instance of the
 stepper can be used for different grids.  
 
 Since creating an instance of the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) class
-involves time consuming compilation of the algorithm code,
+involves time-consuming compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
 instantiated objects. Instances of [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) contain no
@@ -466,7 +470,7 @@ Please use the PyMPDATA issue-tracking and dicsussion infrastructure for `PyMPDA
 We look forward to your contributions and feedback.
 
 ## Credits:
-Development of PyMPDATA is supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
+Development of PyMPDATA was supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
 
 copyright: Jagiellonian University   
 licence: GPL v3   
@@ -483,6 +487,12 @@ licence: GPL v3
 - AtmosFOAM:
   https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
 
-## Other Python packages for hyperbolic transport equations
+## Other Python packages for solving hyperbolic transport equations
 
-...
+- PyPDE: https://pypi.org/project/PyPDE/
+- FiPy: https://pypi.org/project/FiPy/
+- ader: https://pypi.org/project/ader/
+- centpy: https://pypi.org/project/centpy/
+- mattflow: https://pypi.org/project/mattflow/
+- FastFD: https://pypi.org/project/FastFD/
+- Pyclaw: https://www.clawpack.org/pyclaw/

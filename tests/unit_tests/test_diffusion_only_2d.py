@@ -1,5 +1,6 @@
-from PyMPDATA import ScalarField, VectorField, PeriodicBoundaryCondition, Options, Solver, Stepper
 import numpy as np
+from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
+from PyMPDATA.boundary_conditions import Periodic
 
 
 def test_diffusion_only_2d(
@@ -9,7 +10,7 @@ def test_diffusion_only_2d(
 ):
     # Arrange
     options = Options(non_zero_mu_coeff=True)
-    bc = [PeriodicBoundaryCondition()] * 2
+    bc = [Periodic()] * 2
     advectee = ScalarField(data0, options.n_halo, bc)
     advector = VectorField(
         data=(

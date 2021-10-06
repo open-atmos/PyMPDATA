@@ -8,9 +8,8 @@ from pkg_resources import get_distribution, DistributionNotFound, VersionConflic
 from .options import Options
 from .solver import Solver
 from .stepper import Stepper
-from .arakawa_c.scalar_field import ScalarField
-from .arakawa_c.vector_field import VectorField
-from .arakawa_c.boundary_condition import *
+from PyMPDATA.scalar_field import ScalarField
+from PyMPDATA.vector_field import VectorField
 
 try:
     __version__ = get_distribution(__name__).version

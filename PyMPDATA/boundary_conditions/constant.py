@@ -12,7 +12,7 @@ def _make_scalar(value, at, halo):
     return fill_halos
 
 
-class ConstantBoundaryCondition:
+class Constant:
     def __init__(self, value):
         self._value = value
 
@@ -20,4 +20,4 @@ class ConstantBoundaryCondition:
         return _make_scalar(self._value, _at, _halo)
 
     def make_vector(self, at):
-        return ConstantBoundaryCondition(self._value).make_scalar(at, 0)
+        return Constant(self._value).make_scalar(at, 0)

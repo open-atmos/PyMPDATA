@@ -2,17 +2,18 @@ import pytest
 import numba
 import numpy as np
 from functools import lru_cache
-from PyMPDATA.arakawa_c.traversals import Traversals
-from PyMPDATA.arakawa_c.meta import META_HALO_VALID
-from PyMPDATA import Options, ScalarField, VectorField, ConstantBoundaryCondition
-from PyMPDATA.arakawa_c.indexers import indexers
-from PyMPDATA.arakawa_c.enumerations import (
+from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA.impl.meta import META_HALO_VALID
+from PyMPDATA import Options, ScalarField, VectorField
+from PyMPDATA.boundary_conditions import Constant
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import (
     MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC,
     META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
 )
 
 # noinspection PyUnresolvedReferences
-from .n_threads_fixture import n_threads
+from tests.unit_tests.fixtures.n_threads import n_threads
 
 jit_flags = Options().jit_flags
 
@@ -72,7 +73,7 @@ class TestTraversals:
         scl_null_arg_impl = ScalarField.make_null(n_dims).impl
         vec_null_arg_impl = VectorField.make_null(n_dims).impl
 
-        out = ScalarField(np.zeros(grid), halo, [ConstantBoundaryCondition(np.nan)]*n_dims)
+        out = ScalarField(np.zeros(grid), halo, [Constant(np.nan)] * n_dims)
 
         # act
         sut(_cell_id_scalar,
@@ -136,7 +137,7 @@ class TestTraversals:
         else:
             raise NotImplementedError()
 
-        out = VectorField(data, halo, [ConstantBoundaryCondition(np.nan)] * n_dims)
+        out = VectorField(data, halo, [Constant(np.nan)] * n_dims)
 
         # act
         sut(*[_cell_id_vector] * MAX_DIM_NUM,

@@ -14,8 +14,8 @@ import numpy as np
     Options(n_iters=2, infinite_gauge=True),
     Options(n_iters=3, infinite_gauge=True),
 
-    Options(n_iters=2, flux_corrected_transport=True),
-    Options(n_iters=3, flux_corrected_transport=True),
+    Options(n_iters=2, nonoscillatory=True),
+    Options(n_iters=3, nonoscillatory=True),
 
     Options(n_iters=2, divergent_flow=True),
     Options(n_iters=3, divergent_flow=True),

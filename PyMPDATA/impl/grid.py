@@ -1,7 +1,7 @@
 import numba
 
-from ..arakawa_c.domain_decomposition import subdomain
-from ..arakawa_c.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
+from PyMPDATA.impl.domain_decomposition import subdomain
+from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
 
 
 def make_chunk(n, n_threads):

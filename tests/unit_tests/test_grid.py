@@ -1,6 +1,6 @@
-from PyMPDATA.arakawa_c.grid import make_domain, make_chunk
-from PyMPDATA.arakawa_c.meta import META_N_OUTER, META_N_MID3D, META_N_INNER, META_SIZE
-from PyMPDATA.arakawa_c.domain_decomposition import subdomain
+from PyMPDATA.impl.grid import make_domain, make_chunk
+from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER, META_SIZE
+from PyMPDATA.impl.domain_decomposition import subdomain
 import pytest
 
 meta = [None] * META_SIZE

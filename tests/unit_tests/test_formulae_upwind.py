@@ -1,6 +1,7 @@
-from PyMPDATA.formulae.upwind import make_upwind
-from PyMPDATA.arakawa_c.traversals import Traversals
-from PyMPDATA import Options, ScalarField, VectorField, PeriodicBoundaryCondition
+from PyMPDATA.impl.formulae_upwind import make_upwind
+from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA import Options, ScalarField, VectorField
+from PyMPDATA.boundary_conditions import Periodic
 from numba.core.errors import NumbaExperimentalFeatureWarning
 import numpy as np
 import warnings
@@ -17,7 +18,7 @@ class TestUpwind:
         traversals = Traversals(grid=psi_data.shape, halo=halo, jit_flags={}, n_threads=1)
         upwind = make_upwind(options=options, non_unit_g_factor=False, traversals=traversals)
 
-        bc = [PeriodicBoundaryCondition()]
+        bc = [Periodic()]
         psi = ScalarField(psi_data, halo, bc)
         psi_impl = psi.impl
         flux_impl = VectorField((flux_data,), halo, bc).impl

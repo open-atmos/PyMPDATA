@@ -1,8 +1,6 @@
 import numba
-from .arakawa_c.scalar_field import ScalarField
-from .arakawa_c.vector_field import VectorField
-from .stepper import Stepper
-from .arakawa_c.meta import META_IS_NULL
+from PyMPDATA import ScalarField, VectorField, Stepper
+from PyMPDATA.impl.meta import META_IS_NULL
 
 
 @numba.njit()
@@ -40,9 +38,8 @@ class Solver:
         self._vectmp_a = vector_field()
         self._vectmp_b = vector_field()
         self._vectmp_c = vector_field() if self.options.non_zero_mu_coeff else null_vector_field()
-        fct = self.options.flux_corrected_transport
-        self.nonosc_xtrm = scalar_field(dtype=complex) if fct else null_scalar_field()
-        self.nonosc_beta = scalar_field(dtype=complex) if fct else null_scalar_field()
+        self.nonosc_xtrm = scalar_field(dtype=complex) if self.options.nonoscillatory else null_scalar_field()
+        self.nonosc_beta = scalar_field(dtype=complex) if self.options.nonoscillatory else null_scalar_field()
 
     def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff

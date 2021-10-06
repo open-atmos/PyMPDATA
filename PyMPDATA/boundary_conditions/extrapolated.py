@@ -1,6 +1,6 @@
 from functools import lru_cache
 import numba
-from ..enumerations import ARG_FOCUS, INNER, SIGN_LEFT
+from PyMPDATA.impl.enumerations import ARG_FOCUS, INNER, SIGN_LEFT
 
 
 @lru_cache()
@@ -29,7 +29,7 @@ def _make_vector(dim, at):
     return fill_halos
 
 
-class ExtrapolatedBoundaryCondition:
+class Extrapolated:
     def __init__(self, dim=INNER, eps=1e-10):
         self._eps = eps
         self.dim = dim

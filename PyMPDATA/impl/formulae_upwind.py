@@ -1,6 +1,6 @@
 import numba
-from ..arakawa_c.enumerations import MAX_DIM_NUM
-from ..arakawa_c.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM
+from PyMPDATA.impl.indexers import indexers
 
 
 def make_upwind(options, non_unit_g_factor, traversals):
