@@ -3,9 +3,8 @@ import numba
 
 
 @lru_cache()
-def _make_scalar(value, at, halo):
-
-    @numba.njit()
+def _make_scalar(value, at, halo, jit_flags):
+    @numba.njit(**jit_flags)
     def fill_halos(_, __, ___):
         return value
 
@@ -14,10 +13,10 @@ def _make_scalar(value, at, halo):
 
 class Constant:
     def __init__(self, value):
-        self._value = value
+        self.value = value
 
-    def make_scalar(self, _at, _halo, _dtype):
-        return _make_scalar(self._value, _at, _halo)
+    def make_scalar(self, at, halo, dtype, jit_flags):
+        return _make_scalar(self.value, at, halo, jit_flags)
 
-    def make_vector(self, at, dtype):
-        return Constant(self._value).make_scalar(at, 0, dtype)
+    def make_vector(self, at, dtype, jit_flags):
+        return Constant(self.value).make_scalar(at, 0, dtype, jit_flags)

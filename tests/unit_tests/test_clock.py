@@ -1,7 +1,9 @@
-import numba
-from PyMPDATA.impl.clock import clock
 import time
+import numba
+from PyMPDATA.options import Options
+from PyMPDATA.impl.clock import clock
 
+jit_flags = Options().jit_flags
 
 class TestClock:
     @staticmethod
@@ -10,14 +12,14 @@ class TestClock:
 
     @staticmethod
     def test_clock_numba_jit():
-        @numba.jit()
+        @numba.jit(**jit_flags)
         def test():
             clock()
         test()
 
     @staticmethod
     def test_clock_numba_njit():
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def test():
             clock()
         test()

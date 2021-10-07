@@ -1,11 +1,13 @@
-from PyMPDATA import ScalarField, VectorField
-from PyMPDATA.boundary_conditions import Polar, Periodic
-from PyMPDATA.impl.traversals import Traversals
-from PyMPDATA.impl.enumerations import OUTER, INNER
 import numpy as np
 import numba
 import pytest
+from PyMPDATA import ScalarField, VectorField, Options
+from PyMPDATA.boundary_conditions import Polar, Periodic
+from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA.impl.enumerations import OUTER, INNER
 
+
+JIT_FLAGS = Options().jit_flags
 
 class TestPolarBoundaryCondition:
     @pytest.mark.parametrize("halo", (1, ))
@@ -25,8 +27,9 @@ class TestPolarBoundaryCondition:
             Polar(grid=data.shape, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = ScalarField(data, halo, bc)
+        traversals = Traversals(grid=data.shape, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
+        field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        traversals = Traversals(grid=data.shape, halo=halo, jit_flags={}, n_threads=n_threads)
         sut = traversals._fill_halos_scalar
 
         # act
@@ -68,8 +71,9 @@ class TestPolarBoundaryCondition:
             Polar(grid=grid, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = VectorField(data, halo, bc)
+        traversals = Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
+        field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        traversals = Traversals(grid=grid, halo=halo, jit_flags={}, n_threads=n_threads)
         sut = traversals._fill_halos_vector
 
         # act

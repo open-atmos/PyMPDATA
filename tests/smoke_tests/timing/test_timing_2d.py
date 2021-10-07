@@ -51,7 +51,6 @@ class Settings:
         return grid
 
     @staticmethod
-    @numba.njit()
     def pdf(x, y):
         tmp = (x-x0)**2 + (y-y0)**2
         return h0 + np.where(

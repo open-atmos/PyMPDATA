@@ -5,8 +5,8 @@ from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 
 @lru_cache()
-def _make_scalar(dim, eps, at, halo, dtype):
-    @numba.njit()
+def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
+    @numba.njit(**jit_flags)
     def impl(psi, n, sign):
         if sign == SIGN_LEFT:
             edg = halo - psi[ARG_FOCUS][dim]
@@ -21,14 +21,14 @@ def _make_scalar(dim, eps, at, halo, dtype):
         return max(at(*psi, -1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
 
     if dtype == complex:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, n, sign):
             return complex(
                 impl((psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].real), n, sign),
                 impl((psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].imag), n, sign)
             )
     else:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, n, sign):
             return impl(psi, n, sign)
 
@@ -36,8 +36,8 @@ def _make_scalar(dim, eps, at, halo, dtype):
 
 
 @lru_cache()
-def _make_vector(dim, at, dtype):
-    @numba.njit()
+def _make_vector(dim, at, dtype, jit_flags):
+    @numba.njit(**jit_flags)
     def fill_halos(psi, _, sign):
         return at(*psi, sign)
     return fill_halos
@@ -48,8 +48,8 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at, halo, dtype):
-        return _make_scalar(self.dim, self._eps, at, halo, dtype)
+    def make_scalar(self, at, halo, dtype, jit_flags):
+        return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
 
-    def make_vector(self, at, dtype):
-        return _make_vector(self.dim, at, dtype)
+    def make_vector(self, at, dtype, jit_flags):
+        return _make_vector(self.dim, at, dtype, jit_flags)

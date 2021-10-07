@@ -1,6 +1,5 @@
 import numpy as np
 import numba
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM, INNER, OUTER, META_AND_DATA_META, META_AND_DATA_DATA
 
 
@@ -10,7 +9,7 @@ def make_psi_extrema(options, traversals):
         def apply(_psi_extrema, _psi, _psi_bc):
             return
     else:
-        idx = indexers[traversals.n_dims]
+        idx = traversals.indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
 
         at_idx = INNER if traversals.n_dims == 1 else OUTER
@@ -78,7 +77,7 @@ def make_beta(non_unit_g_factor, options, traversals):
                   _g_factor, _g_factor_bc):
             return
     else:
-        idx = indexers[traversals.n_dims]
+        idx = traversals.indexers[traversals.n_dims]
         apply_scalar = traversals.apply_scalar(loop=False)
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
@@ -185,7 +184,7 @@ def make_correction(options, traversals):
         def apply(_GC_corr, _vec_bc, _beta, _beta_bc):
             return
     else:
-        idx = indexers[traversals.n_dims]
+        idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
         formulae = tuple([

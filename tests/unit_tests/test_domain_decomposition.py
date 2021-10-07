@@ -1,6 +1,9 @@
-from PyMPDATA.impl.domain_decomposition import subdomain
 import pytest
+from PyMPDATA import Options
+from PyMPDATA.impl.domain_decomposition import make_subdomain
 
+
+JIT_FLAGS = Options().jit_flags
 
 @pytest.mark.parametrize("n, rank, size, range", [
     (10, 0, 1, (0, 10)),
@@ -12,4 +15,5 @@ import pytest
     (10, 9, 11, (9, 10))
 ])
 def test_subdomain(n, rank, size, range):
+    subdomain = make_subdomain(JIT_FLAGS)
     assert subdomain(n, rank, size) == range

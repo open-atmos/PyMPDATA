@@ -1,6 +1,5 @@
 import numba
 import numpy as np
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
@@ -10,7 +9,7 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
         def apply(_1, _2, _3, _4, _5, _6, _7):
             return
     else:
-        idx = indexers[traversals.n_dims]
+        idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
         formulae_antidiff = tuple([

@@ -1,5 +1,4 @@
 import numba
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 from PyMPDATA.impl.traversals import Traversals
 from ..options import Options
@@ -11,7 +10,7 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         def apply(_1, _2, _3):
             return
     else:
-        idx = indexers[traversals.n_dims]
+        idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
         formulae_laplacian = tuple([

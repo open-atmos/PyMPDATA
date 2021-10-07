@@ -15,14 +15,20 @@ class TestUpwind:
 
         options = Options()
         halo = options.n_halo
-        traversals = Traversals(grid=psi_data.shape, halo=halo, jit_flags={}, n_threads=1)
+        traversals = Traversals(grid=psi_data.shape, halo=halo, jit_flags=options.jit_flags, n_threads=1)
         upwind = make_upwind(options=options, non_unit_g_factor=False, traversals=traversals)
 
         bc = [Periodic()]
+
         psi = ScalarField(psi_data, halo, bc)
+        psi.assemble(traversals)
         psi_impl = psi.impl
-        flux_impl = VectorField((flux_data,), halo, bc).impl
-        null_impl = ScalarField.make_null(len(psi_data.shape)).impl
+
+        flux = VectorField((flux_data,), halo, bc)
+        flux.assemble(traversals)
+        flux_impl = flux.impl
+
+        null_impl = ScalarField.make_null(len(psi_data.shape), traversals).impl
 
         # Act
         with warnings.catch_warnings():

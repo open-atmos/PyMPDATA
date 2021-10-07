@@ -1,11 +1,9 @@
 import numba
-
-from .indexers import indexers
 from .meta import META_HALO_VALID
 from .enumerations import OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_STOP, RNG_START, INVALID_INDEX, ONE_FOR_STAGGERED_GRID
 
 
-def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, boundary_cond_vector,
+def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads, spanner, chunker, boundary_cond_vector,
                        boundary_cond_scalar):
     set = indexers[n_dims].set
 
@@ -74,7 +72,7 @@ def _make_apply_vector(*, jit_flags, halo, n_dims, n_threads, spanner, chunker, 
     return apply_vector
 
 
-def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner):
+def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
     set = indexers[n_dims].set
 
     halos = (

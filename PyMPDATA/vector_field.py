@@ -1,10 +1,9 @@
+import inspect
 import numpy as np
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
 from PyMPDATA.scalar_field import ScalarField
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions.constant import Constant
-import inspect
 from PyMPDATA.impl.field import Field
 
 
@@ -42,18 +41,23 @@ class VectorField(Field):
             self.get_component(d)[:] = data[d][:]
         self.boundary_conditions = boundary_conditions
 
-        fill_halos = [None] * MAX_DIM_NUM
-        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
-        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
-        fill_halos[INNER] = boundary_conditions[INNER]
-        self.fill_halos = tuple([
-            fh.make_vector(indexers[self.n_dims].at[i], self.dtype)
-            for i, fh in enumerate(fill_halos)
-        ])
-
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
         self.comp_outer = self.data[0] if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_mid3d = self.data[1] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_inner = self.data[-1]
+        self.impl = None
+        self.jit_flags = None
+
+    def assemble(self, traversals):
+        if traversals.jit_flags != self.jit_flags:
+            self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple([
+                fh.make_vector(traversals.indexers[self.n_dims].at[i], self.dtype, traversals.jit_flags)
+                for i, fh in enumerate(self.fill_halos)
+            ])
+        self.jit_flags = traversals.jit_flags
 
     @staticmethod
     def clone(field):
@@ -76,12 +80,8 @@ class VectorField(Field):
         result = ScalarField(diff_sum, halo=0, boundary_conditions=[Constant(INVALID_HALO_VALUE)] * len(grid_step))
         return result
 
-    @property
-    def impl(self):
-        return (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), self.fill_halos
-
     @staticmethod
-    def make_null(n_dims):
+    def make_null(n_dims, indexers):
         null = VectorField(
             [np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims,
             halo=1,
@@ -89,4 +89,5 @@ class VectorField(Field):
         )
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
+        null.assemble(indexers)
         return null
