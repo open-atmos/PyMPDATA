@@ -49,13 +49,15 @@ class VectorField(Field):
         self.comp_mid3d = self.data[1] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_inner = self.data[-1]
         self.impl = None
+        self.jit_flags = None
 
     def assemble(self, traversals):
-        assert self.impl is None
-        self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple([
-            fh.make_vector(traversals.indexers[self.n_dims].at[i], self.dtype, traversals.jit_flags)
-            for i, fh in enumerate(self.fill_halos)
-        ])
+        if traversals.jit_flags != self.jit_flags:
+            self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple([
+                fh.make_vector(traversals.indexers[self.n_dims].at[i], self.dtype, traversals.jit_flags)
+                for i, fh in enumerate(self.fill_halos)
+            ])
+        self.jit_flags = traversals.jit_flags
 
     @staticmethod
     def clone(field):

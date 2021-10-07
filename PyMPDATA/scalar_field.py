@@ -31,13 +31,15 @@ class ScalarField(Field):
         self.fill_halos[INNER] = boundary_conditions[INNER]
         self.boundary_conditions = boundary_conditions
         self.impl = None
+        self.jit_flags = None
 
     def assemble(self, traversals):
-        assert self.impl is None
-        self.impl = (self.meta, self.data), tuple([
-            fh.make_scalar(traversals.indexers[self.n_dims].at[i], self.halo, self.dtype, traversals.jit_flags)
-            for i, fh in enumerate(self.fill_halos)
-        ])
+        if traversals.jit_flags != self.jit_flags:
+            self.impl = (self.meta, self.data), tuple([
+                fh.make_scalar(traversals.indexers[self.n_dims].at[i], self.halo, self.dtype, traversals.jit_flags)
+                for i, fh in enumerate(self.fill_halos)
+            ])
+        self.jit_flags = traversals.jit_flags
 
     @staticmethod
     def clone(field, dtype=None):
