@@ -24,8 +24,8 @@ class Periodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, at, _):
+    def make_scalar(self, at, halo, dtype):
         return _make_scalar(at)
 
-    def make_vector(self, at):
+    def make_vector(self, at, dtype):
         return _make_vector(at)

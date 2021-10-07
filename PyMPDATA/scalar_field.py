@@ -30,7 +30,10 @@ class ScalarField(Field):
         fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
         fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
         fill_halos[INNER] = boundary_conditions[INNER]
-        self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
+        self.fill_halos = tuple([
+            fh.make_scalar(indexers[self.n_dims].at[i], halo, self.dtype)
+            for i, fh in enumerate(fill_halos)
+        ])
 
         self.boundary_conditions = boundary_conditions
 

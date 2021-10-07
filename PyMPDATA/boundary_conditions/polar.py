@@ -15,7 +15,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, at, halo):
+    def make_scalar(self, at, halo, dtype):
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -37,7 +37,7 @@ class Polar:
 
         return fill_halos
 
-    def make_vector(self, at):
+    def make_vector(self, at, dtype):
         @numba.njit()
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120
