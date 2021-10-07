@@ -1,5 +1,6 @@
 import numba
 from PyMPDATA import ScalarField, VectorField, Stepper
+from PyMPDATA.impl.meta import META_IS_NULL
 
 
 @numba.njit(inline='always')
