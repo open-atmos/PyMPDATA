@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>PyMPDATA.arakawa_c.field API documentation</title>
+<title>PyMPDATA.impl.enumerations API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,20 +19,40 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PyMPDATA.arakawa_c.field</code></h1>
+<h1 class="title">Module <code>PyMPDATA.impl.enumerations</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .meta import make_meta
+<pre><code class="python">import numpy as np
 
+ARG_FOCUS, ARG_DATA, ARG_DATA_OUTER, ARG_DATA_MID3D, ARG_DATA_INNER = 0, 1, 1, 2, 3
 
-class Field:
-    def __init__(self, *, grid):
-        self.grid = grid
-        self.meta = make_meta(False, grid)</code></pre>
+MAX_DIM_NUM = 3
+
+OUTER, MID3D, INNER = 0, 1, -1
+
+IMPL_META_AND_DATA = 0
+IMPL_BC = 1
+
+META_AND_DATA_META = 0
+META_AND_DATA_DATA = 1
+
+SIGN_LEFT, SIGN_RIGHT = +1, -1
+
+RNG_START, RNG_STOP, RNG_STEP = 0, 1, 2
+
+INVALID_INDEX = -44
+
+INVALID_INIT_VALUE = np.nan
+
+INVALID_HALO_VALUE = 666
+
+INVALID_NULL_VALUE = 0
+
+ONE_FOR_STAGGERED_GRID = 1</code></pre>
 </details>
 </section>
 <section>
@@ -42,30 +62,6 @@ class Field:
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="PyMPDATA.arakawa_c.field.Field"><code class="flex name class">
-<span>class <span class="ident">Field</span></span>
-<span>(</span><span>*, grid)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Field:
-    def __init__(self, *, grid):
-        self.grid = grid
-        self.meta = make_meta(False, grid)</code></pre>
-</details>
-<h3>Subclasses</h3>
-<ul class="hlist">
-<li><a title="PyMPDATA.arakawa_c.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.arakawa_c.scalar_field.ScalarField">ScalarField</a></li>
-<li><a title="PyMPDATA.arakawa_c.vector_field.VectorField" href="vector_field.html#PyMPDATA.arakawa_c.vector_field.VectorField">VectorField</a></li>
-</ul>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -76,14 +72,7 @@ class Field:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="PyMPDATA.arakawa_c" href="index.html">PyMPDATA.arakawa_c</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="PyMPDATA.arakawa_c.field.Field" href="#PyMPDATA.arakawa_c.field.Field">Field</a></code></h4>
-</li>
+<li><code><a title="PyMPDATA.impl" href="index.html">PyMPDATA.impl</a></code></li>
 </ul>
 </li>
 </ul>

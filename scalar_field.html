@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>PyMPDATA.arakawa_c.scalar_field API documentation</title>
+<title>PyMPDATA.scalar_field API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PyMPDATA.arakawa_c.scalar_field</code></h1>
+<h1 class="title">Module <code>PyMPDATA.scalar_field</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -27,11 +27,11 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import numpy as np
-from .indexers import indexers
-from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
-from .meta import META_HALO_VALID, META_IS_NULL
-from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
-from .field import Field
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
+from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
+from PyMPDATA.boundary_conditions import Constant
+from PyMPDATA.impl.field import Field
 import inspect
 
 
@@ -55,8 +55,8 @@ class ScalarField(Field):
         self.get()[:] = data[:]
 
         fill_halos = [None] * MAX_DIM_NUM
-        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims &gt; 1 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
-        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims &gt; 2 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
         fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
 
@@ -78,7 +78,7 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims):
-        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
+        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
         return null</code></pre>
@@ -93,7 +93,7 @@ class ScalarField(Field):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField"><code class="flex name class">
+<dt id="PyMPDATA.scalar_field.ScalarField"><code class="flex name class">
 <span>class <span class="ident">ScalarField</span></span>
 <span>(</span><span>data: numpy.ndarray, halo: int, boundary_conditions)</span>
 </code></dt>
@@ -123,8 +123,8 @@ class ScalarField(Field):
         self.get()[:] = data[:]
 
         fill_halos = [None] * MAX_DIM_NUM
-        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims &gt; 1 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
-        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims &gt; 2 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
         fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
 
@@ -146,18 +146,18 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims):
-        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
+        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
         return null</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="PyMPDATA.arakawa_c.field.Field" href="field.html#PyMPDATA.arakawa_c.field.Field">Field</a></li>
+<li><a title="PyMPDATA.impl.field.Field" href="impl/field.html#PyMPDATA.impl.field.Field">Field</a></li>
 </ul>
 <h3>Static methods</h3>
 <dl>
-<dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField.clone"><code class="name flex">
+<dt id="PyMPDATA.scalar_field.ScalarField.clone"><code class="name flex">
 <span>def <span class="ident">clone</span></span>(<span>field, dtype=None)</span>
 </code></dt>
 <dd>
@@ -173,7 +173,7 @@ def clone(field, dtype=None):
     return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField.make_null"><code class="name flex">
+<dt id="PyMPDATA.scalar_field.ScalarField.make_null"><code class="name flex">
 <span>def <span class="ident">make_null</span></span>(<span>n_dims)</span>
 </code></dt>
 <dd>
@@ -184,7 +184,7 @@ def clone(field, dtype=None):
 </summary>
 <pre><code class="python">@staticmethod
 def make_null(n_dims):
-    null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
+    null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
     null.meta[META_HALO_VALID] = True
     null.meta[META_IS_NULL] = True
     return null</code></pre>
@@ -193,7 +193,7 @@ def make_null(n_dims):
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField.impl"><code class="name">var <span class="ident">impl</span></code></dt>
+<dt id="PyMPDATA.scalar_field.ScalarField.impl"><code class="name">var <span class="ident">impl</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -208,7 +208,7 @@ def impl(self):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="PyMPDATA.arakawa_c.scalar_field.ScalarField.get"><code class="name flex">
+<dt id="PyMPDATA.scalar_field.ScalarField.get"><code class="name flex">
 <span>def <span class="ident">get</span></span>(<span>self) ‑> numpy.ndarray</span>
 </code></dt>
 <dd>
@@ -235,18 +235,18 @@ def impl(self):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="PyMPDATA.arakawa_c" href="index.html">PyMPDATA.arakawa_c</a></code></li>
+<li><code><a title="PyMPDATA" href="index.html">PyMPDATA</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PyMPDATA.arakawa_c.scalar_field.ScalarField" href="#PyMPDATA.arakawa_c.scalar_field.ScalarField">ScalarField</a></code></h4>
+<h4><code><a title="PyMPDATA.scalar_field.ScalarField" href="#PyMPDATA.scalar_field.ScalarField">ScalarField</a></code></h4>
 <ul class="">
-<li><code><a title="PyMPDATA.arakawa_c.scalar_field.ScalarField.clone" href="#PyMPDATA.arakawa_c.scalar_field.ScalarField.clone">clone</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.scalar_field.ScalarField.get" href="#PyMPDATA.arakawa_c.scalar_field.ScalarField.get">get</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.scalar_field.ScalarField.impl" href="#PyMPDATA.arakawa_c.scalar_field.ScalarField.impl">impl</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.scalar_field.ScalarField.make_null" href="#PyMPDATA.arakawa_c.scalar_field.ScalarField.make_null">make_null</a></code></li>
+<li><code><a title="PyMPDATA.scalar_field.ScalarField.clone" href="#PyMPDATA.scalar_field.ScalarField.clone">clone</a></code></li>
+<li><code><a title="PyMPDATA.scalar_field.ScalarField.get" href="#PyMPDATA.scalar_field.ScalarField.get">get</a></code></li>
+<li><code><a title="PyMPDATA.scalar_field.ScalarField.impl" href="#PyMPDATA.scalar_field.ScalarField.impl">impl</a></code></li>
+<li><code><a title="PyMPDATA.scalar_field.ScalarField.make_null" href="#PyMPDATA.scalar_field.ScalarField.make_null">make_null</a></code></li>
 </ul>
 </li>
 </ul>

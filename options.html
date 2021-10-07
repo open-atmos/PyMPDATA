@@ -36,7 +36,7 @@ class Options:
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
                  divergent_flow: bool = False,
-                 flux_corrected_transport: bool = False,
+                 nonoscillatory: bool = False,
                  third_order_terms: bool = False,
                  DPDC: bool = False,
                  epsilon: float = 1e-15,
@@ -45,12 +45,12 @@ class Options:
                  dtype: np.floating = np.float64
                  ):
         self._values = {&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
-                        &#39;divergent_flow&#39;: divergent_flow, &#39;flux_corrected_transport&#39;: flux_corrected_transport,
+                        &#39;divergent_flow&#39;: divergent_flow, &#39;nonoscillatory&#39;: nonoscillatory,
                         &#39;third_order_terms&#39;: third_order_terms, &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
                         &#39;dimensionally_split&#39;: dimensionally_split,
                         &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC}
 
-        if (infinite_gauge or divergent_flow or flux_corrected_transport or third_order_terms or DPDC) and n_iters &lt; 2:
+        if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters &lt; 2:
             raise ValueError()
         if n_iters &lt; 1:
             raise ValueError()
@@ -76,8 +76,8 @@ class Options:
         return self._values[&#39;divergent_flow&#39;]
 
     @property
-    def flux_corrected_transport(self):
-        return self._values[&#39;flux_corrected_transport&#39;]
+    def nonoscillatory(self):
+        return self._values[&#39;nonoscillatory&#39;]
 
     @property
     def third_order_terms(self):
@@ -107,7 +107,7 @@ class Options:
 
     @property
     def n_halo(self):
-        if self.divergent_flow or self.flux_corrected_transport or self.third_order_terms:
+        if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         else:
             return 1
@@ -132,7 +132,7 @@ class Options:
 <dl>
 <dt id="PyMPDATA.options.Options"><code class="flex name class">
 <span>class <span class="ident">Options</span></span>
-<span>(</span><span>*, n_iters: int = 2, infinite_gauge: bool = False, divergent_flow: bool = False, flux_corrected_transport: bool = False, third_order_terms: bool = False, DPDC: bool = False, epsilon: float = 1e-15, non_zero_mu_coeff: bool = False, dimensionally_split: bool = False, dtype: numpy.floating = numpy.float64)</span>
+<span>(</span><span>*, n_iters: int = 2, infinite_gauge: bool = False, divergent_flow: bool = False, nonoscillatory: bool = False, third_order_terms: bool = False, DPDC: bool = False, epsilon: float = 1e-15, non_zero_mu_coeff: bool = False, dimensionally_split: bool = False, dtype: numpy.floating = numpy.float64)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -146,7 +146,7 @@ class Options:
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
                  divergent_flow: bool = False,
-                 flux_corrected_transport: bool = False,
+                 nonoscillatory: bool = False,
                  third_order_terms: bool = False,
                  DPDC: bool = False,
                  epsilon: float = 1e-15,
@@ -155,12 +155,12 @@ class Options:
                  dtype: np.floating = np.float64
                  ):
         self._values = {&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
-                        &#39;divergent_flow&#39;: divergent_flow, &#39;flux_corrected_transport&#39;: flux_corrected_transport,
+                        &#39;divergent_flow&#39;: divergent_flow, &#39;nonoscillatory&#39;: nonoscillatory,
                         &#39;third_order_terms&#39;: third_order_terms, &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
                         &#39;dimensionally_split&#39;: dimensionally_split,
                         &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC}
 
-        if (infinite_gauge or divergent_flow or flux_corrected_transport or third_order_terms or DPDC) and n_iters &lt; 2:
+        if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters &lt; 2:
             raise ValueError()
         if n_iters &lt; 1:
             raise ValueError()
@@ -186,8 +186,8 @@ class Options:
         return self._values[&#39;divergent_flow&#39;]
 
     @property
-    def flux_corrected_transport(self):
-        return self._values[&#39;flux_corrected_transport&#39;]
+    def nonoscillatory(self):
+        return self._values[&#39;nonoscillatory&#39;]
 
     @property
     def third_order_terms(self):
@@ -217,7 +217,7 @@ class Options:
 
     @property
     def n_halo(self):
-        if self.divergent_flow or self.flux_corrected_transport or self.third_order_terms:
+        if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         else:
             return 1
@@ -292,18 +292,6 @@ def epsilon(self):
     return self._values[&#39;epsilon&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.flux_corrected_transport"><code class="name">var <span class="ident">flux_corrected_transport</span></code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def flux_corrected_transport(self):
-    return self._values[&#39;flux_corrected_transport&#39;]</code></pre>
-</details>
-</dd>
 <dt id="PyMPDATA.options.Options.infinite_gauge"><code class="name">var <span class="ident">infinite_gauge</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -341,7 +329,7 @@ def jit_flags(self):
 </summary>
 <pre><code class="python">@property
 def n_halo(self):
-    if self.divergent_flow or self.flux_corrected_transport or self.third_order_terms:
+    if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
         return 2
     else:
         return 1</code></pre>
@@ -369,6 +357,18 @@ def n_iters(self):
 <pre><code class="python">@property
 def non_zero_mu_coeff(self):
     return self._values[&#39;non_zero_mu_coeff&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA.options.Options.nonoscillatory"><code class="name">var <span class="ident">nonoscillatory</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nonoscillatory(self):
+    return self._values[&#39;nonoscillatory&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.third_order_terms"><code class="name">var <span class="ident">third_order_terms</span></code></dt>
@@ -403,18 +403,18 @@ def third_order_terms(self):
 <ul>
 <li>
 <h4><code><a title="PyMPDATA.options.Options" href="#PyMPDATA.options.Options">Options</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="PyMPDATA.options.Options.DPDC" href="#PyMPDATA.options.Options.DPDC">DPDC</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.dimensionally_split" href="#PyMPDATA.options.Options.dimensionally_split">dimensionally_split</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.divergent_flow" href="#PyMPDATA.options.Options.divergent_flow">divergent_flow</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.dtype" href="#PyMPDATA.options.Options.dtype">dtype</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.epsilon" href="#PyMPDATA.options.Options.epsilon">epsilon</a></code></li>
-<li><code><a title="PyMPDATA.options.Options.flux_corrected_transport" href="#PyMPDATA.options.Options.flux_corrected_transport">flux_corrected_transport</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.infinite_gauge" href="#PyMPDATA.options.Options.infinite_gauge">infinite_gauge</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.jit_flags" href="#PyMPDATA.options.Options.jit_flags">jit_flags</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.n_halo" href="#PyMPDATA.options.Options.n_halo">n_halo</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.n_iters" href="#PyMPDATA.options.Options.n_iters">n_iters</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.non_zero_mu_coeff" href="#PyMPDATA.options.Options.non_zero_mu_coeff">non_zero_mu_coeff</a></code></li>
+<li><code><a title="PyMPDATA.options.Options.nonoscillatory" href="#PyMPDATA.options.Options.nonoscillatory">nonoscillatory</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.third_order_terms" href="#PyMPDATA.options.Options.third_order_terms">third_order_terms</a></code></li>
 </ul>
 </li>

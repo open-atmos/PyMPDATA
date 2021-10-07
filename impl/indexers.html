@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>PyMPDATA.arakawa_c.indexers API documentation</title>
+<title>PyMPDATA.impl.indexers API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PyMPDATA.arakawa_c.indexers</code></h1>
+<h1 class="title">Module <code>PyMPDATA.impl.indexers</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -185,7 +185,7 @@ indexers = (
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="PyMPDATA.arakawa_c.indexers.at_1d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.at_1d"><code class="name flex">
 <span>def <span class="ident">at_1d</span></span>(<span>focus, arr, k)</span>
 </code></dt>
 <dd>
@@ -199,7 +199,7 @@ def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
     return arr[focus[INNER] + k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.at_2d_axis0"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.at_2d_axis0"><code class="name flex">
 <span>def <span class="ident">at_2d_axis0</span></span>(<span>focus, arr, i, k=0)</span>
 </code></dt>
 <dd>
@@ -213,7 +213,7 @@ def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
     return arr[focus[OUTER] + i, focus[INNER] + k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.at_2d_axis1"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.at_2d_axis1"><code class="name flex">
 <span>def <span class="ident">at_2d_axis1</span></span>(<span>focus, arr, k, i=0)</span>
 </code></dt>
 <dd>
@@ -227,7 +227,7 @@ def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
     return arr[focus[OUTER] + i, focus[INNER] + k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.at_3d_axis0"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.at_3d_axis0"><code class="name flex">
 <span>def <span class="ident">at_3d_axis0</span></span>(<span>focus, arr, i, j=0, k=0)</span>
 </code></dt>
 <dd>
@@ -241,7 +241,7 @@ def at_3d_axis0(focus, arr, i, j=0, k=0):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.at_3d_axis1"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.at_3d_axis1"><code class="name flex">
 <span>def <span class="ident">at_3d_axis1</span></span>(<span>focus, arr, j, k=0, i=0)</span>
 </code></dt>
 <dd>
@@ -255,7 +255,7 @@ def at_3d_axis1(focus, arr, j, k=0, i=0):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.at_3d_axis2"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.at_3d_axis2"><code class="name flex">
 <span>def <span class="ident">at_3d_axis2</span></span>(<span>focus, arr, k, i=0, j=0)</span>
 </code></dt>
 <dd>
@@ -269,7 +269,7 @@ def at_3d_axis2(focus, arr, k, i=0, j=0):
     return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.atv_1d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.atv_1d"><code class="name flex">
 <span>def <span class="ident">atv_1d</span></span>(<span>focus, arrs, k)</span>
 </code></dt>
 <dd>
@@ -283,7 +283,7 @@ def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
     return arrs[INNER][focus[INNER] + int(k - .5)]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.atv_2d_axis0"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.atv_2d_axis0"><code class="name flex">
 <span>def <span class="ident">atv_2d_axis0</span></span>(<span>focus, arrs, i, k=0)</span>
 </code></dt>
 <dd>
@@ -301,7 +301,7 @@ def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
     return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.atv_2d_axis1"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.atv_2d_axis1"><code class="name flex">
 <span>def <span class="ident">atv_2d_axis1</span></span>(<span>focus, arrs, k, i=0)</span>
 </code></dt>
 <dd>
@@ -319,7 +319,7 @@ def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
     return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.atv_3d_axis0"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.atv_3d_axis0"><code class="name flex">
 <span>def <span class="ident">atv_3d_axis0</span></span>(<span>focus, arrs, i, j=0, k=0)</span>
 </code></dt>
 <dd>
@@ -339,7 +339,7 @@ def atv_3d_axis0(focus, arrs, i, j=0, k=0):
     return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.atv_3d_axis1"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.atv_3d_axis1"><code class="name flex">
 <span>def <span class="ident">atv_3d_axis1</span></span>(<span>focus, arrs, j, k=0, i=0)</span>
 </code></dt>
 <dd>
@@ -359,7 +359,7 @@ def atv_3d_axis1(focus, arrs, j, k=0, i=0):
     return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.atv_3d_axis2"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.atv_3d_axis2"><code class="name flex">
 <span>def <span class="ident">atv_3d_axis2</span></span>(<span>focus, arrs, k, i=0, j=0)</span>
 </code></dt>
 <dd>
@@ -379,7 +379,7 @@ def atv_3d_axis2(focus, arrs, k, i=0, j=0):
     return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.get_1d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.get_1d"><code class="name flex">
 <span>def <span class="ident">get_1d</span></span>(<span>arr, _, __, k)</span>
 </code></dt>
 <dd>
@@ -393,7 +393,7 @@ def get_1d(arr, _, __, k):
     return arr[k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.get_2d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.get_2d"><code class="name flex">
 <span>def <span class="ident">get_2d</span></span>(<span>arr, i, _, k)</span>
 </code></dt>
 <dd>
@@ -407,7 +407,7 @@ def get_2d(arr, i, _, k):
     return arr[i, k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.get_3d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.get_3d"><code class="name flex">
 <span>def <span class="ident">get_3d</span></span>(<span>arr, i, j, k)</span>
 </code></dt>
 <dd>
@@ -421,7 +421,7 @@ def get_3d(arr, i, j, k):
     return arr[i, j, k]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.set_1d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.set_1d"><code class="name flex">
 <span>def <span class="ident">set_1d</span></span>(<span>arr, _, __, k, value)</span>
 </code></dt>
 <dd>
@@ -435,7 +435,7 @@ def set_1d(arr, _, __, k, value):
     arr[k] = value</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.set_2d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.set_2d"><code class="name flex">
 <span>def <span class="ident">set_2d</span></span>(<span>arr, i, _, k, value)</span>
 </code></dt>
 <dd>
@@ -449,7 +449,7 @@ def set_2d(arr, i, _, k, value):
     arr[i, k] = value</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.set_3d"><code class="name flex">
+<dt id="PyMPDATA.impl.indexers.set_3d"><code class="name flex">
 <span>def <span class="ident">set_3d</span></span>(<span>arr, i, j, k, value)</span>
 </code></dt>
 <dd>
@@ -468,7 +468,7 @@ def set_3d(arr, i, j, k, value):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers"><code class="flex name class">
+<dt id="PyMPDATA.impl.indexers.Indexers"><code class="flex name class">
 <span>class <span class="ident">Indexers</span></span>
 <span>(</span><span>at, atv, set, get)</span>
 </code></dt>
@@ -480,19 +480,19 @@ def set_3d(arr, i, j, k, value):
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers.at"><code class="name">var <span class="ident">at</span></code></dt>
+<dt id="PyMPDATA.impl.indexers.Indexers.at"><code class="name">var <span class="ident">at</span></code></dt>
 <dd>
 <div class="desc"><p>Alias for field number 0</p></div>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers.atv"><code class="name">var <span class="ident">atv</span></code></dt>
+<dt id="PyMPDATA.impl.indexers.Indexers.atv"><code class="name">var <span class="ident">atv</span></code></dt>
 <dd>
 <div class="desc"><p>Alias for field number 1</p></div>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers.get"><code class="name">var <span class="ident">get</span></code></dt>
+<dt id="PyMPDATA.impl.indexers.Indexers.get"><code class="name">var <span class="ident">get</span></code></dt>
 <dd>
 <div class="desc"><p>Alias for field number 3</p></div>
 </dd>
-<dt id="PyMPDATA.arakawa_c.indexers.Indexers.set"><code class="name">var <span class="ident">set</span></code></dt>
+<dt id="PyMPDATA.impl.indexers.Indexers.set"><code class="name">var <span class="ident">set</span></code></dt>
 <dd>
 <div class="desc"><p>Alias for field number 2</p></div>
 </dd>
@@ -509,40 +509,40 @@ def set_3d(arr, i, j, k, value):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="PyMPDATA.arakawa_c" href="index.html">PyMPDATA.arakawa_c</a></code></li>
+<li><code><a title="PyMPDATA.impl" href="index.html">PyMPDATA.impl</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="PyMPDATA.arakawa_c.indexers.at_1d" href="#PyMPDATA.arakawa_c.indexers.at_1d">at_1d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.at_2d_axis0" href="#PyMPDATA.arakawa_c.indexers.at_2d_axis0">at_2d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.at_2d_axis1" href="#PyMPDATA.arakawa_c.indexers.at_2d_axis1">at_2d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.at_3d_axis0" href="#PyMPDATA.arakawa_c.indexers.at_3d_axis0">at_3d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.at_3d_axis1" href="#PyMPDATA.arakawa_c.indexers.at_3d_axis1">at_3d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.at_3d_axis2" href="#PyMPDATA.arakawa_c.indexers.at_3d_axis2">at_3d_axis2</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.atv_1d" href="#PyMPDATA.arakawa_c.indexers.atv_1d">atv_1d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.atv_2d_axis0" href="#PyMPDATA.arakawa_c.indexers.atv_2d_axis0">atv_2d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.atv_2d_axis1" href="#PyMPDATA.arakawa_c.indexers.atv_2d_axis1">atv_2d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.atv_3d_axis0" href="#PyMPDATA.arakawa_c.indexers.atv_3d_axis0">atv_3d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.atv_3d_axis1" href="#PyMPDATA.arakawa_c.indexers.atv_3d_axis1">atv_3d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.atv_3d_axis2" href="#PyMPDATA.arakawa_c.indexers.atv_3d_axis2">atv_3d_axis2</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.get_1d" href="#PyMPDATA.arakawa_c.indexers.get_1d">get_1d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.get_2d" href="#PyMPDATA.arakawa_c.indexers.get_2d">get_2d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.get_3d" href="#PyMPDATA.arakawa_c.indexers.get_3d">get_3d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.set_1d" href="#PyMPDATA.arakawa_c.indexers.set_1d">set_1d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.set_2d" href="#PyMPDATA.arakawa_c.indexers.set_2d">set_2d</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.set_3d" href="#PyMPDATA.arakawa_c.indexers.set_3d">set_3d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.at_1d" href="#PyMPDATA.impl.indexers.at_1d">at_1d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.at_2d_axis0" href="#PyMPDATA.impl.indexers.at_2d_axis0">at_2d_axis0</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.at_2d_axis1" href="#PyMPDATA.impl.indexers.at_2d_axis1">at_2d_axis1</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.at_3d_axis0" href="#PyMPDATA.impl.indexers.at_3d_axis0">at_3d_axis0</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.at_3d_axis1" href="#PyMPDATA.impl.indexers.at_3d_axis1">at_3d_axis1</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.at_3d_axis2" href="#PyMPDATA.impl.indexers.at_3d_axis2">at_3d_axis2</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.atv_1d" href="#PyMPDATA.impl.indexers.atv_1d">atv_1d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.atv_2d_axis0" href="#PyMPDATA.impl.indexers.atv_2d_axis0">atv_2d_axis0</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.atv_2d_axis1" href="#PyMPDATA.impl.indexers.atv_2d_axis1">atv_2d_axis1</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.atv_3d_axis0" href="#PyMPDATA.impl.indexers.atv_3d_axis0">atv_3d_axis0</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.atv_3d_axis1" href="#PyMPDATA.impl.indexers.atv_3d_axis1">atv_3d_axis1</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.atv_3d_axis2" href="#PyMPDATA.impl.indexers.atv_3d_axis2">atv_3d_axis2</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.get_1d" href="#PyMPDATA.impl.indexers.get_1d">get_1d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.get_2d" href="#PyMPDATA.impl.indexers.get_2d">get_2d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.get_3d" href="#PyMPDATA.impl.indexers.get_3d">get_3d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.set_1d" href="#PyMPDATA.impl.indexers.set_1d">set_1d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.set_2d" href="#PyMPDATA.impl.indexers.set_2d">set_2d</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.set_3d" href="#PyMPDATA.impl.indexers.set_3d">set_3d</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PyMPDATA.arakawa_c.indexers.Indexers" href="#PyMPDATA.arakawa_c.indexers.Indexers">Indexers</a></code></h4>
+<h4><code><a title="PyMPDATA.impl.indexers.Indexers" href="#PyMPDATA.impl.indexers.Indexers">Indexers</a></code></h4>
 <ul class="">
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.at" href="#PyMPDATA.arakawa_c.indexers.Indexers.at">at</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.atv" href="#PyMPDATA.arakawa_c.indexers.Indexers.atv">atv</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.get" href="#PyMPDATA.arakawa_c.indexers.Indexers.get">get</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.indexers.Indexers.set" href="#PyMPDATA.arakawa_c.indexers.Indexers.set">set</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.Indexers.at" href="#PyMPDATA.impl.indexers.Indexers.at">at</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.Indexers.atv" href="#PyMPDATA.impl.indexers.Indexers.atv">atv</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.Indexers.get" href="#PyMPDATA.impl.indexers.Indexers.get">get</a></code></li>
+<li><code><a title="PyMPDATA.impl.indexers.Indexers.set" href="#PyMPDATA.impl.indexers.Indexers.set">set</a></code></li>
 </ul>
 </li>
 </ul>

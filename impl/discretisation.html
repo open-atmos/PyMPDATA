@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition API documentation</title>
+<title>PyMPDATA.impl.discretisation API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,44 +19,52 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition</code></h1>
+<h1 class="title">Module <code>PyMPDATA.impl.discretisation</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from functools import lru_cache
-import numba
-from ..enumerations import SIGN_RIGHT, SIGN_LEFT
+<pre><code class="python">import numpy as np
+from scipy import integrate
 
 
-@lru_cache()
-def _make_scalar(at):
-    @numba.njit()
-    def fill_halos(psi, n, sign):
-        return at(*psi, sign * n)
-    return fill_halos
+def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
+    z = np.empty(gridsize)
+    dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
+    for i in range(gridsize[0]):
+        for j in range(gridsize[1]):
+            z[i, j] = integrate.nquad(pdf, ranges=(
+                (xrange[0] + dx*i, xrange[0] + dx*(i+1)),
+                (yrange[0] + dy*j, yrange[0] + dy*(j+1))
+            ))[0] / dx / dy
+    x = np.linspace(xrange[0] + dx / 2, xrange[1] - dx / 2, gridsize[0])
+    y = np.linspace(yrange[0] + dy / 2, yrange[1] - dy / 2, gridsize[1])
+    return x, y, z
 
 
-@lru_cache()
-def _make_vector(at):
-    @numba.njit()
-    def fill_halos(psi, n, sign):
-        return at(*psi, sign * n)
-    return fill_halos
+def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
+    dx = (x_max - x_min) / nx
+    x = np.linspace(x_min + dx / 2, x_max - dx / 2, nx)
+    xh = np.linspace(x_min, x_max, nx + 1)
+    y = np.diff(cdf(xh)) / dx
+    return x, y
 
 
-class PeriodicBoundaryCondition:
-    def __init__(self):
-        assert SIGN_RIGHT == -1
-        assert SIGN_LEFT == +1
-
-    def make_scalar(self, at, _):
-        return _make_scalar(at)
-
-    def make_vector(self, at):
-        return _make_vector(at)</code></pre>
+def discretised_analytical_solution(rh, pdf_t, midpoint_value=False, r=None):
+    if midpoint_value:
+        assert r is not None
+    else:
+        assert r is None
+    output = np.empty(rh.shape[0]-1)
+    for i in range(output.shape[0]):
+        if midpoint_value:
+            output[i] = pdf_t(r[i])
+        else:
+            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO #206: handle other output values
+            output[i] = dcdf / (rh[i + 1] - rh[i])
+    return output</code></pre>
 </details>
 </section>
 <section>
@@ -64,12 +72,10 @@ class PeriodicBoundaryCondition:
 <section>
 </section>
 <section>
-</section>
-<section>
-<h2 class="section-title" id="header-classes">Classes</h2>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition"><code class="flex name class">
-<span>class <span class="ident">PeriodicBoundaryCondition</span></span>
+<dt id="PyMPDATA.impl.discretisation.discretised_analytical_solution"><code class="name flex">
+<span>def <span class="ident">discretised_analytical_solution</span></span>(<span>rh, pdf_t, midpoint_value=False, r=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -77,34 +83,23 @@ class PeriodicBoundaryCondition:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class PeriodicBoundaryCondition:
-    def __init__(self):
-        assert SIGN_RIGHT == -1
-        assert SIGN_LEFT == +1
-
-    def make_scalar(self, at, _):
-        return _make_scalar(at)
-
-    def make_vector(self, at):
-        return _make_vector(at)</code></pre>
-</details>
-<h3>Methods</h3>
-<dl>
-<dt id="PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, _)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def make_scalar(self, at, _):
-    return _make_scalar(at)</code></pre>
+<pre><code class="python">def discretised_analytical_solution(rh, pdf_t, midpoint_value=False, r=None):
+    if midpoint_value:
+        assert r is not None
+    else:
+        assert r is None
+    output = np.empty(rh.shape[0]-1)
+    for i in range(output.shape[0]):
+        if midpoint_value:
+            output[i] = pdf_t(r[i])
+        else:
+            dcdf, _ = integrate.quad(pdf_t, rh[i], rh[i + 1])  # TODO #206: handle other output values
+            output[i] = dcdf / (rh[i + 1] - rh[i])
+    return output</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at)</span>
+<dt id="PyMPDATA.impl.discretisation.from_cdf_1d"><code class="name flex">
+<span>def <span class="ident">from_cdf_1d</span></span>(<span>cdf: <built-in function callable>, x_min: float, x_max: float, nx: int)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -112,13 +107,40 @@ class PeriodicBoundaryCondition:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at):
-    return _make_vector(at)</code></pre>
+<pre><code class="python">def from_cdf_1d(cdf: callable, x_min: float, x_max: float, nx: int):
+    dx = (x_max - x_min) / nx
+    x = np.linspace(x_min + dx / 2, x_max - dx / 2, nx)
+    xh = np.linspace(x_min, x_max, nx + 1)
+    y = np.diff(cdf(xh)) / dx
+    return x, y</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA.impl.discretisation.from_pdf_2d"><code class="name flex">
+<span>def <span class="ident">from_pdf_2d</span></span>(<span>pdf: <built-in function callable>, xrange: list, yrange: list, gridsize: list)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_pdf_2d(pdf: callable, xrange: list, yrange: list, gridsize: list):
+    z = np.empty(gridsize)
+    dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
+    for i in range(gridsize[0]):
+        for j in range(gridsize[1]):
+            z[i, j] = integrate.nquad(pdf, ranges=(
+                (xrange[0] + dx*i, xrange[0] + dx*(i+1)),
+                (yrange[0] + dy*j, yrange[0] + dy*(j+1))
+            ))[0] / dx / dy
+    x = np.linspace(xrange[0] + dx / 2, xrange[1] - dx / 2, gridsize[0])
+    y = np.linspace(yrange[0] + dy / 2, yrange[1] - dy / 2, gridsize[1])
+    return x, y, z</code></pre>
 </details>
 </dd>
 </dl>
-</dd>
-</dl>
+</section>
+<section>
 </section>
 </article>
 <nav id="sidebar">
@@ -129,18 +151,14 @@ class PeriodicBoundaryCondition:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="PyMPDATA.arakawa_c.boundary_condition" href="index.html">PyMPDATA.arakawa_c.boundary_condition</a></code></li>
+<li><code><a title="PyMPDATA.impl" href="index.html">PyMPDATA.impl</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition" href="#PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition">PeriodicBoundaryCondition</a></code></h4>
+<li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition.make_scalar" href="#PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition.make_scalar">make_scalar</a></code></li>
-<li><code><a title="PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition.make_vector" href="#PyMPDATA.arakawa_c.boundary_condition.periodic_boundary_condition.PeriodicBoundaryCondition.make_vector">make_vector</a></code></li>
-</ul>
-</li>
+<li><code><a title="PyMPDATA.impl.discretisation.discretised_analytical_solution" href="#PyMPDATA.impl.discretisation.discretised_analytical_solution">discretised_analytical_solution</a></code></li>
+<li><code><a title="PyMPDATA.impl.discretisation.from_cdf_1d" href="#PyMPDATA.impl.discretisation.from_cdf_1d">from_cdf_1d</a></code></li>
+<li><code><a title="PyMPDATA.impl.discretisation.from_pdf_2d" href="#PyMPDATA.impl.discretisation.from_pdf_2d">from_pdf_2d</a></code></li>
 </ul>
 </li>
 </ul>

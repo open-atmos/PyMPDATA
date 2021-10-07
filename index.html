@@ -36,12 +36,11 @@ Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab
 # pylint: disable=invalid-name
 from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
 
+from .scalar_field import ScalarField
+from .vector_field import VectorField
 from .options import Options
-from .solver import Solver
 from .stepper import Stepper
-from .arakawa_c.scalar_field import ScalarField
-from .arakawa_c.vector_field import VectorField
-from .arakawa_c.boundary_condition import *
+from .solver import Solver
 
 try:
     __version__ = get_distribution(__name__).version
@@ -53,19 +52,19 @@ except (DistributionNotFound, VersionConflict):
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="PyMPDATA.arakawa_c" href="arakawa_c/index.html">PyMPDATA.arakawa_c</a></code></dt>
+<dt><code class="name"><a title="PyMPDATA.boundary_conditions" href="boundary_conditions/index.html">PyMPDATA.boundary_conditions</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>classes representing boundary conditions</p></div>
 </dd>
-<dt><code class="name"><a title="PyMPDATA.clock" href="clock.html">PyMPDATA.clock</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA.formulae" href="formulae/index.html">PyMPDATA.formulae</a></code></dt>
+<dt><code class="name"><a title="PyMPDATA.impl" href="impl/index.html">PyMPDATA.impl</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="PyMPDATA.options" href="options.html">PyMPDATA.options</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="PyMPDATA.scalar_field" href="scalar_field.html">PyMPDATA.scalar_field</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -74,6 +73,10 @@ except (DistributionNotFound, VersionConflict):
 <div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="PyMPDATA.stepper" href="stepper.html">PyMPDATA.stepper</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="PyMPDATA.vector_field" href="vector_field.html">PyMPDATA.vector_field</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -94,12 +97,13 @@ except (DistributionNotFound, VersionConflict):
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="PyMPDATA.arakawa_c" href="arakawa_c/index.html">PyMPDATA.arakawa_c</a></code></li>
-<li><code><a title="PyMPDATA.clock" href="clock.html">PyMPDATA.clock</a></code></li>
-<li><code><a title="PyMPDATA.formulae" href="formulae/index.html">PyMPDATA.formulae</a></code></li>
+<li><code><a title="PyMPDATA.boundary_conditions" href="boundary_conditions/index.html">PyMPDATA.boundary_conditions</a></code></li>
+<li><code><a title="PyMPDATA.impl" href="impl/index.html">PyMPDATA.impl</a></code></li>
 <li><code><a title="PyMPDATA.options" href="options.html">PyMPDATA.options</a></code></li>
+<li><code><a title="PyMPDATA.scalar_field" href="scalar_field.html">PyMPDATA.scalar_field</a></code></li>
 <li><code><a title="PyMPDATA.solver" href="solver.html">PyMPDATA.solver</a></code></li>
 <li><code><a title="PyMPDATA.stepper" href="stepper.html">PyMPDATA.stepper</a></code></li>
+<li><code><a title="PyMPDATA.vector_field" href="vector_field.html">PyMPDATA.vector_field</a></code></li>
 </ul>
 </li>
 </ul>
