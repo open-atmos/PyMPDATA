@@ -2,6 +2,11 @@ import numpy as np
 from pystrict import strict
 
 
+class hashabledict(dict):
+    def __hash__(self):
+        return hash(tuple(sorted(self.items())))
+
+
 @strict
 class Options:
     def __init__(self, *,
@@ -86,8 +91,8 @@ class Options:
 
     @property
     def jit_flags(self):
-        return {
+        return hashabledict({
             "fastmath": True,
             "error_model": 'numpy',
             "boundscheck": False,
-        }
+        })

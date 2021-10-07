@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from functools import lru_cache
-from PyMPDATA import ScalarField, VectorField
+from PyMPDATA import ScalarField, VectorField, Options
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.traversals import Traversals
 from PyMPDATA.impl.meta import OUTER, MID3D, INNER
@@ -41,9 +41,11 @@ def indices(a, b=None, c=None):
     return slice(a[0], a[1])
 
 
+JIT_FLAGS = Options().jit_flags
+
 @lru_cache()
 def make_traversals(grid, halo, n_threads):
-    return Traversals(grid=grid, halo=halo, jit_flags={}, n_threads=n_threads)
+    return Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
 
 
 class TestPeriodicBoundaryCondition:
@@ -70,6 +72,7 @@ class TestPeriodicBoundaryCondition:
 
         # arrange
         field = ScalarField(data, halo, tuple([Periodic() for _ in range(n_dims)]))
+        field.assemble(JIT_FLAGS)
         meta_and_data, fill_halos = field.impl
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         sut = traversals._fill_halos_scalar
@@ -126,6 +129,7 @@ class TestPeriodicBoundaryCondition:
 
         # arrange
         field = VectorField(data, halo, tuple([Periodic() for _ in range(n_dims)]))
+        field.assemble(jit_flags=JIT_FLAGS)
         meta_and_data, fill_halos = field.impl
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         sut = traversals._fill_halos_vector

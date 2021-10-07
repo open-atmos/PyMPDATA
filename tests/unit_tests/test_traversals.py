@@ -70,10 +70,11 @@ class TestTraversals:
         traversals = make_traversals(grid, halo, n_threads)
         sut = traversals.apply_scalar(loop=loop)
 
-        scl_null_arg_impl = ScalarField.make_null(n_dims).impl
-        vec_null_arg_impl = VectorField.make_null(n_dims).impl
+        scl_null_arg_impl = ScalarField.make_null(n_dims, jit_flags).impl
+        vec_null_arg_impl = VectorField.make_null(n_dims, jit_flags).impl
 
         out = ScalarField(np.zeros(grid), halo, [Constant(np.nan)] * n_dims)
+        out.assemble(jit_flags)
 
         # act
         sut(_cell_id_scalar,
@@ -118,8 +119,8 @@ class TestTraversals:
         traversals = make_traversals(grid, halo, n_threads)
         sut = traversals.apply_vector()
 
-        scl_null_arg_impl = ScalarField.make_null(n_dims).impl
-        vec_null_arg_impl = VectorField.make_null(n_dims).impl
+        scl_null_arg_impl = ScalarField.make_null(n_dims, jit_flags).impl
+        vec_null_arg_impl = VectorField.make_null(n_dims, jit_flags).impl
 
         if n_dims == 1:
             data = (np.zeros(grid[0]+1),)
@@ -138,6 +139,7 @@ class TestTraversals:
             raise NotImplementedError()
 
         out = VectorField(data, halo, [Constant(np.nan)] * n_dims)
+        out.assemble(jit_flags)
 
         # act
         sut(*[_cell_id_vector] * MAX_DIM_NUM,

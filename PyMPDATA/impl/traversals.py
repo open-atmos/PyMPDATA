@@ -13,9 +13,9 @@ class Traversals:
             grid[OUTER] if len(grid) > 1 else 0,
             grid[MID3D] if len(grid) > 2 else 0,
             grid[INNER]
-            ))
+            ), jit_flags)
         self.n_dims = len(grid)
-        chunk = make_chunk(grid[OUTER], n_threads)
+        chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
         self._fill_halos_scalar = _make_fill_halos_scalar(
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims, chunker=chunk, spanner=domain)
         self._fill_halos_vector = _make_fill_halos_vector(
@@ -35,8 +35,8 @@ class Traversals:
                                                 n_threads=n_threads, spanner=domain, chunker=chunk,
                                                 boundary_cond_vector=self._fill_halos_vector,
                                                 boundary_cond_scalar=self._fill_halos_scalar)
-        self.null_scalar_field = ScalarField.make_null(self.n_dims)
-        self.null_vector_field = VectorField.make_null(self.n_dims)
+        self.null_scalar_field = ScalarField.make_null(self.n_dims, jit_flags)
+        self.null_vector_field = VectorField.make_null(self.n_dims, jit_flags)
 
     def apply_scalar(self, *, loop):
         if loop:

@@ -26,16 +26,21 @@ class ScalarField(Field):
         self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
         self.get()[:] = data[:]
 
-        fill_halos = [None] * MAX_DIM_NUM
-        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
-        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
-        fill_halos[INNER] = boundary_conditions[INNER]
-        self.fill_halos = tuple([
-            fh.make_scalar(indexers[self.n_dims].at[i], halo, self.dtype)
-            for i, fh in enumerate(fill_halos)
-        ])
-
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
         self.boundary_conditions = boundary_conditions
+        self.impl = None
+
+    def assemble(self, jit_flags):
+        if not self.impl is None:
+            print("A")
+        assert self.impl is None
+        self.impl = (self.meta, self.data), tuple([
+            fh.make_scalar(indexers[self.n_dims].at[i], self.halo, self.dtype, jit_flags)
+            for i, fh in enumerate(self.fill_halos)
+        ])
 
     @staticmethod
     def clone(field, dtype=None):
@@ -47,13 +52,10 @@ class ScalarField(Field):
         results = self.data[self.domain]
         return results
 
-    @property
-    def impl(self):
-        return (self.meta, self.data), self.fill_halos
-
     @staticmethod
-    def make_null(n_dims):
+    def make_null(n_dims, jit_flags):
         null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
+        null.assemble(jit_flags)
         return null
