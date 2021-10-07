@@ -176,7 +176,7 @@ class TestTraversals:
                         else:
                             ijk = (i, j, k)
                         print("check at", i, j, k)
-                        value = indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
+                        value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
                         assert cell_id(i, j, k) == value
 
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
