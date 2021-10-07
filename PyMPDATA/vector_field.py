@@ -31,7 +31,12 @@ class VectorField(Field):
         halos = [[(halo - (d == c)) for c in dims] for d in dims]
         shape_with_halo = [[data[d].shape[c] + 2 * halos[d][c] for c in dims] for d in dims]
         self.data = [np.full(shape_with_halo[d], INVALID_INIT_VALUE, dtype=self.dtype) for d in dims]
-        self.domain = tuple([tuple([slice(halos[d][c], halos[d][c] + data[d].shape[c]) for c in dims]) for d in dims])
+        self.domain = tuple([
+            tuple([
+                slice(halos[d][c], halos[d][c] + data[d].shape[c])
+                for c in dims])
+            for d in dims
+        ])
         for d in dims:
             assert data[d].dtype == self.dtype
             self.get_component(d)[:] = data[d][:]
@@ -41,7 +46,10 @@ class VectorField(Field):
         fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
         fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
         fill_halos[INNER] = boundary_conditions[INNER]
-        self.fill_halos = tuple([fh.make_vector(indexers[self.n_dims].at[i]) for i, fh in enumerate(fill_halos)])
+        self.fill_halos = tuple([
+            fh.make_vector(indexers[self.n_dims].at[i], self.dtype)
+            for i, fh in enumerate(fill_halos)
+        ])
 
         self.comp_outer = self.data[0] if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_mid3d = self.data[1] if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
@@ -49,7 +57,10 @@ class VectorField(Field):
 
     @staticmethod
     def clone(field):
-        return VectorField([field.get_component(d) for d in range(field.n_dims)], field.halo, field.boundary_conditions)
+        return VectorField([
+            field.get_component(d)
+            for d in range(field.n_dims)
+        ], field.halo, field.boundary_conditions)
 
     def get_component(self, i: int) -> np.ndarray:
         return self.data[i][self.domain[i]]
