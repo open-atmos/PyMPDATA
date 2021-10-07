@@ -32,16 +32,16 @@ from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 
 @lru_cache()
-def _make_scalar(at):
-    @numba.njit()
+def _make_scalar(at, jit_flags):
+    @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
         return at(*psi, sign * n)
     return fill_halos
 
 
 @lru_cache()
-def _make_vector(at):
-    @numba.njit()
+def _make_vector(at, jit_flags):
+    @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
         return at(*psi, sign * n)
     return fill_halos
@@ -52,11 +52,11 @@ class Periodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, at, halo, dtype):
-        return _make_scalar(at)
+    def make_scalar(self, at, halo, dtype, jit_flags):
+        return _make_scalar(at, jit_flags)
 
-    def make_vector(self, at, dtype):
-        return _make_vector(at)</code></pre>
+    def make_vector(self, at, dtype, jit_flags):
+        return _make_vector(at, jit_flags)</code></pre>
 </details>
 </section>
 <section>
@@ -82,16 +82,16 @@ class Periodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, at, halo, dtype):
-        return _make_scalar(at)
+    def make_scalar(self, at, halo, dtype, jit_flags):
+        return _make_scalar(at, jit_flags)
 
-    def make_vector(self, at, dtype):
-        return _make_vector(at)</code></pre>
+    def make_vector(self, at, dtype, jit_flags):
+        return _make_vector(at, jit_flags)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -99,12 +99,12 @@ class Periodic:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at, halo, dtype):
-    return _make_scalar(at)</code></pre>
+<pre><code class="python">def make_scalar(self, at, halo, dtype, jit_flags):
+    return _make_scalar(at, jit_flags)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -112,8 +112,8 @@ class Periodic:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at, dtype):
-    return _make_vector(at)</code></pre>
+<pre><code class="python">def make_vector(self, at, dtype, jit_flags):
+    return _make_vector(at, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>

@@ -77,7 +77,7 @@ class Stepper:
                 self.n_threads = 1
                 
         self.n_dims = n_dims
-        self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
+        self.__call, self.traversals = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
     def __call__(self, nt, mu_coeff, post_step, post_iter,
                  advectee, advectee_bc,
@@ -199,7 +199,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 advector = advector_orig
             post_step(advectee[ARG_DATA], _)
         return (clock() - time) / nt
-    return step</code></pre>
+    return step, traversals</code></pre>
 </details>
 </section>
 <section>
@@ -314,7 +314,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 advector = advector_orig
             post_step(advectee[ARG_DATA], _)
         return (clock() - time) / nt
-    return step</code></pre>
+    return step, traversals</code></pre>
 </details>
 </dd>
 </dl>
@@ -366,7 +366,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 self.n_threads = 1
                 
         self.n_dims = n_dims
-        self.__call = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
+        self.__call, self.traversals = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 
     def __call__(self, nt, mu_coeff, post_step, post_iter,
                  advectee, advectee_bc,

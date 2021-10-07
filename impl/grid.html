@@ -28,36 +28,38 @@
 </summary>
 <pre><code class="python">import numba
 
-from PyMPDATA.impl.domain_decomposition import subdomain
+from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
 
 
-def make_chunk(n, n_threads):
+def make_chunk(n, n_threads, jit_flags):
     static = n &gt; 0
+
+    subdomain = make_subdomain(jit_flags)
 
     if static:
         rngs = tuple([subdomain(n, th, n_threads) for th in range(n_threads)])
 
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(_, thread_id):
             return rngs[thread_id]
     else:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(meta, thread_id):
             return subdomain(meta[META_N_OUTER], thread_id, n_threads)
 
     return _impl
 
 
-def make_domain(grid):
+def make_domain(grid, jit_flags):
     static = grid[0] &gt; 0
 
     if static:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(_):
             return grid
     else:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(meta):
             return meta[META_N_OUTER], meta[META_N_MID3D], meta[META_N_INNER]
     return _impl</code></pre>
@@ -71,7 +73,7 @@ def make_domain(grid):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="PyMPDATA.impl.grid.make_chunk"><code class="name flex">
-<span>def <span class="ident">make_chunk</span></span>(<span>n, n_threads)</span>
+<span>def <span class="ident">make_chunk</span></span>(<span>n, n_threads, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -79,17 +81,19 @@ def make_domain(grid):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_chunk(n, n_threads):
+<pre><code class="python">def make_chunk(n, n_threads, jit_flags):
     static = n &gt; 0
+
+    subdomain = make_subdomain(jit_flags)
 
     if static:
         rngs = tuple([subdomain(n, th, n_threads) for th in range(n_threads)])
 
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(_, thread_id):
             return rngs[thread_id]
     else:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(meta, thread_id):
             return subdomain(meta[META_N_OUTER], thread_id, n_threads)
 
@@ -97,7 +101,7 @@ def make_domain(grid):
 </details>
 </dd>
 <dt id="PyMPDATA.impl.grid.make_domain"><code class="name flex">
-<span>def <span class="ident">make_domain</span></span>(<span>grid)</span>
+<span>def <span class="ident">make_domain</span></span>(<span>grid, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -105,15 +109,15 @@ def make_domain(grid):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_domain(grid):
+<pre><code class="python">def make_domain(grid, jit_flags):
     static = grid[0] &gt; 0
 
     if static:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(_):
             return grid
     else:
-        @numba.njit()
+        @numba.njit(**jit_flags)
         def _impl(meta):
             return meta[META_N_OUTER], meta[META_N_MID3D], meta[META_N_INNER]
     return _impl</code></pre>

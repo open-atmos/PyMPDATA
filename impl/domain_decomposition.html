@@ -29,16 +29,17 @@
 <pre><code class="python">import math
 import numba
 
+def make_subdomain(jit_flags):
+    @numba.njit(**jit_flags)
+    def subdomain(n, rank, size):
+        if rank &gt;= size:
+            raise ValueError()
 
-@numba.njit()
-def subdomain(n, rank, size):
-    if rank &gt;= size:
-        raise ValueError()
-
-    n_max = math.ceil(n / size)
-    i0 = n_max * rank
-    i1 = i0 + (n_max if i0 + n_max &lt;= n else n - i0)
-    return i0, i1</code></pre>
+        n_max = math.ceil(n / size)
+        i0 = n_max * rank
+        i1 = i0 + (n_max if i0 + n_max &lt;= n else n - i0)
+        return i0, i1
+    return subdomain</code></pre>
 </details>
 </section>
 <section>
@@ -48,8 +49,8 @@ def subdomain(n, rank, size):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="PyMPDATA.impl.domain_decomposition.subdomain"><code class="name flex">
-<span>def <span class="ident">subdomain</span></span>(<span>n, rank, size)</span>
+<dt id="PyMPDATA.impl.domain_decomposition.make_subdomain"><code class="name flex">
+<span>def <span class="ident">make_subdomain</span></span>(<span>jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -57,15 +58,17 @@ def subdomain(n, rank, size):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@numba.njit()
-def subdomain(n, rank, size):
-    if rank &gt;= size:
-        raise ValueError()
+<pre><code class="python">def make_subdomain(jit_flags):
+    @numba.njit(**jit_flags)
+    def subdomain(n, rank, size):
+        if rank &gt;= size:
+            raise ValueError()
 
-    n_max = math.ceil(n / size)
-    i0 = n_max * rank
-    i1 = i0 + (n_max if i0 + n_max &lt;= n else n - i0)
-    return i0, i1</code></pre>
+        n_max = math.ceil(n / size)
+        i0 = n_max * rank
+        i1 = i0 + (n_max if i0 + n_max &lt;= n else n - i0)
+        return i0, i1
+    return subdomain</code></pre>
 </details>
 </dd>
 </dl>
@@ -86,7 +89,7 @@ def subdomain(n, rank, size):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="PyMPDATA.impl.domain_decomposition.subdomain" href="#PyMPDATA.impl.domain_decomposition.subdomain">subdomain</a></code></li>
+<li><code><a title="PyMPDATA.impl.domain_decomposition.make_subdomain" href="#PyMPDATA.impl.domain_decomposition.make_subdomain">make_subdomain</a></code></li>
 </ul>
 </li>
 </ul>

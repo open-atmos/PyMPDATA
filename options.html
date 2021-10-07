@@ -30,6 +30,11 @@
 from pystrict import strict
 
 
+class hashabledict(dict):
+    def __hash__(self):
+        return hash(tuple(sorted(self.items())))
+
+
 @strict
 class Options:
     def __init__(self, *,
@@ -44,11 +49,11 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: np.floating = np.float64
                  ):
-        self._values = {&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
+        self._values = hashabledict({&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
                         &#39;divergent_flow&#39;: divergent_flow, &#39;nonoscillatory&#39;: nonoscillatory,
                         &#39;third_order_terms&#39;: third_order_terms, &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
                         &#39;dimensionally_split&#39;: dimensionally_split,
-                        &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC}
+                        &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC})
 
         if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters &lt; 2:
             raise ValueError()
@@ -99,7 +104,7 @@ class Options:
         return str(self._values)
     
     def __hash__(self):
-        value = hash(str(self._values))
+        value = hash(self._values) + hash(self.jit_flags)
         return value
 
     def __eq__(self, other):
@@ -114,11 +119,11 @@ class Options:
 
     @property
     def jit_flags(self):
-        return {
+        return hashabledict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
             &#34;boundscheck&#34;: False,
-        }</code></pre>
+        })</code></pre>
 </details>
 </section>
 <section>
@@ -154,11 +159,11 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: np.floating = np.float64
                  ):
-        self._values = {&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
+        self._values = hashabledict({&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
                         &#39;divergent_flow&#39;: divergent_flow, &#39;nonoscillatory&#39;: nonoscillatory,
                         &#39;third_order_terms&#39;: third_order_terms, &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
                         &#39;dimensionally_split&#39;: dimensionally_split,
-                        &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC}
+                        &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC})
 
         if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters &lt; 2:
             raise ValueError()
@@ -209,7 +214,7 @@ class Options:
         return str(self._values)
     
     def __hash__(self):
-        value = hash(str(self._values))
+        value = hash(self._values) + hash(self.jit_flags)
         return value
 
     def __eq__(self, other):
@@ -224,11 +229,11 @@ class Options:
 
     @property
     def jit_flags(self):
-        return {
+        return hashabledict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
             &#34;boundscheck&#34;: False,
-        }</code></pre>
+        })</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -313,11 +318,11 @@ def infinite_gauge(self):
 </summary>
 <pre><code class="python">@property
 def jit_flags(self):
-    return {
+    return hashabledict({
         &#34;fastmath&#34;: True,
         &#34;error_model&#34;: &#39;numpy&#39;,
         &#34;boundscheck&#34;: False,
-    }</code></pre>
+    })</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.n_halo"><code class="name">var <span class="ident">n_halo</span></code></dt>
@@ -385,6 +390,35 @@ def third_order_terms(self):
 </dd>
 </dl>
 </dd>
+<dt id="PyMPDATA.options.hashabledict"><code class="flex name class">
+<span>class <span class="ident">hashabledict</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class hashabledict(dict):
+    def __hash__(self):
+        return hash(tuple(sorted(self.items())))</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.dict</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -417,6 +451,9 @@ def third_order_terms(self):
 <li><code><a title="PyMPDATA.options.Options.nonoscillatory" href="#PyMPDATA.options.Options.nonoscillatory">nonoscillatory</a></code></li>
 <li><code><a title="PyMPDATA.options.Options.third_order_terms" href="#PyMPDATA.options.Options.third_order_terms">third_order_terms</a></code></li>
 </ul>
+</li>
+<li>
+<h4><code><a title="PyMPDATA.options.hashabledict" href="#PyMPDATA.options.hashabledict">hashabledict</a></code></h4>
 </li>
 </ul>
 </li>

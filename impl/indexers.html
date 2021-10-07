@@ -30,152 +30,153 @@
 import numba
 from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
 
-
-@numba.njit([numba.boolean(numba.float64),
-             numba.boolean(numba.int64)])
-def _is_integral(n):
-    return int(n * 2.) % 2 == 0
-
-
-@numba.njit()
-def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
-    return arr[focus[INNER] + k]
+def make_indexers(jit_flags):
+    @numba.njit([numba.boolean(numba.float64),
+                 numba.boolean(numba.int64)], **jit_flags)
+    def _is_integral(n):
+        return int(n * 2.) % 2 == 0
 
 
-@numba.njit()
-def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
-    return arr[focus[OUTER] + i, focus[INNER] + k]
+    @numba.njit(**jit_flags)
+    def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
+        return arr[focus[INNER] + k]
 
 
-@numba.njit()
-def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
-    return arr[focus[OUTER] + i, focus[INNER] + k]
+    @numba.njit(**jit_flags)
+    def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
+        return arr[focus[OUTER] + i, focus[INNER] + k]
 
 
-@numba.njit()
-def at_3d_axis0(focus, arr, i, j=0, k=0):
-    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+    @numba.njit(**jit_flags)
+    def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
+        return arr[focus[OUTER] + i, focus[INNER] + k]
 
 
-@numba.njit()
-def at_3d_axis1(focus, arr, j, k=0, i=0):
-    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+    @numba.njit(**jit_flags)
+    def at_3d_axis0(focus, arr, i, j=0, k=0):
+        return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
-@numba.njit()
-def at_3d_axis2(focus, arr, k, i=0, j=0):
-    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+    @numba.njit(**jit_flags)
+    def at_3d_axis1(focus, arr, j, k=0, i=0):
+        return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
-@numba.njit()
-def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
-    return arrs[INNER][focus[INNER] + int(k - .5)]
+    @numba.njit(**jit_flags)
+    def at_3d_axis2(focus, arr, k, i=0, j=0):
+        return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
 
-@numba.njit()
-def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
-    if _is_integral(i):
-        d, ii, kk = INNER, int(i), int(k - .5)
-    else:
-        d, ii, kk = OUTER, int(i - .5), int(k)
-    return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
+    @numba.njit(**jit_flags)
+    def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
+        return arrs[INNER][focus[INNER] + int(k - .5)]
 
 
-@numba.njit()
-def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
-    if _is_integral(i):
-        d, ii, kk = INNER, int(i), int(k - .5)
-    else:
-        d, ii, kk = OUTER, int(i - .5), int(k)
-    return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
+    @numba.njit(**jit_flags)
+    def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
+        if _is_integral(i):
+            d, ii, kk = INNER, int(i), int(k - .5)
+        else:
+            d, ii, kk = OUTER, int(i - .5), int(k)
+        return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
 
 
-@numba.njit()
-def atv_3d_axis0(focus, arrs, i, j=0, k=0):
-    if not _is_integral(i):
-        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
-    elif not _is_integral(j):
-        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
-    else:
-        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
-    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
+    @numba.njit(**jit_flags)
+    def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
+        if _is_integral(i):
+            d, ii, kk = INNER, int(i), int(k - .5)
+        else:
+            d, ii, kk = OUTER, int(i - .5), int(k)
+        return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
 
 
-@numba.njit()
-def atv_3d_axis1(focus, arrs, j, k=0, i=0):
-    if not _is_integral(i):
-        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
-    elif not _is_integral(j):
-        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
-    else:
-        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
-    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
+    @numba.njit(**jit_flags)
+    def atv_3d_axis0(focus, arrs, i, j=0, k=0):
+        if not _is_integral(i):
+            d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+        elif not _is_integral(j):
+            d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+        else:
+            d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+        return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
 
 
-@numba.njit()
-def atv_3d_axis2(focus, arrs, k, i=0, j=0):
-    if not _is_integral(i):
-        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
-    elif not _is_integral(j):
-        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
-    else:
-        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
-    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
+    @numba.njit(**jit_flags)
+    def atv_3d_axis1(focus, arrs, j, k=0, i=0):
+        if not _is_integral(i):
+            d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+        elif not _is_integral(j):
+            d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+        else:
+            d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+        return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
 
 
-@numba.njit()
-def set_1d(arr, _, __, k, value):
-    arr[k] = value
+    @numba.njit(**jit_flags)
+    def atv_3d_axis2(focus, arrs, k, i=0, j=0):
+        if not _is_integral(i):
+            d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+        elif not _is_integral(j):
+            d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+        else:
+            d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+        return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
 
 
-@numba.njit()
-def set_2d(arr, i, _, k, value):
-    arr[i, k] = value
+    @numba.njit(**jit_flags)
+    def set_1d(arr, _, __, k, value):
+        arr[k] = value
 
 
-@numba.njit()
-def set_3d(arr, i, j, k, value):
-    arr[i, j, k] = value
+    @numba.njit(**jit_flags)
+    def set_2d(arr, i, _, k, value):
+        arr[i, k] = value
 
 
-@numba.njit()
-def get_1d(arr, _, __, k):
-    return arr[k]
+    @numba.njit(**jit_flags)
+    def set_3d(arr, i, j, k, value):
+        arr[i, j, k] = value
 
 
-@numba.njit()
-def get_2d(arr, i, _, k):
-    return arr[i, k]
+    @numba.njit(**jit_flags)
+    def get_1d(arr, _, __, k):
+        return arr[k]
 
 
-@numba.njit()
-def get_3d(arr, i, j, k):
-    return arr[i, j, k]
+    @numba.njit(**jit_flags)
+    def get_2d(arr, i, _, k):
+        return arr[i, k]
 
 
-Indexers = namedtuple(&#39;Indexers&#39;, (&#39;at&#39;, &#39;atv&#39;, &#39;set&#39;, &#39;get&#39;))
+    @numba.njit(**jit_flags)
+    def get_3d(arr, i, j, k):
+        return arr[i, j, k]
 
-indexers = (
-    None,
-    Indexers(
-        (None, None, at_1d),
-        (None, None, atv_1d),
-        set_1d,
-        get_1d
-    ),
-    Indexers(
-        (at_2d_axis0, None, at_2d_axis1),
-        (atv_2d_axis0, None, atv_2d_axis1),
-        set_2d,
-        get_2d
-    ),
-    Indexers(
-        (at_3d_axis0, at_3d_axis1, at_3d_axis2),
-        (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
-        set_3d,
-        get_3d
+
+    Indexers = namedtuple(&#39;Indexers&#39;, (&#39;at&#39;, &#39;atv&#39;, &#39;set&#39;, &#39;get&#39;))
+
+    indexers = (
+        None,
+        Indexers(
+            (None, None, at_1d),
+            (None, None, atv_1d),
+            set_1d,
+            get_1d
+        ),
+        Indexers(
+            (at_2d_axis0, None, at_2d_axis1),
+            (atv_2d_axis0, None, atv_2d_axis1),
+            set_2d,
+            get_2d
+        ),
+        Indexers(
+            (at_3d_axis0, at_3d_axis1, at_3d_axis2),
+            (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
+            set_3d,
+            get_3d
+        )
     )
-)</code></pre>
+    return indexers</code></pre>
 </details>
 </section>
 <section>
@@ -185,8 +186,8 @@ indexers = (
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="PyMPDATA.impl.indexers.at_1d"><code class="name flex">
-<span>def <span class="ident">at_1d</span></span>(<span>focus, arr, k)</span>
+<dt id="PyMPDATA.impl.indexers.make_indexers"><code class="name flex">
+<span>def <span class="ident">make_indexers</span></span>(<span>jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -194,311 +195,158 @@ indexers = (
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@numba.njit()
-def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
-    return arr[focus[INNER] + k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.at_2d_axis0"><code class="name flex">
-<span>def <span class="ident">at_2d_axis0</span></span>(<span>focus, arr, i, k=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
-    return arr[focus[OUTER] + i, focus[INNER] + k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.at_2d_axis1"><code class="name flex">
-<span>def <span class="ident">at_2d_axis1</span></span>(<span>focus, arr, k, i=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
-    return arr[focus[OUTER] + i, focus[INNER] + k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.at_3d_axis0"><code class="name flex">
-<span>def <span class="ident">at_3d_axis0</span></span>(<span>focus, arr, i, j=0, k=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def at_3d_axis0(focus, arr, i, j=0, k=0):
-    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.at_3d_axis1"><code class="name flex">
-<span>def <span class="ident">at_3d_axis1</span></span>(<span>focus, arr, j, k=0, i=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def at_3d_axis1(focus, arr, j, k=0, i=0):
-    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.at_3d_axis2"><code class="name flex">
-<span>def <span class="ident">at_3d_axis2</span></span>(<span>focus, arr, k, i=0, j=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def at_3d_axis2(focus, arr, k, i=0, j=0):
-    return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.atv_1d"><code class="name flex">
-<span>def <span class="ident">atv_1d</span></span>(<span>focus, arrs, k)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
-    return arrs[INNER][focus[INNER] + int(k - .5)]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.atv_2d_axis0"><code class="name flex">
-<span>def <span class="ident">atv_2d_axis0</span></span>(<span>focus, arrs, i, k=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
-    if _is_integral(i):
-        d, ii, kk = INNER, int(i), int(k - .5)
-    else:
-        d, ii, kk = OUTER, int(i - .5), int(k)
-    return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.atv_2d_axis1"><code class="name flex">
-<span>def <span class="ident">atv_2d_axis1</span></span>(<span>focus, arrs, k, i=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
-    if _is_integral(i):
-        d, ii, kk = INNER, int(i), int(k - .5)
-    else:
-        d, ii, kk = OUTER, int(i - .5), int(k)
-    return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.atv_3d_axis0"><code class="name flex">
-<span>def <span class="ident">atv_3d_axis0</span></span>(<span>focus, arrs, i, j=0, k=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def atv_3d_axis0(focus, arrs, i, j=0, k=0):
-    if not _is_integral(i):
-        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
-    elif not _is_integral(j):
-        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
-    else:
-        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
-    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.atv_3d_axis1"><code class="name flex">
-<span>def <span class="ident">atv_3d_axis1</span></span>(<span>focus, arrs, j, k=0, i=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def atv_3d_axis1(focus, arrs, j, k=0, i=0):
-    if not _is_integral(i):
-        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
-    elif not _is_integral(j):
-        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
-    else:
-        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
-    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.atv_3d_axis2"><code class="name flex">
-<span>def <span class="ident">atv_3d_axis2</span></span>(<span>focus, arrs, k, i=0, j=0)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def atv_3d_axis2(focus, arrs, k, i=0, j=0):
-    if not _is_integral(i):
-        d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
-    elif not _is_integral(j):
-        d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
-    else:
-        d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
-    return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.get_1d"><code class="name flex">
-<span>def <span class="ident">get_1d</span></span>(<span>arr, _, __, k)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def get_1d(arr, _, __, k):
-    return arr[k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.get_2d"><code class="name flex">
-<span>def <span class="ident">get_2d</span></span>(<span>arr, i, _, k)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def get_2d(arr, i, _, k):
-    return arr[i, k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.get_3d"><code class="name flex">
-<span>def <span class="ident">get_3d</span></span>(<span>arr, i, j, k)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def get_3d(arr, i, j, k):
-    return arr[i, j, k]</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.set_1d"><code class="name flex">
-<span>def <span class="ident">set_1d</span></span>(<span>arr, _, __, k, value)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def set_1d(arr, _, __, k, value):
-    arr[k] = value</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.set_2d"><code class="name flex">
-<span>def <span class="ident">set_2d</span></span>(<span>arr, i, _, k, value)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def set_2d(arr, i, _, k, value):
-    arr[i, k] = value</code></pre>
-</details>
-</dd>
-<dt id="PyMPDATA.impl.indexers.set_3d"><code class="name flex">
-<span>def <span class="ident">set_3d</span></span>(<span>arr, i, j, k, value)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.njit()
-def set_3d(arr, i, j, k, value):
-    arr[i, j, k] = value</code></pre>
+<pre><code class="python">def make_indexers(jit_flags):
+    @numba.njit([numba.boolean(numba.float64),
+                 numba.boolean(numba.int64)], **jit_flags)
+    def _is_integral(n):
+        return int(n * 2.) % 2 == 0
+
+
+    @numba.njit(**jit_flags)
+    def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
+        return arr[focus[INNER] + k]
+
+
+    @numba.njit(**jit_flags)
+    def at_2d_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
+        return arr[focus[OUTER] + i, focus[INNER] + k]
+
+
+    @numba.njit(**jit_flags)
+    def at_2d_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
+        return arr[focus[OUTER] + i, focus[INNER] + k]
+
+
+    @numba.njit(**jit_flags)
+    def at_3d_axis0(focus, arr, i, j=0, k=0):
+        return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+
+
+    @numba.njit(**jit_flags)
+    def at_3d_axis1(focus, arr, j, k=0, i=0):
+        return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+
+
+    @numba.njit(**jit_flags)
+    def at_3d_axis2(focus, arr, k, i=0, j=0):
+        return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
+
+
+    @numba.njit(**jit_flags)
+    def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
+        return arrs[INNER][focus[INNER] + int(k - .5)]
+
+
+    @numba.njit(**jit_flags)
+    def atv_2d_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
+        if _is_integral(i):
+            d, ii, kk = INNER, int(i), int(k - .5)
+        else:
+            d, ii, kk = OUTER, int(i - .5), int(k)
+        return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
+
+
+    @numba.njit(**jit_flags)
+    def atv_2d_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
+        if _is_integral(i):
+            d, ii, kk = INNER, int(i), int(k - .5)
+        else:
+            d, ii, kk = OUTER, int(i - .5), int(k)
+        return arrs[d][focus[OUTER] + ii, focus[INNER] + kk]
+
+
+    @numba.njit(**jit_flags)
+    def atv_3d_axis0(focus, arrs, i, j=0, k=0):
+        if not _is_integral(i):
+            d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+        elif not _is_integral(j):
+            d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+        else:
+            d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+        return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
+
+
+    @numba.njit(**jit_flags)
+    def atv_3d_axis1(focus, arrs, j, k=0, i=0):
+        if not _is_integral(i):
+            d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+        elif not _is_integral(j):
+            d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+        else:
+            d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+        return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
+
+
+    @numba.njit(**jit_flags)
+    def atv_3d_axis2(focus, arrs, k, i=0, j=0):
+        if not _is_integral(i):
+            d, ii, jj, kk = OUTER, int(i - .5), int(j), int(k)
+        elif not _is_integral(j):
+            d, ii, jj, kk = MID3D, int(i), int(j - .5), int(k)
+        else:
+            d, ii, jj, kk = INNER, int(i), int(j), int(k - .5)
+        return arrs[d][focus[OUTER] + ii, focus[MID3D] + jj, focus[INNER] + kk]
+
+
+    @numba.njit(**jit_flags)
+    def set_1d(arr, _, __, k, value):
+        arr[k] = value
+
+
+    @numba.njit(**jit_flags)
+    def set_2d(arr, i, _, k, value):
+        arr[i, k] = value
+
+
+    @numba.njit(**jit_flags)
+    def set_3d(arr, i, j, k, value):
+        arr[i, j, k] = value
+
+
+    @numba.njit(**jit_flags)
+    def get_1d(arr, _, __, k):
+        return arr[k]
+
+
+    @numba.njit(**jit_flags)
+    def get_2d(arr, i, _, k):
+        return arr[i, k]
+
+
+    @numba.njit(**jit_flags)
+    def get_3d(arr, i, j, k):
+        return arr[i, j, k]
+
+
+    Indexers = namedtuple(&#39;Indexers&#39;, (&#39;at&#39;, &#39;atv&#39;, &#39;set&#39;, &#39;get&#39;))
+
+    indexers = (
+        None,
+        Indexers(
+            (None, None, at_1d),
+            (None, None, atv_1d),
+            set_1d,
+            get_1d
+        ),
+        Indexers(
+            (at_2d_axis0, None, at_2d_axis1),
+            (atv_2d_axis0, None, atv_2d_axis1),
+            set_2d,
+            get_2d
+        ),
+        Indexers(
+            (at_3d_axis0, at_3d_axis1, at_3d_axis2),
+            (atv_3d_axis0, atv_3d_axis1, atv_3d_axis2),
+            set_3d,
+            get_3d
+        )
+    )
+    return indexers</code></pre>
 </details>
 </dd>
 </dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="PyMPDATA.impl.indexers.Indexers"><code class="flex name class">
-<span>class <span class="ident">Indexers</span></span>
-<span>(</span><span>at, atv, set, get)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Indexers(at, atv, set, get)</p></div>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>builtins.tuple</li>
-</ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="PyMPDATA.impl.indexers.Indexers.at"><code class="name">var <span class="ident">at</span></code></dt>
-<dd>
-<div class="desc"><p>Alias for field number 0</p></div>
-</dd>
-<dt id="PyMPDATA.impl.indexers.Indexers.atv"><code class="name">var <span class="ident">atv</span></code></dt>
-<dd>
-<div class="desc"><p>Alias for field number 1</p></div>
-</dd>
-<dt id="PyMPDATA.impl.indexers.Indexers.get"><code class="name">var <span class="ident">get</span></code></dt>
-<dd>
-<div class="desc"><p>Alias for field number 3</p></div>
-</dd>
-<dt id="PyMPDATA.impl.indexers.Indexers.set"><code class="name">var <span class="ident">set</span></code></dt>
-<dd>
-<div class="desc"><p>Alias for field number 2</p></div>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -513,38 +361,8 @@ def set_3d(arr, i, j, k, value):
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="PyMPDATA.impl.indexers.at_1d" href="#PyMPDATA.impl.indexers.at_1d">at_1d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.at_2d_axis0" href="#PyMPDATA.impl.indexers.at_2d_axis0">at_2d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.at_2d_axis1" href="#PyMPDATA.impl.indexers.at_2d_axis1">at_2d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.at_3d_axis0" href="#PyMPDATA.impl.indexers.at_3d_axis0">at_3d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.at_3d_axis1" href="#PyMPDATA.impl.indexers.at_3d_axis1">at_3d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.at_3d_axis2" href="#PyMPDATA.impl.indexers.at_3d_axis2">at_3d_axis2</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.atv_1d" href="#PyMPDATA.impl.indexers.atv_1d">atv_1d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.atv_2d_axis0" href="#PyMPDATA.impl.indexers.atv_2d_axis0">atv_2d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.atv_2d_axis1" href="#PyMPDATA.impl.indexers.atv_2d_axis1">atv_2d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.atv_3d_axis0" href="#PyMPDATA.impl.indexers.atv_3d_axis0">atv_3d_axis0</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.atv_3d_axis1" href="#PyMPDATA.impl.indexers.atv_3d_axis1">atv_3d_axis1</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.atv_3d_axis2" href="#PyMPDATA.impl.indexers.atv_3d_axis2">atv_3d_axis2</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.get_1d" href="#PyMPDATA.impl.indexers.get_1d">get_1d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.get_2d" href="#PyMPDATA.impl.indexers.get_2d">get_2d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.get_3d" href="#PyMPDATA.impl.indexers.get_3d">get_3d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.set_1d" href="#PyMPDATA.impl.indexers.set_1d">set_1d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.set_2d" href="#PyMPDATA.impl.indexers.set_2d">set_2d</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.set_3d" href="#PyMPDATA.impl.indexers.set_3d">set_3d</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="PyMPDATA.impl.indexers.Indexers" href="#PyMPDATA.impl.indexers.Indexers">Indexers</a></code></h4>
 <ul class="">
-<li><code><a title="PyMPDATA.impl.indexers.Indexers.at" href="#PyMPDATA.impl.indexers.Indexers.at">at</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.Indexers.atv" href="#PyMPDATA.impl.indexers.Indexers.atv">atv</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.Indexers.get" href="#PyMPDATA.impl.indexers.Indexers.get">get</a></code></li>
-<li><code><a title="PyMPDATA.impl.indexers.Indexers.set" href="#PyMPDATA.impl.indexers.Indexers.set">set</a></code></li>
-</ul>
-</li>
+<li><code><a title="PyMPDATA.impl.indexers.make_indexers" href="#PyMPDATA.impl.indexers.make_indexers">make_indexers</a></code></li>
 </ul>
 </li>
 </ul>
