@@ -1,4 +1,6 @@
+from typing import Union
 import numba
+import numpy as np
 from PyMPDATA import ScalarField, VectorField, Stepper
 from PyMPDATA.impl.meta import META_IS_NULL
 
@@ -37,17 +39,28 @@ class Solver:
         self.g_factor = g_factor or null_scalar_field()
         self._vectmp_a = vector_field()
         self._vectmp_b = vector_field()
-        self._vectmp_c = vector_field() if self.options.non_zero_mu_coeff else null_vector_field()
-        self.nonosc_xtrm = scalar_field(dtype=complex) if self.options.nonoscillatory else null_scalar_field()
-        self.nonosc_beta = scalar_field(dtype=complex) if self.options.nonoscillatory else null_scalar_field()
+        self._vectmp_c = vector_field() \
+            if self.options.non_zero_mu_coeff else null_vector_field()
+        self.nonosc_xtrm = scalar_field(dtype=complex) \
+            if self.options.nonoscillatory else null_scalar_field()
+        self.nonosc_beta = scalar_field(dtype=complex) \
+            if self.options.nonoscillatory else null_scalar_field()
 
         for field in (self.advectee, self.advector, self.g_factor, self._vectmp_a,
                       self._vectmp_b, self._vectmp_c, self.nonosc_xtrm, self.nonosc_beta):
             field.assemble(self.stepper.traversals)
 
-    def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
-        assert mu_coeff == 0. or self.options.non_zero_mu_coeff
-        if mu_coeff != 0 and not self.g_factor.meta[META_IS_NULL]:
+    def advance(self,
+                nt: int,
+                mu_coeff: Union[tuple, None] = None,
+                post_step=post_step_null,
+                post_iter=None
+                ):
+        if mu_coeff is not None:
+            assert self.options.non_zero_mu_coeff
+        else:
+            mu_coeff = (0., 0., 0.)
+        if self.options.non_zero_mu_coeff and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
 
         post_iter = post_iter or PostIterNull()
