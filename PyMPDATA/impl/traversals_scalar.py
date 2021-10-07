@@ -1,10 +1,9 @@
 import numba
-from .indexers import indexers
 from .meta import META_HALO_VALID
 from .enumerations import OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_START, RNG_STOP, INVALID_INDEX
 
 
-def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
+def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
                        boundary_cond_vector, boundary_cond_scalar):
     set = indexers[n_dims].set
     get = indexers[n_dims].get
@@ -120,7 +119,7 @@ def _make_apply_scalar(*, loop, jit_flags, n_dims, halo, n_threads, chunker, spa
     return apply_scalar
 
 
-def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner):
+def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
     set = indexers[n_dims].set
 
     @numba.njit(**jit_flags)

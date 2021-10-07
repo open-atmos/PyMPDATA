@@ -4,7 +4,7 @@ import numba
 
 @lru_cache()
 def _make_scalar(value, at, halo, jit_flags):
-    @numba.njit(**jit_flags, inline='always')
+    @numba.njit(**jit_flags)
     def fill_halos(_, __, ___):
         return value
 

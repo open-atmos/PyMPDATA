@@ -6,7 +6,6 @@ from PyMPDATA.impl.traversals import Traversals
 from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Constant
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import (
     MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC,
     META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
@@ -70,11 +69,11 @@ class TestTraversals:
         traversals = make_traversals(grid, halo, n_threads)
         sut = traversals.apply_scalar(loop=loop)
 
-        scl_null_arg_impl = ScalarField.make_null(n_dims, jit_flags).impl
-        vec_null_arg_impl = VectorField.make_null(n_dims, jit_flags).impl
+        scl_null_arg_impl = ScalarField.make_null(n_dims, traversals).impl
+        vec_null_arg_impl = VectorField.make_null(n_dims, traversals).impl
 
         out = ScalarField(np.zeros(grid), halo, [Constant(np.nan)] * n_dims)
-        out.assemble(jit_flags)
+        out.assemble(traversals)
 
         # act
         sut(_cell_id_scalar,
@@ -101,7 +100,7 @@ class TestTraversals:
                         ijk = (i, k, INVALID_INDEX)
                     else:
                         ijk = (i, j, k)
-                    value = indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
+                    value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
                     assert (n_dims if loop else 1) * cell_id(i, j, k) == value
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
@@ -119,8 +118,8 @@ class TestTraversals:
         traversals = make_traversals(grid, halo, n_threads)
         sut = traversals.apply_vector()
 
-        scl_null_arg_impl = ScalarField.make_null(n_dims, jit_flags).impl
-        vec_null_arg_impl = VectorField.make_null(n_dims, jit_flags).impl
+        scl_null_arg_impl = ScalarField.make_null(n_dims, traversals).impl
+        vec_null_arg_impl = VectorField.make_null(n_dims, traversals).impl
 
         if n_dims == 1:
             data = (np.zeros(grid[0]+1),)
@@ -139,7 +138,7 @@ class TestTraversals:
             raise NotImplementedError()
 
         out = VectorField(data, halo, [Constant(np.nan)] * n_dims)
-        out.assemble(jit_flags)
+        out.assemble(traversals)
 
         # act
         sut(*[_cell_id_vector] * MAX_DIM_NUM,

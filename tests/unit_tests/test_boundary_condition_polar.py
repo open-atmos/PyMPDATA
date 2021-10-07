@@ -27,9 +27,9 @@ class TestPolarBoundaryCondition:
             Polar(grid=data.shape, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = ScalarField(data, halo, bc)
-        field.assemble(JIT_FLAGS)
-        meta_and_data, fill_halos = field.impl
         traversals = Traversals(grid=data.shape, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
+        field.assemble(traversals)
+        meta_and_data, fill_halos = field.impl
         sut = traversals._fill_halos_scalar
 
         # act
@@ -71,9 +71,9 @@ class TestPolarBoundaryCondition:
             Polar(grid=grid, longitude_idx=OUTER, latitude_idx=INNER)
         )
         field = VectorField(data, halo, bc)
-        field.assemble(JIT_FLAGS)
-        meta_and_data, fill_halos = field.impl
         traversals = Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
+        field.assemble(traversals)
+        meta_and_data, fill_halos = field.impl
         sut = traversals._fill_halos_vector
 
         # act

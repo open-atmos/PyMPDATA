@@ -21,9 +21,9 @@ class Solver:
     def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
                  g_factor: [ScalarField, None] = None):
         scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
-        null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims, jit_flags=self.options.jit_flags)
+        null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims, stepper.traversals)
         vector_field = lambda: VectorField.clone(advector)
-        null_vector_field = lambda: VectorField.make_null(advector.n_dims, jit_flags=self.options.jit_flags)
+        null_vector_field = lambda: VectorField.make_null(advector.n_dims, stepper.traversals)
 
         self.options = stepper.options
 
@@ -44,7 +44,7 @@ class Solver:
         for field in (self.advectee, self.advector, self.g_factor, self._vectmp_a,
                       self._vectmp_b, self._vectmp_c, self.nonosc_xtrm, self.nonosc_beta):
             if not field.meta[META_IS_NULL]:
-                field.assemble(self.options.jit_flags)
+                field.assemble(self.stepper.traversals)
 
     def advance(self, nt: int, mu_coeff: float = 0., post_step=post_step_null, post_iter=None):
         assert mu_coeff == 0. or self.options.non_zero_mu_coeff

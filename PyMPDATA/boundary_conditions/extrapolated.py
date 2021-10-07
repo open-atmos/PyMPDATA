@@ -6,7 +6,7 @@ from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 @lru_cache()
 def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
-    @numba.njit(**jit_flags, inline='always')
+    @numba.njit(**jit_flags)
     def impl(psi, n, sign):
         if sign == SIGN_LEFT:
             edg = halo - psi[ARG_FOCUS][dim]
@@ -21,14 +21,14 @@ def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
         return max(at(*psi, -1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
 
     if dtype == complex:
-        @numba.njit(**jit_flags, inline='always')
+        @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, n, sign):
             return complex(
                 impl((psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].real), n, sign),
                 impl((psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].imag), n, sign)
             )
     else:
-        @numba.njit(**jit_flags, inline='always')
+        @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, n, sign):
             return impl(psi, n, sign)
 

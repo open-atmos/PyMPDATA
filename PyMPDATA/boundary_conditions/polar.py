@@ -23,7 +23,7 @@ class Polar:
         left_edge_idx = halo - 1
         right_edge_idx = nlat + halo
 
-        @numba.njit(**jit_flags, inline='always')
+        @numba.njit(**jit_flags)
         def fill_halos(psi, _, sign):
             lon = psi[ARG_FOCUS][lon_idx]
             lat = psi[ARG_FOCUS][lat_idx]
@@ -38,7 +38,7 @@ class Polar:
         return fill_halos
 
     def make_vector(self, at, dtype, jit_flags):
-        @numba.njit(**jit_flags, inline='always')
+        @numba.njit(**jit_flags)
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120
 

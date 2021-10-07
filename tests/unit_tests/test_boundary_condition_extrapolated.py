@@ -15,9 +15,9 @@ class TestBoundaryConditionExtrapolated:
         bc = (Extrapolated(),)
         field = ScalarField(data, halo, bc)
         jit_flags = Options().jit_flags
-        field.assemble(jit_flags=jit_flags)
-        meta_and_data, fill_halos = field.impl
         traversals = Traversals(grid=data.shape, halo=halo, jit_flags=jit_flags, n_threads=n_threads)
+        field.assemble(traversals)
+        meta_and_data, fill_halos = field.impl
         sut = traversals._fill_halos_scalar
 
         # act

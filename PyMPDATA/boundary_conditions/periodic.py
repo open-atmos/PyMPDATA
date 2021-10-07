@@ -5,7 +5,7 @@ from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 @lru_cache()
 def _make_scalar(at, jit_flags):
-    @numba.njit(**jit_flags, inline='always')
+    @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
         return at(*psi, sign * n)
     return fill_halos
@@ -13,7 +13,7 @@ def _make_scalar(at, jit_flags):
 
 @lru_cache()
 def _make_vector(at, jit_flags):
-    @numba.njit(**jit_flags, inline='always')
+    @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
         return at(*psi, sign * n)
     return fill_halos

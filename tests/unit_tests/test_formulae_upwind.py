@@ -21,14 +21,14 @@ class TestUpwind:
         bc = [Periodic()]
 
         psi = ScalarField(psi_data, halo, bc)
-        psi.assemble(options.jit_flags)
+        psi.assemble(traversals)
         psi_impl = psi.impl
 
         flux = VectorField((flux_data,), halo, bc)
-        flux.assemble(options.jit_flags)
+        flux.assemble(traversals)
         flux_impl = flux.impl
 
-        null_impl = ScalarField.make_null(len(psi_data.shape), options.jit_flags).impl
+        null_impl = ScalarField.make_null(len(psi_data.shape), traversals).impl
 
         # Act
         with warnings.catch_warnings():

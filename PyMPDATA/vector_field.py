@@ -1,6 +1,5 @@
 import inspect
 import numpy as np
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
 from PyMPDATA.scalar_field import ScalarField
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
@@ -51,10 +50,10 @@ class VectorField(Field):
         self.comp_inner = self.data[-1]
         self.impl = None
 
-    def assemble(self, jit_flags):
+    def assemble(self, traversals):
         assert self.impl is None
         self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple([
-            fh.make_vector(indexers[self.n_dims].at[i], self.dtype, jit_flags)
+            fh.make_vector(traversals.indexers[self.n_dims].at[i], self.dtype, traversals.jit_flags)
             for i, fh in enumerate(self.fill_halos)
         ])
 
@@ -80,7 +79,7 @@ class VectorField(Field):
         return result
 
     @staticmethod
-    def make_null(n_dims, jit_flags):
+    def make_null(n_dims, indexers):
         null = VectorField(
             [np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims,
             halo=1,
@@ -88,5 +87,5 @@ class VectorField(Field):
         )
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
-        null.assemble(jit_flags)
+        null.assemble(indexers)
         return null

@@ -1,5 +1,4 @@
 import numpy as np
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions import Constant
@@ -33,12 +32,10 @@ class ScalarField(Field):
         self.boundary_conditions = boundary_conditions
         self.impl = None
 
-    def assemble(self, jit_flags):
-        if not self.impl is None:
-            print("A")
+    def assemble(self, traversals):
         assert self.impl is None
         self.impl = (self.meta, self.data), tuple([
-            fh.make_scalar(indexers[self.n_dims].at[i], self.halo, self.dtype, jit_flags)
+            fh.make_scalar(traversals.indexers[self.n_dims].at[i], self.halo, self.dtype, traversals.jit_flags)
             for i, fh in enumerate(self.fill_halos)
         ])
 
@@ -53,9 +50,9 @@ class ScalarField(Field):
         return results
 
     @staticmethod
-    def make_null(n_dims, jit_flags):
+    def make_null(n_dims, traversals):
         null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
-        null.assemble(jit_flags)
+        null.assemble(traversals)
         return null

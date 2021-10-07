@@ -1,11 +1,10 @@
 import numpy as np
 import numba
-from PyMPDATA.impl.indexers import indexers
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
 def make_flux_first_pass(options, traversals):
-    idx = indexers[traversals.n_dims]
+    idx = traversals.indexers[traversals.n_dims]
     apply_vector = traversals.apply_vector()
     null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
@@ -29,7 +28,7 @@ def make_flux_subsequent(options, traversals):
         def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
             return
     else:
-        idx = indexers[traversals.n_dims]
+        idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
         formulae_flux_subsequent = tuple([
