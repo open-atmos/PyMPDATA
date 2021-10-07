@@ -1,5 +1,5 @@
 from PyMPDATA_examples.Olesik_et_al_2020.physics.East_and_Marshall_1954 import SizeDistribution
-from PyMPDATA.arakawa_c.discretisation import discretised_analytical_solution
+from PyMPDATA.impl.discretisation import discretised_analytical_solution
 from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 import pint
 from matplotlib import pyplot

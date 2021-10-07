@@ -1,11 +1,11 @@
 import numpy as np
-from .indexers import indexers
-from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
-from .scalar_field import ScalarField
-from .meta import META_HALO_VALID, META_IS_NULL
-from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
+from PyMPDATA.scalar_field import ScalarField
+from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
+from PyMPDATA.boundary_conditions.constant import Constant
 import inspect
-from .field import Field
+from PyMPDATA.impl.field import Field
 
 
 class VectorField(Field):
@@ -38,8 +38,8 @@ class VectorField(Field):
         self.boundary_conditions = boundary_conditions
 
         fill_halos = [None] * MAX_DIM_NUM
-        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
-        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
         fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_vector(indexers[self.n_dims].at[i]) for i, fh in enumerate(fill_halos)])
 
@@ -62,7 +62,7 @@ class VectorField(Field):
                 diff_sum = tmp
             else:
                 diff_sum += tmp
-        result = ScalarField(diff_sum, halo=0, boundary_conditions=[ConstantBoundaryCondition(INVALID_HALO_VALUE)] * len(grid_step))
+        result = ScalarField(diff_sum, halo=0, boundary_conditions=[Constant(INVALID_HALO_VALUE)] * len(grid_step))
         return result
 
     @property
@@ -74,7 +74,7 @@ class VectorField(Field):
         null = VectorField(
             [np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims,
             halo=1,
-            boundary_conditions=[ConstantBoundaryCondition(INVALID_HALO_VALUE)] * n_dims
+            boundary_conditions=[Constant(INVALID_HALO_VALUE)] * n_dims
         )
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True

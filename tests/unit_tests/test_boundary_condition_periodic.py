@@ -1,12 +1,13 @@
 import numpy as np
 import pytest
 from functools import lru_cache
-from PyMPDATA import ScalarField, VectorField, PeriodicBoundaryCondition
-from PyMPDATA.arakawa_c.traversals import Traversals
-from PyMPDATA.arakawa_c.meta import OUTER, MID3D, INNER
+from PyMPDATA import ScalarField, VectorField
+from PyMPDATA.boundary_conditions import Periodic
+from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA.impl.meta import OUTER, MID3D, INNER
 
 # noinspection PyUnresolvedReferences
-from ..n_threads_fixture import n_threads
+from tests.unit_tests.fixtures.n_threads import n_threads
 
 
 LEFT, RIGHT = 'left', 'right'
@@ -68,7 +69,7 @@ class TestPeriodicBoundaryCondition:
             return
 
         # arrange
-        field = ScalarField(data, halo, tuple([PeriodicBoundaryCondition() for _ in range(n_dims)]))
+        field = ScalarField(data, halo, tuple([Periodic() for _ in range(n_dims)]))
         meta_and_data, fill_halos = field.impl
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         sut = traversals._fill_halos_scalar
@@ -124,7 +125,7 @@ class TestPeriodicBoundaryCondition:
             return
 
         # arrange
-        field = VectorField(data, halo, tuple([PeriodicBoundaryCondition() for _ in range(n_dims)]))
+        field = VectorField(data, halo, tuple([Periodic() for _ in range(n_dims)]))
         meta_and_data, fill_halos = field.impl
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         sut = traversals._fill_halos_vector

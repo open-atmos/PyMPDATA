@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField, PeriodicBoundaryCondition
+from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField
+from PyMPDATA.boundary_conditions import Periodic
 
 
 @pytest.mark.parametrize("shape, ij0, out, C", [
@@ -21,8 +22,8 @@ def test_upwind(shape, ij0, out, C):
     )
     options = Options(n_iters=1)
 
-    advectee = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
-    advector = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+    advectee = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(Periodic(), Periodic()))
+    advector = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(Periodic(), Periodic()))
 
     mpdata = Solver(stepper=Stepper(options=options, grid=shape, n_threads=1), advector=advector, advectee=advectee)
     mpdata.advance(nt=1)

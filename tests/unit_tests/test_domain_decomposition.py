@@ -1,4 +1,4 @@
-from PyMPDATA.arakawa_c.domain_decomposition import subdomain
+from PyMPDATA.impl.domain_decomposition import subdomain
 import pytest
 
 

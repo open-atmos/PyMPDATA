@@ -1,5 +1,5 @@
-from PyMPDATA import ScalarField, VectorField, PeriodicBoundaryCondition, Solver, Stepper
-from PyMPDATA.options import Options
+from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
+from PyMPDATA.boundary_conditions import Periodic
 import numpy as np
 import numba
 from matplotlib import pyplot
@@ -89,9 +89,9 @@ except numba.core.errors.UnsupportedParforsError:
     Options(n_iters=1),
     Options(n_iters=2),
     Options(n_iters=3, infinite_gauge=True),
-    Options(n_iters=2, infinite_gauge=True, flux_corrected_transport=True),
+    Options(n_iters=2, infinite_gauge=True, nonoscillatory=True),
     Options(n_iters=3, infinite_gauge=False, third_order_terms=True),
-    Options(n_iters=3, infinite_gauge=True, third_order_terms=True, flux_corrected_transport=True),
+    Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
 ])
 @pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
@@ -119,9 +119,9 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
         np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
     ]
     advector = VectorField(advector_data, halo=options.n_halo,
-                     boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                           boundary_conditions=(Periodic(), Periodic()))
     advectee = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
-                        boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                           boundary_conditions=(Periodic(), Periodic()))
     if grid_static:
         stepper = Stepper(options=options, grid=grid)
     else:
@@ -133,7 +133,7 @@ def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, 
 
     benchmark.pedantic(solver.advance, (settings.nt,), setup=set_z, warmup_rounds=1, rounds=3)
 
-    if options.n_iters == 1 or options.flux_corrected_transport:
+    if options.n_iters == 1 or options.nonoscillatory:
         np.testing.assert_almost_equal(np.amin(solver.advectee.get()), h0)
     assert np.amax(solver.advectee.get()) < 10 * h
 

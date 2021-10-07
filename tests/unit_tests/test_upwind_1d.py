@@ -1,5 +1,5 @@
-from PyMPDATA import Solver, Stepper, ScalarField, PeriodicBoundaryCondition, VectorField
-from PyMPDATA.options import Options
+from PyMPDATA import Solver, Stepper, ScalarField, Options, VectorField
+from PyMPDATA.boundary_conditions import Periodic
 import numpy as np
 
 
@@ -11,9 +11,9 @@ def test_upwind_1d():
     mpdata = Solver(
         stepper=Stepper(options=options, n_dims=len(state.shape), non_unit_g_factor=False),
         advectee=ScalarField(state.astype(options.dtype), halo=options.n_halo,
-                             boundary_conditions=(PeriodicBoundaryCondition(),)),
+                             boundary_conditions=(Periodic(),)),
         advector=VectorField((np.full(state.shape[0] + 1, C, dtype=options.dtype),), halo=options.n_halo,
-                             boundary_conditions=(PeriodicBoundaryCondition(),))
+                             boundary_conditions=(Periodic(),))
     )
     nt = 5
 

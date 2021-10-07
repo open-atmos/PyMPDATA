@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
-from PyMPDATA import VectorField, PeriodicBoundaryCondition, ScalarField, Stepper, Solver
-from PyMPDATA.options import Options
+from PyMPDATA import VectorField, Options, ScalarField, Stepper, Solver
+from PyMPDATA.boundary_conditions import Periodic
 
 # test data by Dorota Jarecka
 # see http://dx.doi.org/10.3233/SPR-140379
@@ -156,7 +156,7 @@ def test_Arabas_et_al_2014_sanity(case_data):
         np.full((grid[0] + 1, grid[1]), c[0], dtype=options.dtype),
         np.full((grid[0], grid[1] + 1), c[1], dtype=options.dtype)
     ]
-    bcs = (PeriodicBoundaryCondition(), PeriodicBoundaryCondition())
+    bcs = (Periodic(), Periodic())
     advector = VectorField(advector_data, halo=options.n_halo,
                            boundary_conditions=bcs)
     advectee = ScalarField(data=data.astype(dtype=options.dtype), halo=options.n_halo,

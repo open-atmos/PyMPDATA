@@ -1,6 +1,6 @@
 from functools import lru_cache
 import numba
-from ..enumerations import SIGN_RIGHT, SIGN_LEFT
+from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 
 @lru_cache()
@@ -19,7 +19,7 @@ def _make_vector(at):
     return fill_halos
 
 
-class PeriodicBoundaryCondition:
+class Periodic:
     def __init__(self):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1

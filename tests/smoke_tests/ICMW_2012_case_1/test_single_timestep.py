@@ -1,4 +1,5 @@
-from PyMPDATA import Stepper, ScalarField, PeriodicBoundaryCondition, Solver, Options, VectorField
+from PyMPDATA import Stepper, ScalarField, Solver, Options
+from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA_examples.utils import nondivergent_vector_field_2d
 import numpy as np
 import pytest
@@ -8,13 +9,13 @@ import pytest
     "options", [
         Options(n_iters=1),
         Options(n_iters=2),
-        Options(n_iters=2, flux_corrected_transport=True),
-        Options(n_iters=3, flux_corrected_transport=True),
-        Options(n_iters=2, flux_corrected_transport=True, infinite_gauge=True),
-        Options(flux_corrected_transport=True, infinite_gauge=True, third_order_terms=True),
-        Options(flux_corrected_transport=False, infinite_gauge=True),
-        Options(flux_corrected_transport=False, third_order_terms=True),
-        Options(flux_corrected_transport=False, infinite_gauge=True, third_order_terms=True)
+        Options(n_iters=2, nonoscillatory=True),
+        Options(n_iters=3, nonoscillatory=True),
+        Options(n_iters=2, nonoscillatory=True, infinite_gauge=True),
+        Options(nonoscillatory=True, infinite_gauge=True, third_order_terms=True),
+        Options(nonoscillatory=False, infinite_gauge=True),
+        Options(nonoscillatory=False, third_order_terms=True),
+        Options(nonoscillatory=False, infinite_gauge=True, third_order_terms=True)
     ]
 )
 def test_single_timestep(options):
@@ -41,11 +42,11 @@ def test_single_timestep(options):
     stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
     advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
     g_factor = ScalarField(rhod.astype(dtype=options.dtype), halo=options.n_halo,
-                           boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                           boundary_conditions=(Periodic(), Periodic()))
     mpdatas = {}
     for k1, v1 in values.items():
         advectee = ScalarField(np.full(grid, v1, dtype=options.dtype), halo=options.n_halo,
-                               boundary_conditions=(PeriodicBoundaryCondition(), PeriodicBoundaryCondition()))
+                               boundary_conditions=(Periodic(), Periodic()))
         mpdatas[k1] = Solver(stepper=stepper, advectee=advectee, advector=advector, g_factor=g_factor)
 
     # Act

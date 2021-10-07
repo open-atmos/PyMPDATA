@@ -12,8 +12,8 @@ settings = Settings()
 grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))
 opt_set = (
     {'n_iters': 1},
-    {'n_iters': 2, 'flux_corrected_transport': True},
-    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'flux_corrected_transport': True}
+    {'n_iters': 2, 'nonoscillatory': True},
+    {'n_iters': 3, 'third_order_terms': True, 'infinite_gauge': True, 'nonoscillatory': True}
 )
 
 
@@ -29,10 +29,10 @@ def data():
 
 @pytest.mark.parametrize("psi_coord", [x_id(), x_p2(), x_log_of_pn(r0=1 * settings.si.um, n=1)])
 @pytest.mark.parametrize("grid_layout", [x_id(), x_p2(),  x_log_of_pn(r0=1, n=3)])
-@pytest.mark.parametrize("flux_corrected_transport", [False, True])
-def test_init(grid_layout, psi_coord, flux_corrected_transport):
+@pytest.mark.parametrize("nonoscillatory", [False, True])
+def test_init(grid_layout, psi_coord, nonoscillatory):
     # Arrange
-    opts = Options(flux_corrected_transport=flux_corrected_transport)
+    opts = Options(nonoscillatory=nonoscillatory)
 
     # Act
     simulation = Simulation(settings, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)

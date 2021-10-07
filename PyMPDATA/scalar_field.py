@@ -1,9 +1,9 @@
 import numpy as np
-from .indexers import indexers
-from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
-from .meta import META_HALO_VALID, META_IS_NULL
-from ..arakawa_c.boundary_condition.constant_boundary_condition import ConstantBoundaryCondition
-from .field import Field
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
+from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
+from PyMPDATA.boundary_conditions import Constant
+from PyMPDATA.impl.field import Field
 import inspect
 
 
@@ -27,8 +27,8 @@ class ScalarField(Field):
         self.get()[:] = data[:]
 
         fill_halos = [None] * MAX_DIM_NUM
-        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
-        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else ConstantBoundaryCondition(INVALID_HALO_VALUE)
+        fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
+        fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
         fill_halos[INNER] = boundary_conditions[INNER]
         self.fill_halos = tuple([fh.make_scalar(indexers[self.n_dims].at[i], halo) for i, fh in enumerate(fill_halos)])
 
@@ -50,7 +50,7 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims):
-        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[ConstantBoundaryCondition(np.nan)] * n_dims)
+        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
         return null

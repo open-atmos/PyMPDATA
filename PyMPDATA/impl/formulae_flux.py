@@ -1,7 +1,7 @@
 import numpy as np
 import numba
-from ..arakawa_c.indexers import indexers
-from ..arakawa_c.enumerations import MAX_DIM_NUM
+from PyMPDATA.impl.indexers import indexers
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
 def make_flux_first_pass(options, traversals):
