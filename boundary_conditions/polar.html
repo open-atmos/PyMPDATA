@@ -43,7 +43,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, at, halo):
+    def make_scalar(self, at, halo, dtype):
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -65,7 +65,7 @@ class Polar:
 
         return fill_halos
 
-    def make_vector(self, at):
+    def make_vector(self, at, dtype):
         @numba.njit()
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120
@@ -105,7 +105,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, at, halo):
+    def make_scalar(self, at, halo, dtype):
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -127,7 +127,7 @@ class Polar:
 
         return fill_halos
 
-    def make_vector(self, at):
+    def make_vector(self, at, dtype):
         @numba.njit()
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120
@@ -137,7 +137,7 @@ class Polar:
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -145,7 +145,7 @@ class Polar:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at, halo):
+<pre><code class="python">def make_scalar(self, at, halo, dtype):
     nlon_half = self.nlon_half
     nlat = self.nlat
     lon_idx = self.lon_idx
@@ -169,7 +169,7 @@ class Polar:
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -177,7 +177,7 @@ class Polar:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at):
+<pre><code class="python">def make_vector(self, at, dtype):
     @numba.njit()
     def fill_halos(psi, _, __):
         return at(*psi, 0)  # TODO #120

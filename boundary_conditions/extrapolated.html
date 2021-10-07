@@ -29,12 +29,13 @@
 <pre><code class="python">from functools import lru_cache
 import numba
 from PyMPDATA.impl.enumerations import ARG_FOCUS, INNER, SIGN_LEFT
+from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 
 @lru_cache()
-def _make_scalar(dim, eps, at, halo):
+def _make_scalar(dim, eps, at, halo, dtype):
     @numba.njit()
-    def fill_halos_scalar(psi, n, sign):
+    def impl(psi, n, sign):
         if sign == SIGN_LEFT:
             edg = halo - psi[ARG_FOCUS][dim]
             nom = at(*psi, edg + 1) - at(*psi, edg)
@@ -46,11 +47,24 @@ def _make_scalar(dim, eps, at, halo):
         nom = at(*psi, edg) - at(*psi, edg - 1)
         cnst = nom/den if abs(den) &gt; eps else 0
         return max(at(*psi, -1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
+
+    if dtype == complex:
+        @numba.njit()
+        def fill_halos_scalar(psi, n, sign):
+            return complex(
+                impl((psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].real), n, sign),
+                impl((psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].imag), n, sign)
+            )
+    else:
+        @numba.njit()
+        def fill_halos_scalar(psi, n, sign):
+            return impl(psi, n, sign)
+
     return fill_halos_scalar
 
 
 @lru_cache()
-def _make_vector(dim, at):
+def _make_vector(dim, at, dtype):
     @numba.njit()
     def fill_halos(psi, _, sign):
         return at(*psi, sign)
@@ -62,11 +76,11 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at, halo):
-        return _make_scalar(self.dim, self._eps, at, halo)
+    def make_scalar(self, at, halo, dtype):
+        return _make_scalar(self.dim, self._eps, at, halo, dtype)
 
-    def make_vector(self, at):
-        return _make_vector(self.dim, at)</code></pre>
+    def make_vector(self, at, dtype):
+        return _make_vector(self.dim, at, dtype)</code></pre>
 </details>
 </section>
 <section>
@@ -93,16 +107,16 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at, halo):
-        return _make_scalar(self.dim, self._eps, at, halo)
+    def make_scalar(self, at, halo, dtype):
+        return _make_scalar(self.dim, self._eps, at, halo, dtype)
 
-    def make_vector(self, at):
-        return _make_vector(self.dim, at)</code></pre>
+    def make_vector(self, at, dtype):
+        return _make_vector(self.dim, at, dtype)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -110,12 +124,12 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at, halo):
-    return _make_scalar(self.dim, self._eps, at, halo)</code></pre>
+<pre><code class="python">def make_scalar(self, at, halo, dtype):
+    return _make_scalar(self.dim, self._eps, at, halo, dtype)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -123,8 +137,8 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at):
-    return _make_vector(self.dim, at)</code></pre>
+<pre><code class="python">def make_vector(self, at, dtype):
+    return _make_vector(self.dim, at, dtype)</code></pre>
 </details>
 </dd>
 </dl>

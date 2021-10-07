@@ -52,10 +52,10 @@ class Periodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, at, _):
+    def make_scalar(self, at, halo, dtype):
         return _make_scalar(at)
 
-    def make_vector(self, at):
+    def make_vector(self, at, dtype):
         return _make_vector(at)</code></pre>
 </details>
 </section>
@@ -82,16 +82,16 @@ class Periodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, at, _):
+    def make_scalar(self, at, halo, dtype):
         return _make_scalar(at)
 
-    def make_vector(self, at):
+    def make_vector(self, at, dtype):
         return _make_vector(at)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, _)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -99,12 +99,12 @@ class Periodic:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at, _):
+<pre><code class="python">def make_scalar(self, at, halo, dtype):
     return _make_scalar(at)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -112,7 +112,7 @@ class Periodic:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at):
+<pre><code class="python">def make_vector(self, at, dtype):
     return _make_vector(at)</code></pre>
 </details>
 </dd>
