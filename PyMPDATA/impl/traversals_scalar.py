@@ -1,6 +1,8 @@
 import numba
 from .meta import META_HALO_VALID
-from .enumerations import OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_START, RNG_STOP, INVALID_INDEX
+from .enumerations import (
+    OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_START, RNG_STOP, INVALID_INDEX
+)
 
 
 def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
@@ -22,9 +24,12 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
             rng_inner = (0, span[INNER])
 
             vec_arg1_tpl = (vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner)
-            for i in range(rng_outer[RNG_START] + halo, rng_outer[RNG_STOP] + halo) if n_dims > 1 else (INVALID_INDEX,):
-                for j in range(rng_mid3d[RNG_START] + halo, rng_mid3d[RNG_STOP] + halo) if n_dims > 2 else (INVALID_INDEX,):
-                    for k in range(rng_inner[RNG_START] + halo, rng_inner[RNG_STOP] + halo):
+            for i in range(rng_outer[RNG_START] + halo,
+                           rng_outer[RNG_STOP] + halo) if n_dims > 1 else (INVALID_INDEX,):
+                for j in range(rng_mid3d[RNG_START] + halo,
+                               rng_mid3d[RNG_STOP] + halo) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(rng_inner[RNG_START] + halo,
+                                   rng_inner[RNG_STOP] + halo):
                         focus = (i, j, k)
                         if n_dims > 1:
                             set(out, i, j, k, fun_outer(
@@ -66,9 +71,12 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
             rng_inner = (0, span[INNER])
 
             vec_arg1_tpl = (vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner)
-            for i in range(rng_outer[RNG_START] + halo, rng_outer[RNG_STOP] + halo) if n_dims > 1 else (INVALID_INDEX,):
-                for j in range(rng_mid3d[RNG_START] + halo, rng_mid3d[RNG_STOP] + halo) if n_dims > 2 else (INVALID_INDEX,):
-                    for k in range(rng_inner[RNG_START] + halo, rng_inner[RNG_STOP] + halo):
+            for i in range(rng_outer[RNG_START] + halo,
+                           rng_outer[RNG_STOP] + halo) if n_dims > 1 else (INVALID_INDEX,):
+                for j in range(rng_mid3d[RNG_START] + halo,
+                               rng_mid3d[RNG_STOP] + halo) if n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(rng_inner[RNG_START] + halo,
+                                   rng_inner[RNG_STOP] + halo):
                         focus = (i, j, k)
                         set(out, i, j, k, fun(
                             get(out, i, j, k),
@@ -135,7 +143,7 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
             for i in range(rng_outer[RNG_START],
                            rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)):
                 for k in range(0, span[INNER] + 2 * halo):
-                    for j in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated!
+                    for j in range(halo - 1, -1, -1):  # note: reversed order for Extrapolated!
                         focus = (i, j, k)
                         set(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_LEFT))
                     for j in range(span[MID3D] + halo, span[MID3D] + 2 * halo):
@@ -144,24 +152,32 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
 
         if n_dims > 1:
             if thread_id == 0:
-                for i in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated!
+                for i in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated
                     for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                         for k in range(0, span[INNER] + 2 * halo):
                             focus = (i, j, k)
                             set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_LEFT))
             if last_thread:
-                for i in range(span[OUTER] + halo, span[OUTER] + 2 * halo):  # note: non-reversed order assumed in Extrapolated
-                    for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                        for k in range(0, span[INNER] + 2 * halo):
+                for i in range(span[OUTER] + halo,
+                               span[OUTER] + 2*halo):  # note: non-reversed order for Extrapolated
+                    for j in range(0,
+                                   span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                        for k in range(0,
+                                       span[INNER] + 2 * halo):
                             focus = (i, j, k)
                             set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_RIGHT))
 
-        for i in range(rng_outer[RNG_START], rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)) if n_dims > 1 else (INVALID_INDEX,):
-            for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
-                for k in range(halo - 1, -1, -1):  # note: reversed order assumed in Extrapolated!
+        for i in range(rng_outer[RNG_START],
+                       rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)
+                       ) if n_dims > 1 else (INVALID_INDEX,):
+            for j in range(0,
+                           span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
+                for k in range(halo - 1,
+                               -1, -1):  # note: reversed order assumed in Extrapolated!
                     focus = (i, j, k)
                     set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_LEFT))
-                for k in range(span[INNER] + halo, span[INNER] + 2 * halo):
+                for k in range(span[INNER] + halo,
+                               span[INNER] + 2 * halo):
                     focus = (i, j, k)
                     set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_RIGHT))
 

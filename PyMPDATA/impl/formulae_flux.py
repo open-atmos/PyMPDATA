@@ -16,7 +16,10 @@ def make_flux_first_pass(options, traversals):
 
     @numba.njit(**options.jit_flags)
     def apply(vectmp_a, advector, advectee, advectee_bc, vec_bc):
-        return apply_vector(*formulae_flux_first_pass, *vectmp_a, *advectee, *advectee_bc, *advector, *vec_bc,
+        return apply_vector(*formulae_flux_first_pass,
+                            *vectmp_a,
+                            *advectee, *advectee_bc,
+                            *advector, *vec_bc,
                             *null_scalarfield, *null_bc)
 
     return apply
@@ -32,7 +35,12 @@ def make_flux_subsequent(options, traversals):
         apply_vector = traversals.apply_vector()
 
         formulae_flux_subsequent = tuple([
-            __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=False, infinite_gauge=options.infinite_gauge)
+            __make_flux(
+                options.jit_flags,
+                idx.atv[i], idx.at[i],
+                first_pass=False,
+                infinite_gauge=options.infinite_gauge
+            )
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
         ])
@@ -41,7 +49,10 @@ def make_flux_subsequent(options, traversals):
 
         @numba.njit(**options.jit_flags)
         def apply(flux, psi, psi_bc, GC_corr, vec_bc):
-            return apply_vector(*formulae_flux_subsequent, *flux, *psi, *psi_bc, *GC_corr, *vec_bc,
+            return apply_vector(*formulae_flux_subsequent,
+                                *flux,
+                                *psi, *psi_bc,
+                                *GC_corr, *vec_bc,
                                 *null_scalarfield, *null_bc)
 
     return apply

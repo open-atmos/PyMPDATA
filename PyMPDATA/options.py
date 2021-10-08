@@ -21,13 +21,26 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: np.floating = np.float64
                  ):
-        self._values = hashabledict({'n_iters': n_iters, 'infinite_gauge': infinite_gauge, 'epsilon': epsilon,
-                        'divergent_flow': divergent_flow, 'nonoscillatory': nonoscillatory,
-                        'third_order_terms': third_order_terms, 'non_zero_mu_coeff': non_zero_mu_coeff,
-                        'dimensionally_split': dimensionally_split,
-                        'dtype': dtype, 'DPDC': DPDC})
+        self._values = hashabledict({
+            'n_iters': n_iters,
+            'infinite_gauge': infinite_gauge,
+            'epsilon': epsilon,
+            'divergent_flow': divergent_flow,
+            'nonoscillatory': nonoscillatory,
+            'third_order_terms': third_order_terms,
+            'non_zero_mu_coeff': non_zero_mu_coeff,
+            'dimensionally_split': dimensionally_split,
+            'dtype': dtype,
+            'DPDC': DPDC
+        })
 
-        if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters < 2:
+        if (
+            infinite_gauge or
+            divergent_flow or
+            nonoscillatory or
+            third_order_terms or
+            DPDC
+        ) and n_iters < 2:
             raise ValueError()
         if n_iters < 1:
             raise ValueError()
