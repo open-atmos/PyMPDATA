@@ -1,6 +1,8 @@
 import numpy as np
 import numba
-from PyMPDATA.impl.enumerations import MAX_DIM_NUM, INNER, OUTER, META_AND_DATA_META, META_AND_DATA_DATA
+from PyMPDATA.impl.enumerations import (
+    MAX_DIM_NUM, INNER, OUTER, META_AND_DATA_META, META_AND_DATA_DATA
+)
 
 
 def make_psi_extrema(options, traversals):
@@ -13,7 +15,11 @@ def make_psi_extrema(options, traversals):
         apply_scalar = traversals.apply_scalar(loop=False)
 
         at_idx = INNER if traversals.n_dims == 1 else OUTER
-        formulae = (__make_psi_extrema(options.jit_flags, traversals.n_dims, idx.at[at_idx]), None, None)
+        formulae = (
+            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.at[at_idx]),
+            None,
+            None
+        )
 
         null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
         null_vecfield, null_vecfield_bc = traversals.null_vector_field.impl
@@ -92,7 +98,13 @@ def make_beta(non_unit_g_factor, options, traversals):
         null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
 
         @numba.njit(**options.jit_flags)
-        def apply(beta, flux, flux_bc, psi, psi_bc, psi_extrema, psi_extrema_bc, g_factor, g_factor_bc):
+        def apply(
+            beta,
+            flux, flux_bc,
+            psi, psi_bc,
+            psi_extrema, psi_extrema_bc,
+            g_factor, g_factor_bc
+        ):
             return apply_scalar(*formulae,
                                 *beta,
                                 *flux, *flux_bc,
@@ -101,7 +113,6 @@ def make_beta(non_unit_g_factor, options, traversals):
                                 *g_factor, *g_factor_bc,
                                 *null_scalfield, *null_scalfield_bc
                                 )
-
     return apply
 
 
