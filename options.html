@@ -49,13 +49,26 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: np.floating = np.float64
                  ):
-        self._values = hashabledict({&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
-                        &#39;divergent_flow&#39;: divergent_flow, &#39;nonoscillatory&#39;: nonoscillatory,
-                        &#39;third_order_terms&#39;: third_order_terms, &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
-                        &#39;dimensionally_split&#39;: dimensionally_split,
-                        &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC})
+        self._values = hashabledict({
+            &#39;n_iters&#39;: n_iters,
+            &#39;infinite_gauge&#39;: infinite_gauge,
+            &#39;epsilon&#39;: epsilon,
+            &#39;divergent_flow&#39;: divergent_flow,
+            &#39;nonoscillatory&#39;: nonoscillatory,
+            &#39;third_order_terms&#39;: third_order_terms,
+            &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
+            &#39;dimensionally_split&#39;: dimensionally_split,
+            &#39;dtype&#39;: dtype,
+            &#39;DPDC&#39;: DPDC
+        })
 
-        if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters &lt; 2:
+        if (
+            infinite_gauge or
+            divergent_flow or
+            nonoscillatory or
+            third_order_terms or
+            DPDC
+        ) and n_iters &lt; 2:
             raise ValueError()
         if n_iters &lt; 1:
             raise ValueError()
@@ -159,13 +172,26 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: np.floating = np.float64
                  ):
-        self._values = hashabledict({&#39;n_iters&#39;: n_iters, &#39;infinite_gauge&#39;: infinite_gauge, &#39;epsilon&#39;: epsilon,
-                        &#39;divergent_flow&#39;: divergent_flow, &#39;nonoscillatory&#39;: nonoscillatory,
-                        &#39;third_order_terms&#39;: third_order_terms, &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
-                        &#39;dimensionally_split&#39;: dimensionally_split,
-                        &#39;dtype&#39;: dtype, &#39;DPDC&#39;: DPDC})
+        self._values = hashabledict({
+            &#39;n_iters&#39;: n_iters,
+            &#39;infinite_gauge&#39;: infinite_gauge,
+            &#39;epsilon&#39;: epsilon,
+            &#39;divergent_flow&#39;: divergent_flow,
+            &#39;nonoscillatory&#39;: nonoscillatory,
+            &#39;third_order_terms&#39;: third_order_terms,
+            &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
+            &#39;dimensionally_split&#39;: dimensionally_split,
+            &#39;dtype&#39;: dtype,
+            &#39;DPDC&#39;: DPDC
+        })
 
-        if (infinite_gauge or divergent_flow or nonoscillatory or third_order_terms or DPDC) and n_iters &lt; 2:
+        if (
+            infinite_gauge or
+            divergent_flow or
+            nonoscillatory or
+            third_order_terms or
+            DPDC
+        ) and n_iters &lt; 2:
             raise ValueError()
         if n_iters &lt; 1:
             raise ValueError()

@@ -42,7 +42,12 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         apply_vector = traversals.apply_vector()
 
         formulae_laplacian = tuple([
-            __make_laplacian(options.jit_flags, idx.at[i], options.epsilon, non_unit_g_factor)
+            __make_laplacian(
+                options.jit_flags,
+                idx.at[i],
+                options.epsilon,
+                non_unit_g_factor
+            )
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
         ])
@@ -52,7 +57,10 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
 
         @numba.njit(**options.jit_flags)
         def apply(advector, advectee, advectee_bc):
-            return apply_vector(*formulae_laplacian, *advector, *advectee, *advectee_bc, *null_vecfield, *null_vecfield_bc,
+            return apply_vector(*formulae_laplacian,
+                                *advector,
+                                *advectee, *advectee_bc,
+                                *null_vecfield, *null_vecfield_bc,
                                 *null_scalarfield, *null_scalarfield_bc)
 
     return apply
@@ -98,7 +106,12 @@ def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor):
         apply_vector = traversals.apply_vector()
 
         formulae_laplacian = tuple([
-            __make_laplacian(options.jit_flags, idx.at[i], options.epsilon, non_unit_g_factor)
+            __make_laplacian(
+                options.jit_flags,
+                idx.at[i],
+                options.epsilon,
+                non_unit_g_factor
+            )
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
         ])
@@ -108,7 +121,10 @@ def __make_laplacian(jit_flags, at, epsilon, non_unit_g_factor):
 
         @numba.njit(**options.jit_flags)
         def apply(advector, advectee, advectee_bc):
-            return apply_vector(*formulae_laplacian, *advector, *advectee, *advectee_bc, *null_vecfield, *null_vecfield_bc,
+            return apply_vector(*formulae_laplacian,
+                                *advector,
+                                *advectee, *advectee_bc,
+                                *null_vecfield, *null_vecfield_bc,
                                 *null_scalarfield, *null_scalarfield_bc)
 
     return apply</code></pre>

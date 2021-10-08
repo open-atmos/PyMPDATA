@@ -27,7 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import numpy as np
-from PyMPDATA.impl.enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
+from PyMPDATA.impl.enumerations import (
+    MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE, INVALID_INIT_VALUE, INVALID_NULL_VALUE
+)
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl.field import Field
@@ -50,12 +52,17 @@ class ScalarField(Field):
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
         self.dtype = data.dtype
         self.halo = halo
-        self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
+        self.domain = tuple([
+            slice(self.halo, self.data.shape[i] - self.halo)
+            for i in range(self.n_dims)
+        ])
         self.get()[:] = data[:]
 
         self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
         self.fill_halos[INNER] = boundary_conditions[INNER]
         self.boundary_conditions = boundary_conditions
         self.impl = None
@@ -64,7 +71,12 @@ class ScalarField(Field):
     def assemble(self, traversals):
         if traversals.jit_flags != self.jit_flags:
             self.impl = (self.meta, self.data), tuple([
-                fh.make_scalar(traversals.indexers[self.n_dims].at[i], self.halo, self.dtype, traversals.jit_flags)
+                fh.make_scalar(
+                    traversals.indexers[self.n_dims].at[i],
+                    self.halo,
+                    self.dtype,
+                    traversals.jit_flags
+                )
                 for i, fh in enumerate(self.fill_halos)
             ])
         self.jit_flags = traversals.jit_flags
@@ -73,7 +85,11 @@ class ScalarField(Field):
     def clone(field, dtype=None):
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
-        return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)
+        return ScalarField(
+            field.get().astype(dtype, copy=False),
+            field.halo,
+            field.boundary_conditions
+        )
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
         results = self.data[self.domain]
@@ -81,7 +97,11 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims, traversals):
-        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
+        null = ScalarField(
+            np.empty([INVALID_NULL_VALUE]*n_dims),
+            halo=0,
+            boundary_conditions=[Constant(np.nan)] * n_dims
+        )
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
         null.assemble(traversals)
@@ -123,12 +143,17 @@ class ScalarField(Field):
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
         self.dtype = data.dtype
         self.halo = halo
-        self.domain = tuple([slice(self.halo, self.data.shape[i] - self.halo) for i in range(self.n_dims)])
+        self.domain = tuple([
+            slice(self.halo, self.data.shape[i] - self.halo)
+            for i in range(self.n_dims)
+        ])
         self.get()[:] = data[:]
 
         self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
         self.fill_halos[INNER] = boundary_conditions[INNER]
         self.boundary_conditions = boundary_conditions
         self.impl = None
@@ -137,7 +162,12 @@ class ScalarField(Field):
     def assemble(self, traversals):
         if traversals.jit_flags != self.jit_flags:
             self.impl = (self.meta, self.data), tuple([
-                fh.make_scalar(traversals.indexers[self.n_dims].at[i], self.halo, self.dtype, traversals.jit_flags)
+                fh.make_scalar(
+                    traversals.indexers[self.n_dims].at[i],
+                    self.halo,
+                    self.dtype,
+                    traversals.jit_flags
+                )
                 for i, fh in enumerate(self.fill_halos)
             ])
         self.jit_flags = traversals.jit_flags
@@ -146,7 +176,11 @@ class ScalarField(Field):
     def clone(field, dtype=None):
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
-        return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)
+        return ScalarField(
+            field.get().astype(dtype, copy=False),
+            field.halo,
+            field.boundary_conditions
+        )
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
         results = self.data[self.domain]
@@ -154,7 +188,11 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims, traversals):
-        null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
+        null = ScalarField(
+            np.empty([INVALID_NULL_VALUE]*n_dims),
+            halo=0,
+            boundary_conditions=[Constant(np.nan)] * n_dims
+        )
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True
         null.assemble(traversals)
@@ -179,7 +217,11 @@ class ScalarField(Field):
 def clone(field, dtype=None):
     dtype = dtype or field.dtype
     # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
-    return ScalarField(field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions)</code></pre>
+    return ScalarField(
+        field.get().astype(dtype, copy=False),
+        field.halo,
+        field.boundary_conditions
+    )</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.scalar_field.ScalarField.make_null"><code class="name flex">
@@ -193,7 +235,11 @@ def clone(field, dtype=None):
 </summary>
 <pre><code class="python">@staticmethod
 def make_null(n_dims, traversals):
-    null = ScalarField(np.empty([INVALID_NULL_VALUE]*n_dims), halo=0, boundary_conditions=[Constant(np.nan)] * n_dims)
+    null = ScalarField(
+        np.empty([INVALID_NULL_VALUE]*n_dims),
+        halo=0,
+        boundary_conditions=[Constant(np.nan)] * n_dims
+    )
     null.meta[META_HALO_VALID] = True
     null.meta[META_IS_NULL] = True
     null.assemble(traversals)
@@ -215,7 +261,12 @@ def make_null(n_dims, traversals):
 <pre><code class="python">def assemble(self, traversals):
     if traversals.jit_flags != self.jit_flags:
         self.impl = (self.meta, self.data), tuple([
-            fh.make_scalar(traversals.indexers[self.n_dims].at[i], self.halo, self.dtype, traversals.jit_flags)
+            fh.make_scalar(
+                traversals.indexers[self.n_dims].at[i],
+                self.halo,
+                self.dtype,
+                traversals.jit_flags
+            )
             for i, fh in enumerate(self.fill_halos)
         ])
     self.jit_flags = traversals.jit_flags</code></pre>
