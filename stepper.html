@@ -191,6 +191,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                                             advectee, advectee_bc,
                                             psi_extrema, psi_extrema_bc,
                                             g_factor, g_factor_bc)
+                        # note: in libmpdata++, the oscillatory advector from prev iter is used
                         nonoscillatory_correction(advector_nonoscilatory, vec_bc, beta, beta_bc)
                         flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
@@ -306,6 +307,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                                             advectee, advectee_bc,
                                             psi_extrema, psi_extrema_bc,
                                             g_factor, g_factor_bc)
+                        # note: in libmpdata++, the oscillatory advector from prev iter is used
                         nonoscillatory_correction(advector_nonoscilatory, vec_bc, beta, beta_bc)
                         flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
