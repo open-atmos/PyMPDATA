@@ -1,5 +1,5 @@
 ---
-title: 'MPyDATA: Numba-accelerated Pythonic implementation of MPDATA for solutions of multidimensional nonlinear conservation laws with Jupyter, Matlab and Julia examples'
+title: 'Numba-accelerated Pythonic implementation of MPDATA with examples in Python, Julia and Matlab'
 tags:
   - Python
   - pde-solver 
@@ -14,7 +14,7 @@ authors:
     affiliation: "1"
   - name: Szymon Drenda
     affiliation: "1"
-  - name: Maciej Manna
+  - name: Maciej&nbsp;Manna
     affiliation: "1"
   - name: Michael Olesik
     orcid: 0000-0002-6319-9358
@@ -26,11 +26,11 @@ authors:
     affiliation: "1"
   - name: Sylwester Arabas
     orcid: 0000-0003-0361-0082
-    affiliation: "2, 1"
+    affiliation: "2,1"
 affiliations:
  - name: Jagiellonian University, Kraków, Poland 
    index: 1
- - name: University of Illinois at Urbana-Champaign, Urbana, IL, USA
+ - name: University of Illinois at Urbana-Champaign, IL, USA
    index: 2
 date: October 2021
 bibliography: paper.bib
@@ -44,7 +44,7 @@ bibliography: paper.bib
 # Author contributions
 
 PB had been the architect of PyMPDATA v1 with SA taking the role of main developer and maintainer over the time.
-MO participated in the package core development and led the works on the condensational-growth example which constituted his MSc thesis.
+MO participated in the package core development and led the works on the condensational-growth example which was the basis of his MSc thesis.
 JB contributed the DPDC algorithm variant handling.
 SD contributed the advection-diffusion example.
 MM contributed to the numba-mpi package.
