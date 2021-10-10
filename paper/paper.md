@@ -7,13 +7,10 @@ tags:
   - numba 
   - advection-diffusion
 authors:
-  - name: Sylwester Arabas
-    orcid: 0000-0003-0361-0082
-    affiliation: "1"
-  - name: Jakub Banaśkiewicz
-    affiliation: "1"
   - name: Piotr Bartman
     orcid: 0000-0003-0265-6428
+    affiliation: "1"
+  - name: Jakub Banaśkiewicz
     affiliation: "1"
   - name: Szymon Drenda
     affiliation: "1"
@@ -25,66 +22,38 @@ authors:
   - name: Paweł Rozwoda
     affiliation: "1"
   - name: Michał Sadowski
+    orcid: 0000-0003-3482-9733
     affiliation: "1"
+  - name: Sylwester Arabas
+    orcid: 0000-0003-0361-0082
+    affiliation: "2, 1"
 affiliations:
- - name: Jagiellonian University
+ - name: Jagiellonian University, Kraków, Poland 
    index: 1
-date: 30 September 2020
+ - name: University of Illinois at Urbana-Champaign, Urbana, IL, USA
+   index: 2
+date: October 2021
 bibliography: paper.bib
 
 ---
 
 # Summary
 
-TODO
-Linux, OSX, Windows
-Travis
+...
 
-finite volume/finite difference
-dimensionality
-systems
-parallelisation (with a formula-transparent indirection layer for halo-filling/barriers)
-boundary cond
-structured mesh
-hyperbolic
-stencil
+# Author contributions
 
-# Statement of need 
-
-TODO
-
-# Mathematics
-
-TODO?
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Fenced code blocks are rendered with syntax highlighting:
-```python
-for n in range(10):
-    yield f(n)
-```	
+PB had been the architect of PyMPDATA v1 with SA taking the role of main developer and maintainer over the time.
+MO participated in the package core development and led the works on the condensational-growth example which constituted his MSc thesis.
+JB contributed the DPDC algorithm variant handling.
+SD contributed the advection-diffusion example.
+MM contributed to the numba-mpi package.
+PR contributed the shallow-water example.
+MS contributed the advection-on-a-sphere example
+The paper was composed by SA and is based on the content of the PyMPDATA README file.
 
 # Acknowledgements
 
-Development of MPyDATA is supported by the EU through a grant of the Foundation for Polish Science (POIR.04.04.00-00-5E1C/18).
+Development of PyMPDATA has been carried out within the POWROTY/REINTEGRATION programme of the Foundation for Polish Science co-financed by the European Union under the European Regional Development Fund (POIR.04.04.00-00-5E1C/18).
 
 # References
