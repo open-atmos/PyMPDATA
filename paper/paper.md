@@ -44,13 +44,13 @@ bibliography: paper.bib
 # Author contributions
 
 PB had been the architect of PyMPDATA v1 with SA taking the role of main developer and maintainer over the time.
-MO participated in the package core development and led the works on the condensational-growth example which was the basis of his MSc thesis.
+MO participated in the package core development and led the development of the condensational-growth example which was the basis of his MSc thesis.
 JB contributed the DPDC algorithm variant handling.
 SD contributed the advection-diffusion example.
 MM contributed to the numba-mpi package.
 PR contributed the shallow-water example.
 MS contributed the advection-on-a-sphere example
-The paper was composed by SA and is based on the content of the PyMPDATA README file.
+The paper was composed by SA and is based on the content of the README files of the PyMPDATA, PyMPDATA-examples and numba-mpi packages.
 
 # Acknowledgements
 
