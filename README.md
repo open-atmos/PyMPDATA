@@ -63,7 +63,7 @@ The Numba's deviation from Python semantics rendering [closure variables
   code base enabling the just-in-time compilation to benefit from 
   information on domain extents, algorithm variant used and problem
   characteristics (e.g., coordinate transformation used, or lack thereof).
-A separate project called [``numba-mpi``](pypi.org/project/numba-mpi) 
+A separate project called [``numba-mpi``](https://pypi.org/project/numba-mpi) 
   has been developed with the intention to 
   set the stage for future MPI distributed memory parallelism in PyMPDATA.
 
@@ -104,10 +104,13 @@ Alternatively, one can also install the examples package from pypi.org by using 
 
 In short, PyMPDATA numerically solves the following equation:
 
-![\partial_t (G \psi) + \nabla \cdot (Gu \psi) = 0](https://render.githubusercontent.com/render/math?math=%5Cpartial_t%20(G%20%5Cpsi)%20%2B%20%5Cnabla%20%5Ccdot%20(Gu%20%5Cpsi)%20%3D%200)
+![\partial_t (G \psi) + \nabla \cdot (Gu \psi) + \mu \Delta (G \psi) = 0](https://render.githubusercontent.com/render/math?math=%5Cpartial_t%20(G%20%5Cpsi)%20%2B%20%5Cnabla%20%5Ccdot%20(Gu%20%5Cpsi)%20%2B%20%5Cmu%20%5CDelta%20%28G%20%5Cpsi%29%20%3D%200)
 
 where scalar field ![\psi](https://render.githubusercontent.com/render/math?math=%5Cpsi) is referred to as the advectee,
-vector field u is referred to as advector, and the G factor corresponds to optional coordinate transformation. 
+vector field u is referred to as advector, and the G factor corresponds to optional coordinate transformation.
+The inclusion of the Fickian diffusion term is optional and is realised through modification of the
+advective velocity field with MPDATA handling both the advection and diffusion (for discussion
+see, e.g. [Smolarkiewicz and Margolin 1998](https://doi.org/10.1006/jcph.1998.5901), sec. 3.5, par. 4).
 
 The key classes constituting the PyMPDATA interface are summarised below with code
 snippets exemplifying usage of PyMPDATA from Python, Julia and Matlab.
@@ -463,7 +466,8 @@ the license of the contributed code must be compatible with GPL v3.
 
 Developing the code, we follow [The Way of Python](https://www.python.org/dev/peps/pep-0020/) and 
 the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle).
-The codebase has greatly benefited from [PyCharm code inspections](https://www.jetbrains.com/help/pycharm/code-inspection.html).
+The codebase has greatly benefited from [PyCharm code inspections](https://www.jetbrains.com/help/pycharm/code-inspection.html)
+and [Pylint](https://pylint.org) code analysis (which constitutes one of the CI workflows).
 
 Issues regarding any incorrect, unintuitive or undocumented bahaviour of
 PyMPDATA are best to be reported on the [GitHub issue tracker](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues/new).
