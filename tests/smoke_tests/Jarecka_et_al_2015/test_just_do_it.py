@@ -3,7 +3,7 @@ from matplotlib import pylab
 from PyMPDATA_examples.Jarecka_et_al_2015 import Settings, Simulation, analytic_equations
 
 
-def test_just_do_it(plot=True):
+def test_just_do_it(plot=False):
     # arrange
     settings = Settings()
     simulation = Simulation(settings)
