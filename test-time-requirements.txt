@@ -5,4 +5,4 @@ pytest
 pytest-benchmark
 
 # note: if cloning both PyMPDATA and PyMPDATA examples, consider "pip install -e"
-PyMPDATA-examples @ git+git://github.com/atmos-cloud-sim-uj/PyMPDATA-examples@01ae90a#egg=PyMPDATA-examples
+PyMPDATA-examples @ git+git://github.com/atmos-cloud-sim-uj/PyMPDATA-examples@21cbe3c#egg=PyMPDATA-examples
