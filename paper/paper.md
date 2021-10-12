@@ -39,7 +39,7 @@ bibliography: paper.bib
 
 # Summary
 
-Convection-diffusion problems arise across a wide range of pure and applied research domains,
+Convection-diffusion problems arise across a wide range of pure and applied research,
   in particular in geosciences, aerospace engineering and financial modelling
   (for an overview of applications, see, e.g., section 1.1 in [@Morton_1996]).
 One of the key challenges in numerical solutions of problems involving advective transport is
@@ -62,12 +62,30 @@ PyMPDATA is an open source software released under the terms of the GNU General 
   and is available in the PyPI package repository.
 
 # ...
+
+[@Arabas_et_al_2014]
+[@Jaruga_et_al_2015]
   
+# variants
+  
+[@Beason_Margolin_1988]
+[@Smolarkiewicz_and_Grabowski_1990]
+[@Hill_2010]
+[@Smolarkiewicz_and_Clark_1986]
+[@Smolarkiewicz_and_Margolin_1993]
+[@Smolarkiewicz_and_Margolin_1998_SIAM]
+[@Margolin_and_Shashkov_2006]
+
 # Usage examples
 
 [@Jaruga_et_al_2015]
 [@Jarecka_et_al_2015]
 [@Arabas_and_Farhat_2020]
+[@Olesik_et_al_2021]
+[@Shipway_and_Hill_2012]
+[@Williamson and Rasch 1989]
+[@Molenkamp_1968]
+[@Smolarkiewicz_1984]
 
 # Author contributions
 
