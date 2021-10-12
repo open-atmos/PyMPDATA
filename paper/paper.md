@@ -39,7 +39,35 @@ bibliography: paper.bib
 
 # Summary
 
-...
+Convection-diffusion problems arise across a wide range of pure and applied research domains,
+  in particular in geosciences, aerospace engineering and financial modelling
+  (for an overview of applications, see, e.g., section 1.1 in [@Morton_1996]).
+One of the key challenges in numerical solutions of problems involving advective transport is
+  the preservation of sign of the advected field (for an overview of this and other
+  aspects of numerical solutions, see, e.g., [@Roed_2019]).
+The Multidimensional Positive Definite Advection Transport Algorithm (MPDATA) is a robust 
+  explicit-in-time sign-preserving solver introduced in [@Smolarkiewicz_1983] and [@Smolarkiewicz_1984].
+MPDATA has been subsequently developed into a family of schemes with numerous variants 
+  and solution procedures addressing diverse set of problems in geophysical fluid dynamics and beyond
+  (for reviews of MPDATA applications and variants, see, e.g.,: [@Smolarkiewicz_and_Margolin_1998_JCP] and 
+  [@Smolarkiewicz_2006]).
+The PyMPDATA project introduced herein constitutes a high-performance multi-threaded implementation of
+  structured-mesh MPDATA in Python.
+PyMPDATA is built on top of Numba [@Lam_et_al_2015] which is a just-in-time compiler 
+  that translates Python code into fast machine code using the Low Level Virtual Machine (LLVM)
+  compiler infrastructure.
+Thanks to extensive interoperability of Python, PyMPDATA is readily usable not only from within Python
+  but also from such environments as Julia and Matlab, and the package comes with examples depicting it.
+PyMPDATA is an open source software released under the terms of the GNU General Public License v3,
+  and is available in the PyPI package repository.
+
+# ...
+  
+# Usage examples
+
+[@Jaruga_et_al_2015]
+[@Jarecka_et_al_2015]
+[@Arabas_and_Farhat_2020]
 
 # Author contributions
 
