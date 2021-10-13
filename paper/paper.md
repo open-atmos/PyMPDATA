@@ -24,7 +24,7 @@ authors:
   - name: Michał Sadowski
     orcid: 0000-0003-3482-9733
     affiliation: "1"
-  - name: Sylwester Arabas^[corresponding author: sylwester.arabas@uj.edu.pl]
+  - name: Sylwester Arabas^[corresponding author]
     orcid: 0000-0003-0361-0082
     affiliation: "2,1"
 affiliations:
