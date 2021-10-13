@@ -95,14 +95,14 @@ Several of the examples feature comparisons against analytical solution and thes
 The PyMPDATA-examples README file includes links (badges) offering single-click deployment 
   in the cloud using the mybinder.org or the colab.research.google.com platoforms.
 
-A separate project ``numba-mpi`` has been developed  
-  to set the stage for future MPI distributed memory parallelism in PyMPDATA.
-
-The PyMPDATA, the PyMPDATA-examples and the ``numba-mpi`` packages are available in the 
+A separate project ``numba-mpi`` has been developed to set the stage for future MPI distributed 
+  memory parallelism in PyMPDATA.
+The ``PyMPDATA``, the ``PyMPDATA-examples`` and the ``numba-mpi`` packages are available in the 
   ``PyPI`` package repository, and installation of any of these packages reduces to
-  typing ``pip install ...``.
-PyMPDATA development has been hosted on GitHub at: https://github.com/atmos-cloud-sim-uj.
-Auto-generated documentation sites for PyMPDATA, PyMPDATA-examples and numba-mpi are hosted at
+  typing ``pip install package_name``.
+PyMPDATA development has been hosted on ``GitHub`` at: https://github.com/atmos-cloud-sim-uj.
+Auto-generated documentation sites for ``PyMPDATA``, ``PyMPDATA-examples`` and ``numba-mpi`` 
+are hosted at
   https://atmos-cloud-sim-uj.github.io/PyMPDATA, 
   https://atmos-cloud-sim-uj.github.io/PyMPDATA-examples and 
   https://atmos-cloud-sim-uj.github.io/numba-mpi, 
@@ -111,20 +111,21 @@ Auto-generated documentation sites for PyMPDATA, PyMPDATA-examples and numba-mpi
 # Usage examples
 
 Simulations included in the PyMPDATA-examples package, as of time of writing, 
-  are listed below.
+  are listed below labelled with the paper reference on which the example setup is based on.
 Each example is annotated with the dimensionality, 
   number of equations constituting the system and an outline of modelled setup.
-* 1D:
-  * [@Smolarkiewicz_2006]: single-equation advection-only homogeneous problem with different algorithm options depicted with constant advector field
-  * [@Arabas_and_Farhat_2020]: single-equation advection-diffusion problem resulting from a transformation of the Black-Scholes equation into either homogeneous  or heterogeneous problem for European or American option valuation, respectively
-  * [@Olesik_et_al_2021]: single-equation advection-only homogeneous problem with coordinate transformation depicting application of MPDATA for condensational growth of a population of particles
-* 2D:
-  * [@Molenkamp_1968]: single-equation homogeneous transport with different algorithm options
-  * [@Jarecka_et_al_2015]: shallow-water system with three equations representing conservation of mass and two components of momentum (with the momentum equations featuring source terms) modelling spreading under gravity of a three-dimensional ellicptic drop on a two-dimensional plane
-  * [@Williamson_and_Rasch_1989]: advection on a spherical plane depicting transformation to spherical coordinates
-  * [@Shipway_and_Hill_2012]: coupled system of vater vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplet on aerosol particles, coordinate transformation used for representation of air density profile
-* 3D:
-  * [@Smolarkiewicz_1984]: homogeneous single-equation example depicting revolution of a spherical signal in a constant angular velocity rotational velocity field 
+  
+   - 1D:
+      - [@Smolarkiewicz_2006]: single-equation advection-only homogeneous problem with different algorithm options depicted with constant advector field
+      - [@Arabas_and_Farhat_2020]: single-equation advection-diffusion problem resulting from a transformation of the Black-Scholes equation into either homogeneous  or heterogeneous problem for European or American option valuation, respectively
+      - [@Olesik_et_al_2021]: single-equation advection-only homogeneous problem with coordinate transformation depicting application of MPDATA for condensational growth of a population of particles
+   - 2D:
+     - [@Molenkamp_1968]: single-equation homogeneous transport with different algorithm options
+     - [@Jarecka_et_al_2015]: shallow-water system with three equations representing conservation of mass and two components of momentum (with the momentum equations featuring source terms) modelling spreading under gravity of a three-dimensional ellicptic drop on a two-dimensional plane
+     - [@Williamson_and_Rasch_1989]: advection on a spherical plane depicting transformation to spherical coordinates
+     - [@Shipway_and_Hill_2012]: coupled system of vater vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplet on aerosol particles, coordinate transformation used for representation of air density profile
+   - 3D:
+     - [@Smolarkiewicz_1984]: homogeneous single-equation example depicting revolution of a spherical signal in a constant angular velocity rotational velocity field 
 
 In addition, PyMPDATA is used in a two-dimensional setup in of the examples in the sister PySDM package [Bartman_et_al_2021].
 
