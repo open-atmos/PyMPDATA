@@ -24,7 +24,7 @@ authors:
   - name: Michał Sadowski
     orcid: 0000-0003-3482-9733
     affiliation: "1"
-  - name: Sylwester Arabas^[corresponding author]
+  - name: Sylwester Arabas^[corresponding author: sylwester.arabas@uj.edu.pl]
     orcid: 0000-0003-0361-0082
     affiliation: "2,1"
 affiliations:
@@ -67,11 +67,13 @@ From developers' and maintainers' perspective, PyMPDATA offers a suite of unit t
 
 # Package features summary
 
+PyMPDATA is an open source software released under the terms of the GNU General Public License 3.0.
+
 PyMPDATA is built on top of Numba [@Lam_et_al_2015] which is a just-in-time compiler 
   that translates Python code into fast machine code using the Low Level Virtual Machine (LLVM)
   compiler infrastructure.
-Thanks to extensive interoperability of Python, PyMPDATA is readily usable not only from within Python
-  but also from such environments as Julia and Matlab, and the package comes with examples depicting it.
+PyMPDATA API uses NumPy for array-oriented input and output. 
+Usage of PyMPDATA from Julia and Matlab through Python interoperabiity tools is depicted in the PyMPDATA README file.
 
 As of the current version, PyMPDATA supports homogeneous transport in 1D, 2D and 3D using structured meshes,
   optionally generalised by employment of a Jacobian of coordinate transformation 
@@ -93,7 +95,12 @@ Several of the examples feature comparisons against analytical solution and thes
 The PyMPDATA-examples README file includes links (badges) offering single-click deployment 
   in the cloud using the mybinder.org or the colab.research.google.com platoforms.
 
-Both the PyMPDATA and the PyMPDATA-examples packages are available in the PyPI package repository.
+A separate project called ``numba-mpi`` has been developed  
+  to set the stage for future MPI distributed memory parallelism in PyMPDATA.
+
+The PyMPDATA, the PyMPDATA-examples and the ``numba-mpi`` packages are available in the 
+  ``PyPI`` package repository, and installation of any of these packages reduces to
+  typing ``pip install ...``.
 PyMPDATA development has been hosted on GitHub at: https://github.com/atmos-cloud-sim-uj.
 Auto-generated documentation sites for PyMPDATA, PyMPDATA-examples and numba-mpi are hosted at
   https://atmos-cloud-sim-uj.github.io/PyMPDATA, 
@@ -101,24 +108,25 @@ Auto-generated documentation sites for PyMPDATA, PyMPDATA-examples and numba-mpi
   https://atmos-cloud-sim-uj.github.io/numba-mpi, 
   respectively.
 
-PyMPDATA is an open source software released under the terms of the GNU General Public License 3.0.
-
 # Usage examples
 
-Simulations included in the PyMPDATA-examples package (as of time of writing) 
-  are listed below, annotated with their main characteristics such as dimensionality,
-  number of equations constituting the system solved and an outline of model employed:
-- 1D:
-  - [@Smolarkiewicz_2006]
-  - [@Arabas_and_Farhat_2020]
-  - [@Olesik_et_al_2021]
-- 2D:
-  - [@Molenkamp_1968]
-  - [@Williamson and Rasch 1989]
-  - [@Jarecka_et_al_2015]
-  - [@Shipway_and_Hill_2012]
-- 3D:
-  - [@Smolarkiewicz_1984]
+Simulations included in the PyMPDATA-examples package, as of time of writing, 
+  are listed below.
+Each example is annotated with the dimensionality, 
+  number of equations constituting the system and an outline of modelled setup.
+* 1D:
+  * [@Smolarkiewicz_2006]: single-equation advection-only homogeneous problem with different algorithm options depicted with constant advector field
+  * [@Arabas_and_Farhat_2020]: single-equation advection-diffusion problem resulting from a transformation of the Black-Scholes equation into either homogeneous  or heterogeneous problem for European or American option valuation, respectively
+  * [@Olesik_et_al_2021]: single-equation advection-only homogeneous problem with coordinate transformation depicting application of MPDATA for condensational growth of a population of particles
+* 2D:
+  * [@Molenkamp_1968]: single-equation homogeneous transport with different algorithm options
+  * [@Jarecka_et_al_2015]: shallow-water system with three equations representing conservation of mass and two components of momentum (with the momentum equations featuring source terms) modelling spreading under gravity of a three-dimensional ellicptic drop on a two-dimensional plane
+  * [@Williamson_and_Rasch_1989]: advection on a spherical plane depicting transformation to spherical coordinates
+  * [@Shipway_and_Hill_2012]: coupled system of vater vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplet on aerosol particles, coordinate transformation used for representation of air density profile
+* 3D:
+  * [@Smolarkiewicz_1984]: homogeneous single-equation example depicting revolution of a spherical signal in a constant angular velocity rotational velocity field 
+
+In addition, PyMPDATA is used in a two-dimensional setup in of the examples in the sister PySDM package [Bartman_et_al_2021].
 
 # Implementation highlights
 
@@ -137,9 +145,6 @@ The Numba's deviation from Python semantics rendering closure variables as compi
   is extensively exploited within PyMPDATA code base enabling the just-in-time compilation to benefit
   from information on domain extents, algorithm variant used and problem characteristics (e.g., coordinate 
   transformation used, or lack thereof). 
-
-A separate project called ``numba-mpi`` (also available on PyPI) has been developed with the intention 
-  to set the stage for future MPI distributed memory parallelism in PyMPDATA.
 
 In general, the numerical and concurrency aspects of PyMPDATA implementation follow the libmpdata++ 
   open-source C++ implementation of MPDATA [@Jaruga_et_al_2015].
