@@ -74,7 +74,7 @@ From developers' and maintainers' perspective, ``PyMPDATA`` offers a suite of un
 ``PyMPDATA`` interface uses ``NumPy`` for array-oriented input and output. 
 Usage of ``PyMPDATA`` from ``Julia`` (https://julialang.org) and ``Matlab`` (https://mathworks.com) 
   through ``PyCall`` and built-in ``Python`` interoperability tools, respectively,
-  is depicted in the PyMPDATA README file.
+  is depicted in the PyMPDATA README.
 
 As of the current version, ``PyMPDATA`` supports homogeneous transport in one (1D), two (2D) and three dimensions (3D) 
   using structured meshes, optionally generalised by coordinate transformation 
