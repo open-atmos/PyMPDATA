@@ -24,7 +24,7 @@ authors:
   - name: Michał Sadowski
     orcid: 0000-0003-3482-9733
     affiliation: "1"
-  - name: Sylwester Arabas
+  - name: Sylwester Arabas^[corresponding author]
     orcid: 0000-0003-0361-0082
     affiliation: "2,1"
 affiliations:
@@ -37,7 +37,7 @@ bibliography: paper.bib
 
 ---
 
-# Summary
+# Statement of need 
 
 Convection-diffusion problems arise across a wide range of pure and applied research,
   in particular in geosciences, aerospace engineering and financial modelling
@@ -53,39 +53,96 @@ MPDATA has been subsequently developed into a family of schemes with numerous va
   [@Smolarkiewicz_2006]).
 The PyMPDATA project introduced herein constitutes a high-performance multi-threaded implementation of
   structured-mesh MPDATA in Python.
+
+PyMPDATA is aimed to address several aspects which steepen the learning curve for and limit collaborative 
+  development of existing implementaitons of MPDATA.
+PyMPDATA is engineered purely in Python targeting both performance and usability, the latter encompassing 
+  research users', developers' and maintainers' perspectives.
+Performance on par with compiled-language imeplementation is assured using just-in-time compilation technique
+  [@Arabas_et_al_2014].
+From researcher's perspective, PyMPDATA offers hassle-free installation on multitude of platforms
+  including Linux, OSX and Windows, and eliminates compilation stage from the perspective of the user.
+From developers' and maintainers' perspective, PyMPDATA offers a suite of unit tests, multi-platform c
+  ontinuous integration setup, seamless integration with Python development aids including debuggers and profilers.
+
+# Package features summary
+
 PyMPDATA is built on top of Numba [@Lam_et_al_2015] which is a just-in-time compiler 
   that translates Python code into fast machine code using the Low Level Virtual Machine (LLVM)
   compiler infrastructure.
 Thanks to extensive interoperability of Python, PyMPDATA is readily usable not only from within Python
   but also from such environments as Julia and Matlab, and the package comes with examples depicting it.
-PyMPDATA is an open source software released under the terms of the GNU General Public License v3,
-  and is available in the PyPI package repository.
 
-# ...
+As of the current version, PyMPDATA supports homogeneous transport in 1D, 2D and 3D using structured meshes,
+  optionally generalised by employment of a Jacobian of coordinate transformation 
+  [@Smolarkiewicz_and_Clark_1986,@Smolarkiewicz_and_Margolin_1993]. 
+PyMPDATA includes implementation of a set of MPDATA variants including 
+  the non-oscillatory option [@Smolarkiewicz_and_Grabowski_1990], 
+  the infinite-gauge variant [@Smolarkiewicz_and_Clark_1986,@Margolin_and_Shashkov_2006], 
+  the divergent-flow option [Smolarkiewicz_1984,@Smolarkiewicz_and_Margolin_1998_SIAM],
+  the double-pass donor cell (DPDC) flavour [@Beason_Margolin_1988,@Smolarkiewicz_and_Margolin_1998_SIAM,@Margolin_and_Shashkov_2006] and 
+  the third-order-terms options [@Smolarkiewicz_and_Margolin_1998_SIAM]. 
+It also features support for integration of Fickian-terms in advection-diffusion problems using 
+  the pseudo-transport velocity approach [@Smolarkiewicz_and_Clark_1986,@Smolarkiewicz_and_Szmelter_2005]. 
 
-[@Arabas_et_al_2014]
-[@Jaruga_et_al_2015]
-  
-# variants
-  
-[@Beason_Margolin_1988]
-[@Smolarkiewicz_and_Grabowski_1990]
-[@Hill_2010]
-[@Smolarkiewicz_and_Clark_1986]
-[@Smolarkiewicz_and_Margolin_1993]
-[@Smolarkiewicz_and_Margolin_1998_SIAM]
-[@Margolin_and_Shashkov_2006]
+A companion package named PyMPDATA-examples contains a set of Jupyter notebooks reproducing
+  results from literature using PyMPDATA.
+These examples are also executed within continuous integration runs.
+Several of the examples feature comparisons against analytical solution and these are
+  also included in the test suite of PyMPDATA.
+The PyMPDATA-examples README file includes links (badges) offering single-click deployment 
+  in the cloud using the mybinder.org or the colab.research.google.com platoforms.
+
+Both the PyMPDATA and the PyMPDATA-examples packages are available in the PyPI package repository.
+PyMPDATA development has been hosted on GitHub at: https://github.com/atmos-cloud-sim-uj.
+Auto-generated documentation sites for PyMPDATA, PyMPDATA-examples and numba-mpi are hosted at
+  https://atmos-cloud-sim-uj.github.io/PyMPDATA, 
+  https://atmos-cloud-sim-uj.github.io/PyMPDATA-examples and 
+  https://atmos-cloud-sim-uj.github.io/numba-mpi, 
+  respectively.
+
+PyMPDATA is an open source software released under the terms of the GNU General Public License 3.0.
 
 # Usage examples
 
-[@Jaruga_et_al_2015]
-[@Jarecka_et_al_2015]
-[@Arabas_and_Farhat_2020]
-[@Olesik_et_al_2021]
-[@Shipway_and_Hill_2012]
-[@Williamson and Rasch 1989]
-[@Molenkamp_1968]
-[@Smolarkiewicz_1984]
+Simulations included in the PyMPDATA-examples package (as of time of writing) 
+  are listed below, annotated with their main characteristics such as dimensionality,
+  number of equations constituting the system solved and an outline of model employed:
+- 1D:
+  - [@Smolarkiewicz_2006]
+  - [@Arabas_and_Farhat_2020]
+  - [@Olesik_et_al_2021]
+- 2D:
+  - [@Molenkamp_1968]
+  - [@Williamson and Rasch 1989]
+  - [@Jarecka_et_al_2015]
+  - [@Shipway_and_Hill_2012]
+- 3D:
+  - [@Smolarkiewicz_1984]
+
+# Implementation highlights
+
+In 2D and 3D simulations, domain-decomposition is used for multi-threaded parallelism. 
+Domain decomposition is performed along the outer dimension only and is realised using
+  the ``numba.prange()`` functionality.
+
+PyMPDATA design features a custom-built multi-dimensional Arakawa-C grid layer allowing to concisely 
+  represent multi-dimensional stencil operations on both scalar and vector fields. 
+The grid layer is built on top of NumPy's ndarrays (using "C" ordering) using the Numba's ``@njit`` 
+  functionality for high-performance array traversals. 
+It enables one to code once for multiple dimensions, and automatically handles (and hides from the user)
+  any halo-filling logic related with boundary conditions. 
+
+The Numba's deviation from Python semantics rendering closure variables as compile-time constants 
+  is extensively exploited within PyMPDATA code base enabling the just-in-time compilation to benefit
+  from information on domain extents, algorithm variant used and problem characteristics (e.g., coordinate 
+  transformation used, or lack thereof). 
+
+A separate project called ``numba-mpi`` (also available on PyPI) has been developed with the intention 
+  to set the stage for future MPI distributed memory parallelism in PyMPDATA.
+
+In general, the numerical and concurrency aspects of PyMPDATA implementation follow the libmpdata++ 
+  open-source C++ implementation of MPDATA [@Jaruga_et_al_2015].
 
 # Author contributions
 
