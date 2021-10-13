@@ -61,7 +61,6 @@ Performance on par with compiled-language implementations is targetted by employ
   using ``Numba`` [@Lam_et_al_2015] which is a just-in-time compiler 
   that translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
   compiler infrastructure [for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014].
-
 ``PyMPDATA`` is engineered aiming at both performance and usability, the latter encompassing 
   research users', developers' and maintainers' perspectives.
 From researcher's perspective, ``PyMPDATA`` offers hassle-free installation on a multitude of platforms
