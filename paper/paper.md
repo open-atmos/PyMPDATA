@@ -95,7 +95,7 @@ Several of the examples feature comparisons against analytical solution and thes
 The PyMPDATA-examples README file includes links (badges) offering single-click deployment 
   in the cloud using the mybinder.org or the colab.research.google.com platoforms.
 
-A separate project called ``numba-mpi`` has been developed  
+A separate project ``numba-mpi`` has been developed  
   to set the stage for future MPI distributed memory parallelism in PyMPDATA.
 
 The PyMPDATA, the PyMPDATA-examples and the ``numba-mpi`` packages are available in the 
