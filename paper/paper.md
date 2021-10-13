@@ -51,27 +51,27 @@ The Multidimensional Positive Definite Advection Transport Algorithm (``MPDATA``
   and solution procedures addressing a diverse set of problems in geophysical fluid dynamics and beyond.
 For reviews of ``MPDATA`` applications and variants, see, e.g., @Smolarkiewicz_and_Margolin_1998_JCP and 
   @Smolarkiewicz_2006.
+  
 The ``PyMPDATA`` project introduced herein constitutes a high-performance multi-threaded implementation of
   structured-mesh ``MPDATA`` in ``Python``.
-
 ``PyMPDATA`` is aimed to address several aspects which steepen the learning curve and limit collaborative 
-  usage and development of existing open-source [e.g., @Jaruga_et_al_2015] 
-  and closed-source [e.g., @Kuehnlein_et_al_2019] implementations of ``MPDATA``.
-``PyMPDATA`` is engineered purely in ``Python`` aiming at both performance and usability, the latter encompassing 
-  research users', developers' and maintainers' perspectives.
+  usage and development of existing ``C++`` [e.g., @Jaruga_et_al_2015] 
+  and ``Fortran`` [e.g., @Kuehnlein_et_al_2019] implementations of ``MPDATA``.
 Performance on par with compiled-language implementations is targetted by employment of just-in-time (JIT) compilation
-  technique using.
+  using ``Numba`` [@Lam_et_al_2015] which is a just-in-time compiler 
+  that translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
+  compiler infrastructure [for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014].
+
+``PyMPDATA`` is engineered aiming at both performance and usability, the latter encompassing 
+  research users', developers' and maintainers' perspectives.
 From researcher's perspective, ``PyMPDATA`` offers hassle-free installation on a multitude of platforms
   including ``Linux``, ``macOS`` and ``Windows``, and eliminates the compilation stage from the perspective of the user.
 From developers' and maintainers' perspective, ``PyMPDATA`` offers a suite of unit tests, multi-platform 
   continuous integration setup, seamless integration with ``Python`` development tools including debuggers, profilers
   and code analysers.
 
-# Package features summary
+# Summary
 
-``PyMPDATA`` is built on top of ``Numba`` [@Lam_et_al_2015] which is a just-in-time compiler 
-  that translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
-  compiler infrastructure [for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014].
 ``PyMPDATA`` interface uses ``NumPy`` for array-oriented input and output. 
 Usage of ``PyMPDATA`` from ``Julia`` (https://julialang.org) and ``Matlab`` (https://mathworks.com) 
   through ``PyCall`` and built-in ``Python`` interoperability tools, respectively,
