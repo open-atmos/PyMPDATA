@@ -69,11 +69,9 @@ From developers' and maintainers' perspective, ``PyMPDATA`` offers a suite of un
 
 # Package features summary
 
-``PyMPDATA`` is a free and open-source software released under the terms of the GNU General Public License 3.0 (http://www.gnu.org/licenses/gpl-3.0).
-
 ``PyMPDATA`` is built on top of ``Numba`` [@Lam_et_al_2015] which is a just-in-time compiler 
   that translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
-  compiler infrastructure (for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014).
+  compiler infrastructure [for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014].
 ``PyMPDATA`` interface uses ``NumPy`` for array-oriented input and output. 
 Usage of ``PyMPDATA`` from ``Julia`` (https://julialang.org) and ``Matlab`` (https://mathworks.com) 
   through ``PyCall`` and built-in ``Python`` interoperability tools, respectively,
@@ -112,6 +110,8 @@ are hosted at
   https://atmos-cloud-sim-uj.github.io/PyMPDATA/, 
   https://atmos-cloud-sim-uj.github.io/PyMPDATA-examples/ and 
   https://atmos-cloud-sim-uj.github.io/numba-mpi/.
+ 
+``PyMPDATA`` is a free and open-source software released under the terms of the GNU General Public License 3.0 (http://www.gnu.org/licenses/gpl-3.0). 
  
 # Usage examples
 
