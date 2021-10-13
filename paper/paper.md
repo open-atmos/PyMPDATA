@@ -67,10 +67,10 @@ From developers' and maintainers' perspective, PyMPDATA offers a suite of unit t
 
 # Package features summary
 
-PyMPDATA is an open source software released under the terms of the GNU General Public License 3.0.
+PyMPDATA is a free and open-source software released under the terms of the GNU General Public License 3.0.
 
 PyMPDATA is built on top of Numba [@Lam_et_al_2015] which is a just-in-time compiler 
-  that translates Python code into fast machine code using the Low Level Virtual Machine (LLVM)
+  that translates Python code into fast machine code using the Low Level Virtual Machine (LLVM, https://llvm.org/)
   compiler infrastructure.
 PyMPDATA API uses NumPy for array-oriented input and output. 
 Usage of PyMPDATA from Julia and Matlab through Python interoperabiity tools is depicted in the PyMPDATA README file.
@@ -100,12 +100,12 @@ A separate project ``numba-mpi`` has been developed to set the stage for future 
 The ``PyMPDATA``, the ``PyMPDATA-examples`` and the ``numba-mpi`` packages are available in the 
   ``PyPI`` package repository, and installation of any of these packages reduces to
   typing ``pip install package_name``.
-PyMPDATA development has been hosted on ``GitHub`` at: https://github.com/atmos-cloud-sim-uj.
+Development of all three packages has been hosted on ``GitHub`` at: https://github.com/atmos-cloud-sim-uj/.
 Auto-generated documentation sites for ``PyMPDATA``, ``PyMPDATA-examples`` and ``numba-mpi`` 
 are hosted at
-  https://atmos-cloud-sim-uj.github.io/PyMPDATA, 
-  https://atmos-cloud-sim-uj.github.io/PyMPDATA-examples and 
-  https://atmos-cloud-sim-uj.github.io/numba-mpi, 
+  https://atmos-cloud-sim-uj.github.io/PyMPDATA/, 
+  https://atmos-cloud-sim-uj.github.io/PyMPDATA-examples/ and 
+  https://atmos-cloud-sim-uj.github.io/numba-mpi/, 
   respectively.
 
 # Usage examples
@@ -127,7 +127,7 @@ Each example is annotated with the dimensionality,
    - 3D:
      - [@Smolarkiewicz_1984]: homogeneous single-equation example depicting revolution of a spherical signal in a constant angular velocity rotational velocity field 
 
-In addition, PyMPDATA is used in a two-dimensional setup in of the examples in the sister PySDM package [Bartman_et_al_2021].
+In addition, PyMPDATA is used in a two-dimensional setup in of the examples in the sister PySDM package [@Bartman_et_al_2021].
 
 # Implementation highlights
 
