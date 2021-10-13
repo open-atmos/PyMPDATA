@@ -47,42 +47,42 @@ One of the key challenges in numerical solutions of problems involving advective
   aspects of numerical solutions to advection problems, see, e.g., @Roed_2019).
 The Multidimensional Positive Definite Advection Transport Algorithm (``MPDATA``) is a robust 
   explicit-in-time sign-preserving solver introduced in @Smolarkiewicz_1983 and @Smolarkiewicz_1984.
-MPDATA has been subsequently developed into a family of numerical schemes with numerous variants 
-  and solution procedures addressing diverse set of problems in geophysical fluid dynamics and beyond.
+``MPDATA`` has been subsequently developed into a family of numerical schemes with numerous variants 
+  and solution procedures addressing a diverse set of problems in geophysical fluid dynamics and beyond.
 For reviews of ``MPDATA`` applications and variants, see, e.g., @Smolarkiewicz_and_Margolin_1998_JCP and 
   @Smolarkiewicz_2006.
 The ``PyMPDATA`` project introduced herein constitutes a high-performance multi-threaded implementation of
   structured-mesh ``MPDATA`` in ``Python``.
 
 ``PyMPDATA`` is aimed to address several aspects which steepen the learning curve and limit collaborative 
-  usage and development of existing open-source (e.g., @Jaruga_et_al_2015) 
-  and closed-source (e.g., @Kuehnlein_et_al_2019) implementaitons of ``MPDATA``.
-``PyMPDATA`` is engineered purely in ``Python`` targeting both performance and usability, the latter encompassing 
+  usage and development of existing open-source [e.g., @Jaruga_et_al_2015] 
+  and closed-source [e.g., @Kuehnlein_et_al_2019] implementations of ``MPDATA``.
+``PyMPDATA`` is engineered purely in ``Python`` aiming at both performance and usability, the latter encompassing 
   research users', developers' and maintainers' perspectives.
-Performance on par with compiled-language imeplementations is targetted by employment of just-in-time (JIT) compilation
+Performance on par with compiled-language implementations is targetted by employment of just-in-time (JIT) compilation
   technique using.
-From researcher's perspective, ``PyMPDATA`` offers hassle-free installation on multitude of platforms
-  including ``Linux``, ``macOS`` and ``Windows``, and eliminates compilation stage from the perspective of the user.
+From researcher's perspective, ``PyMPDATA`` offers hassle-free installation on a multitude of platforms
+  including ``Linux``, ``macOS`` and ``Windows``, and eliminates the compilation stage from the perspective of the user.
 From developers' and maintainers' perspective, ``PyMPDATA`` offers a suite of unit tests, multi-platform 
   continuous integration setup, seamless integration with ``Python`` development tools including debuggers, profilers
   and code analysers.
 
 # Package features summary
 
-``PyMPDATA`` is a free and open-source software released under the terms of the GNU General Public License 3.0.
+``PyMPDATA`` is a free and open-source software released under the terms of the GNU General Public License 3.0 (http://www.gnu.org/licenses/gpl-3.0).
 
 ``PyMPDATA`` is built on top of ``Numba`` [@Lam_et_al_2015] which is a just-in-time compiler 
   that translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
-  compiler infrastructure (for a discussion of another JIT implementaion of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014).
-``PyMPDATA`` API uses ``NumPy`` for array-oriented input and output. 
-Usage of PyMPDATA from ``Julia`` (https://julialang.org) and ``Matlab`` (https://mathworks.com) 
-  through ``PyCall`` and built-in ``Python`` interoperabiity tools, respectively,
+  compiler infrastructure (for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014).
+``PyMPDATA`` interface uses ``NumPy`` for array-oriented input and output. 
+Usage of ``PyMPDATA`` from ``Julia`` (https://julialang.org) and ``Matlab`` (https://mathworks.com) 
+  through ``PyCall`` and built-in ``Python`` interoperability tools, respectively,
   is depicted in the PyMPDATA README file.
 
 As of the current version, ``PyMPDATA`` supports homogeneous transport in one (1D), two (2D) and three dimensions (3D) 
   using structured meshes, optionally generalised by coordinate transformation 
   [@Smolarkiewicz_and_Clark_1986,@Smolarkiewicz_and_Margolin_1993]. 
-PyMPDATA includes implementation of a set of MPDATA variants including 
+``PyMPDATA`` includes implementation of a subset of ``MPDATA`` variants including 
   the non-oscillatory option [@Smolarkiewicz_and_Grabowski_1990], 
   the infinite-gauge variant [@Smolarkiewicz_and_Clark_1986,@Margolin_and_Shashkov_2006], 
   the divergent-flow option [Smolarkiewicz_1984,@Smolarkiewicz_and_Margolin_1998_SIAM],
@@ -94,18 +94,18 @@ It also features support for integration of Fickian-terms in advection-diffusion
 A companion package named ``PyMPDATA-examples`` contains a set of Jupyter notebooks reproducing
   results from literature using ``PyMPDATA``.
 These examples are also executed within continuous integration runs.
-Several of the examples feature comparisons against analytical solution and these are
+Several of the examples feature comparisons against analytical solution, and these are
   also included in the test suite of ``PyMPDATA``.
 The ``PyMPDATA-examples`` README file includes links (badges) offering single-click deployment 
-  in the cloud using either Binder (``httpss://mybinder.org``) or Colab (``https://colab.research.google.com``) platoforms.
+  in the cloud using either the Binder (``httpss://mybinder.org``) or the Colab (``https://colab.research.google.com``) platforms.
 
 A separate project named ``numba-mpi`` has been developed to set the stage for future Message Passing Interface (``MPI``)
   distributed memory parallelism in ``PyMPDATA``.
 The ``PyMPDATA``, the ``PyMPDATA-examples`` and the ``numba-mpi`` packages are available in the 
-  ``PyPI`` package repository, and installation of any of these packages reduces to
+  ``PyPI`` package repository, and installation of these packages reduces to
   typing ``pip install package_name``.
 Development of all three packages is hosted on ``GitHub`` at: https://github.com/atmos-cloud-sim-uj/
-  and continutous integration runs on ``Linux``, ``macOS`` and ``Windows`` are set up using
+  and continuous integration runs on ``Linux``, ``macOS`` and ``Windows`` are set up using
   ``GitHub Actions`` and ``Appveyor`` platforms (the latter used for 32-bit runs on Windows).
 Auto-generated documentation sites built with ``pdoc3``  
 are hosted at
@@ -116,23 +116,23 @@ are hosted at
 # Usage examples
 
 Simulations included in the ``PyMPDATA-examples`` package 
-  are listed below labelled with the paper reference on which the example setup is based on.
+  are listed below, labelled with the paper reference on which the example setup is based on.
 Each example is annotated with the dimensionality, 
-  number of equations constituting the system and an outline of modelled setup.
+  number of equations constituting the system and an outline of setup.
   
    - 1D:
-      - @Smolarkiewicz_2006: single-equation advection-only homogeneous problem with different algorithm options depicted with constant advector field
+      - @Smolarkiewicz_2006: single-equation advection-only homogeneous problem with different algorithm options depicted with constant velocity field
       - @Arabas_and_Farhat_2020: single-equation advection-diffusion problem resulting from a transformation of the Black-Scholes equation into either homogeneous  or heterogeneous problem for European or American option valuation, respectively
-      - @Olesik_et_al_2021: single-equation advection-only homogeneous problem with coordinate transformation depicting application of MPDATA for condensational growth of a population of particles
+      - @Olesik_et_al_2021: single-equation advection-only homogeneous problem with coordinate transformation depicting application of ``MPDATA`` for condensational growth of a population of particles
    - 2D:
      - @Molenkamp_1968: single-equation homogeneous transport with different algorithm options
-     - @Jarecka_et_al_2015: shallow-water system with three equations representing conservation of mass and two components of momentum (with the momentum equations featuring source terms) modelling spreading under gravity of a three-dimensional ellicptic drop on a two-dimensional plane
+     - @Jarecka_et_al_2015: shallow-water system with three equations representing conservation of mass and two components of momentum (with the momentum equations featuring source terms) modelling spreading under gravity of a three-dimensional elliptic drop on a two-dimensional plane
      - @Williamson_and_Rasch_1989: advection on a spherical plane depicting transformation to spherical coordinates
-     - @Shipway_and_Hill_2012: coupled system of vater vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplet on aerosol particles, coordinate transformation used for representation of air density profile
+     - @Shipway_and_Hill_2012: coupled system of water vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplet on aerosol particles, coordinate transformation used for representation of air density profile
    - 3D:
      - @Smolarkiewicz_1984: homogeneous single-equation example depicting revolution of a spherical signal in a constant angular velocity rotational velocity field 
 
-In addition, PyMPDATA is used in a two-dimensional setup in of the examples in the sister PySDM package [@Bartman_et_al_2021].
+In addition, ``PyMPDATA`` is used in a two-dimensional setup in of the examples in the sister PySDM package [@Bartman_et_al_2021].
 
 # Implementation highlights
 
@@ -140,11 +140,11 @@ In 2D and 3D simulations, domain-decomposition is used for multi-threaded parall
 Domain decomposition is performed along the outer dimension only and is realised using
   the ``numba.prange()`` functionality.
 
-``PyMPDATA`` design features a custom-built multi-dimensional Arakawa-C staggered grid layer allowing to concisely 
+``PyMPDATA`` design features a custom-built multi-dimensional Arakawa-C staggered grid layer, allowing to concisely 
   represent multi-dimensional stencil operations on both scalar and vector fields. 
-The grid layer is built on top of ``NumPy``'s ndarrays (using "C" ordering) using the Numba's ``@njit`` 
+The grid layer is built on top of ``NumPy``'s ``ndarray``s (using "C" ordering) using the ``Numba``'s ``@njit`` 
   functionality for high-performance multi-threaded array traversals. 
-The array-traversal layer enables to code once for multiple dimensions (i.e. one set of MPDATA formulae for 1D, 2D and 3D), 
+The array-traversal layer enables to code once for multiple dimensions (i.e. one set of ``MPDATA`` formulae for 1D, 2D and 3D), 
   and automatically handles (if needed) any halo-filling logic related with boundary conditions. 
 
 The ``Numba``'s deviation from ``Python`` semantics rendering closure variables as compile-time constants 
@@ -153,7 +153,7 @@ The ``Numba``'s deviation from ``Python`` semantics rendering closure variables 
   transformation used, or lack thereof). 
 
 In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation follow the ``libmpdata++`` 
-  open-source C++ implementation of MPDATA [@Jaruga_et_al_2015].
+  open-source ``C++`` implementation of ``MPDATA`` [@Jaruga_et_al_2015].
 
 # Author contributions
 
