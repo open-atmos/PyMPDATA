@@ -43,7 +43,7 @@ Convection-diffusion problems arise across a wide range of pure and applied rese
   in particular in geosciences, aerospace engineering and financial modelling
   (for an overview of applications, see, e.g., section 1.1 in @Morton_1996).
 One of the key challenges in numerical solutions of problems involving advective transport is
-  the preservation of sign of the advected field (for an overview of this and other
+  sign preservation of the advected field (for an overview of this and other
   aspects of numerical solutions to advection problems, see, e.g., @Roed_2019).
 The Multidimensional Positive Definite Advection Transport Algorithm (``MPDATA``) is a robust 
   explicit-in-time sign-preserving solver introduced in @Smolarkiewicz_1983 and @Smolarkiewicz_1984.
@@ -57,14 +57,14 @@ The ``PyMPDATA`` project introduced herein constitutes a high-performance multi-
 ``PyMPDATA`` is aimed to address several aspects which steepen the learning curve and limit collaborative 
   usage and development of existing ``C++`` [e.g., @Jaruga_et_al_2015] 
   and ``Fortran`` [e.g., @Kuehnlein_et_al_2019] implementations of ``MPDATA``.
-Performance on par with compiled-language implementations is targetted by employment of just-in-time (JIT) compilation
-  using ``Numba`` [@Lam_et_al_2015] which is a just-in-time compiler 
-  that translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
+Performance on par with compiled-language implementations is targeted by employing just-in-time (JIT) compilation
+  using ``Numba`` [@Lam_et_al_2015], which translates ``Python`` code into fast machine code using the Low Level Virtual Machine (``LLVM``, https://llvm.org/)
   compiler infrastructure [for a discussion of another JIT implementation of ``MPDATA`` using ``PyPy``, see @Arabas_et_al_2014].
 ``PyMPDATA`` is engineered aiming at both performance and usability, the latter encompassing 
   research users', developers' and maintainers' perspectives.
-From researcher's perspective, ``PyMPDATA`` offers hassle-free installation on a multitude of platforms
-  including ``Linux``, ``macOS`` and ``Windows``, and eliminates the compilation stage from the perspective of the user.
+From researcher's perspective, ``PyMPDATA`` offers hassle-free installation on 
+  ``Linux``, ``macOS`` and ``Windows``.
+It also eliminates the compilation stage from the perspective of the user.
 From developers' and maintainers' perspective, ``PyMPDATA`` offers a suite of unit tests, multi-platform 
   continuous integration setup, seamless integration with ``Python`` development tools including debuggers, profilers
   and code analysers.
@@ -157,7 +157,7 @@ In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation
 # Author contributions
 
 PB had been the architect of ``PyMPDATA`` with SA taking the role of main developer and maintainer over the time.
-MO participated in the package core development and led the development of the condensational-growth example which was the basis of his MSc thesis.
+MO participated in the package core development and led the development of the condensational-growth example, which was the basis of his MSc thesis.
 JB contributed the DPDC algorithm variant handling.
 SD contributed the advection-diffusion example.
 MM contributed to the ``numba-mpi`` package.
