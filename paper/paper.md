@@ -127,7 +127,7 @@ Each example is annotated with the dimensionality,
      - @Molenkamp_1968: single-equation homogeneous transport with different algorithm options
      - @Jarecka_et_al_2015: shallow-water system with three equations representing conservation of mass and two components of momentum (with the momentum equations featuring source terms) modelling spreading under gravity of a three-dimensional elliptic drop on a two-dimensional plane
      - @Williamson_and_Rasch_1989: advection on a spherical plane depicting transformation to spherical coordinates
-     - @Shipway_and_Hill_2012: coupled system of water vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplet on aerosol particles, coordinate transformation used for representation of air density profile
+     - @Shipway_and_Hill_2012: coupled system of water vapour mass (single spatial dimension) and water droplet number conservation (spatial and spectral dimensions) with the latter featuring source term modelling activation of water droplets on aerosol particles, coordinate transformation used for representation of air density profile
    - 3D:
      - @Smolarkiewicz_1984: homogeneous single-equation example depicting revolution of a spherical signal in a constant angular velocity rotational velocity field 
 
