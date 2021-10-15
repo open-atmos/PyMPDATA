@@ -78,15 +78,15 @@ Usage of ``PyMPDATA`` from ``Julia`` (https://julialang.org) and ``Matlab`` (htt
 
 As of the current version, ``PyMPDATA`` supports homogeneous transport in one (1D), two (2D) and three dimensions (3D) 
   using structured meshes, optionally generalised by coordinate transformation 
-  [@Smolarkiewicz_and_Clark_1986,@Smolarkiewicz_and_Margolin_1993]. 
+  [@Smolarkiewicz_and_Clark_1986;@Smolarkiewicz_and_Margolin_1993]. 
 ``PyMPDATA`` includes implementation of a subset of ``MPDATA`` variants including 
   the non-oscillatory option [@Smolarkiewicz_and_Grabowski_1990], 
-  the infinite-gauge variant [@Smolarkiewicz_and_Clark_1986,@Margolin_and_Shashkov_2006], 
-  the divergent-flow option [@Smolarkiewicz_1984,@Smolarkiewicz_and_Margolin_1998_SIAM],
-  the double-pass donor cell (DPDC) flavour [@Beason_Margolin_1988,@Smolarkiewicz_and_Margolin_1998_SIAM,@Margolin_and_Shashkov_2006] and 
+  the infinite-gauge variant [@Smolarkiewicz_and_Clark_1986;@Margolin_and_Shashkov_2006], 
+  the divergent-flow option [@Smolarkiewicz_1984;@Smolarkiewicz_and_Margolin_1998_SIAM],
+  the double-pass donor cell (DPDC) flavour [@Beason_Margolin_1988;@Smolarkiewicz_and_Margolin_1998_SIAM;@Margolin_and_Shashkov_2006] and 
   the third-order-terms options [@Smolarkiewicz_and_Margolin_1998_SIAM]. 
 It also features support for integration of Fickian-terms in advection-diffusion problems using 
-  the pseudo-transport velocity approach [@Smolarkiewicz_and_Clark_1986,@Smolarkiewicz_and_Szmelter_2005]. 
+  the pseudo-transport velocity approach [@Smolarkiewicz_and_Clark_1986;@Smolarkiewicz_and_Szmelter_2005]. 
 
 A companion package named ``PyMPDATA-examples`` contains a set of Jupyter notebooks reproducing
   results from literature using ``PyMPDATA``.
