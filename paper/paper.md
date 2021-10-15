@@ -82,7 +82,7 @@ As of the current version, ``PyMPDATA`` supports homogeneous transport in one (1
 ``PyMPDATA`` includes implementation of a subset of ``MPDATA`` variants including 
   the non-oscillatory option [@Smolarkiewicz_and_Grabowski_1990], 
   the infinite-gauge variant [@Smolarkiewicz_and_Clark_1986,@Margolin_and_Shashkov_2006], 
-  the divergent-flow option [Smolarkiewicz_1984,@Smolarkiewicz_and_Margolin_1998_SIAM],
+  the divergent-flow option [@Smolarkiewicz_1984,@Smolarkiewicz_and_Margolin_1998_SIAM],
   the double-pass donor cell (DPDC) flavour [@Beason_Margolin_1988,@Smolarkiewicz_and_Margolin_1998_SIAM,@Margolin_and_Shashkov_2006] and 
   the third-order-terms options [@Smolarkiewicz_and_Margolin_1998_SIAM]. 
 It also features support for integration of Fickian-terms in advection-diffusion problems using 
