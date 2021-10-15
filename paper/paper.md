@@ -110,7 +110,7 @@ are hosted at
   https://atmos-cloud-sim-uj.github.io/PyMPDATA-examples/ and 
   https://atmos-cloud-sim-uj.github.io/numba-mpi/.
  
-``PyMPDATA`` is a free and open-source software released under the terms of the GNU General Public License 3.0 (http://www.gnu.org/licenses/gpl-3.0). 
+``PyMPDATA`` is a free and open-source software released under the terms of the GNU General Public License 3.0 (https://www.gnu.org/licenses/gpl-3.0). 
  
 # Usage examples
 
