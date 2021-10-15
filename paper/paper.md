@@ -94,7 +94,7 @@ These examples are also executed within continuous integration runs.
 Several of the examples feature comparisons against analytical solution, and these are
   also included in the test suite of ``PyMPDATA``.
 The ``PyMPDATA-examples`` README file includes links (badges) offering single-click deployment 
-  in the cloud using either the Binder (``httpss://mybinder.org``) or the Colab (``https://colab.research.google.com``) platforms.
+  in the cloud using either the Binder (``https://mybinder.org``) or the Colab (``https://colab.research.google.com``) platforms.
 
 A separate project named ``numba-mpi`` has been developed to set the stage for future Message Passing Interface (``MPI``)
   distributed memory parallelism in ``PyMPDATA``.
