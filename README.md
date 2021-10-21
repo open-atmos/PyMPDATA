@@ -346,7 +346,7 @@ In the latter case, noticeably
 faster execution can be expected, however the resultant
 stepper is less versatile as bound to the given grid size.
 If number of dimensions is supplied only, the integration
-will take longer, yet same instance of the
+might take longer, yet same instance of the
 stepper can be used for different grids.  
 
 Since creating an instance of the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) class
@@ -384,6 +384,7 @@ which advances the solution by ``nt`` timesteps, optionally
 taking into account a given diffusion coefficient ``mu_coeff``.
 
 Solution state is accessible through the ``Solver.advectee`` property.
+Multiple solver[s] can share a single stepper, e.g., as exemplified in the shallow-water system solution in the examples package.
 
 Continuing with the above code snippets, instantiating
 a solver and making one integration step looks as follows:
