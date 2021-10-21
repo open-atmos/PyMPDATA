@@ -379,9 +379,9 @@ additional memory required by the solver is
 allocated according to the options provided. 
 
 The only method of the [``Solver``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html) class besides the
-init is ``advance(self, nt: int, mu_coeff: float = 0)`` 
+init is [``advance(nt, mu_coeff, ...)``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
 which advances the solution by ``nt`` timesteps, optionally
-taking into account a given value of diffusion coefficient.
+taking into account a given diffusion coefficient ``mu_coeff``.
 
 Solution state is accessible through the ``Solver.advectee`` property.
 
