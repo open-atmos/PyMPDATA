@@ -16,7 +16,6 @@ setup(
     install_requires=[
         'numba' + ('==0.54.0' if 'CI' in os.environ else ''),
         'numpy' + ('==1.20.2' if 'CI' in os.environ else ''),
-        'scipy' + ('==1.6.3' if 'CI' in os.environ else ''),
         'pystrict'
     ],
     author='https://github.com/atmos-cloud-sim-uj/PyMPDATA/graphs/contributors',
