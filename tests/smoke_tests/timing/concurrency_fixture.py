@@ -1,14 +1,16 @@
 import numba
 import pytest
 
+__num_threads = [pytest.param(1, id='serial')]
 
-__concurrency_str = ("threads", "serial")
 try:
     numba.parfors.parfor.ensure_parallel_support()
+    n = numba.config.NUMBA_NUM_THREADS
+    __num_threads.append(pytest.param(n, id=f"threads ({n})"))
 except numba.core.errors.UnsupportedParforsError:
-    __concurrency_str = ("serial",)
+    pass
 
 
-@pytest.fixture(params=__concurrency_str)
-def concurrency(request):
+@pytest.fixture(params=__num_threads)
+def num_threads(request):
     return request.param

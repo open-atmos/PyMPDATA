@@ -1,10 +1,11 @@
 import pytest
 import numpy as np
+import numba
 from PyMPDATA import Options
 from PyMPDATA_examples.Smolarkiewicz_1984 import Simulation, Settings
 
-from .concurrency_fixture import concurrency
-assert hasattr(concurrency, '_pytestfixturefunction')
+from .concurrency_fixture import num_threads
+assert hasattr(num_threads, '_pytestfixturefunction')
 
 
 @pytest.mark.parametrize("options", [
@@ -17,7 +18,9 @@ assert hasattr(concurrency, '_pytestfixturefunction')
 ])
 @pytest.mark.parametrize("dtype", (np.float64, np.float32))
 @pytest.mark.parametrize("static", (True, False))
-def test_timing_3d(benchmark, options, dtype, static, concurrency):
+def test_timing_3d(benchmark, options, dtype, static, num_threads):
+    numba.set_num_threads(num_threads)
+
     settings = Settings(n=20, dt=1)
     simulation = Simulation(settings, Options(**options, dtype=dtype), static=static)
 

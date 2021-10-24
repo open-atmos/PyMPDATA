@@ -5,8 +5,8 @@ import pytest
 from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
 from PyMPDATA.boundary_conditions import Periodic
 
-from .concurrency_fixture import concurrency
-assert hasattr(concurrency, '_pytestfixturefunction')
+from .concurrency_fixture import num_threads
+assert hasattr(num_threads, '_pytestfixturefunction')
 
 
 grid = (126, 101)
@@ -90,7 +90,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
 ])
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
-def test_timing_2d(benchmark, options, grid_static_str, concurrency, plot=False):
+def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False):
     if grid_static_str == "static":
         grid_static = True
     elif grid_static_str == "dynamic":
@@ -98,10 +98,7 @@ def test_timing_2d(benchmark, options, grid_static_str, concurrency, plot=False)
     else:
         raise ValueError()
 
-    if concurrency_str == "serial":
-        numba.set_num_threads(1)
-    else:
-        numba.set_num_threads(numba.config.NUMBA_NUM_THREADS)
+    numba.set_num_threads(num_threads)
 
     settings = Settings(n_rotations=6)
     _, __, z = from_pdf_2d(settings.pdf, xrange=settings.xrange, yrange=settings.yrange, gridsize=settings.grid)
