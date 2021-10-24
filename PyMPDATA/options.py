@@ -2,7 +2,7 @@ import numpy as np
 from pystrict import strict
 
 
-class hashabledict(dict):
+class _HashableDict(dict):
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
@@ -19,9 +19,9 @@ class Options:
                  epsilon: float = 1e-15,
                  non_zero_mu_coeff: bool = False,
                  dimensionally_split: bool = False,
-                 dtype: np.floating = np.float64
+                 dtype: [np.float32, np.float64] = np.float64
                  ):
-        self._values = hashabledict({
+        self._values = _HashableDict({
             'n_iters': n_iters,
             'infinite_gauge': infinite_gauge,
             'epsilon': epsilon,
@@ -104,7 +104,7 @@ class Options:
 
     @property
     def jit_flags(self):
-        return hashabledict({
+        return _HashableDict({
             "fastmath": True,
             "error_model": 'numpy',
             "boundscheck": False,

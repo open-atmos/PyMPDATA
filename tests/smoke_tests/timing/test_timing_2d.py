@@ -1,9 +1,13 @@
-from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
-from PyMPDATA.boundary_conditions import Periodic
 import numpy as np
 import numba
 from matplotlib import pyplot
 import pytest
+from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
+from PyMPDATA.boundary_conditions import Periodic
+
+from .concurrency_fixture import concurrency
+assert hasattr(concurrency, '_pytestfixturefunction')
+
 
 grid = (126, 101)
 
@@ -77,13 +81,6 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     return x, y, z
 
 
-concurrency_str = ("threads", "serial")
-try:
-    numba.parfors.parfor.ensure_parallel_support()
-except numba.core.errors.UnsupportedParforsError:
-    concurrency_str = ("serial")
-
-
 @pytest.mark.parametrize("options", [
     Options(n_iters=1),
     Options(n_iters=2),
@@ -92,10 +89,8 @@ except numba.core.errors.UnsupportedParforsError:
     Options(n_iters=3, infinite_gauge=False, third_order_terms=True),
     Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
 ])
-@pytest.mark.parametrize("dtype", (np.float64,))
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
-@pytest.mark.parametrize("concurrency_str", concurrency_str)
-def test_timing_2d(benchmark, options, dtype, grid_static_str, concurrency_str, plot=False):
+def test_timing_2d(benchmark, options, grid_static_str, concurrency, plot=False):
     if grid_static_str == "static":
         grid_static = True
     elif grid_static_str == "dynamic":
