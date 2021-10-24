@@ -47,7 +47,7 @@ class Stepper:
                     "forcing n_threads=1 as numba.parfors.parfor.ensure_parallel_support() raised UnsupportedParforsError",
                     file=sys.stderr)
                 self.n_threads = 1
-                
+
         self.n_dims = n_dims
         self.__call, self.traversals = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
 

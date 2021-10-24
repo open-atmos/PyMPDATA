@@ -36,7 +36,7 @@ def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
 
 
 @lru_cache()
-def _make_vector(dim, at, dtype, jit_flags):
+def _make_vector(dim, at, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, _, sign):
         return at(*psi, sign)
@@ -51,5 +51,5 @@ class Extrapolated:
     def make_scalar(self, at, halo, dtype, jit_flags):
         return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
-        return _make_vector(self.dim, at, dtype, jit_flags)
+    def make_vector(self, at, halo, dtype, jit_flags):
+        return _make_vector(self.dim, at, halo, dtype, jit_flags)

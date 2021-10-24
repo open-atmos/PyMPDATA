@@ -76,7 +76,7 @@ class Options:
     @property
     def DPDC(self):
         return self._values['DPDC']
-    
+
     @property
     def non_zero_mu_coeff(self):
         return self._values['non_zero_mu_coeff']
@@ -87,7 +87,7 @@ class Options:
 
     def __str__(self):
         return str(self._values)
-    
+
     def __hash__(self):
         value = hash(self._values) + hash(self.jit_flags)
         return value

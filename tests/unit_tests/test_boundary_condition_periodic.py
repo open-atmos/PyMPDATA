@@ -11,6 +11,7 @@ from tests.unit_tests.fixtures.n_threads import n_threads
 
 
 LEFT, RIGHT = 'left', 'right'
+ALL = (None, None)
 
 DIMENSIONS = (
     pytest.param(OUTER, id="OUTER"),
@@ -85,12 +86,12 @@ class TestPeriodicBoundaryCondition:
         if side == LEFT:
             np.testing.assert_array_equal(
                 field.data[shift(indices((None, halo), (halo, -halo), (halo, -halo))[:n_dims], dim)],
-                data[shift(indices((-halo, None), (None, None), (None, None))[:n_dims], dim)]
+                data[shift(indices((-halo, None), ALL, ALL)[:n_dims], dim)]
             )
         else:
             np.testing.assert_array_equal(
                 field.data[shift(indices((-halo, None), (halo, -halo), (halo, -halo))[:n_dims], dim)],
-                data[shift(indices((None, halo), (None, None), (None, None))[:n_dims], dim)]
+                data[shift(indices((None, halo), ALL, ALL)[:n_dims], dim)]
             )
 
     @pytest.mark.parametrize("data", (
@@ -145,33 +146,82 @@ class TestPeriodicBoundaryCondition:
             if dim_offset == 1:
                 np.testing.assert_array_equal(
                     field.data[component][
-                        shift(indices((None, halo), (halo - 1, -(halo - 1)), (halo, -halo))[:n_dims], -component+dim_offset)],
-                    data[component][shift(indices((-halo, None), (None, None), (None, None))[:n_dims], -component+dim_offset)]
+                        shift(
+                            indices((None, halo), (halo - 1, -(halo - 1)), (halo, -halo))[:n_dims],
+                            -component+dim_offset
+                        )
+                    ],
+                    data[component][
+                        shift(
+                            indices((-halo, None), ALL, ALL)[:n_dims],
+                            -component+dim_offset
+                        )
+                    ]
                 )
             elif dim_offset == 2:
                 np.testing.assert_array_equal(
                     field.data[component][
-                        shift(indices((None, halo), (halo, -halo), (halo - 1, -(halo - 1)))[:n_dims], -component+dim_offset)],
-                    data[component][shift(indices((-halo, None), (None, None), (None, None))[:n_dims], -component+dim_offset)]
+                        shift(
+                            indices((None, halo), (halo, -halo), (halo - 1, -(halo - 1)))[:n_dims],
+                            -component+dim_offset
+                        )
+                    ],
+                    data[component][shift(indices((-halo, None), ALL, ALL)[:n_dims], -component+dim_offset)]
                 )
             elif dim_offset == 0:
                 np.testing.assert_array_equal(
-                    field.data[component][shift(indices((None, halo - 1), (halo, -halo), (halo, -halo))[:n_dims], -component+dim_offset)],
-                    data[component][shift(indices((-(halo - 1), None), (None, None), (None, None))[:n_dims], -component+dim_offset)]
+                    field.data[component][shift(
+                        indices((None, halo - 1), (halo, -halo), (halo, -halo))[:n_dims],
+                        -component+dim_offset
+                    )],
+                    data[component][shift(
+                        indices((-(halo - 1), None), ALL, ALL)[:n_dims],
+                        -component+dim_offset
+                    )]
                 )
         else:
             if dim_offset == 1:
                 np.testing.assert_array_equal(
-                    field.data[component][shift(indices((-halo, None), (halo - 1, -(halo - 1)), (halo, -halo))[:n_dims], -component+dim_offset)],
-                    data[component][shift(indices((None, halo), (None, None), (None, None))[:n_dims], -component+dim_offset)]
+                    field.data[component][
+                        shift(
+                            indices((-halo, None), (halo - 1, -(halo - 1)), (halo, -halo))[:n_dims],
+                            -component+dim_offset
+                        )
+                    ],
+                    data[component][
+                        shift(
+                            indices((None, halo), ALL, ALL)[:n_dims],
+                            -component+dim_offset
+                        )
+                    ]
                 )
             elif dim_offset == 2:
                 np.testing.assert_array_equal(
-                    field.data[component][shift(indices((-halo, None), (halo, -halo), (halo - 1, -(halo - 1)))[:n_dims], -component+dim_offset)],
-                    data[component][shift(indices((None, halo), (None, None), (None, None))[:n_dims], -component+dim_offset)]
+                    field.data[component][
+                        shift(
+                            indices((-halo, None), (halo, -halo), (halo - 1, -(halo - 1)))[:n_dims],
+                            -component+dim_offset
+                        )
+                    ],
+                    data[component][
+                        shift(
+                            indices((None, halo), ALL, ALL)[:n_dims],
+                            -component+dim_offset
+                        )
+                    ]
                 )
             elif dim_offset == 0:
                 np.testing.assert_array_equal(
-                    field.data[component][shift(indices((-(halo - 1), None), (halo, -halo), (halo, -halo))[:n_dims], -component+dim_offset)],
-                    data[component][shift(indices((None, halo - 1), (None, None), (None, None))[:n_dims], -component+dim_offset)]
+                    field.data[component][
+                        shift(
+                            indices((-(halo - 1), None), (halo, -halo), (halo, -halo))[:n_dims],
+                            -component+dim_offset
+                        )
+                    ],
+                    data[component][
+                        shift(
+                            indices((None, halo - 1), ALL, ALL)[:n_dims],
+                            -component+dim_offset
+                        )
+                    ]
                 )

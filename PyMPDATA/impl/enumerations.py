@@ -1,3 +1,4 @@
+""" common constants (mostly integer indices used for indexing tuples) """
 import numpy as np
 
 ARG_FOCUS, ARG_DATA, ARG_DATA_OUTER, ARG_DATA_MID3D, ARG_DATA_INNER = 0, 1, 1, 2, 3

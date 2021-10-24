@@ -1,3 +1,4 @@
+""" constants for indexing and a factory for creating the "meta" tuples """
 import numpy as np
 from .enumerations import INNER, MID3D, OUTER
 
@@ -10,6 +11,7 @@ META_SIZE = 5
 
 
 def make_meta(halo_valid: bool, grid):
+    """ returns a "meta" tuple for a given grid size and halo status """
     meta = np.empty(META_SIZE, dtype=int)
     meta[META_HALO_VALID] = halo_valid
     meta[META_N_OUTER] = grid[OUTER] if len(grid) > 1 else 0

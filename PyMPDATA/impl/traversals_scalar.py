@@ -88,39 +88,44 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                         ))
 
     @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
-    def apply_scalar(fun_outer, fun_mid3d, fun_inner,
-                     out_meta, out,
-                     vec_arg1_meta, vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner,
-                     vec_arg1_bc_outer, vec_arg1_bc_mid3d, vec_arg1_bc_inner,
-                     scal_arg2_meta, scal_arg_2, scal_arg2_bc_outer, scal_arg2_bc_mid3d, scal_arg2_bc_inner,
-                     scal_arg3_meta, scal_arg_3, scal_arg3_bc_outer, scal_arg3_bc_mid3d, scal_arg3_bc_inner,
-                     scal_arg4_meta, scal_arg_4, scal_arg4_bc_outer, scal_arg4_bc_mid3d, scal_arg4_bc_inner,
-                     scal_arg5_meta, scal_arg_5, scal_arg5_bc_outer, scal_arg5_bc_mid3d, scal_arg5_bc_inner,
-                     ):
+    def apply_scalar(
+        fun_outer, fun_mid3d, fun_inner,
+        out_meta, out,
+        arg1v_meta, arg1v_data_o, arg1v_data_m, arg1v_data_i, arg1v_bc_o, arg1v_bc_m, arg1v_bc_i,
+        arg2s_meta, arg2s_data, arg2s_bc_o, arg2s_bc_m, arg2s_bc_i,
+        arg3s_meta, arg3s_data, arg3s_bc_o, arg3s_bc_m, arg3s_bc_i,
+        arg4s_meta, arg4s_data, arg4s_bc_o, arg4s_bc_m, arg4s_bc_i,
+        arg5s_meta, arg5s_data, arg5s_bc_o, arg5s_bc_m, arg5s_bc_i
+    ):
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
-            boundary_cond_vector(thread_id, vec_arg1_meta, vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner, vec_arg1_bc_outer, vec_arg1_bc_mid3d, vec_arg1_bc_inner)
-            boundary_cond_scalar(thread_id, scal_arg2_meta, scal_arg_2, scal_arg2_bc_outer, scal_arg2_bc_mid3d, scal_arg2_bc_inner)
-            boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg_3, scal_arg3_bc_outer, scal_arg3_bc_mid3d, scal_arg3_bc_inner)
-            boundary_cond_scalar(thread_id, scal_arg4_meta, scal_arg_4, scal_arg4_bc_outer, scal_arg4_bc_mid3d, scal_arg4_bc_inner)
-            boundary_cond_scalar(thread_id, scal_arg5_meta, scal_arg_5, scal_arg5_bc_outer, scal_arg5_bc_mid3d, scal_arg5_bc_inner)
-        if not vec_arg1_meta[META_HALO_VALID]:
-            vec_arg1_meta[META_HALO_VALID] = True
-        if not scal_arg2_meta[META_HALO_VALID]:
-            scal_arg2_meta[META_HALO_VALID] = True
-        if not scal_arg3_meta[META_HALO_VALID]:
-            scal_arg3_meta[META_HALO_VALID] = True
-        if not scal_arg4_meta[META_HALO_VALID]:
-            scal_arg4_meta[META_HALO_VALID] = True
-        if not scal_arg5_meta[META_HALO_VALID]:
-            scal_arg5_meta[META_HALO_VALID] = True
+            boundary_cond_vector(thread_id, arg1v_meta, arg1v_data_o, arg1v_data_m, arg1v_data_i,
+                                 arg1v_bc_o, arg1v_bc_m, arg1v_bc_i)
+            boundary_cond_scalar(thread_id, arg2s_meta, arg2s_data,
+                                 arg2s_bc_o, arg2s_bc_m, arg2s_bc_i)
+            boundary_cond_scalar(thread_id, arg3s_meta, arg3s_data,
+                                 arg3s_bc_o, arg3s_bc_m, arg3s_bc_i)
+            boundary_cond_scalar(thread_id, arg4s_meta, arg4s_data,
+                                 arg4s_bc_o, arg4s_bc_m, arg4s_bc_i)
+            boundary_cond_scalar(thread_id, arg5s_meta, arg5s_data,
+                                 arg5s_bc_o, arg5s_bc_m, arg5s_bc_i)
+        if not arg1v_meta[META_HALO_VALID]:
+            arg1v_meta[META_HALO_VALID] = True
+        if not arg2s_meta[META_HALO_VALID]:
+            arg2s_meta[META_HALO_VALID] = True
+        if not arg3s_meta[META_HALO_VALID]:
+            arg3s_meta[META_HALO_VALID] = True
+        if not arg4s_meta[META_HALO_VALID]:
+            arg4s_meta[META_HALO_VALID] = True
+        if not arg5s_meta[META_HALO_VALID]:
+            arg5s_meta[META_HALO_VALID] = True
 
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             apply_scalar_impl(
                 thread_id, out_meta,
                 fun_outer, fun_mid3d, fun_inner,
                 out,
-                vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner,
-                scal_arg_2, scal_arg_3, scal_arg_4, scal_arg_5
+                arg1v_data_o, arg1v_data_m, arg1v_data_i,
+                arg2s_data, arg3s_data, arg4s_data, arg5s_data
             )
         out_meta[META_HALO_VALID] = False
 

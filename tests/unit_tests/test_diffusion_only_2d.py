@@ -18,7 +18,11 @@ def test_diffusion_only_2d(
             np.zeros((data0.shape[0], data0.shape[1]+1))
         ),
         halo=options.n_halo, boundary_conditions=bc)
-    solver = Solver(stepper=Stepper(options=options, grid=data0.shape), advector=advector, advectee=advectee)
+    solver = Solver(
+        stepper=Stepper(options=options, grid=data0.shape),
+        advector=advector,
+        advectee=advectee
+    )
 
     # Act
     solver.advance(nt=nt, mu_coeff=mu)
