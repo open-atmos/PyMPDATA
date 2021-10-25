@@ -36,11 +36,11 @@ from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
 from .impl.formulae_laplacian import make_laplacian
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_nonoscillatory import make_psi_extrema, make_beta, make_correction
-from PyMPDATA.impl.traversals import Traversals
-from PyMPDATA.impl.meta import META_HALO_VALID
-from PyMPDATA.impl.enumerations import INNER, MID3D, OUTER, ARG_DATA
+from .impl.traversals import Traversals
+from .impl.meta import META_HALO_VALID
+from .impl.enumerations import INNER, MID3D, OUTER, ARG_DATA
 from .options import Options
-from PyMPDATA.impl.clock import clock
+from .impl.clock import clock
 
 
 class Stepper:

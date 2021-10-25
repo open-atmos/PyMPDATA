@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.impl.field API documentation</title>
-<meta name="description" content="common logic for ScalarField and VectorField classes" />
+<meta name="description" content="common logic for `ScalarField` and `VectorField` classes" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,19 +22,34 @@
 <h1 class="title">Module <code>PyMPDATA.impl.field</code></h1>
 </header>
 <section id="section-intro">
-<p>common logic for ScalarField and VectorField classes</p>
+<p>common logic for <code>ScalarField</code> and <code>VectorField</code> classes</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34; common logic for ScalarField and VectorField classes &#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34; common logic for `ScalarField` and `VectorField` classes &#34;&#34;&#34;
+from PyMPDATA.boundary_conditions.constant import Constant
 from .meta import make_meta
+from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE
 
 
 class Field:
-    def __init__(self, *, grid):
+    &#34;&#34;&#34; base class &#34;&#34;&#34;
+    def __init__(self, *, grid, boundary_conditions):
         self.grid = grid
-        self.meta = make_meta(False, grid)</code></pre>
+        self.meta = make_meta(False, grid)
+        self.n_dims = len(grid)
+
+        assert len(grid) == len(boundary_conditions)
+
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
+
+        self.boundary_conditions = boundary_conditions</code></pre>
 </details>
 </section>
 <section>
@@ -48,18 +63,31 @@ class Field:
 <dl>
 <dt id="PyMPDATA.impl.field.Field"><code class="flex name class">
 <span>class <span class="ident">Field</span></span>
-<span>(</span><span>*, grid)</span>
+<span>(</span><span>*, grid, boundary_conditions)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>base class</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Field:
-    def __init__(self, *, grid):
+    &#34;&#34;&#34; base class &#34;&#34;&#34;
+    def __init__(self, *, grid, boundary_conditions):
         self.grid = grid
-        self.meta = make_meta(False, grid)</code></pre>
+        self.meta = make_meta(False, grid)
+        self.n_dims = len(grid)
+
+        assert len(grid) == len(boundary_conditions)
+
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
+
+        self.boundary_conditions = boundary_conditions</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">

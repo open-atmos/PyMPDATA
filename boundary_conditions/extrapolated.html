@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.boundary_conditions.extrapolated API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="boundary condition extrapolating values from the edge to the halo" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,15 @@
 <h1 class="title">Module <code>PyMPDATA.boundary_conditions.extrapolated</code></h1>
 </header>
 <section id="section-intro">
+<p>boundary condition extrapolating values from the edge to the halo</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from functools import lru_cache
+<pre><code class="python">&#34;&#34;&#34;
+boundary condition extrapolating values from the edge to the halo
+&#34;&#34;&#34;
+from functools import lru_cache
 import numba
 from PyMPDATA.impl.enumerations import ARG_FOCUS, INNER, SIGN_LEFT
 from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
@@ -76,11 +80,11 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at, halo, dtype, jit_flags):
-        return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
+    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+        return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)
 
-    def make_vector(self, at, halo, dtype, jit_flags):
-        return _make_vector(self.dim, at, halo, dtype, jit_flags)</code></pre>
+    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+        return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 </section>
 <section>
@@ -107,16 +111,16 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at, halo, dtype, jit_flags):
-        return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
+    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+        return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)
 
-    def make_vector(self, at, halo, dtype, jit_flags):
-        return _make_vector(self.dim, at, halo, dtype, jit_flags)</code></pre>
+    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+        return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, at_indexer, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -124,12 +128,12 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at, halo, dtype, jit_flags):
-    return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)</code></pre>
+<pre><code class="python">def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+    return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at_indexer, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -137,8 +141,8 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at, halo, dtype, jit_flags):
-    return _make_vector(self.dim, at, halo, dtype, jit_flags)</code></pre>
+<pre><code class="python">def make_vector(self, at_indexer, halo, dtype, jit_flags):
+    return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>
