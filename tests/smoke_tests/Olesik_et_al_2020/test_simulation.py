@@ -72,4 +72,3 @@ def test_L2_finite(grid_layout, opts, data):
 
     # Assert
     assert np.isfinite(sut).all()
-

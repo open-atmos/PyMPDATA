@@ -10,6 +10,7 @@ from .impl.meta import META_IS_NULL
 
 
 @numba.njit(inline='always')
+# pylint: disable-next=unused-argument
 def post_step_null(psi, t):
     pass
 
@@ -19,6 +20,7 @@ class PostIterNull:
     def __init__(self):
         pass
 
+    # pylint: disable-next=unused-argument
     def __call__(self, flux, g_factor, t, it):
         pass
 
@@ -57,7 +59,7 @@ class Solver:
     def advance(self,
                 nt: int,
                 mu_coeff: Union[tuple, None] = None,
-                post_step=post_step_null,
+                post_step=None,
                 post_iter=None
                 ):
         if mu_coeff is not None:
@@ -67,6 +69,7 @@ class Solver:
         if self.options.non_zero_mu_coeff and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
 
+        post_step = post_step or post_step_null
         post_iter = post_iter or PostIterNull()
 
         wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,

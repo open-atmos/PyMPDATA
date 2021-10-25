@@ -1,8 +1,8 @@
 """
 scalar field abstractions for the staggered grid
 """
-import numpy as np
 import inspect
+import numpy as np
 from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions import Constant
@@ -12,19 +12,22 @@ from PyMPDATA.impl.field import Field
 class ScalarField(Field):
     """ n-dimensional scalar field including halo data """
     def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
-        super().__init__(grid=data.shape, boundary_conditions=boundary_conditions)
+        super().__init__(
+            grid=data.shape,
+            boundary_conditions=boundary_conditions,
+            halo=halo,
+            dtype=data.dtype
+        )
 
         for dim_length in data.shape:
             assert halo <= dim_length
-        for bc in boundary_conditions:
-            assert not inspect.isclass(bc)
+        for boundary_condition in boundary_conditions:
+            assert not inspect.isclass(boundary_condition)
 
-        shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
+        shape_with_halo = tuple(data.shape[i] + 2 * halo for i in range(self.n_dims))
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
-        self.dtype = data.dtype
-        self.halo = halo
         self.domain = tuple(
-            slice(self.halo, self.data.shape[i] - self.halo)
+            slice(halo, self.data.shape[i] - halo)
             for i in range(self.n_dims)
         )
         self.get()[:] = data[:]

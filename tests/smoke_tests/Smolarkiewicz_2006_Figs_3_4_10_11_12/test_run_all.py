@@ -14,81 +14,90 @@ class TestSmolarkiewicz2006:
     def test_fig3(dtype: np.floating):
         # Arrange
         simulation = Simulation(Settings("cosine"), Options(n_iters=1, dtype=dtype))
-        psi0 = simulation.state
+        psi_0 = simulation.state
 
         # Act
         simulation.run()
-        psiT = simulation.state
+        psi_t = simulation.state
 
         # Assert
         epsilon = 1e-20
-        assert psiT.dtype == dtype
-        assert np.amin(psi0) == 0
-        assert np.amax(psi0) == 2
-        assert 0 < np.amin(psiT) < epsilon
-        assert .45 < np.amax(psiT) < .5
+        assert psi_t.dtype == dtype
+        assert np.amin(psi_0) == 0
+        assert np.amax(psi_0) == 2
+        assert 0 < np.amin(psi_t) < epsilon
+        assert .45 < np.amax(psi_t) < .5
 
     @staticmethod
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig4(dtype: np.floating):
         # Arrange
         simulation = Simulation(Settings("cosine"), Options(n_iters=2, dtype=dtype))
-        psi0 = simulation.state
+        psi_0 = simulation.state
 
         # Act
         simulation.run()
-        psiT = simulation.state
+        psi_t = simulation.state
 
         # Assert
         epsilon = 1e-20
-        assert psiT.dtype == dtype
-        assert np.amin(psi0) == 0
-        assert np.amax(psi0) == 2
-        assert 0 < np.amin(psiT) < epsilon
-        assert 1.3 < np.amax(psiT) < 1.4
+        assert psi_t.dtype == dtype
+        assert np.amin(psi_0) == 0
+        assert np.amax(psi_0) == 2
+        assert 0 < np.amin(psi_t) < epsilon
+        assert 1.3 < np.amax(psi_t) < 1.4
 
     @staticmethod
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig10(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Settings("cosine"), Options(infinite_gauge=True, n_iters=2, dtype=dtype))
+        simulation = Simulation(
+            Settings("cosine"),
+            Options(infinite_gauge=True, n_iters=2, dtype=dtype)
+        )
 
         # Act
         simulation.run()
-        psiT = simulation.state
+        psi_t = simulation.state
 
         # Assert
-        assert psiT.dtype == dtype
-        assert -.1 < np.amin(psiT) < 0
-        assert 1.75 < np.amax(psiT) < 1.9
+        assert psi_t.dtype == dtype
+        assert -.1 < np.amin(psi_t) < 0
+        assert 1.75 < np.amax(psi_t) < 1.9
 
     @staticmethod
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig11(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Settings("rect"), Options(infinite_gauge=True, n_iters=2, dtype=dtype))
+        simulation = Simulation(
+            Settings("rect"),
+            Options(infinite_gauge=True, n_iters=2, dtype=dtype)
+        )
 
         # Act
         simulation.run()
-        psiT = simulation.state
+        psi_t = simulation.state
 
         # Assert
-        assert psiT.dtype == dtype
-        assert -1.9 < np.amin(psiT) < 2
-        assert 4 < np.amax(psiT) < 4.2
+        assert psi_t.dtype == dtype
+        assert -1.9 < np.amin(psi_t) < 2
+        assert 4 < np.amax(psi_t) < 4.2
 
     @staticmethod
     @pytest.mark.parametrize("dtype", dtypes)
     def test_fig12(dtype: np.floating):
         # Arrange
-        simulation = Simulation(Settings("rect"), Options(n_iters=2, infinite_gauge=True, nonoscillatory=True, dtype=dtype))
+        simulation = Simulation(
+            Settings("rect"),
+            Options(n_iters=2, infinite_gauge=True, nonoscillatory=True, dtype=dtype)
+        )
 
         # Act
         simulation.run()
-        psiT = simulation.state
+        psi_t = simulation.state
 
         # Assert
-        assert psiT.dtype == dtype
-        assert np.amin(psiT) >= 2
-        assert np.amax(psiT) <= 4
-        assert np.amax(psiT) > 3
+        assert psi_t.dtype == dtype
+        assert np.amin(psi_t) >= 2
+        assert np.amax(psi_t) <= 4
+        assert np.amax(psi_t) > 3

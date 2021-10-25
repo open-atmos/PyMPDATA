@@ -82,7 +82,7 @@ STATS = {
 SETTINGS = Settings(n=59+1, dt=0.018 * 2 * np.pi)
 
 
-@pytest.mark.parametrize('options', [pytest.param(opt, id=str(opt)) for opt in STATS.keys()])
+@pytest.mark.parametrize('options', tuple(pytest.param(opt, id=str(opt)) for opt in STATS))
 def test_against_libmpdata_refdata(options):
     # arrange
     simulation = Simulation(SETTINGS, options)
