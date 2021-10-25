@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.scalar_field API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="scalar field abstractions for the staggered grid" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,33 +22,41 @@
 <h1 class="title">Module <code>PyMPDATA.scalar_field</code></h1>
 </header>
 <section id="section-intro">
+<p>scalar field abstractions for the staggered grid</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy as np
+<pre><code class="python">&#34;&#34;&#34;
+scalar field abstractions for the staggered grid
+&#34;&#34;&#34;
+import inspect
+import numpy as np
 from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl.field import Field
-import inspect
 
 
 class ScalarField(Field):
-    def __init__(self, data: np.ndarray, halo: int, boundary_conditions):
-        super().__init__(grid=data.shape, boundary_conditions=boundary_conditions)
+    &#34;&#34;&#34; n-dimensional scalar field including halo data &#34;&#34;&#34;
+    def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
+        super().__init__(
+            grid=data.shape,
+            boundary_conditions=boundary_conditions,
+            halo=halo,
+            dtype=data.dtype
+        )
 
         for dim_length in data.shape:
             assert halo &lt;= dim_length
-        for bc in boundary_conditions:
-            assert not inspect.isclass(bc)
+        for boundary_condition in boundary_conditions:
+            assert not inspect.isclass(boundary_condition)
 
-        shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
+        shape_with_halo = tuple(data.shape[i] + 2 * halo for i in range(self.n_dims))
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
-        self.dtype = data.dtype
-        self.halo = halo
         self.domain = tuple(
-            slice(self.halo, self.data.shape[i] - self.halo)
+            slice(halo, self.data.shape[i] - halo)
             for i in range(self.n_dims)
         )
         self.get()[:] = data[:]
@@ -107,29 +115,33 @@ class ScalarField(Field):
 <dl>
 <dt id="PyMPDATA.scalar_field.ScalarField"><code class="flex name class">
 <span>class <span class="ident">ScalarField</span></span>
-<span>(</span><span>data: numpy.ndarray, halo: int, boundary_conditions)</span>
+<span>(</span><span>data: numpy.ndarray, halo: int, boundary_conditions: tuple)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>base class</p></div>
+<div class="desc"><p>n-dimensional scalar field including halo data</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ScalarField(Field):
-    def __init__(self, data: np.ndarray, halo: int, boundary_conditions):
-        super().__init__(grid=data.shape, boundary_conditions=boundary_conditions)
+    &#34;&#34;&#34; n-dimensional scalar field including halo data &#34;&#34;&#34;
+    def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
+        super().__init__(
+            grid=data.shape,
+            boundary_conditions=boundary_conditions,
+            halo=halo,
+            dtype=data.dtype
+        )
 
         for dim_length in data.shape:
             assert halo &lt;= dim_length
-        for bc in boundary_conditions:
-            assert not inspect.isclass(bc)
+        for boundary_condition in boundary_conditions:
+            assert not inspect.isclass(boundary_condition)
 
-        shape_with_halo = [data.shape[i] + 2 * halo for i in range(self.n_dims)]
+        shape_with_halo = tuple(data.shape[i] + 2 * halo for i in range(self.n_dims))
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
-        self.dtype = data.dtype
-        self.halo = halo
         self.domain = tuple(
-            slice(self.halo, self.data.shape[i] - self.halo)
+            slice(halo, self.data.shape[i] - halo)
             for i in range(self.n_dims)
         )
         self.get()[:] = data[:]

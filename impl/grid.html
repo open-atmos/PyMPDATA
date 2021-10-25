@@ -32,13 +32,13 @@ from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
 
 
-def make_chunk(n, n_threads, jit_flags):
-    static = n &gt; 0
+def make_chunk(span, n_threads, jit_flags):
+    static = span &gt; 0
 
     subdomain = make_subdomain(jit_flags)
 
     if static:
-        rngs = tuple([subdomain(n, th, n_threads) for th in range(n_threads)])
+        rngs = tuple(subdomain(span, th, n_threads) for th in range(n_threads))
 
         @numba.njit(**jit_flags)
         def _impl(_, thread_id):
@@ -73,7 +73,7 @@ def make_domain(grid, jit_flags):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="PyMPDATA.impl.grid.make_chunk"><code class="name flex">
-<span>def <span class="ident">make_chunk</span></span>(<span>n, n_threads, jit_flags)</span>
+<span>def <span class="ident">make_chunk</span></span>(<span>span, n_threads, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -81,13 +81,13 @@ def make_domain(grid, jit_flags):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_chunk(n, n_threads, jit_flags):
-    static = n &gt; 0
+<pre><code class="python">def make_chunk(span, n_threads, jit_flags):
+    static = span &gt; 0
 
     subdomain = make_subdomain(jit_flags)
 
     if static:
-        rngs = tuple([subdomain(n, th, n_threads) for th in range(n_threads)])
+        rngs = tuple(subdomain(span, th, n_threads) for th in range(n_threads))
 
         @numba.njit(**jit_flags)
         def _impl(_, thread_id):

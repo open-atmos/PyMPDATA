@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.solver API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="container grouping user-supplied stepper and fields as well as self-initialised temporary storage" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,18 +22,24 @@
 <h1 class="title">Module <code>PyMPDATA.solver</code></h1>
 </header>
 <section id="section-intro">
+<p>container grouping user-supplied stepper and fields as well as self-initialised temporary storage</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Union
+<pre><code class="python">&#34;&#34;&#34;
+container grouping user-supplied stepper and fields as well as self-initialised temporary storage
+&#34;&#34;&#34;
+from typing import Union
 import numba
-import numpy as np
-from PyMPDATA import ScalarField, VectorField, Stepper
-from PyMPDATA.impl.meta import META_IS_NULL
+from .scalar_field import  ScalarField
+from .vector_field import VectorField
+from .stepper import Stepper
+from .impl.meta import META_IS_NULL
 
 
 @numba.njit(inline=&#39;always&#39;)
+# pylint: disable-next=unused-argument
 def post_step_null(psi, t):
     pass
 
@@ -43,6 +49,7 @@ class PostIterNull:
     def __init__(self):
         pass
 
+    # pylint: disable-next=unused-argument
     def __call__(self, flux, g_factor, t, it):
         pass
 
@@ -81,7 +88,7 @@ class Solver:
     def advance(self,
                 nt: int,
                 mu_coeff: Union[tuple, None] = None,
-                post_step=post_step_null,
+                post_step=None,
                 post_iter=None
                 ):
         if mu_coeff is not None:
@@ -91,6 +98,7 @@ class Solver:
         if self.options.non_zero_mu_coeff and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
 
+        post_step = post_step or post_step_null
         post_iter = post_iter or PostIterNull()
 
         wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
@@ -123,6 +131,7 @@ class Solver:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@numba.njit(inline=&#39;always&#39;)
+# pylint: disable-next=unused-argument
 def post_step_null(psi, t):
     pass</code></pre>
 </details>
@@ -176,7 +185,7 @@ def post_step_null(psi, t):
     def advance(self,
                 nt: int,
                 mu_coeff: Union[tuple, None] = None,
-                post_step=post_step_null,
+                post_step=None,
                 post_iter=None
                 ):
         if mu_coeff is not None:
@@ -186,6 +195,7 @@ def post_step_null(psi, t):
         if self.options.non_zero_mu_coeff and not self.g_factor.meta[META_IS_NULL]:
             raise NotImplementedError()
 
+        post_step = post_step or post_step_null
         post_iter = post_iter or PostIterNull()
 
         wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
@@ -203,7 +213,7 @@ def post_step_null(psi, t):
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.solver.Solver.advance"><code class="name flex">
-<span>def <span class="ident">advance</span></span>(<span>self, nt: int, mu_coeff: Optional[tuple] = None, post_step=CPUDispatcher(&lt;function post_step_null&gt;), post_iter=None)</span>
+<span>def <span class="ident">advance</span></span>(<span>self, nt: int, mu_coeff: Optional[tuple] = None, post_step=None, post_iter=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -214,7 +224,7 @@ def post_step_null(psi, t):
 <pre><code class="python">def advance(self,
             nt: int,
             mu_coeff: Union[tuple, None] = None,
-            post_step=post_step_null,
+            post_step=None,
             post_iter=None
             ):
     if mu_coeff is not None:
@@ -224,6 +234,7 @@ def post_step_null(psi, t):
     if self.options.non_zero_mu_coeff and not self.g_factor.meta[META_IS_NULL]:
         raise NotImplementedError()
 
+    post_step = post_step or post_step_null
     post_iter = post_iter or PostIterNull()
 
     wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,

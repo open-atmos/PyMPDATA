@@ -35,10 +35,12 @@ from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE
 
 class Field:
     &#34;&#34;&#34; base class &#34;&#34;&#34;
-    def __init__(self, *, grid, boundary_conditions):
+    def __init__(self, *, grid, boundary_conditions, halo, dtype):
         self.grid = grid
         self.meta = make_meta(False, grid)
         self.n_dims = len(grid)
+        self.halo = halo
+        self.dtype = dtype
 
         assert len(grid) == len(boundary_conditions)
 
@@ -63,7 +65,7 @@ class Field:
 <dl>
 <dt id="PyMPDATA.impl.field.Field"><code class="flex name class">
 <span>class <span class="ident">Field</span></span>
-<span>(</span><span>*, grid, boundary_conditions)</span>
+<span>(</span><span>*, grid, boundary_conditions, halo, dtype)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>base class</p></div>
@@ -73,10 +75,12 @@ class Field:
 </summary>
 <pre><code class="python">class Field:
     &#34;&#34;&#34; base class &#34;&#34;&#34;
-    def __init__(self, *, grid, boundary_conditions):
+    def __init__(self, *, grid, boundary_conditions, halo, dtype):
         self.grid = grid
         self.meta = make_meta(False, grid)
         self.n_dims = len(grid)
+        self.halo = halo
+        self.dtype = dtype
 
         assert len(grid) == len(boundary_conditions)
 

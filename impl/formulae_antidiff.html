@@ -40,14 +40,14 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
         idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_antidiff = tuple([
+        formulae_antidiff = tuple(
             __make_antidiff(idx.atv[i], idx.at[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims,
                             last_pass=last_pass)
             if idx.at[i] is not None else None
-            for i in range(MAX_DIM_NUM)])
+            for i in range(MAX_DIM_NUM))
 
         @numba.njit(**options.jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
@@ -195,14 +195,14 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_antidiff = tuple([
+        formulae_antidiff = tuple(
             __make_antidiff(idx.atv[i], idx.at[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims,
                             last_pass=last_pass)
             if idx.at[i] is not None else None
-            for i in range(MAX_DIM_NUM)])
+            for i in range(MAX_DIM_NUM))
 
         @numba.njit(**options.jit_flags)
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
