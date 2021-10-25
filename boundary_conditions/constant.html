@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.boundary_conditions.constant API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="boundary condition filling halos with a constant value" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,32 +22,39 @@
 <h1 class="title">Module <code>PyMPDATA.boundary_conditions.constant</code></h1>
 </header>
 <section id="section-intro">
+<p>boundary condition filling halos with a constant value</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from functools import lru_cache
+<pre><code class="python">&#34;&#34;&#34;
+boundary condition filling halos with a constant value
+&#34;&#34;&#34;
+from functools import lru_cache
 import numba
 
 
 @lru_cache()
-def _make_scalar(value, at, halo, jit_flags):
+def _make_scalar(value, _, __, ___, jit_flags):
     @numba.njit(**jit_flags)
-    def fill_halos(_, __, ___):
+    def fill_halos(_1, _2, _3):
         return value
 
     return fill_halos
 
 
 class Constant:
+    &#34;&#34;&#34; class whose instances are intended to be passed to ScalarField or VectorField __init__&#34;&#34;&#34;
     def __init__(self, value):
         self.value = value
 
-    def make_scalar(self, at, halo, dtype, jit_flags):
-        return _make_scalar(self.value, at, halo, jit_flags)
+    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+        &#34;&#34;&#34; returns (lru-cached) Numba-compiled scalar halo-filling callable &#34;&#34;&#34;
+        return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
-        return Constant(self.value).make_scalar(at, 0, dtype, jit_flags)</code></pre>
+    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+        &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
+        return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 </section>
 <section>
@@ -64,47 +71,52 @@ class Constant:
 <span>(</span><span>value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>class whose instances are intended to be passed to ScalarField or VectorField <strong>init</strong></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Constant:
+    &#34;&#34;&#34; class whose instances are intended to be passed to ScalarField or VectorField __init__&#34;&#34;&#34;
     def __init__(self, value):
         self.value = value
 
-    def make_scalar(self, at, halo, dtype, jit_flags):
-        return _make_scalar(self.value, at, halo, jit_flags)
+    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+        &#34;&#34;&#34; returns (lru-cached) Numba-compiled scalar halo-filling callable &#34;&#34;&#34;
+        return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
-        return Constant(self.value).make_scalar(at, 0, dtype, jit_flags)</code></pre>
+    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+        &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
+        return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.constant.Constant.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, at_indexer, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns (lru-cached) Numba-compiled scalar halo-filling callable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at, halo, dtype, jit_flags):
-    return _make_scalar(self.value, at, halo, jit_flags)</code></pre>
+<pre><code class="python">def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+    &#34;&#34;&#34; returns (lru-cached) Numba-compiled scalar halo-filling callable &#34;&#34;&#34;
+    return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.constant.Constant.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at_indexer, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns (lru-cached) Numba-compiled vector halo-filling callable</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at, dtype, jit_flags):
-    return Constant(self.value).make_scalar(at, 0, dtype, jit_flags)</code></pre>
+<pre><code class="python">def make_vector(self, at_indexer, halo, dtype, jit_flags):
+    &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
+    return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>

@@ -65,7 +65,7 @@ class Polar:
 
         return fill_halos
 
-    def make_vector(self, at, dtype, jit_flags):
+    def make_vector(self, at, halo, dtype, jit_flags):
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120
@@ -127,7 +127,7 @@ class Polar:
 
         return fill_halos
 
-    def make_vector(self, at, dtype, jit_flags):
+    def make_vector(self, at, halo, dtype, jit_flags):
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120
@@ -169,7 +169,7 @@ class Polar:
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -177,7 +177,7 @@ class Polar:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at, dtype, jit_flags):
+<pre><code class="python">def make_vector(self, at, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, _, __):
         return at(*psi, 0)  # TODO #120

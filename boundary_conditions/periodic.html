@@ -55,7 +55,7 @@ class Periodic:
     def make_scalar(self, at, halo, dtype, jit_flags):
         return _make_scalar(at, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
+    def make_vector(self, at, halo, dtype, jit_flags):
         return _make_vector(at, jit_flags)</code></pre>
 </details>
 </section>
@@ -85,7 +85,7 @@ class Periodic:
     def make_scalar(self, at, halo, dtype, jit_flags):
         return _make_scalar(at, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
+    def make_vector(self, at, halo, dtype, jit_flags):
         return _make_vector(at, jit_flags)</code></pre>
 </details>
 <h3>Methods</h3>
@@ -104,7 +104,7 @@ class Periodic:
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -112,7 +112,7 @@ class Periodic:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at, dtype, jit_flags):
+<pre><code class="python">def make_vector(self, at, halo, dtype, jit_flags):
     return _make_vector(at, jit_flags)</code></pre>
 </details>
 </dd>

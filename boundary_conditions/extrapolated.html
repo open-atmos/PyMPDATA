@@ -64,7 +64,7 @@ def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
 
 
 @lru_cache()
-def _make_vector(dim, at, dtype, jit_flags):
+def _make_vector(dim, at, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, _, sign):
         return at(*psi, sign)
@@ -79,8 +79,8 @@ class Extrapolated:
     def make_scalar(self, at, halo, dtype, jit_flags):
         return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
-        return _make_vector(self.dim, at, dtype, jit_flags)</code></pre>
+    def make_vector(self, at, halo, dtype, jit_flags):
+        return _make_vector(self.dim, at, halo, dtype, jit_flags)</code></pre>
 </details>
 </section>
 <section>
@@ -110,8 +110,8 @@ class Extrapolated:
     def make_scalar(self, at, halo, dtype, jit_flags):
         return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
-        return _make_vector(self.dim, at, dtype, jit_flags)</code></pre>
+    def make_vector(self, at, halo, dtype, jit_flags):
+        return _make_vector(self.dim, at, halo, dtype, jit_flags)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -129,7 +129,7 @@ class Extrapolated:
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, at, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -137,8 +137,8 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at, dtype, jit_flags):
-    return _make_vector(self.dim, at, dtype, jit_flags)</code></pre>
+<pre><code class="python">def make_vector(self, at, halo, dtype, jit_flags):
+    return _make_vector(self.dim, at, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>

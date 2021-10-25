@@ -100,7 +100,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         if DPDC and last_pass:
             a = (1 / (1 - np.abs(tmp)))
             b = - (tmp*a)/(1 - tmp**2)
-            result = result * (result * b + a) 
+            result = result * (result * b + a)
         if n_dims == 1 or dimensionally_split:
             return result
         result -= (

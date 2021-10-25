@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.impl.meta API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="constants for indexing and a factory for creating the &#34;meta&#34; tuples" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,13 @@
 <h1 class="title">Module <code>PyMPDATA.impl.meta</code></h1>
 </header>
 <section id="section-intro">
+<p>constants for indexing and a factory for creating the "meta" tuples</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy as np
+<pre><code class="python">&#34;&#34;&#34; constants for indexing and a factory for creating the &#34;meta&#34; tuples &#34;&#34;&#34;
+import numpy as np
 from .enumerations import INNER, MID3D, OUTER
 
 META_HALO_VALID = 0
@@ -38,6 +40,7 @@ META_SIZE = 5
 
 
 def make_meta(halo_valid: bool, grid):
+    &#34;&#34;&#34; returns a &#34;meta&#34; tuple for a given grid size and halo status &#34;&#34;&#34;
     meta = np.empty(META_SIZE, dtype=int)
     meta[META_HALO_VALID] = halo_valid
     meta[META_N_OUTER] = grid[OUTER] if len(grid) &gt; 1 else 0
@@ -58,12 +61,13 @@ def make_meta(halo_valid: bool, grid):
 <span>def <span class="ident">make_meta</span></span>(<span>halo_valid: bool, grid)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns a "meta" tuple for a given grid size and halo status</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_meta(halo_valid: bool, grid):
+    &#34;&#34;&#34; returns a &#34;meta&#34; tuple for a given grid size and halo status &#34;&#34;&#34;
     meta = np.empty(META_SIZE, dtype=int)
     meta[META_HALO_VALID] = halo_valid
     meta[META_N_OUTER] = grid[OUTER] if len(grid) &gt; 1 else 0
