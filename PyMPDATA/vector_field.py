@@ -1,3 +1,6 @@
+"""
+vector field abstractions for the staggered grid
+"""
 import inspect
 import numpy as np
 from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
@@ -8,7 +11,8 @@ from PyMPDATA.impl.field import Field
 
 
 class VectorField(Field):
-    def __init__(self, data, halo, boundary_conditions):
+    """ n-component n-dimensional vector field including halo data """
+    def __init__(self, data: tuple, halo: int, boundary_conditions: tuple):
         super().__init__(
             grid=tuple([data[d].shape[d] - 1 for d, _ in enumerate(data)]),
             boundary_conditions=boundary_conditions

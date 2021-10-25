@@ -1,8 +1,12 @@
+"""
+container grouping user-supplied stepper and fields as well as self-initialised temporary storage
+"""
 from typing import Union
 import numba
-import numpy as np
-from PyMPDATA import ScalarField, VectorField, Stepper
-from PyMPDATA.impl.meta import META_IS_NULL
+from .scalar_field import  ScalarField
+from .vector_field import VectorField
+from .stepper import Stepper
+from .impl.meta import META_IS_NULL
 
 
 @numba.njit(inline='always')

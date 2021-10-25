@@ -1,13 +1,17 @@
+"""
+scalar field abstractions for the staggered grid
+"""
 import numpy as np
+import inspect
 from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl.field import Field
-import inspect
 
 
 class ScalarField(Field):
-    def __init__(self, data: np.ndarray, halo: int, boundary_conditions):
+    """ n-dimensional scalar field including halo data """
+    def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
         super().__init__(grid=data.shape, boundary_conditions=boundary_conditions)
 
         for dim_length in data.shape:

@@ -1,3 +1,4 @@
+""" MPDATA iteration logic (to be shared among solvers) """
 from functools import lru_cache
 import sys
 import warnings
@@ -44,12 +45,14 @@ class Stepper:
                 numba.parfors.parfor.ensure_parallel_support()
             except numba.core.errors.UnsupportedParforsError:
                 print(
-                    "forcing n_threads=1 as numba.parfors.parfor.ensure_parallel_support() raised UnsupportedParforsError",
+                    "Numba ensure_parallel_support() failed, forcing n_threads=1",
                     file=sys.stderr)
                 self.n_threads = 1
 
         self.n_dims = n_dims
-        self.__call, self.traversals = make_step_impl(options, non_unit_g_factor, grid, self.n_threads)
+        self.__call, self.traversals = make_step_impl(
+            options, non_unit_g_factor, grid, self.n_threads
+        )
 
     def __call__(self, nt, mu_coeff, post_step, post_iter,
                  advectee, advectee_bc,

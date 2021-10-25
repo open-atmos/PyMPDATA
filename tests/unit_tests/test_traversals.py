@@ -1,8 +1,8 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+from functools import lru_cache
 import pytest
 import numba
 import numpy as np
-from functools import lru_cache
 from PyMPDATA.impl.traversals import Traversals
 from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA import Options, ScalarField, VectorField
@@ -164,20 +164,20 @@ class TestTraversals:
             dims = (OUTER, INNER)
         else:
             dims = (OUTER, MID3D, INNER)
-        for d in dims:
-            print("DIM", d)
-            data = out.get_component(d)
-            focus = tuple(-halos[d][i] for i in range(MAX_DIM_NUM))
+        for dim in dims:
+            print("DIM", dim)
+            data = out.get_component(dim)
+            focus = tuple(-halos[dim][i] for i in range(MAX_DIM_NUM))
             print("focus", focus)
             for i in range(
-                    halos[d][OUTER],
-                    halos[d][OUTER] + data.shape[OUTER]
+                    halos[dim][OUTER],
+                    halos[dim][OUTER] + data.shape[OUTER]
             ) if n_dims > 1 else (INVALID_INDEX,):
                 for j in range(
-                        halos[d][MID3D],
-                        halos[d][MID3D] + data.shape[MID3D]
+                        halos[dim][MID3D],
+                        halos[dim][MID3D] + data.shape[MID3D]
                 ) if n_dims > 2 else (INVALID_INDEX,):
-                    for k in range(halos[d][INNER], halos[d][INNER] + data.shape[INNER]):
+                    for k in range(halos[dim][INNER], halos[dim][INNER] + data.shape[INNER]):
                         if n_dims == 1:
                             ijk = (k, INVALID_INDEX, INVALID_INDEX)
                         elif n_dims == 2:

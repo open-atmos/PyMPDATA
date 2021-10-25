@@ -5,21 +5,21 @@ from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
 
-@pytest.mark.parametrize("shape, ij0, out, C", [
+@pytest.mark.parametrize("shape, ij0, out, courant_number", [
     pytest.param((3, 1), (1, 0), np.array([[0.], [0.], [44.]]), (1., 0.)),
     pytest.param((1, 3), (0, 1), np.array([[0., 0., 44.]]), (0., 1.)),
     pytest.param((1, 3), (0, 1), np.array([[44., 0., 0.]]), (0., -1.)),
     pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5)),
     pytest.param((3, 3), (1, 1), np.array([[0, 0, 0], [0, 0, 22], [0., 22., 0.]]), (.5, .5)),
 ])
-def test_upwind(shape, ij0, out, C):
+def test_upwind(shape, ij0, out, courant_number):
     value = 44
     scalar_field_init = np.zeros(shape)
     scalar_field_init[ij0] = value
 
     vector_field_init = (
-        np.full((shape[0] + 1, shape[1]), C[0]),
-        np.full((shape[0], shape[1] + 1), C[1])
+        np.full((shape[0] + 1, shape[1]), courant_number[0]),
+        np.full((shape[0], shape[1] + 1), courant_number[1])
     )
     options = Options(n_iters=1)
 

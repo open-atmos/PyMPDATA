@@ -1,3 +1,6 @@
+"""
+MPDATA variants, iterations, data-type and jit-flags settings
+"""
 import numpy as np
 from pystrict import strict
 
@@ -99,8 +102,7 @@ class Options:
     def n_halo(self):
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
-        else:
-            return 1
+        return 1
 
     @property
     def jit_flags(self):

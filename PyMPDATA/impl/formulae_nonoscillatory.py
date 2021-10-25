@@ -201,11 +201,11 @@ def make_correction(options, traversals):
         idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae = tuple([
+        formulae = tuple(
             __make_correction(options.jit_flags, idx.at[i], idx.atv[i])
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
-        ])
+        )
 
         null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
 
