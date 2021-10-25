@@ -1,10 +1,11 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+from numba.core.errors import NumbaExperimentalFeatureWarning
+import numpy as np
+import warnings
 from PyMPDATA.impl.formulae_upwind import make_upwind
 from PyMPDATA.impl.traversals import Traversals
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
-from numba.core.errors import NumbaExperimentalFeatureWarning
-import numpy as np
-import warnings
 
 
 class TestUpwind:

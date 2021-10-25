@@ -1,10 +1,9 @@
+from PyMPDATA import ScalarField, VectorField
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
 from .traversals_scalar import _make_apply_scalar, _make_fill_halos_scalar
 from .traversals_vector import _make_apply_vector, _make_fill_halos_vector
 from .enumerations import INNER, MID3D, OUTER
-from PyMPDATA.scalar_field import ScalarField
-from PyMPDATA.vector_field import VectorField
 
 
 class Traversals:
@@ -15,10 +14,14 @@ class Traversals:
             grid[MID3D] if len(grid) > 2 else 0,
             grid[INNER]
             ), jit_flags)
+        chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
+
         self.n_dims = len(grid)
         self.jit_flags = jit_flags
-        chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
         self.indexers = make_indexers(jit_flags)
+        self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
+        self.null_vector_field = VectorField.make_null(self.n_dims, self)
+
         self._fill_halos_scalar = _make_fill_halos_scalar(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
@@ -52,8 +55,6 @@ class Traversals:
             boundary_cond_vector=self._fill_halos_vector,
             boundary_cond_scalar=self._fill_halos_scalar
         )
-        self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
-        self.null_vector_field = VectorField.make_null(self.n_dims, self)
 
     def apply_scalar(self, *, loop):
         if loop:

@@ -1,8 +1,9 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
-from PyMPDATA import ScalarField, Options
+import pytest
 from PyMPDATA.boundary_conditions import Extrapolated
 from PyMPDATA.impl.traversals import Traversals
-import pytest
+from PyMPDATA import ScalarField, Options
 
 
 class TestBoundaryConditionExtrapolated:

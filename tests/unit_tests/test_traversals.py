@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import pytest
 import numba
 import numpy as np
@@ -100,7 +101,9 @@ class TestTraversals:
                         ijk = (i, k, INVALID_INDEX)
                     else:
                         ijk = (i, j, k)
-                    value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
+                    value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](
+                        focus, data, *ijk
+                    )
                     assert (n_dims if loop else 1) * cell_id(i, j, k) == value
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]

@@ -1,8 +1,8 @@
+import numpy as np
+import pytest
 from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.simulation import Simulation
 from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.settings import Settings
 from PyMPDATA.options import Options
-import numpy as np
-import pytest
 
 
 class TestSmolarkiewicz2006:

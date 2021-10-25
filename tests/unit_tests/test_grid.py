@@ -1,8 +1,9 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import pytest
 from PyMPDATA import Options
 from PyMPDATA.impl.grid import make_domain, make_chunk
 from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER, META_SIZE
 from PyMPDATA.impl.domain_decomposition import make_subdomain
-import pytest
 
 meta = [None] * META_SIZE
 meta[META_N_OUTER] = 200
@@ -11,6 +12,7 @@ meta[META_N_INNER] = 2000
 meta = tuple(meta)
 
 JIT_FLAGS = Options().jit_flags
+
 
 class TestStaticGrid:
     @staticmethod

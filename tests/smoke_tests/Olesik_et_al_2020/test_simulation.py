@@ -1,12 +1,12 @@
+import pytest
+import numpy as np
+import warnings
+from numba.core.errors import NumbaExperimentalFeatureWarning
 from PyMPDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from PyMPDATA_examples.Olesik_et_al_2020.settings import Settings, default_nr, default_GC_max
 from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
 from PyMPDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
 from PyMPDATA.options import Options
-import pytest
-import numpy as np
-import warnings
-from numba.core.errors import NumbaExperimentalFeatureWarning
 
 settings = Settings()
 grid_layout_set = (x_id(), x_p2(), x_log_of_pn(r0=1, n=1))

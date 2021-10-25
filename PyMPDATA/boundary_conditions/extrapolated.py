@@ -1,3 +1,6 @@
+"""
+boundary condition extrapolating values from the edge to the halo
+"""
 from functools import lru_cache
 import numba
 from PyMPDATA.impl.enumerations import ARG_FOCUS, INNER, SIGN_LEFT
@@ -48,8 +51,8 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at, halo, dtype, jit_flags):
-        return _make_scalar(self.dim, self._eps, at, halo, dtype, jit_flags)
+    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+        return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)
 
-    def make_vector(self, at, halo, dtype, jit_flags):
-        return _make_vector(self.dim, at, halo, dtype, jit_flags)
+    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+        return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)

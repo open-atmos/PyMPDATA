@@ -1,8 +1,6 @@
 import inspect
 import numpy as np
-from PyMPDATA.impl.enumerations import (
-    MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
-)
+from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
 from PyMPDATA.scalar_field import ScalarField
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions.constant import Constant
@@ -11,9 +9,10 @@ from PyMPDATA.impl.field import Field
 
 class VectorField(Field):
     def __init__(self, data, halo, boundary_conditions):
-        assert len(data) == len(boundary_conditions)
-
-        super().__init__(grid=tuple([data[d].shape[d] - 1 for d, _ in enumerate(data)]))
+        super().__init__(
+            grid=tuple([data[d].shape[d] - 1 for d, _ in enumerate(data)]),
+            boundary_conditions=boundary_conditions
+        )
 
         for comp, field in enumerate(data):
             assert len(field.shape) == len(data)
@@ -25,7 +24,6 @@ class VectorField(Field):
             assert not inspect.isclass(bc)
 
         self.halo = halo
-        self.n_dims = len(data)
         self.dtype = data[0].dtype
 
         dims = range(self.n_dims)
@@ -38,23 +36,16 @@ class VectorField(Field):
             np.full(shape_with_halo[d], INVALID_INIT_VALUE, dtype=self.dtype)
             for d in dims
         ]
-        self.domain = tuple([
-            tuple([
+        self.domain = tuple(
+            tuple(
                 slice(halos[d][c], halos[d][c] + data[d].shape[c])
-                for c in dims])
+                for c in dims)
             for d in dims
-        ])
+        )
         for d in dims:
             assert data[d].dtype == self.dtype
             self.get_component(d)[:] = data[d][:]
-        self.boundary_conditions = boundary_conditions
 
-        self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
-            if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
-            if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[INNER] = boundary_conditions[INNER]
         self.comp_outer = self.data[0] \
             if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
         self.comp_mid3d = self.data[1] \
@@ -65,7 +56,7 @@ class VectorField(Field):
 
     def assemble(self, traversals):
         if traversals.jit_flags != self.jit_flags:
-            self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple([
+            self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple(
                 fh.make_vector(
                     traversals.indexers[self.n_dims].at[i],
                     self.halo,
@@ -73,15 +64,15 @@ class VectorField(Field):
                     traversals.jit_flags
                 )
                 for i, fh in enumerate(self.fill_halos)
-            ])
+            )
         self.jit_flags = traversals.jit_flags
 
     @staticmethod
     def clone(field):
-        return VectorField([
+        return VectorField(tuple(
             field.get_component(d)
             for d in range(field.n_dims)
-        ], field.halo, field.boundary_conditions)
+        ), field.halo, field.boundary_conditions)
 
     def get_component(self, i: int) -> np.ndarray:
         return self.data[i][self.domain[i]]
