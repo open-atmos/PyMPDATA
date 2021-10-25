@@ -86,8 +86,8 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     Options(n_iters=2),
     Options(n_iters=3, infinite_gauge=True),
     Options(n_iters=2, infinite_gauge=True, nonoscillatory=True),
-    Options(n_iters=3, infinite_gauge=False, third_order_terms=True),
-    Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
+    # Options(n_iters=3, infinite_gauge=False, third_order_terms=True),
+    # Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
 ])
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
 def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False):

@@ -17,7 +17,7 @@ assert hasattr(num_threads, '_pytestfixturefunction')
     # {'n_iters': 3, 'infinite_gauge': False, 'third_order_terms': True},
     # {'n_iters': 3, 'infinite_gauge': True, 'third_order_terms': True, 'nonoscillatory': True},
 ])
-@pytest.mark.parametrize("dtype", (np.float64, np.float32))
+@pytest.mark.parametrize("dtype", (np.float64, ))
 @pytest.mark.parametrize("static", (True, False))
 def test_timing_3d(benchmark, options, dtype, static, num_threads):
     numba.set_num_threads(num_threads)
