@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import pytest
 import numpy as np
 import warnings
@@ -71,4 +72,3 @@ def test_L2_finite(grid_layout, opts, data):
 
     # Assert
     assert np.isfinite(sut).all()
-

@@ -7,8 +7,8 @@ from .enumerations import (
 
 def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
                        boundary_cond_vector, boundary_cond_scalar):
-    set = indexers[n_dims].set
-    get = indexers[n_dims].get
+    set_value = indexers[n_dims].set
+    get_value = indexers[n_dims].get
 
     if loop:
         @numba.njit(**jit_flags)
@@ -32,8 +32,8 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                                    rng_inner[RNG_STOP] + halo):
                         focus = (i, j, k)
                         if n_dims > 1:
-                            set(out, i, j, k, fun_outer(
-                                get(out, i, j, k),
+                            set_value(out, i, j, k, fun_outer(
+                                get_value(out, i, j, k),
                                 (focus, vec_arg1_tpl),
                                 (focus, scal_arg2),
                                 (focus, scal_arg3),
@@ -41,16 +41,16 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                                 (focus, scal_arg5)
                             ))
                             if n_dims > 2:
-                                set(out, i, j, k, fun_mid3d(
-                                    get(out, i, j, k),
+                                set_value(out, i, j, k, fun_mid3d(
+                                    get_value(out, i, j, k),
                                     (focus, vec_arg1_tpl),
                                     (focus, scal_arg2),
                                     (focus, scal_arg3),
                                     (focus, scal_arg4),
                                     (focus, scal_arg5)
                                 ))
-                        set(out, i, j, k, fun_inner(
-                            get(out, i, j, k),
+                        set_value(out, i, j, k, fun_inner(
+                            get_value(out, i, j, k),
                             (focus, vec_arg1_tpl),
                             (focus, scal_arg2),
                             (focus, scal_arg3),
@@ -78,8 +78,8 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                     for k in range(rng_inner[RNG_START] + halo,
                                    rng_inner[RNG_STOP] + halo):
                         focus = (i, j, k)
-                        set(out, i, j, k, fun(
-                            get(out, i, j, k),
+                        set_value(out, i, j, k, fun(
+                            get_value(out, i, j, k),
                             (focus, vec_arg1_tpl),
                             (focus, scal_arg2),
                             (focus, scal_arg3),
@@ -133,7 +133,7 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
 
 
 def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
-    set = indexers[n_dims].set
+    set_value = indexers[n_dims].set
 
     @numba.njit(**jit_flags)
     def boundary_cond_scalar(thread_id, meta, psi, fun_outer, fun_mid3d, fun_inner):
@@ -151,10 +151,10 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0, span[INNER] + 2 * halo):
                     for j in range(halo - 1, -1, -1):  # note: reversed order for Extrapolated!
                         focus = (i, j, k)
-                        set(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_LEFT))
+                        set_value(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_LEFT))
                     for j in range(span[MID3D] + halo, span[MID3D] + 2 * halo):
                         focus = (i, j, k)
-                        set(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_RIGHT))
+                        set_value(psi, i, j, k, fun_mid3d((focus, psi), span[MID3D], SIGN_RIGHT))
 
         if n_dims > 1:
             if first_thread:
@@ -162,7 +162,7 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for j in range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                         for k in range(0, span[INNER] + 2 * halo):
                             focus = (i, j, k)
-                            set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_LEFT))
+                            set_value(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_LEFT))
             if last_thread:
                 for i in range(span[OUTER] + halo,
                                span[OUTER] + 2*halo):  # note: non-reversed order for Extrapolated
@@ -171,7 +171,7 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
                         for k in range(0,
                                        span[INNER] + 2 * halo):
                             focus = (i, j, k)
-                            set(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_RIGHT))
+                            set_value(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_RIGHT))
 
         for i in range(rng_outer[RNG_START],
                        rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)
@@ -181,10 +181,10 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(halo - 1,
                                -1, -1):  # note: reversed order assumed in Extrapolated!
                     focus = (i, j, k)
-                    set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_LEFT))
+                    set_value(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_LEFT))
                 for k in range(span[INNER] + halo,
                                span[INNER] + 2 * halo):
                     focus = (i, j, k)
-                    set(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_RIGHT))
+                    set_value(psi, i, j, k, fun_inner((focus, psi), span[INNER], SIGN_RIGHT))
 
     return boundary_cond_scalar

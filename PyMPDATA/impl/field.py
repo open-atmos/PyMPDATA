@@ -6,10 +6,12 @@ from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE
 
 class Field:
     """ base class """
-    def __init__(self, *, grid, boundary_conditions):
+    def __init__(self, *, grid, boundary_conditions, halo, dtype):
         self.grid = grid
         self.meta = make_meta(False, grid)
         self.n_dims = len(grid)
+        self.halo = halo
+        self.dtype = dtype
 
         assert len(grid) == len(boundary_conditions)
 

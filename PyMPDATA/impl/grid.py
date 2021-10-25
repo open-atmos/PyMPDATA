@@ -4,13 +4,13 @@ from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
 
 
-def make_chunk(n, n_threads, jit_flags):
-    static = n > 0
+def make_chunk(span, n_threads, jit_flags):
+    static = span > 0
 
     subdomain = make_subdomain(jit_flags)
 
     if static:
-        rngs = tuple([subdomain(n, th, n_threads) for th in range(n_threads)])
+        rngs = tuple(subdomain(span, th, n_threads) for th in range(n_threads))
 
         @numba.njit(**jit_flags)
         def _impl(_, thread_id):

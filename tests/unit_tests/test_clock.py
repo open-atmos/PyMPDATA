@@ -30,12 +30,12 @@ class TestClock:
     def test_clock_value():
         # Arrange
         sec_expected = 2
-        t0 = clock()
+        start = clock()
 
         # Act
         time.sleep(sec_expected)
-        t1 = clock()
+        stop = clock()
 
         # Assert
-        sec_actual = (t1 - t0) / 1000
+        sec_actual = (stop - start) / 1000
         assert (sec_actual - sec_expected) / sec_expected < 0.1

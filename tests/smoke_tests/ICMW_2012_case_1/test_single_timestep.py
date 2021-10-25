@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
 import pytest
 from PyMPDATA_examples.utils import nondivergent_vector_field_2d
@@ -41,18 +42,29 @@ def test_single_timestep(options):
     values = {'th': np.full(grid, 300), 'qv': np.full(grid, .001)}
     stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
     advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
-    g_factor = ScalarField(rhod.astype(dtype=options.dtype), halo=options.n_halo,
-                           boundary_conditions=(Periodic(), Periodic()))
+    g_factor = ScalarField(
+        rhod.astype(dtype=options.dtype),
+        halo=options.n_halo,
+        boundary_conditions=(Periodic(), Periodic())
+    )
     mpdatas = {}
     for k1, v1 in values.items():
-        advectee = ScalarField(np.full(grid, v1, dtype=options.dtype), halo=options.n_halo,
-                               boundary_conditions=(Periodic(), Periodic()))
-        mpdatas[k1] = Solver(stepper=stepper, advectee=advectee, advector=advector, g_factor=g_factor)
+        advectee = ScalarField(
+            np.full(grid, v1, dtype=options.dtype),
+            halo=options.n_halo,
+            boundary_conditions=(Periodic(), Periodic())
+        )
+        mpdatas[k1] = Solver(
+            stepper=stepper,
+            advectee=advectee,
+            advector=advector,
+            g_factor=g_factor
+        )
 
     # Act
     for mpdata in mpdatas.values():
         mpdata.advance(nt=1)
 
     # Assert
-    for k, v in mpdatas.items():
+    for v in mpdatas.values():
         assert np.isfinite(v.advectee.get()).all()

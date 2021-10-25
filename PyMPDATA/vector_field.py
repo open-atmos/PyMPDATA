@@ -1,3 +1,6 @@
+"""
+vector field abstractions for the staggered grid
+"""
 import inspect
 import numpy as np
 from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
@@ -8,10 +11,13 @@ from PyMPDATA.impl.field import Field
 
 
 class VectorField(Field):
-    def __init__(self, data, halo, boundary_conditions):
+    """ n-component n-dimensional vector field including halo data """
+    def __init__(self, data: tuple, halo: int, boundary_conditions: tuple):
         super().__init__(
-            grid=tuple([data[d].shape[d] - 1 for d, _ in enumerate(data)]),
-            boundary_conditions=boundary_conditions
+            grid=tuple(data[d].shape[d] - 1 for d, _ in enumerate(data)),
+            boundary_conditions=boundary_conditions,
+            halo=halo,
+            dtype=data[0].dtype
         )
 
         for comp, field in enumerate(data):
@@ -20,31 +26,28 @@ class VectorField(Field):
                 assert halo <= dim_length
                 if not (np.asarray(self.grid) == 0).all():
                     assert dim_length == self.grid[dim] + (dim==comp)
-        for bc in boundary_conditions:
-            assert not inspect.isclass(bc)
-
-        self.halo = halo
-        self.dtype = data[0].dtype
+        for boundary_condition in boundary_conditions:
+            assert not inspect.isclass(boundary_condition)
 
         dims = range(self.n_dims)
-        halos = [[(halo - (d == c)) for c in dims] for d in dims]
-        shape_with_halo = [
-            [data[d].shape[c] + 2 * halos[d][c] for c in dims]
-            for d in dims
-        ]
-        self.data = [
-            np.full(shape_with_halo[d], INVALID_INIT_VALUE, dtype=self.dtype)
-            for d in dims
-        ]
+        halos = tuple(tuple((halo - (dim == comp)) for comp in dims) for dim in dims)
+        shape_with_halo = tuple(
+            tuple(data[dim].shape[comp] + 2 * halos[dim][comp] for comp in dims)
+            for dim in dims
+        )
+        self.data = tuple(
+            np.full(shape_with_halo[dim], INVALID_INIT_VALUE, dtype=self.dtype)
+            for dim in dims
+        )
         self.domain = tuple(
             tuple(
-                slice(halos[d][c], halos[d][c] + data[d].shape[c])
-                for c in dims)
-            for d in dims
+                slice(halos[dim][comp], halos[dim][comp] + data[dim].shape[comp])
+                for comp in dims)
+            for dim in dims
         )
-        for d in dims:
-            assert data[d].dtype == self.dtype
-            self.get_component(d)[:] = data[d][:]
+        for dim in dims:
+            assert data[dim].dtype == self.dtype
+            self.get_component(dim)[:] = data[dim][:]
 
         self.comp_outer = self.data[0] \
             if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)

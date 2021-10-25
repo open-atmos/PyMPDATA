@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import pytest
 import numpy as np
 from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.analysis import fig_12_data

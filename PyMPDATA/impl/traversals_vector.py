@@ -8,7 +8,7 @@ from .enumerations import (
 
 def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                        spanner, chunker, boundary_cond_vector, boundary_cond_scalar):
-    set = indexers[n_dims].set
+    set_value = indexers[n_dims].set
 
     halos = (
         (halo - 1, halo, halo),
@@ -41,18 +41,18 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                                rng_inner[RNG_STOP] + ONE_FOR_STAGGERED_GRID + halos[INNER][INNER]):
                     focus = (i, j, k)
                     if n_dims > 1:
-                        set(out_outer, i, j, k, fun_outer(
+                        set_value(out_outer, i, j, k, fun_outer(
                             (focus, scal_arg1),
                             (focus, arg2),
                             (focus, scal_arg3)
                         ))
                         if n_dims > 2:
-                            set(out_mid3d, i, j, k, fun_mid3d(
+                            set_value(out_mid3d, i, j, k, fun_mid3d(
                                 (focus, scal_arg1),
                                 (focus, arg2),
                                 (focus, scal_arg3)
                             ))
-                    set(out_inner, i, j, k, fun_inner(
+                    set_value(out_inner, i, j, k, fun_inner(
                         (focus, scal_arg1),
                         (focus, arg2),
                         (focus, scal_arg3)
@@ -60,22 +60,25 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
 
     @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
     def apply_vector(
-            fun_outer, fun_mid3d, fun_inner,
-            out_meta, out_outer, out_mid3d, out_inner,
-            scal_arg1_meta, scal_arg1, scal_arg1_bc_outer, scal_arg1_bc_mid3d, scal_arg1_bc_inner,
-            vec_arg2_meta, vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner, vec_arg2_bc_outer, vec_arg2_bc_mid3d, vec_arg2_bc_inner,
-            scal_arg3_meta, scal_arg3, scal_arg3_bc_outer, scal_arg3_bc_mid3d, scal_arg3_bc_inner
+        fun_outer, fun_mid3d, fun_inner,
+        out_meta, out_outer, out_mid3d, out_inner,
+        arg1s_meta, arg1s_data, arg1s_bc_o, arg1s_bc_m, arg1s_bc_i,
+        arg2v_meta, arg2v_data_o, arg2v_data_m, arg2v_data_i, arg2v_bc_o, arg2v_bc_m, arg2v_bc_i,
+        arg3s_meta, arg3s_data, arg3s_bc_o, arg3s_bc_m, arg3s_bc_i
     ):
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
-            boundary_cond_scalar(thread_id, scal_arg1_meta, scal_arg1, scal_arg1_bc_outer, scal_arg1_bc_mid3d, scal_arg1_bc_inner)
-            boundary_cond_vector(thread_id, vec_arg2_meta, vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner, vec_arg2_bc_outer, vec_arg2_bc_mid3d, vec_arg2_bc_inner)
-            boundary_cond_scalar(thread_id, scal_arg3_meta, scal_arg3, scal_arg3_bc_outer, scal_arg3_bc_mid3d, scal_arg3_bc_inner)
-        if not scal_arg1_meta[META_HALO_VALID]:
-            scal_arg1_meta[META_HALO_VALID] = True
-        if not vec_arg2_meta[META_HALO_VALID]:
-            vec_arg2_meta[META_HALO_VALID] = True
-        if not scal_arg3_meta[META_HALO_VALID]:
-            scal_arg3_meta[META_HALO_VALID] = True
+            boundary_cond_scalar(thread_id, arg1s_meta, arg1s_data,
+                                 arg1s_bc_o, arg1s_bc_m, arg1s_bc_i)
+            boundary_cond_vector(thread_id, arg2v_meta, arg2v_data_o, arg2v_data_m, arg2v_data_i,
+                                 arg2v_bc_o, arg2v_bc_m, arg2v_bc_i)
+            boundary_cond_scalar(thread_id, arg3s_meta, arg3s_data,
+                                 arg3s_bc_o, arg3s_bc_m, arg3s_bc_i)
+        if not arg1s_meta[META_HALO_VALID]:
+            arg1s_meta[META_HALO_VALID] = True
+        if not arg2v_meta[META_HALO_VALID]:
+            arg2v_meta[META_HALO_VALID] = True
+        if not arg3s_meta[META_HALO_VALID]:
+            arg3s_meta[META_HALO_VALID] = True
 
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             apply_vector_impl(
@@ -83,9 +86,9 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                 out_meta,
                 fun_outer, fun_mid3d, fun_inner,
                 out_outer, out_mid3d, out_inner,
-                scal_arg1,
-                vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner,
-                scal_arg3
+                arg1s_data,
+                arg2v_data_o, arg2v_data_m, arg2v_data_i,
+                arg3s_data
             )
         out_meta[META_HALO_VALID] = False
 
@@ -93,7 +96,7 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
 
 
 def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
-    set = indexers[n_dims].set
+    set_value = indexers[n_dims].set
 
     halos = (
         (halo - 1, halo, halo),
@@ -111,7 +114,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + 2 * halos[OUTER][INNER]):
                         focus = (i, j, k)
-                        set(comp, i, j, k, fun((focus, comp), span[OUTER] + 1, SIGN_LEFT))
+                        set_value(comp, i, j, k, fun((focus, comp), span[OUTER] + 1, SIGN_LEFT))
         if last_thread:
             for i in range(span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
                            span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]
@@ -121,7 +124,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + 2 * halos[OUTER][INNER]):
                         focus = (i, j, k)
-                        set(comp, i, j, k, fun(
+                        set_value(comp, i, j, k, fun(
                             (focus, comp),
                             span[OUTER] + 1,
                             SIGN_RIGHT
@@ -136,13 +139,13 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                span[INNER] + 2 * halo):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_LEFT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_LEFT))
             for j in range(span[MID3D] + halos[OUTER][MID3D],
                            span[MID3D] + 2 * halos[OUTER][MID3D]):
                 for k in range(0,
                                span[INNER] + 2 * halo):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun(
+                    set_value(comp, i, j, k, fun(
                         (focus, comp),
                         span[MID3D],
                         SIGN_RIGHT
@@ -157,11 +160,11 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                halos[OUTER][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
                 for k in range(span[INNER] + halos[OUTER][INNER],
                                span[INNER] + 2 * halos[OUTER][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
 
     @numba.njit(**jit_flags)
     def mid3d_outer(span, comp, fun, first_thread, last_thread):
@@ -172,7 +175,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + 2 * halo):
                         focus = (i, j, k)
-                        set(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT))
+                        set_value(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT))
         if last_thread:
             for i in range(span[OUTER] + halos[MID3D][OUTER],
                            span[OUTER] + 2 * halos[MID3D][OUTER]):
@@ -181,7 +184,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + 2 * halo):
                         focus = (i, j, k)
-                        set(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT))
+                        set_value(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT))
 
     @numba.njit(**jit_flags)
     def mid3d_mid3d(span, comp, fun, rng_outer, last_thread):
@@ -192,13 +195,16 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                span[INNER] + 2 * halo):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT))
             for j in range(span[MID3D] + 1 + halos[MID3D][MID3D],
                            span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]):
                 for k in range(0,
                                span[INNER] + 2 * halo):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_RIGHT))
+                    set_value(comp, i, j, k, fun(
+                        (focus, comp),
+                        span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_RIGHT)
+                    )
 
     @numba.njit(**jit_flags)
     def mid3d_inner(span, comp, fun, rng_outer, last_thread):
@@ -209,11 +215,11 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                halos[MID3D][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
                 for k in range(span[INNER] + halos[MID3D][INNER],
                                span[INNER] + 2 * halos[MID3D][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
 
     @numba.njit(**jit_flags)
     def inner_outer(span, comp, fun, first_thread, last_thread):
@@ -225,7 +231,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                         focus = (i, j, k)
-                        set(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT))
+                        set_value(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT))
         if last_thread:
             for i in range(span[OUTER] + halos[INNER][OUTER],
                            span[OUTER] + 2 * halos[INNER][OUTER]):
@@ -234,7 +240,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                         focus = (i, j, k)
-                        set(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT))
+                        set_value(comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT))
 
     @numba.njit(**jit_flags)
     def inner_inner(span, comp, fun, last_thread, rng_outer):
@@ -246,7 +252,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                halos[INNER][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun(
+                    set_value(comp, i, j, k, fun(
                         (focus, comp),
                         span[INNER] + ONE_FOR_STAGGERED_GRID,
                         SIGN_LEFT
@@ -254,7 +260,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(span[INNER] + 1 + halos[INNER][INNER],
                                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun(
+                    set_value(comp, i, j, k, fun(
                         (focus, comp),
                         span[INNER] + ONE_FOR_STAGGERED_GRID,
                         SIGN_RIGHT
@@ -269,13 +275,13 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_LEFT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_LEFT))
             for j in range(span[MID3D] + halos[INNER][MID3D],
                            span[MID3D] + 2 * halos[INNER][MID3D]):
                 for k in range(0,
                                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]):
                     focus = (i, j, k)
-                    set(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_RIGHT))
+                    set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_RIGHT))
 
     @numba.njit(**jit_flags)
     def boundary_cond_vector(thread_id, meta,

@@ -1,7 +1,7 @@
-import numpy as np
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import pytest
 from matplotlib import pylab
-from PyMPDATA_examples.Jarecka_et_al_2015 import Settings, Simulation, formulae, plot_output
+from PyMPDATA_examples.Jarecka_et_al_2015 import Settings, Simulation, plot_output
 from PyMPDATA_examples.utils.error_norms import L2
 
 
@@ -29,4 +29,3 @@ def test_just_do_it(nx, ny, plot=False):
     for key, item in plot_data.items():
         assert 2**L2(item['h_numeric'], item['h_analytic'], nt=settings.nt) < 5e-3
         assert 2**L2(item['q_h_numeric'], item['q_h_analytic'], nt=settings.nt) < 5e-2
-

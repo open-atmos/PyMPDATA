@@ -1,4 +1,5 @@
-from PyMPDATA import ScalarField, VectorField
+from ..scalar_field import ScalarField
+from ..vector_field import VectorField
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
 from .traversals_scalar import _make_apply_scalar, _make_fill_halos_scalar

@@ -1,6 +1,6 @@
 import numba
-from PyMPDATA.impl.enumerations import MAX_DIM_NUM
-from PyMPDATA.impl.traversals import Traversals
+from ..impl.enumerations import MAX_DIM_NUM
+from ..impl.traversals import Traversals
 from ..options import Options
 
 
@@ -13,7 +13,7 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_laplacian = tuple([
+        formulae_laplacian = tuple(
             __make_laplacian(
                 options.jit_flags,
                 idx.at[i],
@@ -22,7 +22,7 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
             )
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
-        ])
+        )
 
         null_vecfield, null_vecfield_bc = traversals.null_vector_field.impl
         null_scalarfield, null_scalarfield_bc = traversals.null_scalar_field.impl

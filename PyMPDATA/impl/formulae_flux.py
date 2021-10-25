@@ -8,11 +8,11 @@ def make_flux_first_pass(options, traversals):
     apply_vector = traversals.apply_vector()
     null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
-    formulae_flux_first_pass = tuple([
+    formulae_flux_first_pass = tuple(
         __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
         if idx.at[i] is not None else None
         for i in range(MAX_DIM_NUM)
-    ])
+    )
 
     @numba.njit(**options.jit_flags)
     def apply(vectmp_a, advector, advectee, advectee_bc, vec_bc):
@@ -34,7 +34,7 @@ def make_flux_subsequent(options, traversals):
         idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
 
-        formulae_flux_subsequent = tuple([
+        formulae_flux_subsequent = tuple(
             __make_flux(
                 options.jit_flags,
                 idx.atv[i], idx.at[i],
@@ -43,7 +43,7 @@ def make_flux_subsequent(options, traversals):
             )
             if idx.at[i] is not None else None
             for i in range(MAX_DIM_NUM)
-        ])
+        )
 
         null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
