@@ -1,8 +1,8 @@
-from PyMPDATA import Stepper, ScalarField, Solver, Options
-from PyMPDATA.boundary_conditions import Periodic
-from PyMPDATA_examples.utils import nondivergent_vector_field_2d
 import numpy as np
 import pytest
+from PyMPDATA_examples.utils import nondivergent_vector_field_2d
+from PyMPDATA import Stepper, ScalarField, Solver, Options
+from PyMPDATA.boundary_conditions import Periodic
 
 
 @pytest.mark.parametrize(

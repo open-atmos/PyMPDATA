@@ -1,6 +1,7 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import numpy as np
 from PyMPDATA import ScalarField
 from PyMPDATA.boundary_conditions import Periodic
-import numpy as np
 
 
 class TestScalarField:

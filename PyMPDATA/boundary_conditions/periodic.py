@@ -1,21 +1,24 @@
+"""
+periodic/cyclic boundary condition logic
+"""
 from functools import lru_cache
 import numba
 from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 
 @lru_cache()
-def _make_scalar(at, jit_flags):
+def _make_scalar(at_indexer, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
-        return at(*psi, sign * n)
+        return at_indexer(*psi, sign * n)
     return fill_halos
 
 
 @lru_cache()
-def _make_vector(at, jit_flags):
+def _make_vector(at_indexer, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
-        return at(*psi, sign * n)
+        return at_indexer(*psi, sign * n)
     return fill_halos
 
 

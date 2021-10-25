@@ -1,3 +1,6 @@
+"""
+polar boundary condition for use in with spherical coordinates
+"""
 import numba
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 

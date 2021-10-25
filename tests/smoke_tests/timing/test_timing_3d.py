@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
 import numba
-from PyMPDATA import Options
 from PyMPDATA_examples.Smolarkiewicz_1984 import Simulation, Settings
+from PyMPDATA import Options
 
 from .concurrency_fixture import num_threads
 assert hasattr(num_threads, '_pytestfixturefunction')

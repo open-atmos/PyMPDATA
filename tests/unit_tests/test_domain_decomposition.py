@@ -1,9 +1,11 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import pytest
 from PyMPDATA import Options
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 
 
 JIT_FLAGS = Options().jit_flags
+
 
 @pytest.mark.parametrize("n, rank, size, range", [
     (10, 0, 1, (0, 10)),

@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
 import pytest
 from PyMPDATA import Solver, Stepper, ScalarField, VectorField, Options
@@ -21,15 +22,10 @@ BCS = (Periodic(),)
         }, marks=pytest.mark.xfail(strict=True))
 ))
 def test_mu_arg_handling(case):
-    # arrange
     opt = Options(non_zero_mu_coeff=case['non_zero_mu_coeff'])
     advector = VectorField((np.asarray([1., 2, 3]),), opt.n_halo, BCS)
     advectee = ScalarField(np.asarray([4., 5]), opt.n_halo, BCS)
     stepper = Stepper(options=opt, n_dims=1)
     sut = Solver(stepper, advectee, advector, case['g_factor'])
 
-    # act
     sut.advance(1, mu_coeff=case['mu'])
-
-    # assert
-    pass

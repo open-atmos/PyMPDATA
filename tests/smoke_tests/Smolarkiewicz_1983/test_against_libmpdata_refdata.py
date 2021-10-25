@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
-from PyMPDATA import Options
 from PyMPDATA_examples.Smolarkiewicz_1984 import Settings, Simulation
+from PyMPDATA import Options
 
 
 # https://github.com/igfuw/libmpdataxx/blob/master/tests/paper_2015_GMD/4_revolving_sphere_3d/...
