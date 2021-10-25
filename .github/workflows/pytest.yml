@@ -1,4 +1,4 @@
-name: PyMPDATA
+name: pytest
 
 defaults:
   run:
@@ -36,7 +36,10 @@ jobs:
       - if: matrix.platform == 'ubuntu-latest'
         env:
           NUMBA_THREADING_LAYER: omp
-        run: pytest -p no:unraisableexception -We
+        run: |
+          pytest -p no:unraisableexception -We tests/unit_tests
+          pytest -p no:unraisableexception -We tests/smoke_tests
+          pytest -p no:unraisableexception -We tests/devops_tests
 
       - if: matrix.platform != 'ubuntu-latest'
         run: |

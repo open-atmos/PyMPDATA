@@ -68,6 +68,7 @@ class VectorField(Field):
             self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple([
                 fh.make_vector(
                     traversals.indexers[self.n_dims].at[i],
+                    self.halo,
                     self.dtype,
                     traversals.jit_flags
                 )

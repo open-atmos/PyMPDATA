@@ -1,3 +1,4 @@
+""" clock() function which works from within njit-ted code """
 import ctypes
 import platform
 

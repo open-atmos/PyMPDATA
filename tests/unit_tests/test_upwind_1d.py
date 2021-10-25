@@ -10,10 +10,16 @@ def test_upwind_1d():
     options = Options(n_iters=1)
     mpdata = Solver(
         stepper=Stepper(options=options, n_dims=len(state.shape), non_unit_g_factor=False),
-        advectee=ScalarField(state.astype(options.dtype), halo=options.n_halo,
-                             boundary_conditions=(Periodic(),)),
-        advector=VectorField((np.full(state.shape[0] + 1, C, dtype=options.dtype),), halo=options.n_halo,
-                             boundary_conditions=(Periodic(),))
+        advectee=ScalarField(
+            state.astype(options.dtype),
+            halo=options.n_halo,
+            boundary_conditions=(Periodic(),)
+        ),
+        advector=VectorField(
+            (np.full(state.shape[0] + 1, C, dtype=options.dtype),),
+            halo=options.n_halo,
+            boundary_conditions=(Periodic(),)
+        )
     )
     nt = 5
 

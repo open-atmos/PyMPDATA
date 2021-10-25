@@ -166,8 +166,14 @@ class TestTraversals:
             data = out.get_component(d)
             focus = tuple(-halos[d][i] for i in range(MAX_DIM_NUM))
             print("focus", focus)
-            for i in range(halos[d][OUTER], halos[d][OUTER] + data.shape[OUTER]) if n_dims > 1 else (INVALID_INDEX,):
-                for j in range(halos[d][MID3D], halos[d][MID3D] + data.shape[MID3D]) if n_dims > 2 else (INVALID_INDEX,):
+            for i in range(
+                    halos[d][OUTER],
+                    halos[d][OUTER] + data.shape[OUTER]
+            ) if n_dims > 1 else (INVALID_INDEX,):
+                for j in range(
+                        halos[d][MID3D],
+                        halos[d][MID3D] + data.shape[MID3D]
+                ) if n_dims > 2 else (INVALID_INDEX,):
                     for k in range(halos[d][INNER], halos[d][INNER] + data.shape[INNER]):
                         if n_dims == 1:
                             ijk = (k, INVALID_INDEX, INVALID_INDEX)
@@ -176,7 +182,9 @@ class TestTraversals:
                         else:
                             ijk = (i, j, k)
                         print("check at", i, j, k)
-                        value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](focus, data, *ijk)
+                        value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](
+                            focus, data, *ijk
+                        )
                         assert cell_id(i, j, k) == value
 
         assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]

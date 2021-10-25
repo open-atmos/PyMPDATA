@@ -37,7 +37,7 @@ class Polar:
 
         return fill_halos
 
-    def make_vector(self, at, dtype, jit_flags):
+    def make_vector(self, at, halo, dtype, jit_flags):
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, __):
             return at(*psi, 0)  # TODO #120

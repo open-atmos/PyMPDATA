@@ -22,10 +22,15 @@ def test_upwind(shape, ij0, out, C):
     )
     options = Options(n_iters=1)
 
-    advectee = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=(Periodic(), Periodic()))
-    advector = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=(Periodic(), Periodic()))
+    bcs = (Periodic(), Periodic())
+    advectee = ScalarField(scalar_field_init, halo=options.n_halo, boundary_conditions=bcs)
+    advector = VectorField(vector_field_init, halo=options.n_halo, boundary_conditions=bcs)
 
-    mpdata = Solver(stepper=Stepper(options=options, grid=shape, n_threads=1), advector=advector, advectee=advectee)
+    mpdata = Solver(
+        stepper=Stepper(options=options, grid=shape, n_threads=1),
+        advector=advector,
+        advectee=advectee
+    )
     mpdata.advance(nt=1)
 
     np.testing.assert_array_equal(

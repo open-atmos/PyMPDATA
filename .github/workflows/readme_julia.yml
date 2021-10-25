@@ -1,4 +1,4 @@
-name: PyMPDATA-readme.jl
+name: readme_julia
 
 defaults:
   run:

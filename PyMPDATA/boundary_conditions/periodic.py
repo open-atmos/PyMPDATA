@@ -27,5 +27,5 @@ class Periodic:
     def make_scalar(self, at, halo, dtype, jit_flags):
         return _make_scalar(at, jit_flags)
 
-    def make_vector(self, at, dtype, jit_flags):
+    def make_vector(self, at, halo, dtype, jit_flags):
         return _make_vector(at, jit_flags)
