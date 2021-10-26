@@ -103,7 +103,7 @@ class TestTraversals:
                         ijk = (i, k, INVALID_INDEX)
                     else:
                         ijk = (i, j, k)
-                    value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](
+                    value = traversals.indexers[n_dims].ats[INNER if n_dims == 1 else OUTER](
                         focus, data, *ijk
                     )
                     assert (n_dims if loop else 1) * cell_id(i, j, k) == value
@@ -188,7 +188,7 @@ class TestTraversals:
                         else:
                             ijk = (i, j, k)
                         print("check at", i, j, k)
-                        value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](
+                        value = traversals.indexers[n_dims].ats[INNER if n_dims == 1 else OUTER](
                             focus, data, *ijk
                         )
                         assert cell_id(i, j, k) == value
