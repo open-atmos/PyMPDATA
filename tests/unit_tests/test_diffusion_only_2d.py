@@ -11,14 +11,14 @@ def test_diffusion_only_2d(
 ):
     # Arrange
     options = Options(non_zero_mu_coeff=True)
-    bc = [Periodic()] * 2
-    advectee = ScalarField(data0, options.n_halo, bc)
+    boundary_conditions = tuple([Periodic()] * 2)
+    advectee = ScalarField(data0, options.n_halo, boundary_conditions)
     advector = VectorField(
         data=(
             np.zeros((data0.shape[0]+1, data0.shape[1])),
             np.zeros((data0.shape[0], data0.shape[1]+1))
         ),
-        halo=options.n_halo, boundary_conditions=bc)
+        halo=options.n_halo, boundary_conditions=boundary_conditions)
     solver = Solver(
         stepper=Stepper(options=options, grid=data0.shape),
         advector=advector,

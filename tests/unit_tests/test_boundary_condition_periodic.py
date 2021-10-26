@@ -1,14 +1,14 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+from functools import lru_cache
 import numpy as np
 import pytest
-from functools import lru_cache
 from PyMPDATA import ScalarField, VectorField, Options
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.traversals import Traversals
 from PyMPDATA.impl.meta import OUTER, MID3D, INNER
 
-# noinspection PyUnresolvedReferences
 from tests.unit_tests.fixtures.n_threads import n_threads
+assert hasattr(n_threads, '_pytestfixturefunction')
 
 
 LEFT, RIGHT = 'left', 'right'
@@ -88,14 +88,15 @@ class TestPeriodicBoundaryCondition:
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
+        INT = (halo, -halo)
         if side == LEFT:
             np.testing.assert_array_equal(
-                field.data[shift(indices((None, halo), (halo, -halo), (halo, -halo))[:n_dims], dim)],
+                field.data[shift(indices((None, halo), INT, INT)[:n_dims], dim)],
                 data[shift(indices((-halo, None), ALL, ALL)[:n_dims], dim)]
             )
         else:
             np.testing.assert_array_equal(
-                field.data[shift(indices((-halo, None), (halo, -halo), (halo, -halo))[:n_dims], dim)],
+                field.data[shift(indices((-halo, None), INT, INT)[:n_dims], dim)],
                 data[shift(indices((None, halo), ALL, ALL)[:n_dims], dim)]
             )
 
@@ -147,6 +148,7 @@ class TestPeriodicBoundaryCondition:
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
+        INT = (halo, -halo)
         if n_dims == 1 and halo == 1:
             np.testing.assert_array_equal(field.data[component], data[component])
         if side == LEFT:
@@ -154,7 +156,7 @@ class TestPeriodicBoundaryCondition:
                 np.testing.assert_array_equal(
                     field.data[component][
                         shift(
-                            indices((None, halo), (halo - 1, -(halo - 1)), (halo, -halo))[:n_dims],
+                            indices((None, halo), (halo - 1, -(halo - 1)), INT)[:n_dims],
                             -component+dim_offset
                         )
                     ],
@@ -169,7 +171,7 @@ class TestPeriodicBoundaryCondition:
                 np.testing.assert_array_equal(
                     field.data[component][
                         shift(
-                            indices((None, halo), (halo, -halo), (halo - 1, -(halo - 1)))[:n_dims],
+                            indices((None, halo), INT, (halo - 1, -(halo - 1)))[:n_dims],
                             -component+dim_offset
                         )
                     ],
@@ -178,7 +180,7 @@ class TestPeriodicBoundaryCondition:
             elif dim_offset == 0:
                 np.testing.assert_array_equal(
                     field.data[component][shift(
-                        indices((None, halo - 1), (halo, -halo), (halo, -halo))[:n_dims],
+                        indices((None, halo - 1), INT, INT)[:n_dims],
                         -component+dim_offset
                     )],
                     data[component][shift(
@@ -191,7 +193,7 @@ class TestPeriodicBoundaryCondition:
                 np.testing.assert_array_equal(
                     field.data[component][
                         shift(
-                            indices((-halo, None), (halo - 1, -(halo - 1)), (halo, -halo))[:n_dims],
+                            indices((-halo, None), (halo - 1, -(halo - 1)), INT)[:n_dims],
                             -component+dim_offset
                         )
                     ],
@@ -206,7 +208,7 @@ class TestPeriodicBoundaryCondition:
                 np.testing.assert_array_equal(
                     field.data[component][
                         shift(
-                            indices((-halo, None), (halo, -halo), (halo - 1, -(halo - 1)))[:n_dims],
+                            indices((-halo, None), INT, (halo - 1, -(halo - 1)))[:n_dims],
                             -component+dim_offset
                         )
                     ],
@@ -221,7 +223,7 @@ class TestPeriodicBoundaryCondition:
                 np.testing.assert_array_equal(
                     field.data[component][
                         shift(
-                            indices((-(halo - 1), None), (halo, -halo), (halo, -halo))[:n_dims],
+                            indices((-(halo - 1), None), INT, INT)[:n_dims],
                             -component+dim_offset
                         )
                     ],

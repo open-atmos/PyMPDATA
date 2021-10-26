@@ -103,7 +103,10 @@ def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False)
     numba.set_num_threads(num_threads)
 
     settings = Settings(n_rotations=6)
-    _, __, z = from_pdf_2d(settings.pdf, xrange=settings.xrange, yrange=settings.yrange, gridsize=settings.grid)
+    _, __, z = from_pdf_2d(settings.pdf,
+                           xrange=settings.xrange,
+                           yrange=settings.yrange,
+                           gridsize=settings.grid)
 
     C = (-.5, .25)
     grid = z.shape

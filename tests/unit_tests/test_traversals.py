@@ -1,5 +1,6 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 from functools import lru_cache
+from collections import namedtuple
 import pytest
 import numba
 import numpy as np
@@ -12,8 +13,8 @@ from PyMPDATA.impl.enumerations import (
     META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
 )
 
-# noinspection PyUnresolvedReferences
 from tests.unit_tests.fixtures.n_threads import n_threads
+assert hasattr(n_threads, '_pytestfixturefunction')
 
 jit_flags = Options().jit_flags
 
@@ -57,142 +58,150 @@ def _cell_id_vector(arg_1, arg_2, arg_3):
     return cell_id(*focus)
 
 
+def make_commons(grid, halo, num_threads):
+    traversals = make_traversals(grid, halo, num_threads)
+    n_dims = len(grid)
+    halos = (
+        (halo - 1, halo, halo),
+        (halo, halo - 1, halo),
+        (halo, halo, halo - 1)
+    )
+
+    _Commons = namedtuple('_Commons', (
+        'n_dims', 'traversals', 'scl_null_arg_impl', 'vec_null_arg_impl', 'halos'
+    ))
+
+    return _Commons(
+        n_dims=n_dims,
+        traversals=traversals,
+        scl_null_arg_impl=ScalarField.make_null(n_dims, traversals).impl,
+        vec_null_arg_impl=VectorField.make_null(n_dims, traversals).impl,
+        halos=halos
+    )
+
+
 class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     @pytest.mark.parametrize("loop", (True, False))
     # pylint: disable-next=redefined-outer-name
-    def test_apply_scalar(n_threads, halo, grid, loop):
-        n_dims = len(grid)
-        if n_dims == 1 and n_threads > 1:
+    def test_apply_scalar(n_threads: int, halo: int, grid: tuple, loop: bool):
+        if len(grid) == 1 and n_threads > 1:
             return
+        cmn = make_commons(grid, halo, n_threads)
 
         # arrange
-        traversals = make_traversals(grid, halo, n_threads)
-        sut = traversals.apply_scalar(loop=loop)
-
-        scl_null_arg_impl = ScalarField.make_null(n_dims, traversals).impl
-        vec_null_arg_impl = VectorField.make_null(n_dims, traversals).impl
-
-        out = ScalarField(np.zeros(grid), halo, [Constant(np.nan)] * n_dims)
-        out.assemble(traversals)
+        sut = cmn.traversals.apply_scalar(loop=loop)
+        out = ScalarField(np.zeros(grid), halo, tuple([Constant(np.nan)] * cmn.n_dims))
+        out.assemble(cmn.traversals)
 
         # act
         sut(_cell_id_scalar,
             _cell_id_scalar if loop else None,
             _cell_id_scalar if loop else None,
             *out.impl[IMPL_META_AND_DATA],
-            *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
-            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
-            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
-            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
-            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
+            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA], *cmn.vec_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC]
             )
 
         # assert
         data = out.get()
         assert data.shape == grid
         focus = (-halo, -halo, -halo)
-        for i in range(halo, halo + grid[OUTER]) if n_dims > 1 else (INVALID_INDEX,):
-            for j in range(halo, halo + grid[MID3D]) if n_dims > 2 else (INVALID_INDEX,):
+        for i in range(halo, halo + grid[OUTER]) if cmn.n_dims > 1 else (INVALID_INDEX,):
+            for j in range(halo, halo + grid[MID3D]) if cmn.n_dims > 2 else (INVALID_INDEX,):
                 for k in range(halo, halo + grid[INNER]):
-                    if n_dims == 1:
+                    if cmn.n_dims == 1:
                         ijk = (k, INVALID_INDEX, INVALID_INDEX)
-                    elif n_dims == 2:
+                    elif cmn.n_dims == 2:
                         ijk = (i, k, INVALID_INDEX)
                     else:
                         ijk = (i, j, k)
-                    value = traversals.indexers[n_dims].ats[INNER if n_dims == 1 else OUTER](
+                    value = cmn.traversals.indexers[cmn.n_dims].ats[
+                        INNER if cmn.n_dims == 1 else OUTER
+                    ](
                         focus, data, *ijk
                     )
-                    assert (n_dims if loop else 1) * cell_id(i, j, k) == value
-        assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-        assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+                    assert (cmn.n_dims if loop else 1) * cell_id(i, j, k) == value
+        assert cmn.scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert cmn.vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
 
     @staticmethod
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     # pylint: disable-next=redefined-outer-name
-    def test_apply_vector(n_threads, halo, grid):
-        n_dims = len(grid)
-        if n_dims == 1 and n_threads > 1:
+    def test_apply_vector(n_threads: int, halo: int, grid: tuple):
+        if len(grid) == 1 and n_threads > 1:
             return
+        cmn = make_commons(grid, halo, n_threads)
 
         # arrange
-        traversals = make_traversals(grid, halo, n_threads)
-        sut = traversals.apply_vector()
+        sut = cmn.traversals.apply_vector()
 
-        scl_null_arg_impl = ScalarField.make_null(n_dims, traversals).impl
-        vec_null_arg_impl = VectorField.make_null(n_dims, traversals).impl
-
-        if n_dims == 1:
-            data = (np.zeros(grid[0]+1),)
-        elif n_dims == 2:
-            data = (
+        data = {
+            1: lambda: (np.zeros(grid[0]+1),),
+            2: lambda: (
                 np.zeros((grid[0]+1, grid[1])),
                 np.zeros((grid[0], grid[1]+1))
-            )
-        elif n_dims == 3:
-            data = (
+            ),
+            3: lambda: (
                 np.zeros((grid[0]+1, grid[1], grid[2])),
                 np.zeros((grid[0], grid[1]+1, grid[2])),
                 np.zeros((grid[0], grid[1], grid[2]+1)),
             )
-        else:
-            raise NotImplementedError()
+        }[cmn.n_dims]()
 
-        out = VectorField(data, halo, [Constant(np.nan)] * n_dims)
-        out.assemble(traversals)
+        out = VectorField(data, halo, tuple([Constant(np.nan)] * cmn.n_dims))
+        out.assemble(cmn.traversals)
 
         # act
         sut(*[_cell_id_vector] * MAX_DIM_NUM,
             *out.impl[IMPL_META_AND_DATA],
-            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC],
-            *vec_null_arg_impl[IMPL_META_AND_DATA], *vec_null_arg_impl[IMPL_BC],
-            *scl_null_arg_impl[IMPL_META_AND_DATA], *scl_null_arg_impl[IMPL_BC]
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA], *cmn.vec_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC]
             )
 
         # assert
-        halos = (
-            (halo-1, halo, halo),
-            (halo, halo-1, halo),
-            (halo, halo, halo-1)
-        )
+        dims = {
+            1: (INNER,),
+            2: (OUTER, INNER),
+            3: (OUTER, MID3D, INNER)
+        }[cmn.n_dims]
 
-        if n_dims == 1:
-            dims = (INNER,)
-        elif n_dims == 2:
-            dims = (OUTER, INNER)
-        else:
-            dims = (OUTER, MID3D, INNER)
         for dim in dims:
-            print("DIM", dim)
             data = out.get_component(dim)
-            focus = tuple(-halos[dim][i] for i in range(MAX_DIM_NUM))
-            print("focus", focus)
+            focus = tuple(-cmn.halos[dim][i] for i in range(MAX_DIM_NUM))
             for i in range(
-                    halos[dim][OUTER],
-                    halos[dim][OUTER] + data.shape[OUTER]
-            ) if n_dims > 1 else (INVALID_INDEX,):
+                    cmn.halos[dim][OUTER],
+                    cmn.halos[dim][OUTER] + data.shape[OUTER]
+            ) if cmn.n_dims > 1 else (INVALID_INDEX,):
                 for j in range(
-                        halos[dim][MID3D],
-                        halos[dim][MID3D] + data.shape[MID3D]
-                ) if n_dims > 2 else (INVALID_INDEX,):
-                    for k in range(halos[dim][INNER], halos[dim][INNER] + data.shape[INNER]):
-                        if n_dims == 1:
+                        cmn.halos[dim][MID3D],
+                        cmn.halos[dim][MID3D] + data.shape[MID3D]
+                ) if cmn.n_dims > 2 else (INVALID_INDEX,):
+                    for k in range(
+                        cmn.halos[dim][INNER],
+                        cmn.halos[dim][INNER] + data.shape[INNER]
+                    ):
+                        if cmn.n_dims == 1:
                             ijk = (k, INVALID_INDEX, INVALID_INDEX)
-                        elif n_dims == 2:
+                        elif cmn.n_dims == 2:
                             ijk = (i, k, INVALID_INDEX)
                         else:
                             ijk = (i, j, k)
-                        print("check at", i, j, k)
-                        value = traversals.indexers[n_dims].ats[INNER if n_dims == 1 else OUTER](
+                        value = cmn.traversals.indexers[cmn.n_dims].ats[
+                            INNER if cmn.n_dims == 1 else OUTER
+                        ](
                             focus, data, *ijk
                         )
                         assert cell_id(i, j, k) == value
 
-        assert scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-        assert vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert cmn.scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert cmn.vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]

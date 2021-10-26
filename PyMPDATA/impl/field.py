@@ -29,6 +29,7 @@ class Field:
         self.impl_data = None
 
     def assemble(self, traversals):
+        """ initialises .impl field with halo_filling logic compiled for given traversals """
         if traversals.jit_flags != self.jit_flags:
             fun = f'make_{self.__class__.__name__[:6].lower()}'
             self.impl = (self.meta, *self.impl_data), tuple(
