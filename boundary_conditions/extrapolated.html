@@ -37,20 +37,20 @@ from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 
 @lru_cache()
-def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
+def _make_scalar(dim, eps, ats, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def impl(psi, n, sign):
         if sign == SIGN_LEFT:
             edg = halo - psi[ARG_FOCUS][dim]
-            nom = at(*psi, edg + 1) - at(*psi, edg)
-            den = at(*psi, edg + 2) - at(*psi, edg + 1)
+            nom = ats(*psi, edg + 1) - ats(*psi, edg)
+            den = ats(*psi, edg + 2) - ats(*psi, edg + 1)
             cnst = nom / den if abs(den) &gt; eps else 0
-            return max(at(*psi, 1) - (at(*psi, 2) - at(*psi, 1)) * cnst, 0)
+            return max(ats(*psi, 1) - (ats(*psi, 2) - ats(*psi, 1)) * cnst, 0)
         edg = n + halo - 1 - psi[ARG_FOCUS][dim]
-        den = at(*psi, edg - 1) - at(*psi, edg - 2)
-        nom = at(*psi, edg) - at(*psi, edg - 1)
+        den = ats(*psi, edg - 1) - ats(*psi, edg - 2)
+        nom = ats(*psi, edg) - ats(*psi, edg - 1)
         cnst = nom/den if abs(den) &gt; eps else 0
-        return max(at(*psi, -1) + (at(*psi, -1) - at(*psi, -2)) * cnst, 0)
+        return max(ats(*psi, -1) + (ats(*psi, -1) - ats(*psi, -2)) * cnst, 0)
 
     if dtype == complex:
         @numba.njit(**jit_flags)
@@ -68,10 +68,10 @@ def _make_scalar(dim, eps, at, halo, dtype, jit_flags):
 
 
 @lru_cache()
-def _make_vector(dim, at, halo, dtype, jit_flags):
+def _make_vector(dim, ats, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, _, sign):
-        return at(*psi, sign)
+        return ats(*psi, sign)
     return fill_halos
 
 
@@ -80,11 +80,11 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
-        return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)
+    def make_scalar(self, ats, halo, dtype, jit_flags):
+        return _make_scalar(self.dim, self._eps, ats, halo, dtype, jit_flags)
 
-    def make_vector(self, at_indexer, halo, dtype, jit_flags):
-        return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)</code></pre>
+    def make_vector(self, ats, halo, dtype, jit_flags):
+        return _make_vector(self.dim, ats, halo, dtype, jit_flags)</code></pre>
 </details>
 </section>
 <section>
@@ -111,16 +111,16 @@ class Extrapolated:
         self._eps = eps
         self.dim = dim
 
-    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
-        return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)
+    def make_scalar(self, ats, halo, dtype, jit_flags):
+        return _make_scalar(self.dim, self._eps, ats, halo, dtype, jit_flags)
 
-    def make_vector(self, at_indexer, halo, dtype, jit_flags):
-        return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)</code></pre>
+    def make_vector(self, ats, halo, dtype, jit_flags):
+        return _make_vector(self.dim, ats, halo, dtype, jit_flags)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, at_indexer, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, ats, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -128,12 +128,12 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, at_indexer, halo, dtype, jit_flags):
-    return _make_scalar(self.dim, self._eps, at_indexer, halo, dtype, jit_flags)</code></pre>
+<pre><code class="python">def make_scalar(self, ats, halo, dtype, jit_flags):
+    return _make_scalar(self.dim, self._eps, ats, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.extrapolated.Extrapolated.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>self, at_indexer, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>self, ats, halo, dtype, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -141,8 +141,8 @@ class Extrapolated:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_vector(self, at_indexer, halo, dtype, jit_flags):
-    return _make_vector(self.dim, at_indexer, halo, dtype, jit_flags)</code></pre>
+<pre><code class="python">def make_vector(self, ats, halo, dtype, jit_flags):
+    return _make_vector(self.dim, ats, halo, dtype, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>

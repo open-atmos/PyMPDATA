@@ -50,7 +50,7 @@ def make_psi_extrema(options, traversals):
 
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
-            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.at[at_idx]),
+            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.ats[at_idx]),
             None,
             None
         )
@@ -72,30 +72,30 @@ def make_psi_extrema(options, traversals):
     return apply
 
 
-def __make_psi_extrema(jit_flags, n_dims, at):
+def __make_psi_extrema(jit_flags, n_dims, ats):
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def _impl(psi, extremum):
             return extremum(
-                at(*psi, 0),
-                at(*psi, -1), at(*psi, 1)
+                ats(*psi, 0),
+                ats(*psi, -1), ats(*psi, 1)
             )
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def _impl(psi, extremum):
             return extremum(
-                at(*psi, 0, 0),
-                at(*psi, -1, 0), at(*psi, 1, 0),
-                at(*psi, 0, -1), at(*psi, 0, 1)
+                ats(*psi, 0, 0),
+                ats(*psi, -1, 0), ats(*psi, 1, 0),
+                ats(*psi, 0, -1), ats(*psi, 0, 1)
             )
     elif n_dims == 3:
         @numba.njit(**jit_flags)
         def _impl(psi, extremum):
             return extremum(
-                at(*psi, 0, 0, 0),
-                at(*psi, -1, 0, 0), at(*psi, 1, 0, 0),
-                at(*psi, 0, -1, 0), at(*psi, 0, 1, 0),
-                at(*psi, 0, 0, -1), at(*psi, 0, 0, 1),
+                ats(*psi, 0, 0, 0),
+                ats(*psi, -1, 0, 0), ats(*psi, 1, 0, 0),
+                ats(*psi, 0, -1, 0), ats(*psi, 0, 1, 0),
+                ats(*psi, 0, 0, -1), ats(*psi, 0, 0, 1),
             )
     else:
         raise NotImplementedError()
@@ -122,7 +122,7 @@ def make_beta(non_unit_g_factor, options, traversals):
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
             __make_beta(
-                options.jit_flags, traversals.n_dims, idx.at[at_idx], idx.atv[at_idx],
+                options.jit_flags, traversals.n_dims, idx.ats[at_idx], idx.atv[at_idx],
                 non_unit_g_factor, options.epsilon
             ),
             None,
@@ -150,7 +150,7 @@ def make_beta(non_unit_g_factor, options, traversals):
     return apply
 
 
-def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon):
+def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def denominator(flux, sign):
@@ -178,7 +178,7 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon):
     if non_unit_g_factor:
         @numba.njit(**jit_flags)
         def G(g_factor):
-            return at(*g_factor, 0)
+            return ats(*g_factor, 0)
     else:
         @numba.njit(**jit_flags)
         def G(_):
@@ -187,27 +187,27 @@ def __make_beta(jit_flags, n_dims, at, atv, non_unit_g_factor, epsilon):
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
-            return ((extremum(at(*psi_ext, 0), at(*psi, 0), at(*psi, -1), at(*psi, 1))
-                     - at(*psi, 0)) * sign * G(g_factor)
+            return ((extremum(ats(*psi_ext, 0), ats(*psi, 0), ats(*psi, -1), ats(*psi, 1))
+                     - ats(*psi, 0)) * sign * G(g_factor)
                     ) / denominator(flux, sign)
     elif n_dims == 2:
         @numba.njit(**jit_flags)
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
-            return ((extremum(at(*psi_ext, 0, 0),
-                              at(*psi, 0, 0),
-                              at(*psi, -1, 0), at(*psi, 1, 0),
-                              at(*psi, 0, -1), at(*psi, 0, 1))
-                     - at(*psi, 0, 0)) * sign * G(g_factor)
+            return ((extremum(ats(*psi_ext, 0, 0),
+                              ats(*psi, 0, 0),
+                              ats(*psi, -1, 0), ats(*psi, 1, 0),
+                              ats(*psi, 0, -1), ats(*psi, 0, 1))
+                     - ats(*psi, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux, sign)
     elif n_dims == 3:
         @numba.njit(**jit_flags)
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
-            return ((extremum(at(*psi_ext, 0, 0, 0),
-                              at(*psi, 0, 0, 0),
-                              at(*psi, -1, 0, 0), at(*psi, 1, 0, 0),
-                              at(*psi, 0, -1, 0), at(*psi, 0, 1, 0),
-                              at(*psi, 0, 0, -1), at(*psi, 0, 0, 1))
-                     - at(*psi, 0, 0, 0)) * sign * G(g_factor)
+            return ((extremum(ats(*psi_ext, 0, 0, 0),
+                              ats(*psi, 0, 0, 0),
+                              ats(*psi, -1, 0, 0), ats(*psi, 1, 0, 0),
+                              ats(*psi, 0, -1, 0), ats(*psi, 0, 1, 0),
+                              ats(*psi, 0, 0, -1), ats(*psi, 0, 0, 1))
+                     - ats(*psi, 0, 0, 0)) * sign * G(g_factor)
                     ) / denominator(flux, sign)
     else:
         raise NotImplementedError()
@@ -233,8 +233,8 @@ def make_correction(options, traversals):
         apply_vector = traversals.apply_vector()
 
         formulae = tuple(
-            __make_correction(options.jit_flags, idx.at[i], idx.atv[i])
-            if idx.at[i] is not None else None
+            __make_correction(options.jit_flags, idx.ats[i], idx.atv[i])
+            if idx.ats[i] is not None else None
             for i in range(MAX_DIM_NUM)
         )
 
@@ -252,13 +252,13 @@ def make_correction(options, traversals):
     return apply
 
 
-def __make_correction(jit_flags, at, atv):
+def __make_correction(jit_flags, ats, atv):
     @numba.njit(**jit_flags)
     def correction(beta, GC, _):
         beta_down = (beta[META_AND_DATA_META], beta[META_AND_DATA_DATA].real)
         beta_up = (beta[META_AND_DATA_META], beta[META_AND_DATA_DATA].imag)
-        a = min(1, at(*beta_down, 0), at(*beta_up, 1))
-        b = min(1, at(*beta_up, 0), at(*beta_down, 1))
+        a = min(1, ats(*beta_down, 0), ats(*beta_up, 1))
+        b = min(1, ats(*beta_up, 0), ats(*beta_down, 1))
         c = atv(*GC, +.5)
         return (c + np.abs(c)) / 2 * a + (c - np.abs(c)) / 2 * b
 
@@ -293,7 +293,7 @@ def __make_correction(jit_flags, at, atv):
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
             __make_beta(
-                options.jit_flags, traversals.n_dims, idx.at[at_idx], idx.atv[at_idx],
+                options.jit_flags, traversals.n_dims, idx.ats[at_idx], idx.atv[at_idx],
                 non_unit_g_factor, options.epsilon
             ),
             None,
@@ -340,8 +340,8 @@ def __make_correction(jit_flags, at, atv):
         apply_vector = traversals.apply_vector()
 
         formulae = tuple(
-            __make_correction(options.jit_flags, idx.at[i], idx.atv[i])
-            if idx.at[i] is not None else None
+            __make_correction(options.jit_flags, idx.ats[i], idx.atv[i])
+            if idx.ats[i] is not None else None
             for i in range(MAX_DIM_NUM)
         )
 
@@ -379,7 +379,7 @@ def __make_correction(jit_flags, at, atv):
 
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
-            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.at[at_idx]),
+            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.ats[at_idx]),
             None,
             None
         )

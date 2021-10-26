@@ -51,7 +51,25 @@ class Field:
             if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
         self.fill_halos[INNER] = boundary_conditions[INNER]
 
-        self.boundary_conditions = boundary_conditions</code></pre>
+        self.boundary_conditions = boundary_conditions
+
+        self.impl = None
+        self.jit_flags = None
+        self.impl_data = None
+
+    def assemble(self, traversals):
+        if traversals.jit_flags != self.jit_flags:
+            fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
+            self.impl = (self.meta, *self.impl_data), tuple(
+                getattr(fh, fun)(
+                    traversals.indexers[self.n_dims].ats[i],
+                    self.halo,
+                    self.dtype,
+                    traversals.jit_flags
+                )
+                for i, fh in enumerate(self.fill_halos)
+            )
+        self.jit_flags = traversals.jit_flags</code></pre>
 </details>
 </section>
 <section>
@@ -91,13 +109,58 @@ class Field:
             if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
         self.fill_halos[INNER] = boundary_conditions[INNER]
 
-        self.boundary_conditions = boundary_conditions</code></pre>
+        self.boundary_conditions = boundary_conditions
+
+        self.impl = None
+        self.jit_flags = None
+        self.impl_data = None
+
+    def assemble(self, traversals):
+        if traversals.jit_flags != self.jit_flags:
+            fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
+            self.impl = (self.meta, *self.impl_data), tuple(
+                getattr(fh, fun)(
+                    traversals.indexers[self.n_dims].ats[i],
+                    self.halo,
+                    self.dtype,
+                    traversals.jit_flags
+                )
+                for i, fh in enumerate(self.fill_halos)
+            )
+        self.jit_flags = traversals.jit_flags</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="PyMPDATA.scalar_field.ScalarField" href="../scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a></li>
 <li><a title="PyMPDATA.vector_field.VectorField" href="../vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="PyMPDATA.impl.field.Field.assemble"><code class="name flex">
+<span>def <span class="ident">assemble</span></span>(<span>self, traversals)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def assemble(self, traversals):
+    if traversals.jit_flags != self.jit_flags:
+        fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
+        self.impl = (self.meta, *self.impl_data), tuple(
+            getattr(fh, fun)(
+                traversals.indexers[self.n_dims].ats[i],
+                self.halo,
+                self.dtype,
+                traversals.jit_flags
+            )
+            for i, fh in enumerate(self.fill_halos)
+        )
+    self.jit_flags = traversals.jit_flags</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -117,6 +180,9 @@ class Field:
 <ul>
 <li>
 <h4><code><a title="PyMPDATA.impl.field.Field" href="#PyMPDATA.impl.field.Field">Field</a></code></h4>
+<ul class="">
+<li><code><a title="PyMPDATA.impl.field.Field.assemble" href="#PyMPDATA.impl.field.Field.assemble">assemble</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

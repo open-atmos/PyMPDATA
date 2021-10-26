@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.solver API documentation</title>
-<meta name="description" content="container grouping user-supplied stepper and fields as well as self-initialised temporary storage" />
+<meta name="description" content="class grouping user-supplied stepper, fields and post-step/post-iter hooks,
+as well as self-initialised temporary storage" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,13 +23,15 @@
 <h1 class="title">Module <code>PyMPDATA.solver</code></h1>
 </header>
 <section id="section-intro">
-<p>container grouping user-supplied stepper and fields as well as self-initialised temporary storage</p>
+<p>class grouping user-supplied stepper, fields and post-step/post-iter hooks,
+as well as self-initialised temporary storage</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-container grouping user-supplied stepper and fields as well as self-initialised temporary storage
+class grouping user-supplied stepper, fields and post-step/post-iter hooks,
+as well as self-initialised temporary storage
 &#34;&#34;&#34;
 from typing import Union
 import numba
