@@ -58,6 +58,7 @@ class Field:
         self.impl_data = None
 
     def assemble(self, traversals):
+        &#34;&#34;&#34; initialises .impl field with halo_filling logic compiled for given traversals &#34;&#34;&#34;
         if traversals.jit_flags != self.jit_flags:
             fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
             self.impl = (self.meta, *self.impl_data), tuple(
@@ -116,6 +117,7 @@ class Field:
         self.impl_data = None
 
     def assemble(self, traversals):
+        &#34;&#34;&#34; initialises .impl field with halo_filling logic compiled for given traversals &#34;&#34;&#34;
         if traversals.jit_flags != self.jit_flags:
             fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
             self.impl = (self.meta, *self.impl_data), tuple(
@@ -140,12 +142,13 @@ class Field:
 <span>def <span class="ident">assemble</span></span>(<span>self, traversals)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>initialises .impl field with halo_filling logic compiled for given traversals</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def assemble(self, traversals):
+    &#34;&#34;&#34; initialises .impl field with halo_filling logic compiled for given traversals &#34;&#34;&#34;
     if traversals.jit_flags != self.jit_flags:
         fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
         self.impl = (self.meta, *self.impl_data), tuple(

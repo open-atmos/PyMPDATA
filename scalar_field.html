@@ -64,6 +64,7 @@ class ScalarField(Field):
 
     @staticmethod
     def clone(field, dtype=None):
+        &#34;&#34;&#34; returns a instance with the same dimensionality and halo size as the argument &#34;&#34;&#34;
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
         return ScalarField(
@@ -73,11 +74,13 @@ class ScalarField(Field):
         )
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
+        &#34;&#34;&#34; returns a view (not a copy) of the field data excluding halo &#34;&#34;&#34;
         results = self.data[self.domain]
         return results
 
     @staticmethod
     def make_null(n_dims, traversals):
+        &#34;&#34;&#34; returns an instance with no allocated data storage and the META_IS_NULL flag set &#34;&#34;&#34;
         null = ScalarField(
             np.empty([INVALID_NULL_VALUE]*n_dims),
             halo=0,
@@ -134,6 +137,7 @@ class ScalarField(Field):
 
     @staticmethod
     def clone(field, dtype=None):
+        &#34;&#34;&#34; returns a instance with the same dimensionality and halo size as the argument &#34;&#34;&#34;
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
         return ScalarField(
@@ -143,11 +147,13 @@ class ScalarField(Field):
         )
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
+        &#34;&#34;&#34; returns a view (not a copy) of the field data excluding halo &#34;&#34;&#34;
         results = self.data[self.domain]
         return results
 
     @staticmethod
     def make_null(n_dims, traversals):
+        &#34;&#34;&#34; returns an instance with no allocated data storage and the META_IS_NULL flag set &#34;&#34;&#34;
         null = ScalarField(
             np.empty([INVALID_NULL_VALUE]*n_dims),
             halo=0,
@@ -168,13 +174,14 @@ class ScalarField(Field):
 <span>def <span class="ident">clone</span></span>(<span>field, dtype=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns a instance with the same dimensionality and halo size as the argument</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
 def clone(field, dtype=None):
+    &#34;&#34;&#34; returns a instance with the same dimensionality and halo size as the argument &#34;&#34;&#34;
     dtype = dtype or field.dtype
     # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
     return ScalarField(
@@ -188,13 +195,14 @@ def clone(field, dtype=None):
 <span>def <span class="ident">make_null</span></span>(<span>n_dims, traversals)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns an instance with no allocated data storage and the META_IS_NULL flag set</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
 def make_null(n_dims, traversals):
+    &#34;&#34;&#34; returns an instance with no allocated data storage and the META_IS_NULL flag set &#34;&#34;&#34;
     null = ScalarField(
         np.empty([INVALID_NULL_VALUE]*n_dims),
         halo=0,
@@ -213,17 +221,26 @@ def make_null(n_dims, traversals):
 <span>def <span class="ident">get</span></span>(<span>self) ‑> numpy.ndarray</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns a view (not a copy) of the field data excluding halo</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get(self) -&gt; np.ndarray:  # note: actually a view is returned
+    &#34;&#34;&#34; returns a view (not a copy) of the field data excluding halo &#34;&#34;&#34;
     results = self.data[self.domain]
     return results</code></pre>
 </details>
 </dd>
 </dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="PyMPDATA.impl.field.Field" href="impl/field.html#PyMPDATA.impl.field.Field">Field</a></b></code>:
+<ul class="hlist">
+<li><code><a title="PyMPDATA.impl.field.Field.assemble" href="impl/field.html#PyMPDATA.impl.field.Field.assemble">assemble</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 </dl>
 </section>

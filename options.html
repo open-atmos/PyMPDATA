@@ -82,39 +82,39 @@ class Options:
         return self._values[&#39;dtype&#39;]
 
     @property
-    def n_iters(self):
+    def n_iters(self) -&gt; int:
         return self._values[&#39;n_iters&#39;]
 
     @property
-    def infinite_gauge(self):
+    def infinite_gauge(self) -&gt; bool:
         return self._values[&#39;infinite_gauge&#39;]
 
     @property
-    def epsilon(self):
+    def epsilon(self) -&gt; float:
         return self._values[&#39;epsilon&#39;]
 
     @property
-    def divergent_flow(self):
+    def divergent_flow(self) -&gt; bool:
         return self._values[&#39;divergent_flow&#39;]
 
     @property
-    def nonoscillatory(self):
+    def nonoscillatory(self) -&gt; bool:
         return self._values[&#39;nonoscillatory&#39;]
 
     @property
-    def third_order_terms(self):
+    def third_order_terms(self) -&gt; bool:
         return self._values[&#39;third_order_terms&#39;]
 
     @property
-    def DPDC(self):
+    def DPDC(self) -&gt; bool:
         return self._values[&#39;DPDC&#39;]
 
     @property
-    def non_zero_mu_coeff(self):
+    def non_zero_mu_coeff(self) -&gt; bool:
         return self._values[&#39;non_zero_mu_coeff&#39;]
 
     @property
-    def dimensionally_split(self):
+    def dimensionally_split(self) -&gt; bool:
         return self._values[&#39;dimensionally_split&#39;]
 
     def __str__(self):
@@ -128,13 +128,16 @@ class Options:
         return other.__hash__() == self.__hash__()
 
     @property
-    def n_halo(self):
+    def n_halo(self) -&gt; int:
+        &#34;&#34;&#34; halo extent for a given options set &#34;&#34;&#34;
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         return 1
 
     @property
-    def jit_flags(self):
+    def jit_flags(self) -&gt; _HashableDict:
+        &#34;&#34;&#34; options passed to numba.njit(), for description see:
+            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options &#34;&#34;&#34;
         return _HashableDict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
@@ -204,39 +207,39 @@ class Options:
         return self._values[&#39;dtype&#39;]
 
     @property
-    def n_iters(self):
+    def n_iters(self) -&gt; int:
         return self._values[&#39;n_iters&#39;]
 
     @property
-    def infinite_gauge(self):
+    def infinite_gauge(self) -&gt; bool:
         return self._values[&#39;infinite_gauge&#39;]
 
     @property
-    def epsilon(self):
+    def epsilon(self) -&gt; float:
         return self._values[&#39;epsilon&#39;]
 
     @property
-    def divergent_flow(self):
+    def divergent_flow(self) -&gt; bool:
         return self._values[&#39;divergent_flow&#39;]
 
     @property
-    def nonoscillatory(self):
+    def nonoscillatory(self) -&gt; bool:
         return self._values[&#39;nonoscillatory&#39;]
 
     @property
-    def third_order_terms(self):
+    def third_order_terms(self) -&gt; bool:
         return self._values[&#39;third_order_terms&#39;]
 
     @property
-    def DPDC(self):
+    def DPDC(self) -&gt; bool:
         return self._values[&#39;DPDC&#39;]
 
     @property
-    def non_zero_mu_coeff(self):
+    def non_zero_mu_coeff(self) -&gt; bool:
         return self._values[&#39;non_zero_mu_coeff&#39;]
 
     @property
-    def dimensionally_split(self):
+    def dimensionally_split(self) -&gt; bool:
         return self._values[&#39;dimensionally_split&#39;]
 
     def __str__(self):
@@ -250,13 +253,16 @@ class Options:
         return other.__hash__() == self.__hash__()
 
     @property
-    def n_halo(self):
+    def n_halo(self) -&gt; int:
+        &#34;&#34;&#34; halo extent for a given options set &#34;&#34;&#34;
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         return 1
 
     @property
-    def jit_flags(self):
+    def jit_flags(self) -&gt; _HashableDict:
+        &#34;&#34;&#34; options passed to numba.njit(), for description see:
+            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options &#34;&#34;&#34;
         return _HashableDict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
@@ -265,7 +271,7 @@ class Options:
 </details>
 <h3>Instance variables</h3>
 <dl>
-<dt id="PyMPDATA.options.Options.DPDC"><code class="name">var <span class="ident">DPDC</span></code></dt>
+<dt id="PyMPDATA.options.Options.DPDC"><code class="name">var <span class="ident">DPDC</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -273,11 +279,11 @@ class Options:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def DPDC(self):
+def DPDC(self) -&gt; bool:
     return self._values[&#39;DPDC&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.dimensionally_split"><code class="name">var <span class="ident">dimensionally_split</span></code></dt>
+<dt id="PyMPDATA.options.Options.dimensionally_split"><code class="name">var <span class="ident">dimensionally_split</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -285,11 +291,11 @@ def DPDC(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def dimensionally_split(self):
+def dimensionally_split(self) -&gt; bool:
     return self._values[&#39;dimensionally_split&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.divergent_flow"><code class="name">var <span class="ident">divergent_flow</span></code></dt>
+<dt id="PyMPDATA.options.Options.divergent_flow"><code class="name">var <span class="ident">divergent_flow</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -297,7 +303,7 @@ def dimensionally_split(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def divergent_flow(self):
+def divergent_flow(self) -&gt; bool:
     return self._values[&#39;divergent_flow&#39;]</code></pre>
 </details>
 </dd>
@@ -313,7 +319,7 @@ def dtype(self):
     return self._values[&#39;dtype&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.epsilon"><code class="name">var <span class="ident">epsilon</span></code></dt>
+<dt id="PyMPDATA.options.Options.epsilon"><code class="name">var <span class="ident">epsilon</span> : float</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -321,11 +327,11 @@ def dtype(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def epsilon(self):
+def epsilon(self) -&gt; float:
     return self._values[&#39;epsilon&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.infinite_gauge"><code class="name">var <span class="ident">infinite_gauge</span></code></dt>
+<dt id="PyMPDATA.options.Options.infinite_gauge"><code class="name">var <span class="ident">infinite_gauge</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -333,19 +339,22 @@ def epsilon(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def infinite_gauge(self):
+def infinite_gauge(self) -&gt; bool:
     return self._values[&#39;infinite_gauge&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.jit_flags"><code class="name">var <span class="ident">jit_flags</span></code></dt>
+<dt id="PyMPDATA.options.Options.jit_flags"><code class="name">var <span class="ident">jit_flags</span> : PyMPDATA.options._HashableDict</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>options passed to numba.njit(), for description see:
+<a href="https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options">https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options</a></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def jit_flags(self):
+def jit_flags(self) -&gt; _HashableDict:
+    &#34;&#34;&#34; options passed to numba.njit(), for description see:
+        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options &#34;&#34;&#34;
     return _HashableDict({
         &#34;fastmath&#34;: True,
         &#34;error_model&#34;: &#39;numpy&#39;,
@@ -353,21 +362,22 @@ def jit_flags(self):
     })</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.n_halo"><code class="name">var <span class="ident">n_halo</span></code></dt>
+<dt id="PyMPDATA.options.Options.n_halo"><code class="name">var <span class="ident">n_halo</span> : int</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>halo extent for a given options set</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def n_halo(self):
+def n_halo(self) -&gt; int:
+    &#34;&#34;&#34; halo extent for a given options set &#34;&#34;&#34;
     if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
         return 2
     return 1</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.n_iters"><code class="name">var <span class="ident">n_iters</span></code></dt>
+<dt id="PyMPDATA.options.Options.n_iters"><code class="name">var <span class="ident">n_iters</span> : int</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -375,11 +385,11 @@ def n_halo(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def n_iters(self):
+def n_iters(self) -&gt; int:
     return self._values[&#39;n_iters&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.non_zero_mu_coeff"><code class="name">var <span class="ident">non_zero_mu_coeff</span></code></dt>
+<dt id="PyMPDATA.options.Options.non_zero_mu_coeff"><code class="name">var <span class="ident">non_zero_mu_coeff</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -387,11 +397,11 @@ def n_iters(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def non_zero_mu_coeff(self):
+def non_zero_mu_coeff(self) -&gt; bool:
     return self._values[&#39;non_zero_mu_coeff&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.nonoscillatory"><code class="name">var <span class="ident">nonoscillatory</span></code></dt>
+<dt id="PyMPDATA.options.Options.nonoscillatory"><code class="name">var <span class="ident">nonoscillatory</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -399,11 +409,11 @@ def non_zero_mu_coeff(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def nonoscillatory(self):
+def nonoscillatory(self) -&gt; bool:
     return self._values[&#39;nonoscillatory&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.third_order_terms"><code class="name">var <span class="ident">third_order_terms</span></code></dt>
+<dt id="PyMPDATA.options.Options.third_order_terms"><code class="name">var <span class="ident">third_order_terms</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -411,7 +421,7 @@ def nonoscillatory(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def third_order_terms(self):
+def third_order_terms(self) -&gt; bool:
     return self._values[&#39;third_order_terms&#39;]</code></pre>
 </details>
 </dd>
