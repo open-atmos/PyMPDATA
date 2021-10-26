@@ -1,3 +1,4 @@
+""" scalar field traversals (incl. multi-threading and halo-filling logic) """
 import numba
 from .meta import META_HALO_VALID
 from .enumerations import (

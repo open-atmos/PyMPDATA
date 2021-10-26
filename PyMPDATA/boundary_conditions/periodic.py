@@ -7,18 +7,18 @@ from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 
 @lru_cache()
-def _make_scalar(at_indexer, jit_flags):
+def _make_scalar(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
-        return at_indexer(*psi, sign * n)
+        return ats(*psi, sign * n)
     return fill_halos
 
 
 @lru_cache()
-def _make_vector(at_indexer, jit_flags):
+def _make_vector(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, n, sign):
-        return at_indexer(*psi, sign * n)
+        return ats(*psi, sign * n)
     return fill_halos
 
 
@@ -27,8 +27,10 @@ class Periodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, at, halo, dtype, jit_flags):
-        return _make_scalar(at, jit_flags)
+    @staticmethod
+    def make_scalar(ats, halo, dtype, jit_flags):
+        return _make_scalar(ats, jit_flags)
 
-    def make_vector(self, at, halo, dtype, jit_flags):
-        return _make_vector(at, jit_flags)
+    @staticmethod
+    def make_vector(ats, halo, dtype, jit_flags):
+        return _make_vector(ats, jit_flags)

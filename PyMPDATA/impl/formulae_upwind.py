@@ -8,8 +8,8 @@ def make_upwind(options, non_unit_g_factor, traversals):
     null_scalarfield, null_scalarfield_bc = traversals.null_scalar_field.impl
 
     formulae_upwind = tuple(
-        __make_upwind(options.jit_flags, idx.atv[i], idx.at[i], non_unit_g_factor)
-        if idx.at[i] is not None else None
+        __make_upwind(options.jit_flags, idx.atv[i], idx.ats[i], non_unit_g_factor)
+        if idx.ats[i] is not None else None
         for i in range(MAX_DIM_NUM)
     )
 
@@ -27,13 +27,13 @@ def make_upwind(options, non_unit_g_factor, traversals):
     return apply
 
 
-def __make_upwind(jit_flags, atv, at, nug):
+def __make_upwind(jit_flags, atv, ats, nug):
     @numba.njit(**jit_flags)
     def upwind(init, flux, g_factor, _, __, ___):
         result = \
                + atv(*flux, -.5) \
                - atv(*flux, .5)
         if nug:
-            result /= at(*g_factor, 0)
+            result /= ats(*g_factor, 0)
         return init + result
     return upwind

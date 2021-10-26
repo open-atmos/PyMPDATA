@@ -53,6 +53,7 @@ def test_init(grid_layout, psi_coord, nonoscillatory):
 
 @pytest.mark.parametrize("grid_layout", grid_layout_set)
 @pytest.mark.parametrize("opts", opt_set)
+# pylint: disable-next=redefined-outer-name
 def test_n_finite(grid_layout, opts, data):
     # Arrange
     grid_layout_str = grid_layout.__class__.__name__
@@ -65,6 +66,7 @@ def test_n_finite(grid_layout, opts, data):
 
 @pytest.mark.parametrize("grid_layout", grid_layout_set)
 @pytest.mark.parametrize("opts", opt_set)
+# pylint: disable-next=redefined-outer-name
 def test_L2_finite(grid_layout, opts, data):
     # Arrange
     grid_layout_str = grid_layout.__class__.__name__

@@ -91,6 +91,7 @@ def from_pdf_2d(pdf, xrange, yrange, gridsize):
     # Options(n_iters=3, infinite_gauge=True, third_order_terms=True, nonoscillatory=True),
 ])
 @pytest.mark.parametrize("grid_static_str", ("static", "dynamic"))
+# pylint: disable-next=redefined-outer-name
 def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False):
     if grid_static_str == "static":
         grid_static = True

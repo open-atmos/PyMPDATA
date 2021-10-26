@@ -24,6 +24,7 @@ from PyMPDATA.options import Options
     Options(n_iters=2, third_order_terms=True),
     Options(n_iters=3, third_order_terms=True)
 ])
+# pylint: disable-next=redefined-outer-name
 def test_timing_1d(benchmark, options):
     simulation = Simulation(Settings("cosine"), options)
     psi0 = simulation.stepper.advectee.get().copy()

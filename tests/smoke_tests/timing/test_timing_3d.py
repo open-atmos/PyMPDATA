@@ -20,6 +20,7 @@ assert hasattr(num_threads, '_pytestfixturefunction')
 ])
 @pytest.mark.parametrize("dtype", (np.float64, ))
 @pytest.mark.parametrize("static", (True, False))
+# pylint: disable-next=redefined-outer-name
 def test_timing_3d(benchmark, options, dtype, static, num_threads):
     numba.set_num_threads(num_threads)
 

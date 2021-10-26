@@ -23,3 +23,21 @@ class Field:
         self.fill_halos[INNER] = boundary_conditions[INNER]
 
         self.boundary_conditions = boundary_conditions
+
+        self.impl = None
+        self.jit_flags = None
+        self.impl_data = None
+
+    def assemble(self, traversals):
+        if traversals.jit_flags != self.jit_flags:
+            fun = f'make_{self.__class__.__name__[:6].lower()}'
+            self.impl = (self.meta, *self.impl_data), tuple(
+                getattr(fh, fun)(
+                    traversals.indexers[self.n_dims].ats[i],
+                    self.halo,
+                    self.dtype,
+                    traversals.jit_flags
+                )
+                for i, fh in enumerate(self.fill_halos)
+            )
+        self.jit_flags = traversals.jit_flags

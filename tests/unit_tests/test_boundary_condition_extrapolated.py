@@ -7,11 +7,12 @@ from PyMPDATA import ScalarField, Options
 
 
 class TestBoundaryConditionExtrapolated:
+    @staticmethod
     @pytest.mark.parametrize("data", (
         np.array([1, 2, 3, 4], dtype=float),
         np.array([1, 2, 3, 4], dtype=complex)
     ))
-    def test_1d_scalar(self, data, n_threads=1, halo=1):
+    def test_1d_scalar(data, n_threads=1, halo=1):
         # arrange
         bc = (Extrapolated(),)
         field = ScalarField(data, halo, bc)
