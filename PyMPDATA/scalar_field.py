@@ -35,6 +35,7 @@ class ScalarField(Field):
 
     @staticmethod
     def clone(field, dtype=None):
+        """ returns a instance with the same dimensionality and halo size as the argument """
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
         return ScalarField(
@@ -44,11 +45,13 @@ class ScalarField(Field):
         )
 
     def get(self) -> np.ndarray:  # note: actually a view is returned
+        """ returns a view (not a copy) of the field data excluding halo """
         results = self.data[self.domain]
         return results
 
     @staticmethod
     def make_null(n_dims, traversals):
+        """ returns an instance with no allocated data storage and the META_IS_NULL flag set """
         null = ScalarField(
             np.empty([INVALID_NULL_VALUE]*n_dims),
             halo=0,

@@ -7,21 +7,23 @@ from PyMPDATA.boundary_conditions import Periodic
 
 @pytest.mark.parametrize("n_iters", [2, 3, 4])
 def test_double_pass_donor_cell(n_iters):
-    state = np.array([0, 1, 0])
     courant = .5
 
     options = Options(n_iters=n_iters, DPDC=True, nonoscillatory=True)
+    state = np.array([0, 1, 0], dtype=options.dtype)
+    boundary_conditions = (Periodic(),)
+
     mpdata = Solver(
-        stepper=Stepper(options=options, n_dims=len(state.shape), non_unit_g_factor=False),
+        stepper=Stepper(options=options, n_dims=state.ndim, non_unit_g_factor=False),
         advectee=ScalarField(
-            state.astype(options.dtype),
+            state,
             halo=options.n_halo,
-            boundary_conditions=(Periodic(),)
+            boundary_conditions=boundary_conditions
         ),
         advector=VectorField(
             (np.full(state.shape[0] + 1, courant, dtype=options.dtype),),
             halo=options.n_halo,
-            boundary_conditions=(Periodic(),)
+            boundary_conditions=boundary_conditions
         )
     )
     steps = 1

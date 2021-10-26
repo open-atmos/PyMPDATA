@@ -1,7 +1,7 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import warnings
 import pytest
 import numpy as np
-import warnings
 from numba.core.errors import NumbaExperimentalFeatureWarning
 from PyMPDATA_examples.Olesik_et_al_2020.simulation import Simulation
 from PyMPDATA_examples.Olesik_et_al_2020.settings import Settings, default_nr, default_GC_max
@@ -36,7 +36,11 @@ def test_init(grid_layout, psi_coord, nonoscillatory):
     opts = Options(nonoscillatory=nonoscillatory)
 
     # Act
-    simulation = Simulation(settings, grid_layout=grid_layout, GC_max=default_GC_max, psi_coord=psi_coord, opts=opts)
+    simulation = Simulation(settings,
+                            grid_layout=grid_layout,
+                            GC_max=default_GC_max,
+                            psi_coord=psi_coord,
+                            opts=opts)
     simulation.step(1)
 
     # Asserts for array shapes

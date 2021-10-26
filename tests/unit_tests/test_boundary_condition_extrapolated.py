@@ -14,10 +14,12 @@ class TestBoundaryConditionExtrapolated:
     ))
     def test_1d_scalar(data, n_threads=1, halo=1):
         # arrange
-        bc = (Extrapolated(),)
-        field = ScalarField(data, halo, bc)
+        boundary_conditions = (Extrapolated(),)
+        field = ScalarField(data, halo, boundary_conditions)
         jit_flags = Options().jit_flags
-        traversals = Traversals(grid=data.shape, halo=halo, jit_flags=jit_flags, n_threads=n_threads)
+        traversals = Traversals(
+            grid=data.shape, halo=halo, jit_flags=jit_flags, n_threads=n_threads
+        )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
         sut = traversals._fill_halos_scalar
@@ -25,6 +27,3 @@ class TestBoundaryConditionExtrapolated:
         # act
         thread_id = 0
         sut(thread_id, *meta_and_data, *fill_halos)
-
-        # assert
-        pass

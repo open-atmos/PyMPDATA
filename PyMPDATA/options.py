@@ -53,39 +53,39 @@ class Options:
         return self._values['dtype']
 
     @property
-    def n_iters(self):
+    def n_iters(self) -> int:
         return self._values['n_iters']
 
     @property
-    def infinite_gauge(self):
+    def infinite_gauge(self) -> bool:
         return self._values['infinite_gauge']
 
     @property
-    def epsilon(self):
+    def epsilon(self) -> float:
         return self._values['epsilon']
 
     @property
-    def divergent_flow(self):
+    def divergent_flow(self) -> bool:
         return self._values['divergent_flow']
 
     @property
-    def nonoscillatory(self):
+    def nonoscillatory(self) -> bool:
         return self._values['nonoscillatory']
 
     @property
-    def third_order_terms(self):
+    def third_order_terms(self) -> bool:
         return self._values['third_order_terms']
 
     @property
-    def DPDC(self):
+    def DPDC(self) -> bool:
         return self._values['DPDC']
 
     @property
-    def non_zero_mu_coeff(self):
+    def non_zero_mu_coeff(self) -> bool:
         return self._values['non_zero_mu_coeff']
 
     @property
-    def dimensionally_split(self):
+    def dimensionally_split(self) -> bool:
         return self._values['dimensionally_split']
 
     def __str__(self):
@@ -99,13 +99,16 @@ class Options:
         return other.__hash__() == self.__hash__()
 
     @property
-    def n_halo(self):
+    def n_halo(self) -> int:
+        """ halo extent for a given options set """
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         return 1
 
     @property
-    def jit_flags(self):
+    def jit_flags(self) -> _HashableDict:
+        """ options passed to numba.njit(), for description see:
+            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options """
         return _HashableDict({
             "fastmath": True,
             "error_model": 'numpy',

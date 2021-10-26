@@ -70,11 +70,11 @@ class TestPolarBoundaryCondition:
                 [4, 8, 12],
             ], dtype=float)
         )
-        bc = (
+        boundary_conditions = (
             Periodic(),
             Polar(grid=grid, longitude_idx=OUTER, latitude_idx=INNER)
         )
-        field = VectorField(data, halo, bc)
+        field = VectorField(data, halo, boundary_conditions)
         traversals = Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
