@@ -19,6 +19,7 @@ jit_flags = Options().jit_flags
 
 
 @lru_cache()
+# pylint: disable-next=redefined-outer-name
 def make_traversals(grid, halo, n_threads):
     return Traversals(grid=grid, halo=halo, jit_flags=jit_flags, n_threads=n_threads)
 
@@ -61,6 +62,7 @@ class TestTraversals:
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     @pytest.mark.parametrize("loop", (True, False))
+    # pylint: disable-next=redefined-outer-name
     def test_apply_scalar(n_threads, halo, grid, loop):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -101,7 +103,7 @@ class TestTraversals:
                         ijk = (i, k, INVALID_INDEX)
                     else:
                         ijk = (i, j, k)
-                    value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](
+                    value = traversals.indexers[n_dims].ats[INNER if n_dims == 1 else OUTER](
                         focus, data, *ijk
                     )
                     assert (n_dims if loop else 1) * cell_id(i, j, k) == value
@@ -112,6 +114,7 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
+    # pylint: disable-next=redefined-outer-name
     def test_apply_vector(n_threads, halo, grid):
         n_dims = len(grid)
         if n_dims == 1 and n_threads > 1:
@@ -185,7 +188,7 @@ class TestTraversals:
                         else:
                             ijk = (i, j, k)
                         print("check at", i, j, k)
-                        value = traversals.indexers[n_dims].at[INNER if n_dims == 1 else OUTER](
+                        value = traversals.indexers[n_dims].ats[INNER if n_dims == 1 else OUTER](
                             focus, data, *ijk
                         )
                         assert cell_id(i, j, k) == value

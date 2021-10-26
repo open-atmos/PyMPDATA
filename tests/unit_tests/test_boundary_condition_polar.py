@@ -10,10 +10,12 @@ from PyMPDATA.impl.enumerations import OUTER, INNER
 
 JIT_FLAGS = Options().jit_flags
 
+
 class TestPolarBoundaryCondition:
+    @staticmethod
     @pytest.mark.parametrize("halo", (1, ))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
-    def test_scalar_2d(self, halo, n_threads):
+    def test_scalar_2d(halo, n_threads):
         # arrange
         data = np.array(
             [
@@ -47,9 +49,10 @@ class TestPolarBoundaryCondition:
             np.roll(field.get()[:, -halo:], data.shape[OUTER] // 2, axis=OUTER)
         )
 
+    @staticmethod
     @pytest.mark.parametrize("halo", (1, ))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
-    def test_vector_2d(self, halo, n_threads):
+    def test_vector_2d(halo, n_threads):
         # arrange
         grid = (4, 2)
         data = (

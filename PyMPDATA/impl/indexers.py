@@ -17,7 +17,7 @@ def make_indexers(jit_flags):
     class _1D:
         @staticmethod
         @numba.njit(**jit_flags)
-        def at_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
+        def ats_1d(focus, arr, k, _=INVALID_INDEX, __=INVALID_INDEX):
             return arr[focus[INNER] + k]
 
         @staticmethod
@@ -38,12 +38,12 @@ def make_indexers(jit_flags):
     class _2D:
         @staticmethod
         @numba.njit(**jit_flags)
-        def at_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
+        def ats_axis0(focus, arr, i, k=0, _=INVALID_INDEX):
             return arr[focus[OUTER] + i, focus[INNER] + k]
 
         @staticmethod
         @numba.njit(**jit_flags)
-        def at_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
+        def ats_axis1(focus, arr, k, i=0, _=INVALID_INDEX):
             return arr[focus[OUTER] + i, focus[INNER] + k]
 
         @staticmethod
@@ -77,17 +77,17 @@ def make_indexers(jit_flags):
     class _3D:
         @staticmethod
         @numba.njit(**jit_flags)
-        def at_axis0(focus, arr, i, j=0, k=0):
+        def ats_axis0(focus, arr, i, j=0, k=0):
             return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
         @staticmethod
         @numba.njit(**jit_flags)
-        def at_axis1(focus, arr, j, k=0, i=0):
+        def ats_axis1(focus, arr, j, k=0, i=0):
             return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
         @staticmethod
         @numba.njit(**jit_flags)
-        def at_axis2(focus, arr, k, i=0, j=0):
+        def ats_axis2(focus, arr, k, i=0, j=0):
             return arr[focus[OUTER] + i, focus[MID3D] + j, focus[INNER] + k]
 
         @staticmethod
@@ -133,24 +133,24 @@ def make_indexers(jit_flags):
         def get(arr, i, j, k):
             return arr[i, j, k]
 
-    Indexers = namedtuple('Indexers', ('at', 'atv', 'set', 'get'))
+    Indexers = namedtuple('Indexers', ('ats', 'atv', 'set', 'get'))
 
     indexers = (
         None,
         Indexers(
-            (None, None, _1D.at_1d),
+            (None, None, _1D.ats_1d),
             (None, None, _1D.atv_1d),
             _1D.set,
             _1D.get
         ),
         Indexers(
-            (_2D.at_axis0, None, _2D.at_axis1),
+            (_2D.ats_axis0, None, _2D.ats_axis1),
             (_2D.atv_axis0, None, _2D.atv_axis1),
             _2D.set,
             _2D.get
         ),
         Indexers(
-            (_3D.at_axis0, _3D.at_axis1, _3D.at_axis2),
+            (_3D.ats_axis0, _3D.ats_axis1, _3D.ats_axis2),
             (_3D.atv_axis0, _3D.atv_axis1, _3D.atv_axis2),
             _3D.set,
             _3D.get

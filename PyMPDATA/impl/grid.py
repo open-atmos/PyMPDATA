@@ -1,3 +1,6 @@
+"""
+static (extents known to JIT) and dynamic (run-time extents) grid handling logic
+"""
 import numba
 
 from PyMPDATA.impl.domain_decomposition import make_subdomain

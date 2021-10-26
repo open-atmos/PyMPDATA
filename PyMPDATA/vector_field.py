@@ -3,7 +3,8 @@ vector field abstractions for the staggered grid
 """
 import inspect
 import numpy as np
-from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE
+from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE, \
+    INNER, OUTER, MID3D
 from PyMPDATA.scalar_field import ScalarField
 from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions.constant import Constant
@@ -12,6 +13,7 @@ from PyMPDATA.impl.field import Field
 
 class VectorField(Field):
     """ n-component n-dimensional vector field including halo data """
+
     def __init__(self, data: tuple, halo: int, boundary_conditions: tuple):
         super().__init__(
             grid=tuple(data[d].shape[d] - 1 for d, _ in enumerate(data)),
@@ -25,7 +27,7 @@ class VectorField(Field):
             for dim, dim_length in enumerate(field.shape):
                 assert halo <= dim_length
                 if not (np.asarray(self.grid) == 0).all():
-                    assert dim_length == self.grid[dim] + (dim==comp)
+                    assert dim_length == self.grid[dim] + (dim == comp)
         for boundary_condition in boundary_conditions:
             assert not inspect.isclass(boundary_condition)
 
@@ -49,26 +51,12 @@ class VectorField(Field):
             assert data[dim].dtype == self.dtype
             self.get_component(dim)[:] = data[dim][:]
 
-        self.comp_outer = self.data[0] \
-            if self.n_dims > 1 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
-        self.comp_mid3d = self.data[1] \
-            if self.n_dims > 2 else np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
-        self.comp_inner = self.data[-1]
-        self.impl = None
-        self.jit_flags = None
-
-    def assemble(self, traversals):
-        if traversals.jit_flags != self.jit_flags:
-            self.impl = (self.meta, self.comp_outer, self.comp_mid3d, self.comp_inner), tuple(
-                fh.make_vector(
-                    traversals.indexers[self.n_dims].at[i],
-                    self.halo,
-                    self.dtype,
-                    traversals.jit_flags
-                )
-                for i, fh in enumerate(self.fill_halos)
-            )
-        self.jit_flags = traversals.jit_flags
+        empty = np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
+        self.impl_data = (
+            self.data[OUTER] if self.n_dims > 1 else empty,
+            self.data[MID3D] if self.n_dims > 2 else empty,
+            self.data[INNER]
+        )
 
     @staticmethod
     def clone(field):
@@ -88,10 +76,11 @@ class VectorField(Field):
                 diff_sum = tmp
             else:
                 diff_sum += tmp
-        result = ScalarField(diff_sum,
-                             halo=0,
-                             boundary_conditions=[Constant(INVALID_HALO_VALUE)] * len(grid_step)
-                             )
+        result = ScalarField(
+            diff_sum,
+            halo=0,
+            boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * len(grid_step))
+        )
         return result
 
     @staticmethod
@@ -99,7 +88,7 @@ class VectorField(Field):
         null = VectorField(
             [np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims,
             halo=1,
-            boundary_conditions=[Constant(INVALID_HALO_VALUE)] * n_dims
+            boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
         )
         null.meta[META_HALO_VALID] = True
         null.meta[META_IS_NULL] = True

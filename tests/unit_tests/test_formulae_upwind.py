@@ -9,7 +9,8 @@ from PyMPDATA.boundary_conditions import Periodic
 
 
 class TestUpwind:
-    def test_make_upwind(self):
+    @staticmethod
+    def test_make_upwind():
         # Arrange
         psi_data = np.array((0, 1, 0))
         flux_data = np.array((0, 0, 1, 0))
@@ -24,13 +25,13 @@ class TestUpwind:
         )
         upwind = make_upwind(options=options, non_unit_g_factor=False, traversals=traversals)
 
-        bc = [Periodic()]
+        boundary_conditions = (Periodic(),)
 
-        psi = ScalarField(psi_data, halo, bc)
+        psi = ScalarField(psi_data, halo, boundary_conditions)
         psi.assemble(traversals)
         psi_impl = psi.impl
 
-        flux = VectorField((flux_data,), halo, bc)
+        flux = VectorField((flux_data,), halo, boundary_conditions)
         flux.assemble(traversals)
         flux_impl = flux.impl
 

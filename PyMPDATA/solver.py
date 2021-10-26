@@ -1,5 +1,6 @@
 """
-container grouping user-supplied stepper and fields as well as self-initialised temporary storage
+class grouping user-supplied stepper, fields and post-step/post-iter hooks,
+as well as self-initialised temporary storage
 """
 from typing import Union
 import numba

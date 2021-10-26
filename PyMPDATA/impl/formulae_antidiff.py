@@ -13,12 +13,12 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
         apply_vector = traversals.apply_vector()
 
         formulae_antidiff = tuple(
-            __make_antidiff(idx.atv[i], idx.at[i],
+            __make_antidiff(idx.atv[i], idx.ats[i],
                             non_unit_g_factor=non_unit_g_factor,
                             options=options,
                             n_dims=traversals.n_dims,
                             last_pass=last_pass)
-            if idx.at[i] is not None else None
+            if idx.ats[i] is not None else None
             for i in range(MAX_DIM_NUM))
 
         @numba.njit(**options.jit_flags)
@@ -29,7 +29,7 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
     return apply
 
 
-def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
+def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
     infinite_gauge = options.infinite_gauge
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms
@@ -40,26 +40,26 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
     @numba.njit(**options.jit_flags)
     def A(psi):
         """ eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998 """
-        result = at(*psi, 1) - at(*psi, 0)
+        result = ats(*psi, 1) - ats(*psi, 0)
         if infinite_gauge:
             result /= 2
         else:
-            result /= (at(*psi, 1) + at(*psi, 0) + epsilon)
+            result /= (ats(*psi, 1) + ats(*psi, 0) + epsilon)
         return result
 
     @numba.njit(**options.jit_flags)
     def B(psi):
         """ eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998 """
         result = (
-                at(*psi, 1, 1) + at(*psi, 0, 1) -
-                at(*psi, 1, -1) - at(*psi, 0, -1)
+                ats(*psi, 1, 1) + ats(*psi, 0, 1) -
+                ats(*psi, 1, -1) - ats(*psi, 0, -1)
         )
         if infinite_gauge:
             result /= 4
         else:
             result /= (
-                    at(*psi, 1, 1) + at(*psi, 0, 1) +
-                    at(*psi, 1, -1) + at(*psi, 0, -1) +
+                    ats(*psi, 1, 1) + ats(*psi, 0, 1) +
+                    ats(*psi, 1, -1) + ats(*psi, 0, -1) +
                     epsilon
             )
         return result
@@ -87,7 +87,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
         """ eq. 13 in Smolarkiewicz 1984 """
         result = antidiff_basic(psi, GC, G)
 
-        G_bar = (at(*G, 1) + at(*G, 0)) / 2 if non_unit_g_factor else 1
+        G_bar = (ats(*G, 1) + ats(*G, 0)) / 2 if non_unit_g_factor else 1
 
         # third-order terms
         if third_order_terms:
@@ -98,12 +98,12 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
               - atv(*GC, .5)
             ) / 6
 
-            tmp *= 2 * (at(*psi, 2) - at(*psi, 1) - at(*psi, 0) + at(*psi, -1))
+            tmp *= 2 * (ats(*psi, 2) - ats(*psi, 1) - ats(*psi, 0) + ats(*psi, -1))
 
             if infinite_gauge:
                 tmp /= (1 + 1 + 1 + 1)
             else:
-                tmp /= at(*psi, 2) + at(*psi, 1) + at(*psi, 0) + at(*psi, -1) + epsilon
+                tmp /= ats(*psi, 2) + ats(*psi, 1) + ats(*psi, 0) + ats(*psi, -1) + epsilon
 
             result += tmp
 
@@ -118,12 +118,12 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
                         np.abs(atv(*GC, .5)) - 2 * atv(*GC, .5) ** 2 / G_bar
                 )
 
-                tmp *= 2 * (at(*psi, 1, 1) - at(*psi, 0, 1) - at(*psi, 1, -1) + at(*psi, 0, -1))
+                tmp *= 2 * (ats(*psi, 1, 1) - ats(*psi, 0, 1) - ats(*psi, 1, -1) + ats(*psi, 0, -1))
 
                 if infinite_gauge:
                     tmp /= (1 + 1 + 1 + 1)
                 else:
-                    tmp /= (at(*psi, 1, 1) + at(*psi, 0, 1) + at(*psi, 1, -1) + at(*psi, 0, -1))
+                    tmp /= (ats(*psi, 1, 1) + ats(*psi, 0, 1) + ats(*psi, 1, -1) + ats(*psi, 0, -1))
 
                 result += tmp
 
@@ -135,7 +135,7 @@ def __make_antidiff(atv, at, non_unit_g_factor, options, n_dims, last_pass):
             if non_unit_g_factor:
                 tmp /= G_bar
             if infinite_gauge:
-                tmp *= .5 * at(*psi, 1) + at(*psi, 0)
+                tmp *= .5 * ats(*psi, 1) + ats(*psi, 0)
 
             result += tmp
         return result

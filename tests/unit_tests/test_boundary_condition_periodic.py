@@ -45,12 +45,15 @@ def indices(a, b=None, c=None):
 
 JIT_FLAGS = Options().jit_flags
 
+
 @lru_cache()
+# pylint: disable-next=redefined-outer-name
 def make_traversals(grid, halo, n_threads):
     return Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
 
 
 class TestPeriodicBoundaryCondition:
+    @staticmethod
     @pytest.mark.parametrize("data", (
             np.array([1, 2, 3]),
             np.array([
@@ -63,7 +66,8 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("dim", DIMENSIONS)
-    def test_scalar(self, data, halo, side, n_threads, dim):
+    # pylint: disable-next=redefined-outer-name
+    def test_scalar(data, halo, side, n_threads, dim):
         n_dims = len(data.shape)
         if n_dims == 1 and dim != INNER:
             return
@@ -95,6 +99,7 @@ class TestPeriodicBoundaryCondition:
                 data[shift(indices((None, halo), ALL, ALL)[:n_dims], dim)]
             )
 
+    @staticmethod
     @pytest.mark.parametrize("data", (
             (np.array([1, 2, 3]),),
             (
@@ -120,7 +125,8 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("component", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
-    def test_vector(self, data, halo, side, n_threads, component, dim_offset):
+    # pylint: disable-next=redefined-outer-name
+    def test_vector(data, halo, side, n_threads, component, dim_offset):
         n_dims = len(data)
         if n_dims == 1 and n_threads > 1:
             return

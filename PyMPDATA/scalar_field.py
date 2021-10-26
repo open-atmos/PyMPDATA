@@ -26,27 +26,12 @@ class ScalarField(Field):
 
         shape_with_halo = tuple(data.shape[i] + 2 * halo for i in range(self.n_dims))
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
+        self.impl_data = (self.data,)
         self.domain = tuple(
             slice(halo, self.data.shape[i] - halo)
             for i in range(self.n_dims)
         )
         self.get()[:] = data[:]
-
-        self.impl = None
-        self.jit_flags = None
-
-    def assemble(self, traversals):
-        if traversals.jit_flags != self.jit_flags:
-            self.impl = (self.meta, self.data), tuple(
-                fh.make_scalar(
-                    traversals.indexers[self.n_dims].at[i],
-                    self.halo,
-                    self.dtype,
-                    traversals.jit_flags
-                )
-                for i, fh in enumerate(self.fill_halos)
-            )
-        self.jit_flags = traversals.jit_flags
 
     @staticmethod
     def clone(field, dtype=None):

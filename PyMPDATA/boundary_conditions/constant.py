@@ -19,10 +19,10 @@ class Constant:
     def __init__(self, value):
         self.value = value
 
-    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+    def make_scalar(self, ats, halo, dtype, jit_flags):
         """ returns (lru-cached) Numba-compiled scalar halo-filling callable """
-        return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)
+        return _make_scalar(self.value, ats, halo, dtype, jit_flags)
 
-    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+    def make_vector(self, ats, halo, dtype, jit_flags):
         """ returns (lru-cached) Numba-compiled vector halo-filling callable """
-        return _make_scalar(self.value, at_indexer, halo, dtype, jit_flags)
+        return _make_scalar(self.value, ats, halo, dtype, jit_flags)

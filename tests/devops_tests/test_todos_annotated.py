@@ -28,7 +28,12 @@ def grep(filepath, regex):
     return res
 
 
-@pytest.fixture(params=findfiles(pathlib.Path(__file__).parent.parent.parent.absolute(), r'.*\.(ipynb|py|txt|yml|m|jl|md)$'))
+@pytest.fixture(
+    params=findfiles(
+        pathlib.Path(__file__).parent.parent.parent.absolute(),
+        r'.*\.(ipynb|py|txt|yml|m|jl|md)$'
+    )
+)
 def file(request):
     return request.param
 
@@ -48,8 +53,13 @@ def gh_issues():
     return res
 
 
+# pylint: disable-next=redefined-outer-name
 def test_todos_annotated(file, gh_issues):
-    if os.path.basename(file) == 'test_todos_annotated.py' or file.endswith("-checkpoint.ipynb") or ".eggs" in file:
+    if (
+        os.path.basename(file) == 'test_todos_annotated.py' or
+        file.endswith("-checkpoint.ipynb") or
+        ".eggs" in file
+    ):
         return
     for line in grep(file, r'.*TODO.*'):
         match = re.search(r'TODO #(\d+)', line)

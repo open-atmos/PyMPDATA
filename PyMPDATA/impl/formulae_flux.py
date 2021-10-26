@@ -9,8 +9,8 @@ def make_flux_first_pass(options, traversals):
     null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
     formulae_flux_first_pass = tuple(
-        __make_flux(options.jit_flags, idx.atv[i], idx.at[i], first_pass=True, infinite_gauge=False)
-        if idx.at[i] is not None else None
+        __make_flux(options.jit_flags, idx.atv[i], idx.ats[i], first_pass=True, infinite_gauge=False)
+        if idx.ats[i] is not None else None
         for i in range(MAX_DIM_NUM)
     )
 
@@ -37,11 +37,11 @@ def make_flux_subsequent(options, traversals):
         formulae_flux_subsequent = tuple(
             __make_flux(
                 options.jit_flags,
-                idx.atv[i], idx.at[i],
+                idx.atv[i], idx.ats[i],
                 first_pass=False,
                 infinite_gauge=options.infinite_gauge
             )
-            if idx.at[i] is not None else None
+            if idx.ats[i] is not None else None
             for i in range(MAX_DIM_NUM)
         )
 
@@ -58,7 +58,7 @@ def make_flux_subsequent(options, traversals):
     return apply
 
 
-def __make_flux(jit_flags, atv, at, first_pass, infinite_gauge):
+def __make_flux(jit_flags, atv, ats, first_pass, infinite_gauge):
     @numba.njit(**jit_flags)
     def minimum_0(c):
         return (c - np.abs(c)) / 2
@@ -75,6 +75,6 @@ def __make_flux(jit_flags, atv, at, first_pass, infinite_gauge):
         @numba.njit(**jit_flags)
         def flux(advectee, advector, __):
             return \
-                maximum_0(atv(*advector, +.5)) * at(*advectee, 0) + \
-                minimum_0(atv(*advector, +.5)) * at(*advectee, 1)
+                maximum_0(atv(*advector, +.5)) * ats(*advectee, 0) + \
+                minimum_0(atv(*advector, +.5)) * ats(*advectee, 1)
     return flux

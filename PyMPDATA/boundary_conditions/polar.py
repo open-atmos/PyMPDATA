@@ -18,7 +18,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, at_indexer, halo, dtype, jit_flags):
+    def make_scalar(self, ats, halo, dtype, jit_flags):
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -36,13 +36,14 @@ class Polar:
                 step = (lat - right_edge_idx) * 2 + 1
 
             val = nlon_half * (-1 if lon > nlon_half else 1)
-            return at_indexer(*psi, sign * step, val)
+            return ats(*psi, sign * step, val)
 
         return fill_halos
 
-    def make_vector(self, at_indexer, halo, dtype, jit_flags):
+    @staticmethod
+    def make_vector(ats, halo, dtype, jit_flags):
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, __):
-            return at_indexer(*psi, 0)  # TODO #120
+            return ats(*psi, 0)  # TODO #120
 
         return fill_halos
