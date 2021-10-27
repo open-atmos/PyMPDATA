@@ -57,11 +57,11 @@ class Periodic:
         assert SIGN_LEFT == +1
 
     @staticmethod
-    def make_scalar(ats, halo, dtype, jit_flags):
+    def make_scalar(ats, _, __, jit_flags):
         return _make_scalar(ats, jit_flags)
 
     @staticmethod
-    def make_vector(ats, halo, dtype, jit_flags):
+    def make_vector(ats, _, __, jit_flags):
         return _make_vector(ats, jit_flags)</code></pre>
 </details>
 </section>
@@ -89,17 +89,17 @@ class Periodic:
         assert SIGN_LEFT == +1
 
     @staticmethod
-    def make_scalar(ats, halo, dtype, jit_flags):
+    def make_scalar(ats, _, __, jit_flags):
         return _make_scalar(ats, jit_flags)
 
     @staticmethod
-    def make_vector(ats, halo, dtype, jit_flags):
+    def make_vector(ats, _, __, jit_flags):
         return _make_vector(ats, jit_flags)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>ats, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>ats, _, __, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -108,12 +108,12 @@ class Periodic:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_scalar(ats, halo, dtype, jit_flags):
+def make_scalar(ats, _, __, jit_flags):
     return _make_scalar(ats, jit_flags)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>ats, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>ats, _, __, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -122,7 +122,7 @@ def make_scalar(ats, halo, dtype, jit_flags):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_vector(ats, halo, dtype, jit_flags):
+def make_vector(ats, _, __, jit_flags):
     return _make_vector(ats, jit_flags)</code></pre>
 </details>
 </dd>

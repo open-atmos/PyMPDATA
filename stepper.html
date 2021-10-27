@@ -143,9 +143,9 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
              advectee, advectee_bc,
              advector, advector_bc,
              g_factor, g_factor_bc,
-             vectmp_a, vectmp_a_bc,
-             vectmp_b, vectmp_b_bc,
-             vectmp_c, vectmp_c_bc,
+             vectmp_a, _,
+             vectmp_b, __,
+             vectmp_c, ___,
              psi_extrema, psi_extrema_bc,
              beta, beta_bc
              ):
@@ -259,9 +259,9 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
              advectee, advectee_bc,
              advector, advector_bc,
              g_factor, g_factor_bc,
-             vectmp_a, vectmp_a_bc,
-             vectmp_b, vectmp_b_bc,
-             vectmp_c, vectmp_c_bc,
+             vectmp_a, _,
+             vectmp_b, __,
+             vectmp_c, ___,
              psi_extrema, psi_extrema_bc,
              beta, beta_bc
              ):

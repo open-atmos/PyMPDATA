@@ -68,9 +68,9 @@ def _make_scalar(dim, eps, ats, halo, dtype, jit_flags):
 
 
 @lru_cache()
-def _make_vector(dim, ats, halo, dtype, jit_flags):
+def _make_vector(_, ats, __, ___, jit_flags):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, _, sign):
+    def fill_halos(psi, ____, sign):
         return ats(*psi, sign)
     return fill_halos
 

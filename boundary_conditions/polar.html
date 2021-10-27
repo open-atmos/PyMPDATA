@@ -47,7 +47,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, halo, dtype, jit_flags):
+    def make_scalar(self, ats, halo, _, jit_flags):
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -70,9 +70,9 @@ class Polar:
         return fill_halos
 
     @staticmethod
-    def make_vector(ats, halo, dtype, jit_flags):
+    def make_vector(ats, _, __, jit_flags):
         @numba.njit(**jit_flags)
-        def fill_halos(psi, _, __):
+        def fill_halos(psi, ___, ____):
             return ats(*psi, 0)  # TODO #120
 
         return fill_halos</code></pre>
@@ -110,7 +110,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, halo, dtype, jit_flags):
+    def make_scalar(self, ats, halo, _, jit_flags):
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -133,9 +133,9 @@ class Polar:
         return fill_halos
 
     @staticmethod
-    def make_vector(ats, halo, dtype, jit_flags):
+    def make_vector(ats, _, __, jit_flags):
         @numba.njit(**jit_flags)
-        def fill_halos(psi, _, __):
+        def fill_halos(psi, ___, ____):
             return ats(*psi, 0)  # TODO #120
 
         return fill_halos</code></pre>
@@ -143,7 +143,7 @@ class Polar:
 <h3>Static methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>ats, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>ats, _, __, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -152,9 +152,9 @@ class Polar:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_vector(ats, halo, dtype, jit_flags):
+def make_vector(ats, _, __, jit_flags):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, _, __):
+    def fill_halos(psi, ___, ____):
         return ats(*psi, 0)  # TODO #120
 
     return fill_halos</code></pre>
@@ -164,7 +164,7 @@ def make_vector(ats, halo, dtype, jit_flags):
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, ats, halo, dtype, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, ats, halo, _, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -172,7 +172,7 @@ def make_vector(ats, halo, dtype, jit_flags):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, ats, halo, dtype, jit_flags):
+<pre><code class="python">def make_scalar(self, ats, halo, _, jit_flags):
     nlon_half = self.nlon_half
     nlat = self.nlat
     lon_idx = self.lon_idx

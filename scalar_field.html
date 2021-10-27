@@ -33,7 +33,6 @@ scalar field abstractions for the staggered grid
 import inspect
 import numpy as np
 from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
-from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl.field import Field
 
@@ -55,7 +54,7 @@ class ScalarField(Field):
 
         shape_with_halo = tuple(data.shape[i] + 2 * halo for i in range(self.n_dims))
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
-        self.impl_data = (self.data,)
+        self._impl_data = (self.data,)
         self.domain = tuple(
             slice(halo, self.data.shape[i] - halo)
             for i in range(self.n_dims)
@@ -80,16 +79,13 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims, traversals):
-        &#34;&#34;&#34; returns an instance with no allocated data storage and the META_IS_NULL flag set &#34;&#34;&#34;
-        null = ScalarField(
+        &#34;&#34;&#34; returns a scalar field instance with no allocated data storage,
+            see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
+        return Field._make_null(ScalarField(
             np.empty([INVALID_NULL_VALUE]*n_dims),
             halo=0,
-            boundary_conditions=[Constant(np.nan)] * n_dims
-        )
-        null.meta[META_HALO_VALID] = True
-        null.meta[META_IS_NULL] = True
-        null.assemble(traversals)
-        return null</code></pre>
+            boundary_conditions=tuple([Constant(np.nan)] * n_dims)
+        ), traversals)</code></pre>
 </details>
 </section>
 <section>
@@ -128,7 +124,7 @@ class ScalarField(Field):
 
         shape_with_halo = tuple(data.shape[i] + 2 * halo for i in range(self.n_dims))
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
-        self.impl_data = (self.data,)
+        self._impl_data = (self.data,)
         self.domain = tuple(
             slice(halo, self.data.shape[i] - halo)
             for i in range(self.n_dims)
@@ -153,16 +149,13 @@ class ScalarField(Field):
 
     @staticmethod
     def make_null(n_dims, traversals):
-        &#34;&#34;&#34; returns an instance with no allocated data storage and the META_IS_NULL flag set &#34;&#34;&#34;
-        null = ScalarField(
+        &#34;&#34;&#34; returns a scalar field instance with no allocated data storage,
+            see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
+        return Field._make_null(ScalarField(
             np.empty([INVALID_NULL_VALUE]*n_dims),
             halo=0,
-            boundary_conditions=[Constant(np.nan)] * n_dims
-        )
-        null.meta[META_HALO_VALID] = True
-        null.meta[META_IS_NULL] = True
-        null.assemble(traversals)
-        return null</code></pre>
+            boundary_conditions=tuple([Constant(np.nan)] * n_dims)
+        ), traversals)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -195,23 +188,21 @@ def clone(field, dtype=None):
 <span>def <span class="ident">make_null</span></span>(<span>n_dims, traversals)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>returns an instance with no allocated data storage and the META_IS_NULL flag set</p></div>
+<div class="desc"><p>returns a scalar field instance with no allocated data storage,
+see <code>Field._make_null</code> other properties of the returned field</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
 def make_null(n_dims, traversals):
-    &#34;&#34;&#34; returns an instance with no allocated data storage and the META_IS_NULL flag set &#34;&#34;&#34;
-    null = ScalarField(
+    &#34;&#34;&#34; returns a scalar field instance with no allocated data storage,
+        see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
+    return Field._make_null(ScalarField(
         np.empty([INVALID_NULL_VALUE]*n_dims),
         halo=0,
-        boundary_conditions=[Constant(np.nan)] * n_dims
-    )
-    null.meta[META_HALO_VALID] = True
-    null.meta[META_IS_NULL] = True
-    null.assemble(traversals)
-    return null</code></pre>
+        boundary_conditions=tuple([Constant(np.nan)] * n_dims)
+    ), traversals)</code></pre>
 </details>
 </dd>
 </dl>
