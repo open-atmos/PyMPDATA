@@ -11,7 +11,7 @@ from fastcore.net import ExceptionsHTTP
 def findfiles(path, regex):
     regObj = re.compile(regex)
     res = []
-    for root, dirs, fnames in os.walk(path):
+    for root, _, fnames in os.walk(path):
         for fname in fnames:
             if regObj.match(fname):
                 res.append(os.path.join(root, fname))

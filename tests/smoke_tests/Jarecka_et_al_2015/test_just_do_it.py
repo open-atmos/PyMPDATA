@@ -5,15 +5,15 @@ from PyMPDATA_examples.Jarecka_et_al_2015 import Settings, Simulation, plot_outp
 from PyMPDATA_examples.utils.error_norms import L2
 
 
-@pytest.mark.parametrize("nx", (101, 100))
-@pytest.mark.parametrize("ny", (101, 100))
-def test_just_do_it(nx, ny, plot=False):
+@pytest.mark.parametrize("n_x", (101, 100))
+@pytest.mark.parametrize("n_y", (101, 100))
+def test_just_do_it(n_x, n_y, plot=False):
     # arrange
     settings = Settings()
-    settings.dx *= settings.nx / nx
-    settings.nx = nx
-    settings.dy *= settings.ny / ny
-    settings.ny = ny
+    settings.dx *= settings.nx / n_x
+    settings.nx = n_x
+    settings.dy *= settings.ny / n_y
+    settings.ny = n_y
     simulation = Simulation(settings)
     times = (1, 3, 7)
 
@@ -26,6 +26,6 @@ def test_just_do_it(nx, ny, plot=False):
         pylab.show()
 
     # assert
-    for key, item in plot_data.items():
+    for item in plot_data.values():
         assert 2**L2(item['h_numeric'], item['h_analytic'], nt=settings.nt) < 5e-3
         assert 2**L2(item['q_h_numeric'], item['q_h_analytic'], nt=settings.nt) < 5e-2

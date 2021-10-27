@@ -21,26 +21,26 @@ DIMENSIONS = (
 )
 
 
-def shift(tup, n):
-    if not tup or not n:
+def shift(tup, num):
+    if not tup or not num:
         return tup
-    n %= len(tup)
-    return tup[n:] + tup[:n]
+    num %= len(tup)
+    return tup[num:] + tup[:num]
 
 
-def indices(a, b=None, c=None):
-    if b is not None:
-        if c is not None:
+def indices(arg1, arg2=None, arg3=None):
+    if arg2 is not None:
+        if arg3 is not None:
             return (
-                slice(a[0] if a[0] else None, a[1] if a[1] else None),
-                slice(b[0] if b[0] else None, b[1] if b[1] else None),
-                slice(c[0] if c[0] else None, c[1] if c[1] else None)
+                slice(arg1[0] if arg1[0] else None, arg1[1] if arg1[1] else None),
+                slice(arg2[0] if arg2[0] else None, arg2[1] if arg2[1] else None),
+                slice(arg3[0] if arg3[0] else None, arg3[1] if arg3[1] else None)
             )
         return (
-            slice(a[0] if a[0] else None, a[1] if a[1] else None),
-            slice(b[0] if b[0] else None, b[1] if b[1] else None)
+            slice(arg1[0] if arg1[0] else None, arg1[1] if arg1[1] else None),
+            slice(arg2[0] if arg2[0] else None, arg2[1] if arg2[1] else None)
         )
-    return slice(a[0], a[1])
+    return slice(arg1[0], arg1[1])
 
 
 JIT_FLAGS = Options().jit_flags
@@ -77,26 +77,26 @@ class TestPeriodicBoundaryCondition:
             return
 
         # arrange
-        field = ScalarField(data, halo, tuple([Periodic() for _ in range(n_dims)]))
+        field = ScalarField(data, halo, tuple(Periodic() for _ in range(n_dims)))
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._fill_halos_scalar
+        sut = traversals.fill_halos_scalar
 
         # act
         for thread_id in range(n_threads):  # TODO #96: xfail if not all threads executed?
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
-        INT = (halo, -halo)
+        interior = (halo, -halo)
         if side == LEFT:
             np.testing.assert_array_equal(
-                field.data[shift(indices((None, halo), INT, INT)[:n_dims], dim)],
+                field.data[shift(indices((None, halo), interior, interior)[:n_dims], dim)],
                 data[shift(indices((-halo, None), ALL, ALL)[:n_dims], dim)]
             )
         else:
             np.testing.assert_array_equal(
-                field.data[shift(indices((-halo, None), INT, INT)[:n_dims], dim)],
+                field.data[shift(indices((-halo, None), interior, interior)[:n_dims], dim)],
                 data[shift(indices((None, halo), ALL, ALL)[:n_dims], dim)]
             )
 
@@ -124,113 +124,113 @@ class TestPeriodicBoundaryCondition:
     ))
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
-    @pytest.mark.parametrize("component", DIMENSIONS)
+    @pytest.mark.parametrize("comp", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
     # pylint: disable-next=redefined-outer-name
-    def test_vector(data, halo, side, n_threads, component, dim_offset):
+    def test_vector(data, halo, side, n_threads, comp, dim_offset):
         n_dims = len(data)
         if n_dims == 1 and n_threads > 1:
             return
-        if n_dims == 1 and (component != INNER or dim_offset != 0):
+        if n_dims == 1 and (comp != INNER or dim_offset != 0):
             return
-        if n_dims == 2 and (component == MID3D or dim_offset == 2):
+        if n_dims == 2 and (comp == MID3D or dim_offset == 2):
             return
 
         # arrange
-        field = VectorField(data, halo, tuple([Periodic() for _ in range(n_dims)]))
+        field = VectorField(data, halo, tuple(Periodic() for _ in range(n_dims)))
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._fill_halos_vector
+        sut = traversals.fill_halos_vector
 
         # act
         for thread_id in range(n_threads):  # TODO #96: xfail if not all threads executed?
             sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
-        INT = (halo, -halo)
+        interior = (halo, -halo)
         if n_dims == 1 and halo == 1:
-            np.testing.assert_array_equal(field.data[component], data[component])
+            np.testing.assert_array_equal(field.data[comp], data[comp])
         if side == LEFT:
             if dim_offset == 1:
                 np.testing.assert_array_equal(
-                    field.data[component][
+                    field.data[comp][
                         shift(
-                            indices((None, halo), (halo - 1, -(halo - 1)), INT)[:n_dims],
-                            -component+dim_offset
+                            indices((None, halo), (halo - 1, -(halo - 1)), interior)[:n_dims],
+                            -comp + dim_offset
                         )
                     ],
-                    data[component][
+                    data[comp][
                         shift(
                             indices((-halo, None), ALL, ALL)[:n_dims],
-                            -component+dim_offset
+                            -comp + dim_offset
                         )
                     ]
                 )
             elif dim_offset == 2:
                 np.testing.assert_array_equal(
-                    field.data[component][
+                    field.data[comp][
                         shift(
-                            indices((None, halo), INT, (halo - 1, -(halo - 1)))[:n_dims],
-                            -component+dim_offset
+                            indices((None, halo), interior, (halo - 1, -(halo - 1)))[:n_dims],
+                            -comp + dim_offset
                         )
                     ],
-                    data[component][shift(indices((-halo, None), ALL, ALL)[:n_dims], -component+dim_offset)]
+                    data[comp][shift(indices((-halo, None), ALL, ALL)[:n_dims], -comp + dim_offset)]
                 )
             elif dim_offset == 0:
                 np.testing.assert_array_equal(
-                    field.data[component][shift(
-                        indices((None, halo - 1), INT, INT)[:n_dims],
-                        -component+dim_offset
+                    field.data[comp][shift(
+                        indices((None, halo - 1), interior, interior)[:n_dims],
+                        -comp + dim_offset
                     )],
-                    data[component][shift(
+                    data[comp][shift(
                         indices((-(halo - 1), None), ALL, ALL)[:n_dims],
-                        -component+dim_offset
+                        -comp + dim_offset
                     )]
                 )
         else:
             if dim_offset == 1:
                 np.testing.assert_array_equal(
-                    field.data[component][
+                    field.data[comp][
                         shift(
-                            indices((-halo, None), (halo - 1, -(halo - 1)), INT)[:n_dims],
-                            -component+dim_offset
+                            indices((-halo, None), (halo - 1, -(halo - 1)), interior)[:n_dims],
+                            -comp + dim_offset
                         )
                     ],
-                    data[component][
+                    data[comp][
                         shift(
                             indices((None, halo), ALL, ALL)[:n_dims],
-                            -component+dim_offset
+                            -comp + dim_offset
                         )
                     ]
                 )
             elif dim_offset == 2:
                 np.testing.assert_array_equal(
-                    field.data[component][
+                    field.data[comp][
                         shift(
-                            indices((-halo, None), INT, (halo - 1, -(halo - 1)))[:n_dims],
-                            -component+dim_offset
+                            indices((-halo, None), interior, (halo - 1, -(halo - 1)))[:n_dims],
+                            -comp + dim_offset
                         )
                     ],
-                    data[component][
+                    data[comp][
                         shift(
                             indices((None, halo), ALL, ALL)[:n_dims],
-                            -component+dim_offset
+                            -comp + dim_offset
                         )
                     ]
                 )
             elif dim_offset == 0:
                 np.testing.assert_array_equal(
-                    field.data[component][
+                    field.data[comp][
                         shift(
-                            indices((-(halo - 1), None), INT, INT)[:n_dims],
-                            -component+dim_offset
+                            indices((-(halo - 1), None), interior, interior)[:n_dims],
+                            -comp + dim_offset
                         )
                     ],
-                    data[component][
+                    data[comp][
                         shift(
                             indices((None, halo - 1), ALL, ALL)[:n_dims],
-                            -component+dim_offset
+                            -comp + dim_offset
                         )
                     ]
                 )

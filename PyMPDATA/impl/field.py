@@ -2,6 +2,7 @@
 from PyMPDATA.boundary_conditions.constant import Constant
 from .meta import make_meta
 from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE
+from .meta import META_IS_NULL, META_HALO_VALID
 
 
 class Field:
@@ -26,13 +27,13 @@ class Field:
 
         self.impl = None
         self.jit_flags = None
-        self.impl_data = None
+        self._impl_data = None
 
     def assemble(self, traversals):
         """ initialises .impl field with halo_filling logic compiled for given traversals """
         if traversals.jit_flags != self.jit_flags:
             fun = f'make_{self.__class__.__name__[:6].lower()}'
-            self.impl = (self.meta, *self.impl_data), tuple(
+            self.impl = (self.meta, *self._impl_data), tuple(
                 getattr(fh, fun)(
                     traversals.indexers[self.n_dims].ats[i],
                     self.halo,
@@ -42,3 +43,10 @@ class Field:
                 for i, fh in enumerate(self.fill_halos)
             )
         self.jit_flags = traversals.jit_flags
+
+    @staticmethod
+    def _make_null(null_field, traversals):
+        null_field.meta[META_HALO_VALID] = True
+        null_field.meta[META_IS_NULL] = True
+        null_field.assemble(traversals)
+        return null_field

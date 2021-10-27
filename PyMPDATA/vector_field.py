@@ -6,7 +6,6 @@ import numpy as np
 from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE, \
     INNER, OUTER, MID3D
 from PyMPDATA.scalar_field import ScalarField
-from PyMPDATA.impl.meta import META_HALO_VALID, META_IS_NULL
 from PyMPDATA.boundary_conditions.constant import Constant
 from PyMPDATA.impl.field import Field
 
@@ -52,7 +51,7 @@ class VectorField(Field):
             self.get_component(dim)[:] = data[dim][:]
 
         empty = np.empty(tuple([0] * self.n_dims), dtype=self.dtype)
-        self.impl_data = (
+        self._impl_data = (
             self.data[OUTER] if self.n_dims > 1 else empty,
             self.data[MID3D] if self.n_dims > 2 else empty,
             self.data[INNER]
@@ -60,18 +59,22 @@ class VectorField(Field):
 
     @staticmethod
     def clone(field):
+        """ returns a newly allocated field of the same shape, halo and boundary conditions """
         return VectorField(tuple(
             field.get_component(d)
             for d in range(field.n_dims)
         ), field.halo, field.boundary_conditions)
 
     def get_component(self, i: int) -> np.ndarray:
+        """ returns a view over given component of the field excluding halo """
         return self.data[i][self.domain[i]]
 
     def div(self, grid_step: tuple) -> ScalarField:
+        """ returns a newly allocated scalar field (with no halo) containing the
+            divergence of the vector field computed using minimal stencil """
         diff_sum = None
-        for d in range(self.n_dims):
-            tmp = np.diff(self.get_component(d), axis=d) / grid_step[d]
+        for dim in range(self.n_dims):
+            tmp = np.diff(self.get_component(dim), axis=dim) / grid_step[dim]
             if diff_sum is None:
                 diff_sum = tmp
             else:
@@ -85,12 +88,10 @@ class VectorField(Field):
 
     @staticmethod
     def make_null(n_dims, indexers):
-        null = VectorField(
-            [np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims,
+        """ returns a vector field instance with no allocated data storage,
+            see `Field._make_null` other properties of the returned field """
+        return Field._make_null(VectorField(
+            tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
             halo=1,
             boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
-        )
-        null.meta[META_HALO_VALID] = True
-        null.meta[META_IS_NULL] = True
-        null.assemble(indexers)
-        return null
+        ), indexers)
