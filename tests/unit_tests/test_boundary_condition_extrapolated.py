@@ -22,7 +22,7 @@ class TestBoundaryConditionExtrapolated:
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._fill_halos_scalar
+        sut = traversals.fill_halos_scalar
 
         # act
         thread_id = 0

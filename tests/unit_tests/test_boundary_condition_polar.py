@@ -25,17 +25,19 @@ class TestPolarBoundaryCondition:
                 [4,  9]
             ], dtype=float
         )
-        bc = (
+        boundary_condition = (
             Periodic(),
             Polar(grid=data.shape, longitude_idx=OUTER, latitude_idx=INNER)
         )
-        field = ScalarField(data, halo, bc)
-        traversals = Traversals(grid=data.shape, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
+        field = ScalarField(data, halo, boundary_condition)
+        traversals = Traversals(grid=data.shape, halo=halo, jit_flags=JIT_FLAGS,
+                                n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._fill_halos_scalar
+        sut = traversals.fill_halos_scalar
 
         # act
+        # pylint: disable-next=not-an-iterable
         for thread_id in numba.prange(n_threads):
             sut(thread_id, *meta_and_data, *fill_halos)
 
@@ -78,9 +80,10 @@ class TestPolarBoundaryCondition:
         traversals = Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._fill_halos_vector
+        sut = traversals.fill_halos_vector
 
         # act
+        # pylint: disable-next=not-an-iterable
         for thread_id in numba.prange(n_threads):
             sut(thread_id, *meta_and_data, *fill_halos)
 

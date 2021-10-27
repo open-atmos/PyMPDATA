@@ -33,7 +33,8 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
         arg2 = (vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner)
 
         for i in range(rng_outer[RNG_START] + halos[OUTER][OUTER],
-                       rng_outer[RNG_STOP] + halos[OUTER][OUTER] + (ONE_FOR_STAGGERED_GRID if last_thread else 0)
+                       rng_outer[RNG_STOP] + halos[OUTER][OUTER] + (
+                               ONE_FOR_STAGGERED_GRID if last_thread else 0)
                        ) if n_dims > 1 else (INVALID_INDEX,):
             for j in range(rng_mid3d[RNG_START] + halos[MID3D][MID3D],
                            rng_mid3d[RNG_STOP] + ONE_FOR_STAGGERED_GRID + halos[MID3D][MID3D]
@@ -115,7 +116,10 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     for k in range(0,
                                    span[INNER] + 2 * halos[OUTER][INNER]):
                         focus = (i, j, k)
-                        set_value(comp, i, j, k, fun((focus, comp), span[OUTER] + 1, SIGN_LEFT))
+                        set_value(comp, i, j, k, fun(
+                            (focus, comp),
+                            span[OUTER] + 1, SIGN_LEFT
+                        ))
         if last_thread:
             for i in range(span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
                            span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]
@@ -134,7 +138,9 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
     @numba.njit(**jit_flags)
     def outer_mid3d(span, comp, fun, rng_outer, last_thread):
         for i in range(rng_outer[RNG_START],
-                       rng_outer[RNG_STOP] + ((ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0)):
+                       rng_outer[RNG_STOP] + (
+                           (ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0
+                       )):
             for j in range(0,
                            halos[OUTER][MID3D]):
                 for k in range(0,
@@ -155,7 +161,9 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
     @numba.njit(**jit_flags)
     def outer_inner(span, comp, fun, rng_outer, last_thread):
         for i in range(rng_outer[RNG_START],
-                       rng_outer[RNG_STOP] + ((ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0)):
+                       rng_outer[RNG_STOP] + (
+                           (ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER]) if last_thread else 0
+                       )):
             for j in range(0,
                            span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,):
                 for k in range(0,
@@ -196,7 +204,11 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                 for k in range(0,
                                span[INNER] + 2 * halo):
                     focus = (i, j, k)
-                    set_value(comp, i, j, k, fun((focus, comp), span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT))
+                    set_value(comp, i, j, k, fun(
+                        (focus, comp),
+                        span[MID3D] + ONE_FOR_STAGGERED_GRID,
+                        SIGN_LEFT
+                    ))
             for j in range(span[MID3D] + 1 + halos[MID3D][MID3D],
                            span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]):
                 for k in range(0,

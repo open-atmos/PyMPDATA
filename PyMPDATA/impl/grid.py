@@ -27,6 +27,8 @@ def make_chunk(span, n_threads, jit_flags):
 
 
 def make_domain(grid, jit_flags):
+    """ returns an njit-ted function which, for static grids, returns a compile-time-constant
+        grid size, and otherwise returns the grid size encoded in the meta tuple """
     static = grid[0] > 0
 
     if static:

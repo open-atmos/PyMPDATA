@@ -14,7 +14,8 @@ def get_long_description():
 
 setup(
     name='PyMPDATA',
-    description='Numba-accelerated Pythonic implementation of MPDATA with examples in Python, Julia and Matlab',
+    description='Numba-accelerated Pythonic implementation of MPDATA '
+                'with examples in Python, Julia and Matlab',
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     install_requires=[
@@ -40,5 +41,6 @@ setup(
         'Topic :: Scientific/Engineering :: Physics',
         'Topic :: Software Development :: Libraries'
     ],
-    keywords='atmospheric-modelling, numba, numerical-integration, advection, pde-solver, advection-diffusion'
+    keywords='atmospheric-modelling, numba, numerical-integration, '
+             'advection, pde-solver, advection-diffusion'
 )

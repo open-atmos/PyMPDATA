@@ -28,9 +28,9 @@ class Periodic:
         assert SIGN_LEFT == +1
 
     @staticmethod
-    def make_scalar(ats, halo, dtype, jit_flags):
+    def make_scalar(ats, _, __, jit_flags):
         return _make_scalar(ats, jit_flags)
 
     @staticmethod
-    def make_vector(ats, halo, dtype, jit_flags):
+    def make_vector(ats, _, __, jit_flags):
         return _make_vector(ats, jit_flags)

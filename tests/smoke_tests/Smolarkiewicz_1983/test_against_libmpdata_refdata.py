@@ -109,9 +109,9 @@ def test_against_libmpdata_refdata(options):
     # assert
     for step in STATS[options].keys():
         for stat in STATS[options][step].keys():
-                np.testing.assert_approx_equal(
-                    desired=STATS[options][step][stat],
-                    actual=actual[step][stat],
-                    significant=1, # TODO #96
-                    err_msg=stat
-                )
+            np.testing.assert_approx_equal(
+                desired=STATS[options][step][stat],
+                actual=actual[step][stat],
+                significant=1,  # TODO #96
+                err_msg=stat
+            )

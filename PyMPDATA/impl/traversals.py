@@ -23,12 +23,12 @@ class Traversals:
         self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
         self.null_vector_field = VectorField.make_null(self.n_dims, self)
 
-        self._fill_halos_scalar = _make_fill_halos_scalar(
+        self.fill_halos_scalar = _make_fill_halos_scalar(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             chunker=chunk, spanner=domain
         )
-        self._fill_halos_vector = _make_fill_halos_vector(
+        self.fill_halos_vector = _make_fill_halos_vector(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             chunker=chunk, spanner=domain
@@ -38,23 +38,23 @@ class Traversals:
             loop=False, jit_flags=jit_flags, n_dims=self.n_dims,
             halo=halo, n_threads=n_threads,
             chunker=chunk, spanner=domain,
-            boundary_cond_vector=self._fill_halos_vector,
-            boundary_cond_scalar=self._fill_halos_scalar
+            boundary_cond_vector=self.fill_halos_vector,
+            boundary_cond_scalar=self.fill_halos_scalar
         )
         self._apply_scalar_loop = _make_apply_scalar(
             indexers=self.indexers,
             loop=True, jit_flags=jit_flags, n_dims=self.n_dims,
             halo=halo, n_threads=n_threads,
             chunker=chunk, spanner=domain,
-            boundary_cond_vector=self._fill_halos_vector,
-            boundary_cond_scalar=self._fill_halos_scalar
+            boundary_cond_vector=self.fill_halos_vector,
+            boundary_cond_scalar=self.fill_halos_scalar
         )
         self._apply_vector = _make_apply_vector(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             n_threads=n_threads, spanner=domain, chunker=chunk,
-            boundary_cond_vector=self._fill_halos_vector,
-            boundary_cond_scalar=self._fill_halos_scalar
+            boundary_cond_vector=self.fill_halos_vector,
+            boundary_cond_scalar=self.fill_halos_scalar
         )
 
     def apply_scalar(self, *, loop):
