@@ -82,6 +82,7 @@ def __make_psi_extrema(jit_flags, n_dims, ats):
 def make_beta(non_unit_g_factor, options, traversals):
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
+        # pylint: disable=too-many-arguments
         def apply(_beta, _flux, _flux_bc, _psi, _psi_bc, _psi_extrema, _psi_extrema_bc,
                   _g_factor, _g_factor_bc):
             return
@@ -101,6 +102,7 @@ def make_beta(non_unit_g_factor, options, traversals):
         null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
 
         @numba.njit(**options.jit_flags)
+        # pylint: disable=too-many-arguments
         def apply(
             beta,
             flux, flux_bc,
@@ -155,12 +157,14 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
 
     if n_dims == 1:
         @numba.njit(**jit_flags)
+        # pylint: disable=too-many-arguments
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
             return ((extremum(ats(*psi_ext, 0), ats(*psi, 0), ats(*psi, -1), ats(*psi, 1))
                      - ats(*psi, 0)) * sign * G(g_factor)
                     ) / denominator(flux, sign)
     elif n_dims == 2:
         @numba.njit(**jit_flags)
+        # pylint: disable=too-many-arguments
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
             return ((extremum(ats(*psi_ext, 0, 0),
                               ats(*psi, 0, 0),
@@ -170,6 +174,7 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
                     ) / denominator(flux, sign)
     elif n_dims == 3:
         @numba.njit(**jit_flags)
+        # pylint: disable=too-many-arguments
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
             return ((extremum(ats(*psi_ext, 0, 0, 0),
                               ats(*psi, 0, 0, 0),
@@ -182,7 +187,8 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
         raise NotImplementedError()
 
     @numba.njit(**jit_flags)
-    def psi_extremum(_0, flux, psi, psi_ext, g_factor, _5):
+    # pylint: disable=too-many-arguments
+    def psi_extremum(_, flux, psi, psi_ext, g_factor, __):
         psi_min = (psi_ext[META_AND_DATA_META], psi_ext[META_AND_DATA_DATA].real)
         psi_max = (psi_ext[META_AND_DATA_META], psi_ext[META_AND_DATA_DATA].imag)
         return complex(

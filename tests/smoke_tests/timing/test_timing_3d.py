@@ -5,7 +5,7 @@ import numba
 from PyMPDATA_examples.Smolarkiewicz_1984 import Simulation, Settings
 from PyMPDATA import Options
 
-from .concurrency_fixture import num_threads
+from .fixtures import num_threads
 assert hasattr(num_threads, '_pytestfixturefunction')
 
 
@@ -30,5 +30,5 @@ def test_timing_3d(benchmark, options, dtype, static, num_threads):
     def reset():
         simulation.solver.advectee.get()[:] = settings.advectee
 
-    nt = 10
-    benchmark.pedantic(simulation.run, (nt,), setup=reset, warmup_rounds=1, rounds=1)
+    n_steps = 10
+    benchmark.pedantic(simulation.run, (n_steps,), setup=reset, warmup_rounds=1, rounds=1)

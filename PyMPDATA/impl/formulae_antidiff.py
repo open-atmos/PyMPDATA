@@ -1,3 +1,5 @@
+""" antidiffusive velocity formulae incl. divergent-flow,
+    third-order-terms, DPDC and partially also infinite-gauge logic """
 import numba
 import numpy as np
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
@@ -6,6 +8,7 @@ from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
     if options.n_iters <= 1:
         @numba.njit(**options.jit_flags)
+        # pylint: disable=too-many-arguments
         def apply(_1, _2, _3, _4, _5, _6, _7):
             return
     else:
@@ -22,6 +25,7 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
             for i in range(MAX_DIM_NUM))
 
         @numba.njit(**options.jit_flags)
+        # pylint: disable=too-many-arguments
         def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
             return apply_vector(*formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
                                 *g_factor, *g_factor_bc)
@@ -42,27 +46,24 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
         """ eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998 """
         result = ats(*psi, 1) - ats(*psi, 0)
         if infinite_gauge:
-            result /= 2
-        else:
-            result /= (ats(*psi, 1) + ats(*psi, 0) + epsilon)
-        return result
+            return result / 2
+        return result / (ats(*psi, 1) + ats(*psi, 0) + epsilon)
 
     @numba.njit(**options.jit_flags)
     def B(psi):
         """ eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998 """
         result = (
-                ats(*psi, 1, 1) + ats(*psi, 0, 1) -
-                ats(*psi, 1, -1) - ats(*psi, 0, -1)
+            ats(*psi, 1, 1) + ats(*psi, 0, 1) -
+            ats(*psi, 1, -1) - ats(*psi, 0, -1)
         )
         if infinite_gauge:
-            result /= 4
-        else:
-            result /= (
-                    ats(*psi, 1, 1) + ats(*psi, 0, 1) +
-                    ats(*psi, 1, -1) + ats(*psi, 0, -1) +
-                    epsilon
-            )
-        return result
+            return result / 4
+
+        return result / (
+            ats(*psi, 1, 1) + ats(*psi, 0, 1) +
+            ats(*psi, 1, -1) + ats(*psi, 0, -1) +
+            epsilon
+        )
 
     @numba.njit(**options.jit_flags)
     def antidiff_basic(psi, GC, _):
@@ -75,12 +76,11 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
             result = result * (result * b + a)
         if n_dims == 1 or dimensionally_split:
             return result
-        result -= (
+        return result - (
             0.5 * atv(*GC, .5) *
             0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
             B(psi)
         )
-        return result
 
     @numba.njit(**options.jit_flags)
     def antidiff_variants(psi, GC, G):
@@ -93,9 +93,9 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
         if third_order_terms:
             # assert psi.dimension < 3  # TODO #96
             tmp = (
-              3 * atv(*GC, .5) * np.abs(atv(*GC, .5)) / G_bar
-              - 2 * atv(*GC, .5) ** 3 / G_bar ** 2
-              - atv(*GC, .5)
+                3 * atv(*GC, .5) * np.abs(atv(*GC, .5)) / G_bar
+                -2 * atv(*GC, .5) ** 3 / G_bar ** 2
+                -atv(*GC, .5)
             ) / 6
 
             tmp *= 2 * (ats(*psi, 2) - ats(*psi, 1) - ats(*psi, 0) + ats(*psi, -1))
@@ -109,13 +109,13 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 
             if n_dims > 1:
                 GC1_bar = (
-                                  atv(*GC, 1, .5) +
-                                  atv(*GC, 0, .5) +
-                                  atv(*GC, 1, -.5) +
-                                  atv(*GC, 0, -.5)
-                          ) / 4
+                    atv(*GC, 1, .5) +
+                    atv(*GC, 0, .5) +
+                    atv(*GC, 1, -.5) +
+                    atv(*GC, 0, -.5)
+                ) / 4
                 tmp = GC1_bar / (2 * G_bar) * (
-                        np.abs(atv(*GC, .5)) - 2 * atv(*GC, .5) ** 2 / G_bar
+                    np.abs(atv(*GC, .5)) - 2 * atv(*GC, .5) ** 2 / G_bar
                 )
 
                 tmp *= 2 * (ats(*psi, 1, 1) - ats(*psi, 0, 1) - ats(*psi, 1, -1) + ats(*psi, 0, -1))

@@ -9,16 +9,16 @@ from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 @lru_cache()
 def _make_scalar(ats, jit_flags):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, n, sign):
-        return ats(*psi, sign * n)
+    def fill_halos(psi, span, sign):
+        return ats(*psi, sign * span)
     return fill_halos
 
 
 @lru_cache()
 def _make_vector(ats, jit_flags):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, n, sign):
-        return ats(*psi, sign * n)
+    def fill_halos(psi, span, sign):
+        return ats(*psi, sign * span)
     return fill_halos
 
 

@@ -1,4 +1,4 @@
-""" MPDATA iteration logic (to be shared among solvers) """
+""" MPDATA iteration logic """
 from functools import lru_cache
 import sys
 import warnings
@@ -17,6 +17,8 @@ from .impl.clock import clock
 
 
 class Stepper:
+    """ MPDATA stepper specialised for given options, dimensionality and optionally grid
+        (instances of Stepper can be shared among `Solver`s) """
     def __init__(self, *,
                  options: Options,
                  n_dims: (int, None) = None,
@@ -24,8 +26,6 @@ class Stepper:
                  grid: (tuple, None) = None,
                  n_threads: (int, None) = None
                  ):
-        self.options = options
-
         if n_dims is not None and grid is not None:
             raise ValueError()
         if n_dims is None and grid is None:
@@ -39,22 +39,36 @@ class Stepper:
         if n_threads is None:
             n_threads = numba.get_num_threads()
 
-        self.n_threads = 1 if n_dims == 1 else n_threads
-        if self.n_threads > 1:
+        self.__options = options
+        self.__n_threads = 1 if n_dims == 1 else n_threads
+
+        if self.__n_threads > 1:
             try:
                 numba.parfors.parfor.ensure_parallel_support()
             except numba.core.errors.UnsupportedParforsError:
                 print(
                     "Numba ensure_parallel_support() failed, forcing n_threads=1",
                     file=sys.stderr)
-                self.n_threads = 1
+                self.__n_threads = 1
 
-        self.n_dims = n_dims
+        self.__n_dims = n_dims
         self.__call, self.traversals = make_step_impl(
             options, non_unit_g_factor, grid, self.n_threads
         )
 
-    def __call__(self, nt, mu_coeff, post_step, post_iter,
+    @property
+    def options(self):
+        return self.__options
+
+    @property
+    def n_threads(self):
+        return self.__n_threads
+
+    @property
+    def n_dims(self):
+        return self.__n_dims
+
+    def __call__(self, n_steps, mu_coeff, post_step, post_iter,
                  advectee, advectee_bc,
                  advector, advector_bc,
                  g_factor, g_factor_bc,
@@ -66,7 +80,7 @@ class Stepper:
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-            return self.__call(nt, mu_coeff, post_step, post_iter,
+            return self.__call(n_steps, mu_coeff, post_step, post_iter,
                                advectee, advectee_bc,
                                advector, advector_bc,
                                g_factor, g_factor_bc,
@@ -99,18 +113,20 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     nonoscillatory_correction = make_correction(options, traversals)
 
     @numba.njit(**options.jit_flags)
-    def axpy(out_meta, out_outer, out_mid3d, out_inner, a,
-             x_meta, x_outer, x_mid3d, x_inner,
-             y_meta, y_outer, y_mid3d, y_inner):
+    # pylint: disable=too-many-arguments
+    def axpy(out_meta, out_outer, out_mid3d, out_inner, a_coeffs,
+             _, x_outer, x_mid3d, x_inner,
+             __, y_outer, y_mid3d, y_inner):
         if n_dims > 1:
-            out_outer[:] = a[OUTER] * x_outer[:] + y_outer[:]
+            out_outer[:] = a_coeffs[OUTER] * x_outer[:] + y_outer[:]
             if n_dims > 2:
-                out_mid3d[:] = a[MID3D] * x_mid3d[:] + y_mid3d[:]
-        out_inner[:] = a[INNER] * x_inner[:] + y_inner[:]
+                out_mid3d[:] = a_coeffs[MID3D] * x_mid3d[:] + y_mid3d[:]
+        out_inner[:] = a_coeffs[INNER] * x_inner[:] + y_inner[:]
         out_meta[META_HALO_VALID] = False
 
     @numba.njit(**options.jit_flags)
-    def step(nt, mu_coeff, post_step, post_iter,
+    # pylint: disable=too-many-arguments
+    def step(n_steps, mu_coeff, post_step, post_iter,
              advectee, advectee_bc,
              advector, advector_bc,
              g_factor, g_factor_bc,
@@ -123,12 +139,12 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
         vec_bc = advector_bc
 
         time = clock()
-        for _ in range(nt):
+        for step in range(n_steps):
             if non_zero_mu_coeff:
                 advector_orig = advector
                 advector = vectmp_c
-            for it in range(n_iters):
-                if it == 0:
+            for iteration in range(n_iters):
+                if iteration == 0:
                     if nonoscillatory:
                         nonoscillatory_psi_extrema(psi_extrema, advectee, advectee_bc)
                     if non_zero_mu_coeff:
@@ -137,11 +153,11 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                     flux_first_pass(vectmp_a, advector, advectee, advectee_bc, vec_bc)
                     flux = vectmp_a
                 else:
-                    if it == 1:
+                    if iteration == 1:
                         advector_oscilatory = advector
                         advector_nonoscilatory = vectmp_a
                         flux = vectmp_b
-                    elif it % 2 == 0:
+                    elif iteration % 2 == 0:
                         advector_oscilatory = vectmp_a
                         advector_nonoscilatory = vectmp_b
                         flux = vectmp_a
@@ -149,7 +165,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                         advector_oscilatory = vectmp_b
                         advector_nonoscilatory = vectmp_a
                         flux = vectmp_b
-                    if it < n_iters - 1:
+                    if iteration < n_iters - 1:
                         antidiff(advector_nonoscilatory,
                                  advectee, advectee_bc,
                                  advector_oscilatory, vec_bc,
@@ -170,9 +186,9 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                         nonoscillatory_correction(advector_nonoscilatory, vec_bc, beta, beta_bc)
                         flux_subsequent(flux, advectee, advectee_bc, advector_nonoscilatory, vec_bc)
                 upwind(advectee, flux, vec_bc, g_factor, g_factor_bc)
-                post_iter.__call__(flux, g_factor, _, it)
+                post_iter.__call__(flux, g_factor, step, iteration)
             if non_zero_mu_coeff:
                 advector = advector_orig
-            post_step(advectee[ARG_DATA], _)
-        return (clock() - time) / nt
+            post_step(advectee[ARG_DATA], step)
+        return (clock() - time) / n_steps
     return step, traversals

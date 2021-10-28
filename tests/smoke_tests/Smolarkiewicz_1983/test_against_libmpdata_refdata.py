@@ -95,16 +95,16 @@ def test_against_libmpdata_refdata(options):
         steps_done += timesteps
         psi = simulation.solver.advectee.get()
         absdiff = np.abs(psi - SETTINGS.advectee)
-        dv = np.product(SETTINGS.grid)
-        T = steps_done * SETTINGS.dt
+        volume = np.product(SETTINGS.grid)
+        time = steps_done * SETTINGS.dt
         actual[steps_done] = {
             'min(solution)': np.amin(psi),
             'max(solution)': np.amax(psi)
         }
         if steps_done > 0:
             actual[steps_done]['Linf'] = np.amax(absdiff)
-            actual[steps_done]['L1'] = 1 / T * (1 / dv * np.sum((absdiff)**1))
-            actual[steps_done]['L2'] = 1 / T * (1 / dv * np.sum((absdiff)**2))**.5
+            actual[steps_done]['L1'] = 1 / time * (1 / volume * np.sum((absdiff)**1))
+            actual[steps_done]['L2'] = 1 / time * (1 / volume * np.sum((absdiff)**2))**.5
 
     # assert
     for step in STATS[options].keys():

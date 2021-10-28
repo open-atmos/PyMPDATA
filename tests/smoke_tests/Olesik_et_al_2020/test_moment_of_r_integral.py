@@ -16,7 +16,10 @@ def test_moment_of_r_integral(k, coord):
 
     # Act
     with np.errstate(divide='ignore', invalid='ignore'):
-        integral = coord.moment_of_r_integral(coord.x(r1), k) - coord.moment_of_r_integral(coord.x(r0), k)
+        integral = (
+            coord.moment_of_r_integral(coord.x(r1), k) -
+            coord.moment_of_r_integral(coord.x(r0), k)
+        )
 
     # Assert
     if coord.__class__==x_id:
