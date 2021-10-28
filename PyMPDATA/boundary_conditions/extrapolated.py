@@ -7,7 +7,7 @@ from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 class Extrapolated:
     """ class which instances are to be passed in boundary_conditions tuple to the
-        `ScalarField` and `VectorField` __init__ methods """
+        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods """
     def __init__(self, dim=INNER, eps=1e-10):
         self.eps = eps
         self.dim = dim

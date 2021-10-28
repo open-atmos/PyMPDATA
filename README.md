@@ -54,7 +54,7 @@ PyMPDATA design features
   to concisely represent multi-dimensional stencil operations on both
   scalar and vector fields.
 The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
-  using the Numba's ```@njit``` functionality for high-performance array traversals.
+  using the Numba's ``@njit`` functionality for high-performance array traversals.
 It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 Numba ``prange()`` functionality is used for implementing multi-threading 
@@ -178,17 +178,56 @@ options = Options(n_iters=3, infinite_gauge=True, nonoscillatory=True)
 
 #### Arakawa-C grid layer and boundary conditions
 
+In PyMPDATA, the solution domain is assumed to extend from the
+first cell's boundary to the last cell's boundary (thus
+first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
 The [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
-and [``VectorField`](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html) classes implementing the
+and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html) classes implementing the
 [Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) logic
 in which:
 - scalar fields are discretised onto cell-center points,
 - vector fields are discretised onto cell-boundary points.
-In PyMPDATA, the solution domain is assumed to extend from the
-first cell's boundary to the last cell's boundary (thus
-first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
+The code snippet below generates a schematic of the grid layout in 
+two dimensions:
+<details open>
+<summary>Python (click to expand)</summary>
 
-The init methods have the following signatures:
+```Python
+import numpy as np
+from matplotlib import pyplot
+
+dx, dy = .2, .3
+grid = (10, 5)
+
+x, y = np.mgrid[
+    dx / 2 : grid[0] * dx : dx, 
+    dy / 2 : grid[1] * dy : dy
+]
+ux, uy = np.mgrid[
+    0 : (grid[0]+1) * dx : dx, 
+    dy / 2 : grid[1] * dy : dy
+]
+vx, vy = np.mgrid[
+    dx / 2 : grid[0] * dx : dx,
+    0: (grid[1] + 1) * dy : dy
+]
+
+pyplot.quiver(ux, uy, 1, 0, pivot='mid')
+pyplot.quiver(vx, vy, 0, 1, pivot='mid')
+pyplot.xticks(ux[:, 0])
+pyplot.yticks(vy[0, :])
+pyplot.scatter(x, y)
+pyplot.title('PyMPDATA staggered grid layout (2D)')
+pyplot.grid()
+pyplot.savefig('grid.png')
+```
+</details>
+![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png)
+
+The ``__init__`` methods of
+[``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
+and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html)
+have the following signatures:
 - [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/scalar_field.py)
 - [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/vector_field.py)
 The ``data`` parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
@@ -381,8 +420,8 @@ additional memory required by the solver is
 allocated according to the options provided. 
 
 The only method of the [``Solver``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html) class besides the
-init is [``advance(nt, mu_coeff, ...)``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
-which advances the solution by ``nt`` timesteps, optionally
+init is [``advance(n_steps, mu_coeff, ...)``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
+which advances the solution by ``n_steps`` timesteps, optionally
 taking into account a given diffusion coefficient ``mu_coeff``.
 
 Solution state is accessible through the ``Solver.advectee`` property.

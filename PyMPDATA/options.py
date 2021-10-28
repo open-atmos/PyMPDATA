@@ -14,7 +14,9 @@ class _HashableDict(dict):
 class Options:
     """ representation of MPDATA algorithm variant choice, for an overview of
         MPDATA options carried out using PyMPDATA, see
-        [Olesik et al. 2020[(https://doi.org/10.5194/gmd-2020-404) """
+        [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
+        equipped with meaningul `__str__` `__hash__`, `__eq__`.
+    """
     def __init__(self, *,
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
@@ -64,8 +66,8 @@ class Options:
     @property
     def infinite_gauge(self) -> bool:
         """ flag enabling the infinite-gauge option, see e.g.:
-            - [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-            - [Smolarkiewicz & Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+            [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+            [Smolarkiewicz & Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
         """
         return self._values['infinite_gauge']
 
@@ -78,8 +80,8 @@ class Options:
     @property
     def divergent_flow(self) -> bool:
         """ flag enabling the divergent-flow option, see e.g.:
-            - [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9)
-            - [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+            [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+            [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         """
         return self._values['divergent_flow']
 
@@ -98,9 +100,9 @@ class Options:
     @property
     def DPDC(self) -> bool:  # pylint: disable=invalid-name
         """ flag enabling the double-pass donor-cell option, see:
-            - [Beason & Margolin, 1988](https://www.osti.gov/servlets/purl/7049237)
-            - [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-            - [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+            [Beason & Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+            [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+            [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         """
         return self._values['DPDC']
 
@@ -133,8 +135,8 @@ class Options:
 
     @property
     def jit_flags(self) -> _HashableDict:
-        """ options passed to numba.njit(), for description see:
-            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options """
+        """ options passed [to numba.njit()](
+            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) """
         return _HashableDict({
             "fastmath": True,
             "error_model": 'numpy',
