@@ -32,7 +32,7 @@ def test_upwind(shape, ij0, out, courant_number):
         advector=advector,
         advectee=advectee
     )
-    mpdata.advance(nt=1)
+    mpdata.advance(n_steps=1)
 
     np.testing.assert_array_equal(
         mpdata.advectee.get(),

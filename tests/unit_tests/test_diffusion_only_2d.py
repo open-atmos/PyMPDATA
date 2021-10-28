@@ -26,7 +26,7 @@ def test_diffusion_only_2d(
     )
 
     # Act
-    solver.advance(nt=n_steps, mu_coeff=mu_coeff)
+    solver.advance(n_steps=n_steps, mu_coeff=mu_coeff)
 
     # Assert
     data1 = solver.advectee.get()

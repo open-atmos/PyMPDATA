@@ -167,7 +167,7 @@ def test_Arabas_et_al_2014_sanity(case_data):
     sut = mpdata
 
     # Act
-    sut.advance(nt=case["nt"])
+    sut.advance(n_steps=case["nt"])
 
     # Assert
     np.testing.assert_almost_equal(
