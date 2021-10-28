@@ -9,9 +9,9 @@ from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
 from .impl.formulae_laplacian import make_laplacian
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_nonoscillatory import make_psi_extrema, make_beta, make_correction
+from .impl.formulae_axpy import make_axpy
 from .impl.traversals import Traversals
-from .impl.meta import META_HALO_VALID
-from .impl.enumerations import INNER, MID3D, OUTER, ARG_DATA, IMPL_META_AND_DATA, IMPL_BC
+from .impl.enumerations import ARG_DATA, IMPL_META_AND_DATA, IMPL_BC
 from .options import Options
 from .impl.clock import clock
 
@@ -57,18 +57,22 @@ class Stepper:
         )
 
     @property
-    def options(self):
+    def options(self) -> Options:
+        """ `Options` instance used """
         return self.__options
 
     @property
-    def n_threads(self):
+    def n_threads(self) -> int:
+        """ actual n_threads used (may be different than passed to __init__ if n_dims==1
+            or if on a platform where Numba does not support threading) """
         return self.__n_threads
 
     @property
-    def n_dims(self):
+    def n_dims(self) -> int:
+        """ dimensionality (1, 2 or 3) """
         return self.__n_dims
 
-    def __call__(self, n_steps, mu_coeff, post_step, post_iter, fields):
+    def __call__(self, *, n_steps, mu_coeff, post_step, post_iter, fields):
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
@@ -80,14 +84,14 @@ class Stepper:
 
 
 @lru_cache()
+# pylint: disable=too-many-locals,too-many-statements
 def make_step_impl(options, non_unit_g_factor, grid, n_threads):
+    """ returns (and caches) an njit-ted stepping function and a traversals pair """
+    traversals = Traversals(grid, options.n_halo, options.jit_flags, n_threads=n_threads)
+
     n_iters = options.n_iters
-    n_dims = len(grid)
-    halo = options.n_halo
     non_zero_mu_coeff = options.non_zero_mu_coeff
     nonoscillatory = options.nonoscillatory
-
-    traversals = Traversals(grid, halo, options.jit_flags, n_threads=n_threads)
 
     upwind = make_upwind(options, non_unit_g_factor, traversals)
     flux_first_pass = make_flux_first_pass(options, traversals)
@@ -98,21 +102,10 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     nonoscillatory_psi_extrema = make_psi_extrema(options, traversals)
     nonoscillatory_beta = make_beta(non_unit_g_factor, options, traversals)
     nonoscillatory_correction = make_correction(options, traversals)
+    axpy = make_axpy(options, traversals)
 
     @numba.njit(**options.jit_flags)
-    # pylint: disable=too-many-arguments
-    def axpy(out_meta, out_outer, out_mid3d, out_inner, a_coeffs,
-             _, x_outer, x_mid3d, x_inner,
-             __, y_outer, y_mid3d, y_inner):
-        if n_dims > 1:
-            out_outer[:] = a_coeffs[OUTER] * x_outer[:] + y_outer[:]
-            if n_dims > 2:
-                out_mid3d[:] = a_coeffs[MID3D] * x_mid3d[:] + y_mid3d[:]
-        out_inner[:] = a_coeffs[INNER] * x_inner[:] + y_inner[:]
-        out_meta[META_HALO_VALID] = False
-
-    @numba.njit(**options.jit_flags)
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-branches
     def step(n_steps, mu_coeff, post_step, post_iter,
              advectee, advectee_bc,
              advector, advector_bc,

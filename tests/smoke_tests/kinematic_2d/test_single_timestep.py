@@ -6,8 +6,31 @@ from PyMPDATA import Stepper, ScalarField, Solver, Options
 from PyMPDATA.boundary_conditions import Periodic
 
 
+GRID = (75, 75)
+SIZE = (1500, 1500)
+TIMESTEP = 1
+RHOD_W_MAX = .6
+
+
+def stream_function(x_01, z_01):
+    x_span = SIZE[0]
+    return - RHOD_W_MAX * x_span / np.pi * np.sin(np.pi * z_01) * np.cos(2 * np.pi * x_01)
+
+
+RHOD_OF_Z = lambda z: 1 - z * 1e-4
+RHOD = np.repeat(
+    RHOD_OF_Z(
+        (np.arange(GRID[1]) + 1 / 2) / GRID[1]
+    ).reshape((1, GRID[1])),
+    GRID[0],
+    axis=0
+)
+
+VALUES = {'th': np.full(GRID, 300), 'qv': np.full(GRID, .001)}
+
+
 @pytest.mark.parametrize(
-    "options", [
+    "options", (
         Options(n_iters=1),
         Options(n_iters=2),
         Options(n_iters=2, nonoscillatory=True),
@@ -17,44 +40,25 @@ from PyMPDATA.boundary_conditions import Periodic
         Options(nonoscillatory=False, infinite_gauge=True),
         Options(nonoscillatory=False, third_order_terms=True),
         Options(nonoscillatory=False, infinite_gauge=True, third_order_terms=True)
-    ]
+    )
 )
 def test_single_timestep(options):
     # Arrange
-    grid = (75, 75)
-    size = (1500, 1500)
-    timestep = 1
-    w_max = .6
-
-    def stream_function(xX, zZ):
-        X = size[0]
-        return - w_max * X / np.pi * np.sin(np.pi * zZ) * np.cos(2 * np.pi * xX)
-
-    rhod_of = lambda z: 1 - z * 1e-4
-    rhod = np.repeat(
-        rhod_of(
-            (np.arange(grid[1]) + 1 / 2) / grid[1]
-        ).reshape((1, grid[1])),
-        grid[0],
-        axis=0
-    )
-
-    values = {'th': np.full(grid, 300), 'qv': np.full(grid, .001)}
-    stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
-    advector = nondivergent_vector_field_2d(grid, size, timestep, stream_function, options.n_halo)
+    stepper = Stepper(options=options, grid=GRID, non_unit_g_factor=True)
+    advector = nondivergent_vector_field_2d(GRID, SIZE, TIMESTEP, stream_function, options.n_halo)
     g_factor = ScalarField(
-        rhod.astype(dtype=options.dtype),
+        RHOD.astype(dtype=options.dtype),
         halo=options.n_halo,
         boundary_conditions=(Periodic(), Periodic())
     )
     mpdatas = {}
-    for k1, v1 in values.items():
+    for key, value in VALUES.items():
         advectee = ScalarField(
-            np.full(grid, v1, dtype=options.dtype),
+            np.full(GRID, value, dtype=options.dtype),
             halo=options.n_halo,
             boundary_conditions=(Periodic(), Periodic())
         )
-        mpdatas[k1] = Solver(
+        mpdatas[key] = Solver(
             stepper=stepper,
             advectee=advectee,
             advector=advector,
@@ -66,5 +70,5 @@ def test_single_timestep(options):
         mpdata.advance(n_steps=1)
 
     # Assert
-    for v in mpdatas.values():
-        assert np.isfinite(v.advectee.get()).all()
+    for value in mpdatas.values():
+        assert np.isfinite(value.advectee.get()).all()

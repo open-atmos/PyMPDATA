@@ -16,7 +16,8 @@
 
 [![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/PyMPDATA/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
 [![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
-[![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)    
+[![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)
+[![Github Actions Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/Pylint/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml)    
 [![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=)
 [![GitHub issues](https://img.shields.io/github/issues-pr-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=is:closed)    
 [![GitHub issues](https://img.shields.io/github/issues/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)

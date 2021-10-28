@@ -12,13 +12,16 @@ class _HashableDict(dict):
 
 @strict
 class Options:
+    """ representation of MPDATA algorithm variant choice, for an overview of
+        MPDATA options carried out using PyMPDATA, see
+        [Olesik et al. 2020[(https://doi.org/10.5194/gmd-2020-404) """
     def __init__(self, *,
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
                  divergent_flow: bool = False,
                  nonoscillatory: bool = False,
                  third_order_terms: bool = False,
-                 DPDC: bool = False,
+                 DPDC: bool = False,  # pylint: disable=invalid-name
                  epsilon: float = 1e-15,
                  non_zero_mu_coeff: bool = False,
                  dimensionally_split: bool = False,
@@ -37,55 +40,78 @@ class Options:
             'DPDC': DPDC
         })
 
-        if (
-            infinite_gauge or
-            divergent_flow or
-            nonoscillatory or
-            third_order_terms or
+        if any((
+            infinite_gauge,
+            divergent_flow,
+            nonoscillatory,
+            third_order_terms,
             DPDC
-        ) and n_iters < 2:
+        )) and n_iters < 2:
             raise ValueError()
         if n_iters < 1:
             raise ValueError()
 
     @property
     def dtype(self):
+        """ data type (e.g., np.float64) """
         return self._values['dtype']
 
     @property
     def n_iters(self) -> int:
+        """ number of iterations (1: upwind, 2: upwind + one corrective iteration, ...) """
         return self._values['n_iters']
 
     @property
     def infinite_gauge(self) -> bool:
+        """ flag enabling the infinite-gauge option, see e.g.:
+            - [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070)
+            - [Smolarkiewicz & Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+        """
         return self._values['infinite_gauge']
 
     @property
     def epsilon(self) -> float:
+        """ value of constant used to prevent from divisins by zero
+            in statements such as (a - b)/(a + b + eps) """
         return self._values['epsilon']
 
     @property
     def divergent_flow(self) -> bool:
+        """ flag enabling the divergent-flow option, see e.g.:
+            - [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9)
+            - [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        """
         return self._values['divergent_flow']
 
     @property
     def nonoscillatory(self) -> bool:
+        """ flag enabling the nonoscillatory option, see
+            [Smolarkiewicz & Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A) """
         return self._values['nonoscillatory']
 
     @property
     def third_order_terms(self) -> bool:
+        """ flag enabling the third-order-terms option, see
+            [Margolin & Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X) """
         return self._values['third_order_terms']
 
     @property
-    def DPDC(self) -> bool:
+    def DPDC(self) -> bool:  # pylint: disable=invalid-name
+        """ flag enabling the double-pass donor-cell option, see:
+            - [Beason & Margolin, 1988](https://www.osti.gov/servlets/purl/7049237)
+            - [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070)
+            - [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        """
         return self._values['DPDC']
 
     @property
     def non_zero_mu_coeff(self) -> bool:
+        """ flag enabling handling of Fickian diffusion term """
         return self._values['non_zero_mu_coeff']
 
     @property
     def dimensionally_split(self) -> bool:
+        """ flag disabling cross-dimensional terms in antidiffusive velocities """
         return self._values['dimensionally_split']
 
     def __str__(self):

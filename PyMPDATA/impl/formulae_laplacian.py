@@ -1,3 +1,4 @@
+""" logic for handling the Fickian term by modifying physical velocity """
 import numba
 from ..impl.enumerations import MAX_DIM_NUM
 from ..impl.traversals import Traversals
@@ -5,6 +6,7 @@ from ..options import Options
 
 
 def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):
+    """ returns njit-ted function for use with given traversals """
     if not options.non_zero_mu_coeff:
         @numba.njit(**options.jit_flags)
         def apply(_1, _2, _3):

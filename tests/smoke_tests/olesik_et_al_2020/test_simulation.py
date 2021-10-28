@@ -47,12 +47,12 @@ def test_init(grid_layout, psi_coord, nonoscillatory):
     assert simulation.n_of_r.shape[0] == settings.nr
 
     # Asserts for Jacobian
-    G_with_halo = simulation.solver.g_factor.data
-    assert np.isfinite(G_with_halo).all()
+    g_factor_with_halo = simulation.solver.g_factor.data
+    assert np.isfinite(g_factor_with_halo).all()
     if isinstance(psi_coord, type(grid_layout)):
-        np.testing.assert_array_almost_equal(np.diff(G_with_halo), 0)
+        np.testing.assert_array_almost_equal(np.diff(g_factor_with_halo), 0)
     else:
-        assert (np.diff(G_with_halo) >= 0).all() or (np.diff(G_with_halo) <= 0).all()
+        assert (np.diff(g_factor_with_halo) >= 0).all() or (np.diff(g_factor_with_halo) <= 0).all()
 
 
 @pytest.mark.parametrize("grid_layout", grid_layout_set)
@@ -71,7 +71,7 @@ def test_n_finite(grid_layout, opts, data):
 @pytest.mark.parametrize("grid_layout", grid_layout_set)
 @pytest.mark.parametrize("opts", opt_set)
 # pylint: disable-next=redefined-outer-name
-def test_L2_finite(grid_layout, opts, data):
+def test_error_norm_finite(grid_layout, opts, data):
     # Arrange
     grid_layout_str = grid_layout.__class__.__name__
     sut = data[grid_layout_str]['error_L2'][str(opts)]

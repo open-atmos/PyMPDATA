@@ -81,7 +81,7 @@ class TestPeriodicBoundaryCondition:
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals.fill_halos_scalar
+        sut = traversals._code['fill_halos_scalar']  # pylint:disable=protected-access
 
         # act
         for thread_id in range(n_threads):  # TODO #96: xfail if not all threads executed?
@@ -126,7 +126,7 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("comp", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
-    # pylint: disable-next=redefined-outer-name
+    # pylint: disable=redefined-outer-name,too-many-arguments
     def test_vector(data, halo, side, n_threads, comp, dim_offset):
         n_dims = len(data)
         if n_dims == 1 and n_threads > 1:
@@ -141,7 +141,7 @@ class TestPeriodicBoundaryCondition:
         traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals.fill_halos_vector
+        sut = traversals._code['fill_halos_vector']  # pylint:disable=protected-access
 
         # act
         for thread_id in range(n_threads):  # TODO #96: xfail if not all threads executed?

@@ -9,6 +9,7 @@ from PyMPDATA.impl.enumerations import (
 
 
 def make_psi_extrema(options, traversals):
+    """ returns an njit-ted function for use with given traversals """
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
         def apply(_psi_extrema, _psi, _psi_bc):
@@ -80,6 +81,7 @@ def __make_psi_extrema(jit_flags, n_dims, ats):
 
 
 def make_beta(non_unit_g_factor, options, traversals):
+    """ returns njit-ted function for use with given traversals """
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
         # pylint: disable=too-many-arguments
@@ -92,8 +94,12 @@ def make_beta(non_unit_g_factor, options, traversals):
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
             __make_beta(
-                options.jit_flags, traversals.n_dims, idx.ats[at_idx], idx.atv[at_idx],
-                non_unit_g_factor, options.epsilon
+                jit_flags=options.jit_flags,
+                n_dims=traversals.n_dims,
+                ats=idx.ats[at_idx],
+                atv=idx.atv[at_idx],
+                non_unit_g_factor=non_unit_g_factor,
+                epsilon=options.epsilon
             ),
             None,
             None
@@ -121,7 +127,7 @@ def make_beta(non_unit_g_factor, options, traversals):
     return apply
 
 
-def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
+def __make_beta(*, jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
     if n_dims == 1:
         @numba.njit(**jit_flags)
         def denominator(flux, sign):
@@ -148,11 +154,11 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
 
     if non_unit_g_factor:
         @numba.njit(**jit_flags)
-        def G(g_factor):
-            return ats(*g_factor, 0)
+        def g_fun(arg):
+            return ats(*arg, 0)
     else:
         @numba.njit(**jit_flags)
-        def G(_):
+        def g_fun(_):
             return 1
 
     if n_dims == 1:
@@ -160,7 +166,7 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
         # pylint: disable=too-many-arguments
         def _impl(flux, psi, psi_ext, g_factor, extremum, sign):
             return ((extremum(ats(*psi_ext, 0), ats(*psi, 0), ats(*psi, -1), ats(*psi, 1))
-                     - ats(*psi, 0)) * sign * G(g_factor)
+                     - ats(*psi, 0)) * sign * g_fun(g_factor)
                     ) / denominator(flux, sign)
     elif n_dims == 2:
         @numba.njit(**jit_flags)
@@ -170,7 +176,7 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
                               ats(*psi, 0, 0),
                               ats(*psi, -1, 0), ats(*psi, 1, 0),
                               ats(*psi, 0, -1), ats(*psi, 0, 1))
-                     - ats(*psi, 0, 0)) * sign * G(g_factor)
+                     - ats(*psi, 0, 0)) * sign * g_fun(g_factor)
                     ) / denominator(flux, sign)
     elif n_dims == 3:
         @numba.njit(**jit_flags)
@@ -181,7 +187,7 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
                               ats(*psi, -1, 0, 0), ats(*psi, 1, 0, 0),
                               ats(*psi, 0, -1, 0), ats(*psi, 0, 1, 0),
                               ats(*psi, 0, 0, -1), ats(*psi, 0, 0, 1))
-                     - ats(*psi, 0, 0, 0)) * sign * G(g_factor)
+                     - ats(*psi, 0, 0, 0)) * sign * g_fun(g_factor)
                     ) / denominator(flux, sign)
     else:
         raise NotImplementedError()
@@ -199,9 +205,10 @@ def __make_beta(jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
 
 
 def make_correction(options, traversals):
+    """ returns njit-ted function for use with given traversals """
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
-        def apply(_GC_corr, _vec_bc, _beta, _beta_bc):
+        def apply(_, __, ___, ____):
             return
     else:
         idx = traversals.indexers[traversals.n_dims]
@@ -216,11 +223,11 @@ def make_correction(options, traversals):
         null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
 
         @numba.njit(**options.jit_flags)
-        def apply(GC_corr, vec_bc, beta, beta_bc):
+        def apply(g_c_corr, vec_bc, beta, beta_bc):
             return apply_vector(*formulae,
-                                *GC_corr,
+                                *g_c_corr,
                                 *beta, *beta_bc,
-                                *GC_corr, *vec_bc,
+                                *g_c_corr, *vec_bc,
                                 *null_scalfield, *null_scalfield_bc
                                 )
 
@@ -229,12 +236,12 @@ def make_correction(options, traversals):
 
 def __make_correction(jit_flags, ats, atv):
     @numba.njit(**jit_flags)
-    def correction(beta, GC, _):
+    def correction(beta, g_c, _):
         beta_down = (beta[META_AND_DATA_META], beta[META_AND_DATA_DATA].real)
         beta_up = (beta[META_AND_DATA_META], beta[META_AND_DATA_DATA].imag)
-        a = min(1, ats(*beta_down, 0), ats(*beta_up, 1))
-        b = min(1, ats(*beta_up, 0), ats(*beta_down, 1))
-        c = atv(*GC, +.5)
-        return (c + np.abs(c)) / 2 * a + (c - np.abs(c)) / 2 * b
+        val_1 = min(1, ats(*beta_down, 0), ats(*beta_up, 1))
+        val_2 = min(1, ats(*beta_up, 0), ats(*beta_down, 1))
+        val_3 = atv(*g_c, +.5)
+        return (val_3 + np.abs(val_3)) / 2 * val_1 + (val_3 - np.abs(val_3)) / 2 * val_2
 
     return correction

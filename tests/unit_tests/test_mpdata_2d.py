@@ -136,7 +136,7 @@ def case_data(request):
 
 
 # pylint: disable-next=redefined-outer-name
-def test_Arabas_et_al_2014_sanity(case_data):
+def test_mpdata_2d(case_data):
     case = {
         "nx": case_data[0],
         "ny": case_data[1],
@@ -150,12 +150,12 @@ def test_Arabas_et_al_2014_sanity(case_data):
     }
     # Arrange
     data = case["input"].reshape((case["nx"], case["ny"]))
-    c = [case["Cx"], case["Cy"]]
+    courant = [case["Cx"], case["Cy"]]
     options = Options(n_iters=case["ni"], dimensionally_split=case["dimsplit"])
     grid = data.shape
     advector_data = [
-        np.full((grid[0] + 1, grid[1]), c[0], dtype=options.dtype),
-        np.full((grid[0], grid[1] + 1), c[1], dtype=options.dtype)
+        np.full((grid[0] + 1, grid[1]), courant[0], dtype=options.dtype),
+        np.full((grid[0], grid[1] + 1), courant[1], dtype=options.dtype)
     ]
     bcs = (Periodic(), Periodic())
     advector = VectorField(advector_data, halo=options.n_halo,

@@ -34,7 +34,7 @@ class TestPolarBoundaryCondition:
                                 n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals.fill_halos_scalar
+        sut = traversals._code['fill_halos_scalar']  # pylint:disable=protected-access
 
         # act
         # pylint: disable-next=not-an-iterable
@@ -80,7 +80,7 @@ class TestPolarBoundaryCondition:
         traversals = Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals.fill_halos_vector
+        sut = traversals._code['fill_halos_vector']  # pylint:disable=protected-access
 
         # act
         # pylint: disable-next=not-an-iterable
