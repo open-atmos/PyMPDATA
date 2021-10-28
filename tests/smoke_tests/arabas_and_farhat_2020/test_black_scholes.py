@@ -1,5 +1,7 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 from PyMPDATA_examples.Arabas_and_Farhat_2020 import Simulation
 from PyMPDATA_examples.Arabas_and_Farhat_2020.setup2_american_put import Settings
+
 
 def test_black_scholes():
     # arrange

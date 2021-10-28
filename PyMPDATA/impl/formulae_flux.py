@@ -1,9 +1,11 @@
+""" staggered-grid flux logic including infinite-gauge logic handling """
 import numpy as np
 import numba
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
 def make_flux_first_pass(options, traversals):
+    """ returns njit-ted function for use with given traversals """
     idx = traversals.indexers[traversals.n_dims]
     apply_vector = traversals.apply_vector()
     null_scalarfield, null_bc = traversals.null_scalar_field.impl
@@ -32,6 +34,7 @@ def make_flux_first_pass(options, traversals):
 
 
 def make_flux_subsequent(options, traversals):
+    """ returns njit-ted function for use with given traversals """
     idx = traversals.indexers[traversals.n_dims]
     apply_vector = traversals.apply_vector()
 
@@ -49,11 +52,11 @@ def make_flux_subsequent(options, traversals):
     null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
     @numba.njit(**options.jit_flags)
-    def apply(flux, psi, psi_bc, GC_corr, vec_bc):
+    def apply(flux, psi, psi_bc, g_c_corr, vec_bc):
         return apply_vector(*formulae_flux_subsequent,
                             *flux,
                             *psi, *psi_bc,
-                            *GC_corr, *vec_bc,
+                            *g_c_corr, *vec_bc,
                             *null_scalarfield, *null_bc)
 
     return apply

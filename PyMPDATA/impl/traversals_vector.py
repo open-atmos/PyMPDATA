@@ -5,13 +5,13 @@ from .enumerations import (
     OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_STOP, RNG_START,
     INVALID_INDEX, ONE_FOR_STAGGERED_GRID
 )
-from .traversals_common import make_common
+from .traversals_common import _make_common
 
 
 def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                        spanner, chunker, boundary_cond_vector, boundary_cond_scalar):
     set_value = indexers[n_dims].set
-    common = make_common(jit_flags, spanner, chunker)
+    common = _make_common(jit_flags, spanner, chunker)
     halos = (
         (halo - 1, halo, halo),
         (halo, halo - 1, halo),
@@ -19,7 +19,7 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
     )
 
     @numba.njit(**jit_flags)
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-locals
     def apply_vector_impl(thread_id, out_meta,
                           fun_outer, fun_mid3d, fun_inner,
                           out_outer, out_mid3d, out_inner,
@@ -61,7 +61,7 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                     ))
 
     @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-locals
     def apply_vector(
         fun_outer, fun_mid3d, fun_inner,
         out_meta, out_outer, out_mid3d, out_inner,
@@ -98,9 +98,10 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
     return apply_vector
 
 
+# pylint: disable=too-many-statements,too-many-locals
 def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
     set_value = indexers[n_dims].set
-    common = make_common(jit_flags, spanner, chunker)
+    common = _make_common(jit_flags, spanner, chunker)
     halos = (
         (halo - 1, halo, halo),
         (halo, halo - 1, halo),

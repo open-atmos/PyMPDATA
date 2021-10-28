@@ -1,13 +1,28 @@
-"""
-boundary condition extrapolating values from the edge to the halo
-"""
+""" boundary condition extrapolating values from the edge to the halo """
 from functools import lru_cache
 import numba
 from PyMPDATA.impl.enumerations import ARG_FOCUS, INNER, SIGN_LEFT
 from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 
+class Extrapolated:
+    """ class which instances are to be passed in boundary_conditions tuple to the
+        `ScalarField` and `VectorField` __init__ methods """
+    def __init__(self, dim=INNER, eps=1e-10):
+        self.eps = eps
+        self.dim = dim
+
+    def make_scalar(self, ats, halo, dtype, jit_flags):
+        """ returns (lru-cached) Numba-compiled scalar halo-filling callable """
+        return _make_scalar(self.dim, self.eps, ats, halo, dtype, jit_flags)
+
+    def make_vector(self, ats, halo, dtype, jit_flags):
+        """ returns (lru-cached) Numba-compiled vector halo-filling callable """
+        return _make_vector(self.dim, ats, halo, dtype, jit_flags)
+
+
 @lru_cache()
+# pylint: disable=too-many-arguments
 def _make_scalar(dim, eps, ats, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def impl(psi, span, sign):
@@ -44,15 +59,3 @@ def _make_vector(_, ats, __, ___, jit_flags):
     def fill_halos(psi, ____, sign):
         return ats(*psi, sign)
     return fill_halos
-
-
-class Extrapolated:
-    def __init__(self, dim=INNER, eps=1e-10):
-        self.eps = eps
-        self.dim = dim
-
-    def make_scalar(self, ats, halo, dtype, jit_flags):
-        return _make_scalar(self.dim, self.eps, ats, halo, dtype, jit_flags)
-
-    def make_vector(self, ats, halo, dtype, jit_flags):
-        return _make_vector(self.dim, ats, halo, dtype, jit_flags)

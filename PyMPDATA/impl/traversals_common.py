@@ -1,8 +1,9 @@
+""" commons for scalar and vector field traversals """
 import numba
 from .enumerations import RNG_STOP, OUTER
 
 
-def make_common(jit_flags, spanner, chunker):
+def _make_common(jit_flags, spanner, chunker):
     @numba.njit(**jit_flags)
     def common(meta, thread_id):
         span = spanner(meta)

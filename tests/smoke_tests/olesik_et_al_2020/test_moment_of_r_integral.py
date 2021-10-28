@@ -11,14 +11,14 @@ si = pint.UnitRegistry()
 @pytest.mark.parametrize("coord", [x_id(), x_log_of_pn(r0=1 * si.um, n=1), x_p2()])
 def test_moment_of_r_integral(k, coord):
     # Arrange
-    r0 = 2 * si.um
-    r1 = 4 * si.um
+    r_0 = 2 * si.um
+    r_1 = 4 * si.um
 
     # Act
     with np.errstate(divide='ignore', invalid='ignore'):
         integral = (
-            coord.moment_of_r_integral(coord.x(r1), k) -
-            coord.moment_of_r_integral(coord.x(r0), k)
+            coord.moment_of_r_integral(coord.x(r_1), k) -
+            coord.moment_of_r_integral(coord.x(r_0), k)
         )
 
     # Assert

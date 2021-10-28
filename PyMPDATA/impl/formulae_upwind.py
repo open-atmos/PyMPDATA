@@ -1,8 +1,10 @@
+""" upwind/donor-cell formula logic including G-factor handling """
 import numba
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
 def make_upwind(options, non_unit_g_factor, traversals):
+    """ returns an njit-ted function for use with given traversals """
     apply_scalar = traversals.apply_scalar(loop=True)
     idx = traversals.indexers[traversals.n_dims]
     null_scalarfield, null_scalarfield_bc = traversals.null_scalar_field.impl

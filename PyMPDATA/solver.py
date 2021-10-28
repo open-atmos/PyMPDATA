@@ -12,6 +12,7 @@ from .impl.meta import META_IS_NULL
 
 @numba.experimental.jitclass([])
 class PostStepNull:  # pylint: disable=too-few-public-methods
+    """ do-nothing version of the post-step hook """
     def __init__(self):
         pass
 
@@ -21,6 +22,7 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
 
 @numba.experimental.jitclass([])
 class PostIterNull:  # pylint: disable=too-few-public-methods
+    """ do-nothing version of the post-iter hook """
     def __init__(self):
         pass
 
@@ -29,8 +31,15 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
 
 
 class Solver:
-    def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
-                 g_factor: [ScalarField, None] = None):
+    """ solution orchestrator requireing prior instantiation of: a `Stepper`,
+        a scalar advectee field, a vector advector field and optionally
+        a scala g_factor field """
+    def __init__(self,
+        stepper: Stepper,
+        advectee: ScalarField,
+        advector: VectorField,
+        g_factor: [ScalarField, None] = None
+    ):
         scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
         null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims, stepper.traversals)
         vector_field = lambda: VectorField.clone(advector)
@@ -59,15 +68,21 @@ class Solver:
         self.__stepper = stepper
 
     @property
-    def advectee(self):
+    def advectee(self) -> ScalarField:
+        """ advectee scalar field (with halo), modified by advance(),
+            may be modified from user code (e.g., source-term handling) """
         return self.__fields['advectee']
 
     @property
-    def advector(self):
+    def advector(self) -> VectorField:
+        """ advector vector field (with halo), unmodified by advance(),
+            may be modified from user code """
         return self.__fields['advector']
 
     @property
-    def g_factor(self):
+    def g_factor(self) -> ScalarField:
+        """ g_factor field (with halo), unmodified by advance(),
+            assumed to be constant-in-time """
         return self.__fields['g_factor']
 
     def advance(self,
@@ -94,4 +109,10 @@ class Solver:
         post_step = post_step or PostStepNull()
         post_iter = post_iter or PostIterNull()
 
-        return self.__stepper(n_steps, mu_coeff, post_step, post_iter, self.__fields)
+        return self.__stepper(
+            n_steps=n_steps,
+            mu_coeff=mu_coeff,
+            post_step=post_step,
+            post_iter=post_iter,
+            fields=self.__fields
+        )

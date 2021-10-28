@@ -19,12 +19,13 @@ OMEGA = .1
 H = 4.
 H_0 = 1
 
-r = .15 * GRID[0] * DX
+RADIUS = .15 * GRID[0] * DX
 X_0 = int(.5 * GRID[0]) * DX
 Y_0 = int(.2 * GRID[0]) * DY
 
 X_C = .5 * GRID[0] * DX
 Y_C = .5 * GRID[1] * DY
+COURANT = (-.5, .25)
 
 
 class Settings:
@@ -56,30 +57,31 @@ class Settings:
         return GRID
 
     @staticmethod
-    def pdf(x, y):
-        tmp = (x - X_0) ** 2 + (y - Y_0) ** 2
+    def pdf(coord_x, coord_y):
+        tmp = (coord_x - X_0) ** 2 + (coord_y - Y_0) ** 2
         return H_0 + np.where(
             # if
-            tmp - r ** 2 <= 0,
+            tmp - RADIUS ** 2 <= 0,
             # then
-            H - np.sqrt(tmp / (r / H) ** 2),
+            H - np.sqrt(tmp / (RADIUS / H) ** 2),
             # else
             0.
         )
 
 
 def from_pdf_2d(pdf, xrange, yrange, gridsize):
-    z = np.empty(gridsize)
-    dx, dy = (xrange[1] - xrange[0]) / gridsize[0], (yrange[1] - yrange[0]) / gridsize[1]
+    psi = np.empty(gridsize)
+    delta_x = (xrange[1] - xrange[0]) / gridsize[0]
+    delta_y = (yrange[1] - yrange[0]) / gridsize[1]
     for i in range(gridsize[0]):
         for j in range(gridsize[1]):
-            z[i, j] = pdf(
-                xrange[0] + dx * (i + .5),
-                yrange[0] + dy * (j + .5)
+            psi[i, j] = pdf(
+                xrange[0] + delta_x * (i + .5),
+                yrange[0] + delta_y * (j + .5)
             )
-    x = np.linspace(xrange[0] + dx / 2, xrange[1] - dx / 2, gridsize[0])
-    y = np.linspace(yrange[0] + dy / 2, yrange[1] - dy / 2, gridsize[1])
-    return x, y, z
+    coord_x = np.linspace(xrange[0] + delta_x / 2, xrange[1] - delta_x / 2, gridsize[0])
+    coord_y = np.linspace(yrange[0] + delta_y / 2, yrange[1] - delta_y / 2, gridsize[1])
+    return coord_x, coord_y, psi
 
 
 @pytest.mark.parametrize("options", [
@@ -103,29 +105,34 @@ def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False)
     numba.set_num_threads(num_threads)
 
     settings = Settings(n_rotations=6)
-    _, __, z = from_pdf_2d(settings.pdf,
+    _, __, psi = from_pdf_2d(settings.pdf,
                            xrange=settings.xrange,
                            yrange=settings.yrange,
                            gridsize=settings.grid)
 
-    courant = (-.5, .25)
-    grid = z.shape
-    advector_data = [
-        np.full((grid[0] + 1, grid[1]), courant[0], dtype=options.dtype),
-        np.full((grid[0], grid[1] + 1), courant[1], dtype=options.dtype)
-    ]
-    advector = VectorField(advector_data, halo=options.n_halo,
-                           boundary_conditions=(Periodic(), Periodic()))
-    advectee = ScalarField(data=z.astype(dtype=options.dtype), halo=options.n_halo,
-                           boundary_conditions=(Periodic(), Periodic()))
+    advectee = ScalarField(
+        data=psi.astype(dtype=options.dtype),
+        halo=options.n_halo,
+        boundary_conditions=(Periodic(), Periodic())
+    )
+
+    advector = VectorField(
+        data=(
+            np.full((advectee.grid[0] + 1, advectee.grid[1]), COURANT[0], dtype=options.dtype),
+            np.full((advectee.grid[0], advectee.grid[1] + 1), COURANT[1], dtype=options.dtype)
+        ),
+        halo=options.n_halo,
+        boundary_conditions=(Periodic(), Periodic())
+    )
+
     if grid_static:
-        stepper = Stepper(options=options, grid=grid)
+        stepper = Stepper(options=options, grid=psi.shape)
     else:
         stepper = Stepper(options=options, n_dims=2)
     solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 
     def set_z():
-        solver.advectee.get()[:] = z
+        solver.advectee.get()[:] = psi
 
     benchmark.pedantic(solver.advance, (settings.n_steps,), setup=set_z, warmup_rounds=1, rounds=3)
 
