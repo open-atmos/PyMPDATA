@@ -395,7 +395,7 @@ a solver and making one integration step looks as follows:
 ```Julia
 Solver = pyimport("PyMPDATA").Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
-solver.advance(nt=1)
+solver.advance(n_steps=1)
 state = solver.advectee.get()
 ```
 </details>
@@ -405,7 +405,7 @@ state = solver.advectee.get()
 ```Matlab
 Solver = py.importlib.import_module('PyMPDATA').Solver;
 solver = Solver(pyargs('stepper', stepper, 'advectee', advectee, 'advector', advector));
-solver.advance(pyargs('nt', 1));
+solver.advance(pyargs('n_steps', 1));
 state = solver.advectee.get();
 ```
 </details>
@@ -414,8 +414,9 @@ state = solver.advectee.get();
 
 ```python
 from PyMPDATA import Solver
+
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
-solver.advance(nt=1)
+solver.advance(n_steps=1)
 state = solver.advectee.get()
 ```
 </details>

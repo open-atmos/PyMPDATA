@@ -4,20 +4,23 @@ as well as self-initialised temporary storage
 """
 from typing import Union
 import numba
-from .scalar_field import  ScalarField
+from .scalar_field import ScalarField
 from .vector_field import VectorField
 from .stepper import Stepper
 from .impl.meta import META_IS_NULL
 
 
-@numba.njit(inline='always')
-# pylint: disable-next=unused-argument
-def post_step_null(psi, t):
-    pass
+@numba.experimental.jitclass([])
+class PostStepNull:  # pylint: disable=too-few-public-methods
+    def __init__(self):
+        pass
+
+    def __call__(self, psi, step):  # pylint: disable-next=unused-argument
+        pass
 
 
 @numba.experimental.jitclass([])
-class PostIterNull:
+class PostIterNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
@@ -33,53 +36,62 @@ class Solver:
         vector_field = lambda: VectorField.clone(advector)
         null_vector_field = lambda: VectorField.make_null(advector.n_dims, stepper.traversals)
 
-        self.options = stepper.options
-
         for field in [advector, advectee] + ([g_factor] if g_factor is not None else []):
-            assert field.halo == self.options.n_halo
-            assert field.dtype == self.options.dtype
+            assert field.halo == stepper.options.n_halo
+            assert field.dtype == stepper.options.dtype
 
-        self.stepper = stepper
-        self.advectee = advectee
-        self.advector = advector
-        self.g_factor = g_factor or null_scalar_field()
-        self._vectmp_a = vector_field()
-        self._vectmp_b = vector_field()
-        self._vectmp_c = vector_field() \
-            if self.options.non_zero_mu_coeff else null_vector_field()
-        self.nonosc_xtrm = scalar_field(dtype=complex) \
-            if self.options.nonoscillatory else null_scalar_field()
-        self.nonosc_beta = scalar_field(dtype=complex) \
-            if self.options.nonoscillatory else null_scalar_field()
+        self.__fields = {
+            'advectee': advectee,
+            'advector': advector,
+            'g_factor': g_factor or null_scalar_field(),
+            'vectmp_a': vector_field(),
+            'vectmp_b': vector_field(),
+            'vectmp_c': vector_field()
+                if stepper.options.non_zero_mu_coeff else null_vector_field(),
+            'nonosc_xtrm': scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory else null_scalar_field(),
+            'nonosc_beta': scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory else null_scalar_field()
+        }
+        for field in self.__fields.values():
+            field.assemble(stepper.traversals)
 
-        for field in (self.advectee, self.advector, self.g_factor, self._vectmp_a,
-                      self._vectmp_b, self._vectmp_c, self.nonosc_xtrm, self.nonosc_beta):
-            field.assemble(self.stepper.traversals)
+        self.__stepper = stepper
+
+    @property
+    def advectee(self):
+        return self.__fields['advectee']
+
+    @property
+    def advector(self):
+        return self.__fields['advector']
+
+    @property
+    def g_factor(self):
+        return self.__fields['g_factor']
 
     def advance(self,
-                nt: int,
+                n_steps: int,
                 mu_coeff: Union[tuple, None] = None,
                 post_step=None,
                 post_iter=None
                 ):
+        """ advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
+            coefficients (one value per dimension) as well as `post_iter` and `post_step`
+            callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+            signature see `PostStepNull` and `PostIterNull`;
+            returns wall time per timestep (units as returned by `clock.clock()`) """
         if mu_coeff is not None:
-            assert self.options.non_zero_mu_coeff
+            assert self.__stepper.options.non_zero_mu_coeff
         else:
             mu_coeff = (0., 0., 0.)
-        if self.options.non_zero_mu_coeff and not self.g_factor.meta[META_IS_NULL]:
+        if (
+            self.__stepper.options.non_zero_mu_coeff and
+            not self.__fields['g_factor'].meta[META_IS_NULL]
+        ):
             raise NotImplementedError()
 
-        post_step = post_step or post_step_null
+        post_step = post_step or PostStepNull()
         post_iter = post_iter or PostIterNull()
 
-        wall_time_per_timestep = self.stepper(nt, mu_coeff, post_step, post_iter,
-                                              *self.advectee.impl,
-                                              *self.advector.impl,
-                                              *self.g_factor.impl,
-                                              *self._vectmp_a.impl,
-                                              *self._vectmp_b.impl,
-                                              *self._vectmp_c.impl,
-                                              *self.nonosc_xtrm.impl,
-                                              *self.nonosc_beta.impl
-                                              )
-        return wall_time_per_timestep
+        return self.__stepper(n_steps, mu_coeff, post_step, post_iter, self.__fields)

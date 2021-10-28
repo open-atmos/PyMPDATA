@@ -11,7 +11,7 @@ from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_nonoscillatory import make_psi_extrema, make_beta, make_correction
 from .impl.traversals import Traversals
 from .impl.meta import META_HALO_VALID
-from .impl.enumerations import INNER, MID3D, OUTER, ARG_DATA
+from .impl.enumerations import INNER, MID3D, OUTER, ARG_DATA, IMPL_META_AND_DATA, IMPL_BC
 from .options import Options
 from .impl.clock import clock
 
@@ -68,28 +68,15 @@ class Stepper:
     def n_dims(self):
         return self.__n_dims
 
-    def __call__(self, n_steps, mu_coeff, post_step, post_iter,
-                 advectee, advectee_bc,
-                 advector, advector_bc,
-                 g_factor, g_factor_bc,
-                 vectmp_a, vectmp_a_bc,
-                 vectmp_b, vectmp_b_bc,
-                 vectmp_c, vectmp_c_bc,
-                 psi_extrema, psi_extrema_bc,
-                 beta, beta_bc):
+    def __call__(self, n_steps, mu_coeff, post_step, post_iter, fields):
         assert self.n_threads == 1 or numba.get_num_threads() == self.n_threads
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-            return self.__call(n_steps, mu_coeff, post_step, post_iter,
-                               advectee, advectee_bc,
-                               advector, advector_bc,
-                               g_factor, g_factor_bc,
-                               vectmp_a, vectmp_a_bc,
-                               vectmp_b, vectmp_b_bc,
-                               vectmp_c, vectmp_c_bc,
-                               psi_extrema, psi_extrema_bc,
-                               beta, beta_bc
-                               )
+            wall_time_per_timestep = self.__call(
+                n_steps, mu_coeff, post_step, post_iter,
+                *(v.impl[i] for v in fields.values() for i in (IMPL_META_AND_DATA, IMPL_BC))
+            )
+        return wall_time_per_timestep
 
 
 @lru_cache()
@@ -189,6 +176,6 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                 post_iter.__call__(flux, g_factor, step, iteration)
             if non_zero_mu_coeff:
                 advector = advector_orig
-            post_step(advectee[ARG_DATA], step)
+            post_step.__call__(advectee[ARG_DATA], step)
         return (clock() - time) / n_steps
     return step, traversals
