@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.impl.traversals API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="staggered-grid traversals orchestration" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,13 @@
 <h1 class="title">Module <code>PyMPDATA.impl.traversals</code></h1>
 </header>
 <section id="section-intro">
+<p>staggered-grid traversals orchestration</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from ..scalar_field import ScalarField
+<pre><code class="python">&#34;&#34;&#34; staggered-grid traversals orchestration &#34;&#34;&#34;
+from ..scalar_field import ScalarField
 from ..vector_field import VectorField
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
@@ -36,6 +38,7 @@ from .enumerations import INNER, MID3D, OUTER
 
 
 class Traversals:
+    &#34;&#34;&#34; groups njit-ted traversals for a given grid, halo, jit_flags and threading settings &#34;&#34;&#34;
     def __init__(self, grid, halo, jit_flags, n_threads):
         assert not (n_threads &gt; 1 and len(grid) == 1)
         domain = make_domain((
@@ -51,47 +54,53 @@ class Traversals:
         self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
         self.null_vector_field = VectorField.make_null(self.n_dims, self)
 
-        self.fill_halos_scalar = _make_fill_halos_scalar(
+        self._code = {}
+        self._code[&#39;fill_halos_scalar&#39;] = _make_fill_halos_scalar(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             chunker=chunk, spanner=domain
         )
-        self.fill_halos_vector = _make_fill_halos_vector(
+        self._code[&#39;fill_halos_vector&#39;] = _make_fill_halos_vector(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             chunker=chunk, spanner=domain
         )
-        self._apply_scalar = _make_apply_scalar(
+        self._code[&#39;apply_scalar&#39;] = _make_apply_scalar(
             indexers=self.indexers,
             loop=False, jit_flags=jit_flags, n_dims=self.n_dims,
             halo=halo, n_threads=n_threads,
             chunker=chunk, spanner=domain,
-            boundary_cond_vector=self.fill_halos_vector,
-            boundary_cond_scalar=self.fill_halos_scalar
+            boundary_cond_vector=self._code[&#39;fill_halos_vector&#39;],
+            boundary_cond_scalar=self._code[&#39;fill_halos_scalar&#39;]
         )
-        self._apply_scalar_loop = _make_apply_scalar(
+        self._code[&#39;apply_scalar_loop&#39;] = _make_apply_scalar(
             indexers=self.indexers,
             loop=True, jit_flags=jit_flags, n_dims=self.n_dims,
             halo=halo, n_threads=n_threads,
             chunker=chunk, spanner=domain,
-            boundary_cond_vector=self.fill_halos_vector,
-            boundary_cond_scalar=self.fill_halos_scalar
+            boundary_cond_vector=self._code[&#39;fill_halos_vector&#39;],
+            boundary_cond_scalar=self._code[&#39;fill_halos_scalar&#39;]
         )
-        self._apply_vector = _make_apply_vector(
+        self._code[&#39;apply_vector&#39;] = _make_apply_vector(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             n_threads=n_threads, spanner=domain, chunker=chunk,
-            boundary_cond_vector=self.fill_halos_vector,
-            boundary_cond_scalar=self.fill_halos_scalar
+            boundary_cond_vector=self._code[&#39;fill_halos_vector&#39;],
+            boundary_cond_scalar=self._code[&#39;fill_halos_scalar&#39;]
         )
 
     def apply_scalar(self, *, loop):
+        &#34;&#34;&#34; returns scalar field traversal function in two flavours:
+            - loop=True sums contributions over dimensions (used in summing upwind fluxes only)
+            - loop=False does no summing
+        &#34;&#34;&#34;
         if loop:
-            return self._apply_scalar_loop
-        return self._apply_scalar
+            return self._code[&#39;apply_scalar_loop&#39;]
+        return self._code[&#39;apply_scalar&#39;]
 
     def apply_vector(self):
-        return self._apply_vector</code></pre>
+        &#34;&#34;&#34; returns vector field traversal function &#34;&#34;&#34;
+        return self._code[&#39;apply_vector&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -108,12 +117,13 @@ class Traversals:
 <span>(</span><span>grid, halo, jit_flags, n_threads)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>groups njit-ted traversals for a given grid, halo, jit_flags and threading settings</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Traversals:
+    &#34;&#34;&#34; groups njit-ted traversals for a given grid, halo, jit_flags and threading settings &#34;&#34;&#34;
     def __init__(self, grid, halo, jit_flags, n_threads):
         assert not (n_threads &gt; 1 and len(grid) == 1)
         domain = make_domain((
@@ -129,47 +139,53 @@ class Traversals:
         self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
         self.null_vector_field = VectorField.make_null(self.n_dims, self)
 
-        self.fill_halos_scalar = _make_fill_halos_scalar(
+        self._code = {}
+        self._code[&#39;fill_halos_scalar&#39;] = _make_fill_halos_scalar(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             chunker=chunk, spanner=domain
         )
-        self.fill_halos_vector = _make_fill_halos_vector(
+        self._code[&#39;fill_halos_vector&#39;] = _make_fill_halos_vector(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             chunker=chunk, spanner=domain
         )
-        self._apply_scalar = _make_apply_scalar(
+        self._code[&#39;apply_scalar&#39;] = _make_apply_scalar(
             indexers=self.indexers,
             loop=False, jit_flags=jit_flags, n_dims=self.n_dims,
             halo=halo, n_threads=n_threads,
             chunker=chunk, spanner=domain,
-            boundary_cond_vector=self.fill_halos_vector,
-            boundary_cond_scalar=self.fill_halos_scalar
+            boundary_cond_vector=self._code[&#39;fill_halos_vector&#39;],
+            boundary_cond_scalar=self._code[&#39;fill_halos_scalar&#39;]
         )
-        self._apply_scalar_loop = _make_apply_scalar(
+        self._code[&#39;apply_scalar_loop&#39;] = _make_apply_scalar(
             indexers=self.indexers,
             loop=True, jit_flags=jit_flags, n_dims=self.n_dims,
             halo=halo, n_threads=n_threads,
             chunker=chunk, spanner=domain,
-            boundary_cond_vector=self.fill_halos_vector,
-            boundary_cond_scalar=self.fill_halos_scalar
+            boundary_cond_vector=self._code[&#39;fill_halos_vector&#39;],
+            boundary_cond_scalar=self._code[&#39;fill_halos_scalar&#39;]
         )
-        self._apply_vector = _make_apply_vector(
+        self._code[&#39;apply_vector&#39;] = _make_apply_vector(
             indexers=self.indexers,
             jit_flags=jit_flags, halo=halo, n_dims=self.n_dims,
             n_threads=n_threads, spanner=domain, chunker=chunk,
-            boundary_cond_vector=self.fill_halos_vector,
-            boundary_cond_scalar=self.fill_halos_scalar
+            boundary_cond_vector=self._code[&#39;fill_halos_vector&#39;],
+            boundary_cond_scalar=self._code[&#39;fill_halos_scalar&#39;]
         )
 
     def apply_scalar(self, *, loop):
+        &#34;&#34;&#34; returns scalar field traversal function in two flavours:
+            - loop=True sums contributions over dimensions (used in summing upwind fluxes only)
+            - loop=False does no summing
+        &#34;&#34;&#34;
         if loop:
-            return self._apply_scalar_loop
-        return self._apply_scalar
+            return self._code[&#39;apply_scalar_loop&#39;]
+        return self._code[&#39;apply_scalar&#39;]
 
     def apply_vector(self):
-        return self._apply_vector</code></pre>
+        &#34;&#34;&#34; returns vector field traversal function &#34;&#34;&#34;
+        return self._code[&#39;apply_vector&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -177,28 +193,35 @@ class Traversals:
 <span>def <span class="ident">apply_scalar</span></span>(<span>self, *, loop)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns scalar field traversal function in two flavours:
+- loop=True sums contributions over dimensions (used in summing upwind fluxes only)
+- loop=False does no summing</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def apply_scalar(self, *, loop):
+    &#34;&#34;&#34; returns scalar field traversal function in two flavours:
+        - loop=True sums contributions over dimensions (used in summing upwind fluxes only)
+        - loop=False does no summing
+    &#34;&#34;&#34;
     if loop:
-        return self._apply_scalar_loop
-    return self._apply_scalar</code></pre>
+        return self._code[&#39;apply_scalar_loop&#39;]
+    return self._code[&#39;apply_scalar&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.impl.traversals.Traversals.apply_vector"><code class="name flex">
 <span>def <span class="ident">apply_vector</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns vector field traversal function</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def apply_vector(self):
-    return self._apply_vector</code></pre>
+    &#34;&#34;&#34; returns vector field traversal function &#34;&#34;&#34;
+    return self._code[&#39;apply_vector&#39;]</code></pre>
 </details>
 </dd>
 </dl>

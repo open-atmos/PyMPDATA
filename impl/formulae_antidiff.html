@@ -37,43 +37,43 @@ from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 
 
 def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
-    if options.n_iters &lt;= 1:
-        @numba.njit(**options.jit_flags)
-        # pylint: disable=too-many-arguments
-        def apply(_1, _2, _3, _4, _5, _6, _7):
-            return
-    else:
-        idx = traversals.indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector()
+    &#34;&#34;&#34; returns njit-ted function for use with given traversals &#34;&#34;&#34;
+    idx = traversals.indexers[traversals.n_dims]
+    apply_vector = traversals.apply_vector()
 
-        formulae_antidiff = tuple(
-            __make_antidiff(idx.atv[i], idx.ats[i],
-                            non_unit_g_factor=non_unit_g_factor,
-                            options=options,
-                            n_dims=traversals.n_dims,
-                            last_pass=last_pass)
-            if idx.ats[i] is not None else None
-            for i in range(MAX_DIM_NUM))
+    formulae_antidiff = tuple(
+        __make_antidiff(atv=idx.atv[i],
+                        ats=idx.ats[i],
+                        non_unit_g_factor=non_unit_g_factor,
+                        options=options,
+                        n_dims=traversals.n_dims,
+                        last_pass=last_pass)
+        if idx.ats[i] is not None else None
+        for i in range(MAX_DIM_NUM))
 
-        @numba.njit(**options.jit_flags)
-        # pylint: disable=too-many-arguments
-        def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
-            return apply_vector(*formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
-                                *g_factor, *g_factor_bc)
+    @numba.njit(**options.jit_flags)
+    # pylint: disable=too-many-arguments
+    def apply(g_c_corr, psi, psi_bc, g_c_unco, vec_bc, g_factor, g_factor_bc):
+        return apply_vector(*formulae_antidiff,
+                            *g_c_corr,
+                            *psi, *psi_bc,
+                            *g_c_unco, *vec_bc,
+                            *g_factor, *g_factor_bc)
 
     return apply
 
 
-def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
+# pylint: disable=too-many-locals
+def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
     infinite_gauge = options.infinite_gauge
     divergent_flow = options.divergent_flow
     third_order_terms = options.third_order_terms
     epsilon = options.epsilon
-    DPDC = options.DPDC
+    dpdc = options.DPDC
     dimensionally_split = options.dimensionally_split
 
     @numba.njit(**options.jit_flags)
-    def A(psi):
+    def a_term(psi):
         &#34;&#34;&#34; eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz &amp; Margolin 1998 &#34;&#34;&#34;
         result = ats(*psi, 1) - ats(*psi, 0)
         if infinite_gauge:
@@ -81,7 +81,7 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
         return result / (ats(*psi, 1) + ats(*psi, 0) + epsilon)
 
     @numba.njit(**options.jit_flags)
-    def B(psi):
+    def b_term(psi):
         &#34;&#34;&#34; eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz &amp; Margolin 1998 &#34;&#34;&#34;
         result = (
             ats(*psi, 1, 1) + ats(*psi, 0, 1) -
@@ -97,36 +97,40 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
         )
 
     @numba.njit(**options.jit_flags)
-    def antidiff_basic(psi, GC, _):
+    def antidiff_basic(psi, g_c, _):
         &#34;&#34;&#34; eq. 13 in Smolarkiewicz 1984 &#34;&#34;&#34;
-        tmp = A(psi)
-        result = (np.abs(atv(*GC, .5)) - atv(*GC, +.5) ** 2) * tmp
-        if DPDC and last_pass:
-            a = (1 / (1 - np.abs(tmp)))
-            b = - (tmp*a)/(1 - tmp**2)
-            result = result * (result * b + a)
+        tmp = a_term(psi)
+        result = (np.abs(atv(*g_c, .5)) - atv(*g_c, +.5) ** 2) * tmp
+        if dpdc and last_pass:
+            val_1 = (1 / (1 - np.abs(tmp)))
+            val_2 = - (tmp * val_1)/(1 - tmp**2)
+            result = result * (result * val_2 + val_1)
         if n_dims == 1 or dimensionally_split:
             return result
         return result - (
-            0.5 * atv(*GC, .5) *
-            0.25 * (atv(*GC, 1., +.5) + atv(*GC, 0., +.5) + atv(*GC, 1., -.5) + atv(*GC, 0., -.5)) *
-            B(psi)
+                0.5 * atv(*g_c, .5) *
+                0.25 * (
+                        atv(*g_c, 1., +.5) +
+                        atv(*g_c, 0., +.5) +
+                        atv(*g_c, 1., -.5) +
+                        atv(*g_c, 0., -.5)
+                ) * b_term(psi)
         )
 
     @numba.njit(**options.jit_flags)
-    def antidiff_variants(psi, GC, G):
+    def antidiff_variants(psi, g_c, g_factor):
         &#34;&#34;&#34; eq. 13 in Smolarkiewicz 1984 &#34;&#34;&#34;
-        result = antidiff_basic(psi, GC, G)
+        result = antidiff_basic(psi, g_c, g_factor)
 
-        G_bar = (ats(*G, 1) + ats(*G, 0)) / 2 if non_unit_g_factor else 1
+        g_bar = (ats(*g_factor, 1) + ats(*g_factor, 0)) / 2 if non_unit_g_factor else 1
 
         # third-order terms
         if third_order_terms:
             # assert psi.dimension &lt; 3  # TODO #96
             tmp = (
-                3 * atv(*GC, .5) * np.abs(atv(*GC, .5)) / G_bar
-                -2 * atv(*GC, .5) ** 3 / G_bar ** 2
-                -atv(*GC, .5)
+                3 * atv(*g_c, .5) * np.abs(atv(*g_c, .5)) / g_bar
+                - 2 * atv(*g_c, .5) ** 3 / g_bar ** 2
+                - atv(*g_c, .5)
             ) / 6
 
             tmp *= 2 * (ats(*psi, 2) - ats(*psi, 1) - ats(*psi, 0) + ats(*psi, -1))
@@ -139,14 +143,14 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
             result += tmp
 
             if n_dims &gt; 1:
-                GC1_bar = (
-                    atv(*GC, 1, .5) +
-                    atv(*GC, 0, .5) +
-                    atv(*GC, 1, -.5) +
-                    atv(*GC, 0, -.5)
+                tmp = (
+                    atv(*g_c, 1, .5) +
+                    atv(*g_c, 0, .5) +
+                    atv(*g_c, 1, -.5) +
+                    atv(*g_c, 0, -.5)
                 ) / 4
-                tmp = GC1_bar / (2 * G_bar) * (
-                    np.abs(atv(*GC, .5)) - 2 * atv(*GC, .5) ** 2 / G_bar
+                tmp = tmp / (2 * g_bar) * (
+                    np.abs(atv(*g_c, .5)) - 2 * atv(*g_c, .5) ** 2 / g_bar
                 )
 
                 tmp *= 2 * (ats(*psi, 1, 1) - ats(*psi, 0, 1) - ats(*psi, 1, -1) + ats(*psi, 0, -1))
@@ -162,9 +166,9 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
         # eq.(30) in Smolarkiewicz_and_Margolin_1998
         if divergent_flow:
             # assert psi.dimension == 1
-            tmp = -.25 * atv(*GC, .5) * (atv(*GC, 1.5) - atv(*GC, -.5))
+            tmp = -.25 * atv(*g_c, .5) * (atv(*g_c, 1.5) - atv(*g_c, -.5))
             if non_unit_g_factor:
-                tmp /= G_bar
+                tmp /= g_bar
             if infinite_gauge:
                 tmp *= .5 * ats(*psi, 1) + ats(*psi, 0)
 
@@ -184,35 +188,34 @@ def __make_antidiff(atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 <span>def <span class="ident">make_antidiff</span></span>(<span>non_unit_g_factor, options, traversals, last_pass=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns njit-ted function for use with given traversals</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
-    if options.n_iters &lt;= 1:
-        @numba.njit(**options.jit_flags)
-        # pylint: disable=too-many-arguments
-        def apply(_1, _2, _3, _4, _5, _6, _7):
-            return
-    else:
-        idx = traversals.indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector()
+    &#34;&#34;&#34; returns njit-ted function for use with given traversals &#34;&#34;&#34;
+    idx = traversals.indexers[traversals.n_dims]
+    apply_vector = traversals.apply_vector()
 
-        formulae_antidiff = tuple(
-            __make_antidiff(idx.atv[i], idx.ats[i],
-                            non_unit_g_factor=non_unit_g_factor,
-                            options=options,
-                            n_dims=traversals.n_dims,
-                            last_pass=last_pass)
-            if idx.ats[i] is not None else None
-            for i in range(MAX_DIM_NUM))
+    formulae_antidiff = tuple(
+        __make_antidiff(atv=idx.atv[i],
+                        ats=idx.ats[i],
+                        non_unit_g_factor=non_unit_g_factor,
+                        options=options,
+                        n_dims=traversals.n_dims,
+                        last_pass=last_pass)
+        if idx.ats[i] is not None else None
+        for i in range(MAX_DIM_NUM))
 
-        @numba.njit(**options.jit_flags)
-        # pylint: disable=too-many-arguments
-        def apply(GC_corr, psi, psi_bc, GC_unco, vec_bc, g_factor, g_factor_bc):
-            return apply_vector(*formulae_antidiff, *GC_corr, *psi, *psi_bc, *GC_unco, *vec_bc,
-                                *g_factor, *g_factor_bc)
+    @numba.njit(**options.jit_flags)
+    # pylint: disable=too-many-arguments
+    def apply(g_c_corr, psi, psi_bc, g_c_unco, vec_bc, g_factor, g_factor_bc):
+        return apply_vector(*formulae_antidiff,
+                            *g_c_corr,
+                            *psi, *psi_bc,
+                            *g_c_unco, *vec_bc,
+                            *g_factor, *g_factor_bc)
 
     return apply</code></pre>
 </details>

@@ -43,6 +43,7 @@ from .impl.meta import META_IS_NULL
 
 @numba.experimental.jitclass([])
 class PostStepNull:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34; do-nothing version of the post-step hook &#34;&#34;&#34;
     def __init__(self):
         pass
 
@@ -52,6 +53,7 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
 
 @numba.experimental.jitclass([])
 class PostIterNull:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34; do-nothing version of the post-iter hook &#34;&#34;&#34;
     def __init__(self):
         pass
 
@@ -60,8 +62,15 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
 
 
 class Solver:
-    def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
-                 g_factor: [ScalarField, None] = None):
+    &#34;&#34;&#34; solution orchestrator requireing prior instantiation of: a `Stepper`,
+        a scalar advectee field, a vector advector field and optionally
+        a scala g_factor field &#34;&#34;&#34;
+    def __init__(self,
+        stepper: Stepper,
+        advectee: ScalarField,
+        advector: VectorField,
+        g_factor: [ScalarField, None] = None
+    ):
         scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
         null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims, stepper.traversals)
         vector_field = lambda: VectorField.clone(advector)
@@ -90,15 +99,21 @@ class Solver:
         self.__stepper = stepper
 
     @property
-    def advectee(self):
+    def advectee(self) -&gt; ScalarField:
+        &#34;&#34;&#34; advectee scalar field (with halo), modified by advance(),
+            may be modified from user code (e.g., source-term handling) &#34;&#34;&#34;
         return self.__fields[&#39;advectee&#39;]
 
     @property
-    def advector(self):
+    def advector(self) -&gt; VectorField:
+        &#34;&#34;&#34; advector vector field (with halo), unmodified by advance(),
+            may be modified from user code &#34;&#34;&#34;
         return self.__fields[&#39;advector&#39;]
 
     @property
-    def g_factor(self):
+    def g_factor(self) -&gt; ScalarField:
+        &#34;&#34;&#34; g_factor field (with halo), unmodified by advance(),
+            assumed to be constant-in-time &#34;&#34;&#34;
         return self.__fields[&#39;g_factor&#39;]
 
     def advance(self,
@@ -125,7 +140,13 @@ class Solver:
         post_step = post_step or PostStepNull()
         post_iter = post_iter or PostIterNull()
 
-        return self.__stepper(n_steps, mu_coeff, post_step, post_iter, self.__fields)</code></pre>
+        return self.__stepper(
+            n_steps=n_steps,
+            mu_coeff=mu_coeff,
+            post_step=post_step,
+            post_iter=post_iter,
+            fields=self.__fields
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -142,14 +163,23 @@ class Solver:
 <span>(</span><span>stepper: <a title="PyMPDATA.stepper.Stepper" href="stepper.html#PyMPDATA.stepper.Stepper">Stepper</a>, advectee: <a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a>, advector: <a title="PyMPDATA.vector_field.VectorField" href="vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a>, g_factor: [<class '<a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a>'>, None] = None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>solution orchestrator requireing prior instantiation of: a <code>Stepper</code>,
+a scalar advectee field, a vector advector field and optionally
+a scala g_factor field</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Solver:
-    def __init__(self, stepper: Stepper, advectee: ScalarField, advector: VectorField,
-                 g_factor: [ScalarField, None] = None):
+    &#34;&#34;&#34; solution orchestrator requireing prior instantiation of: a `Stepper`,
+        a scalar advectee field, a vector advector field and optionally
+        a scala g_factor field &#34;&#34;&#34;
+    def __init__(self,
+        stepper: Stepper,
+        advectee: ScalarField,
+        advector: VectorField,
+        g_factor: [ScalarField, None] = None
+    ):
         scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
         null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims, stepper.traversals)
         vector_field = lambda: VectorField.clone(advector)
@@ -178,15 +208,21 @@ class Solver:
         self.__stepper = stepper
 
     @property
-    def advectee(self):
+    def advectee(self) -&gt; ScalarField:
+        &#34;&#34;&#34; advectee scalar field (with halo), modified by advance(),
+            may be modified from user code (e.g., source-term handling) &#34;&#34;&#34;
         return self.__fields[&#39;advectee&#39;]
 
     @property
-    def advector(self):
+    def advector(self) -&gt; VectorField:
+        &#34;&#34;&#34; advector vector field (with halo), unmodified by advance(),
+            may be modified from user code &#34;&#34;&#34;
         return self.__fields[&#39;advector&#39;]
 
     @property
-    def g_factor(self):
+    def g_factor(self) -&gt; ScalarField:
+        &#34;&#34;&#34; g_factor field (with halo), unmodified by advance(),
+            assumed to be constant-in-time &#34;&#34;&#34;
         return self.__fields[&#39;g_factor&#39;]
 
     def advance(self,
@@ -213,43 +249,58 @@ class Solver:
         post_step = post_step or PostStepNull()
         post_iter = post_iter or PostIterNull()
 
-        return self.__stepper(n_steps, mu_coeff, post_step, post_iter, self.__fields)</code></pre>
+        return self.__stepper(
+            n_steps=n_steps,
+            mu_coeff=mu_coeff,
+            post_step=post_step,
+            post_iter=post_iter,
+            fields=self.__fields
+        )</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
-<dt id="PyMPDATA.solver.Solver.advectee"><code class="name">var <span class="ident">advectee</span></code></dt>
+<dt id="PyMPDATA.solver.Solver.advectee"><code class="name">var <span class="ident">advectee</span> : <a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>advectee scalar field (with halo), modified by advance(),
+may be modified from user code (e.g., source-term handling)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def advectee(self):
+def advectee(self) -&gt; ScalarField:
+    &#34;&#34;&#34; advectee scalar field (with halo), modified by advance(),
+        may be modified from user code (e.g., source-term handling) &#34;&#34;&#34;
     return self.__fields[&#39;advectee&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.solver.Solver.advector"><code class="name">var <span class="ident">advector</span></code></dt>
+<dt id="PyMPDATA.solver.Solver.advector"><code class="name">var <span class="ident">advector</span> : <a title="PyMPDATA.vector_field.VectorField" href="vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>advector vector field (with halo), unmodified by advance(),
+may be modified from user code</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def advector(self):
+def advector(self) -&gt; VectorField:
+    &#34;&#34;&#34; advector vector field (with halo), unmodified by advance(),
+        may be modified from user code &#34;&#34;&#34;
     return self.__fields[&#39;advector&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.solver.Solver.g_factor"><code class="name">var <span class="ident">g_factor</span></code></dt>
+<dt id="PyMPDATA.solver.Solver.g_factor"><code class="name">var <span class="ident">g_factor</span> : <a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>g_factor field (with halo), unmodified by advance(),
+assumed to be constant-in-time</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def g_factor(self):
+def g_factor(self) -&gt; ScalarField:
+    &#34;&#34;&#34; g_factor field (with halo), unmodified by advance(),
+        assumed to be constant-in-time &#34;&#34;&#34;
     return self.__fields[&#39;g_factor&#39;]</code></pre>
 </details>
 </dd>
@@ -293,7 +344,13 @@ returns wall time per timestep (units as returned by <code>clock.clock()</code>)
     post_step = post_step or PostStepNull()
     post_iter = post_iter or PostIterNull()
 
-    return self.__stepper(n_steps, mu_coeff, post_step, post_iter, self.__fields)</code></pre>
+    return self.__stepper(
+        n_steps=n_steps,
+        mu_coeff=mu_coeff,
+        post_step=post_step,
+        post_iter=post_iter,
+        fields=self.__fields
+    )</code></pre>
 </details>
 </dd>
 </dl>

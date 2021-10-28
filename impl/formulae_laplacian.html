@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.impl.formulae_laplacian API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="logic for handling the Fickian term by modifying physical velocity" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,17 +22,20 @@
 <h1 class="title">Module <code>PyMPDATA.impl.formulae_laplacian</code></h1>
 </header>
 <section id="section-intro">
+<p>logic for handling the Fickian term by modifying physical velocity</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numba
+<pre><code class="python">&#34;&#34;&#34; logic for handling the Fickian term by modifying physical velocity &#34;&#34;&#34;
+import numba
 from ..impl.enumerations import MAX_DIM_NUM
 from ..impl.traversals import Traversals
 from ..options import Options
 
 
 def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):
+    &#34;&#34;&#34; returns njit-ted function for use with given traversals &#34;&#34;&#34;
     if not options.non_zero_mu_coeff:
         @numba.njit(**options.jit_flags)
         def apply(_1, _2, _3):
@@ -91,12 +94,13 @@ def __make_laplacian(jit_flags, ats, epsilon, non_unit_g_factor):
 <span>def <span class="ident">make_laplacian</span></span>(<span>non_unit_g_factor: bool, options: <a title="PyMPDATA.options.Options" href="../options.html#PyMPDATA.options.Options">Options</a>, traversals: <a title="PyMPDATA.impl.traversals.Traversals" href="traversals.html#PyMPDATA.impl.traversals.Traversals">Traversals</a>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns njit-ted function for use with given traversals</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traversals):
+    &#34;&#34;&#34; returns njit-ted function for use with given traversals &#34;&#34;&#34;
     if not options.non_zero_mu_coeff:
         @numba.njit(**options.jit_flags)
         def apply(_1, _2, _3):

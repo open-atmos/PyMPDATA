@@ -27,24 +27,14 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-boundary condition filling halos with a constant value
-&#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34; boundary condition filling halos with a constant value &#34;&#34;&#34;
 from functools import lru_cache
 import numba
 
 
-@lru_cache()
-def _make_scalar(value, _, __, ___, jit_flags):
-    @numba.njit(**jit_flags)
-    def fill_halos(_1, _2, _3):
-        return value
-
-    return fill_halos
-
-
 class Constant:
-    &#34;&#34;&#34; class whose instances are intended to be passed to ScalarField or VectorField __init__&#34;&#34;&#34;
+    &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
+        `ScalarField` and `VectorField` __init__ methods &#34;&#34;&#34;
     def __init__(self, value):
         self.value = value
 
@@ -54,7 +44,16 @@ class Constant:
 
     def make_vector(self, ats, halo, dtype, jit_flags):
         &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
-        return _make_scalar(self.value, ats, halo, dtype, jit_flags)</code></pre>
+        return _make_scalar(self.value, ats, halo, dtype, jit_flags)
+
+
+@lru_cache()
+def _make_scalar(value, _, __, ___, jit_flags):
+    @numba.njit(**jit_flags)
+    def fill_halos(_1, _2, _3):
+        return value
+
+    return fill_halos</code></pre>
 </details>
 </section>
 <section>
@@ -71,13 +70,15 @@ class Constant:
 <span>(</span><span>value)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>class whose instances are intended to be passed to ScalarField or VectorField <strong>init</strong></p></div>
+<div class="desc"><p>class which instances are to be passed in boundary_conditions tuple to the
+<code>ScalarField</code> and <code>VectorField</code> <strong>init</strong> methods</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Constant:
-    &#34;&#34;&#34; class whose instances are intended to be passed to ScalarField or VectorField __init__&#34;&#34;&#34;
+    &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
+        `ScalarField` and `VectorField` __init__ methods &#34;&#34;&#34;
     def __init__(self, value):
         self.value = value
 
