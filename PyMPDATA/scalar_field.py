@@ -34,7 +34,8 @@ class ScalarField(Field):
 
     @staticmethod
     def clone(field, dtype=None):
-        """ returns a instance with the same dimensionality and halo size as the argument """
+        """ returns an instance with the same dimensionality and same halo size as the argument
+            optionally with a different data type"""
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
         return ScalarField(

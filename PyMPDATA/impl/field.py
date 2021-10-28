@@ -1,4 +1,4 @@
-""" common logic for `ScalarField` and `VectorField` classes """
+""" common logic for `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` classes """
 from collections import namedtuple
 import abc
 from PyMPDATA.boundary_conditions.constant import Constant
@@ -70,7 +70,7 @@ class Field:
 
     @property
     def boundary_conditions(self):
-        """ tuple of boundary conditions as passed to the __init__() """
+        """ tuple of boundary conditions as passed to the `__init__()` """
         return self.__properties.boundary_conditions
 
     @property
@@ -79,7 +79,8 @@ class Field:
         return self.__jit_flags
 
     def assemble(self, traversals):
-        """ initialises .impl field with halo_filling logic compiled for given traversals """
+        """ initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+            with halo-filling logic njit-ted using the given traversals """
         if traversals.jit_flags != self.__jit_flags:
             fun = f'make_{self.__class__.__name__[:6].lower()}'
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
