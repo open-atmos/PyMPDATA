@@ -44,7 +44,13 @@ def gh_issues():
     if 'CI' not in os.environ or ('GITHUB_ACTIONS' in os.environ and sys.version_info.minor >= 8):
         try:
             api = GhApi(owner='atmos-cloud-sim-uj', repo='PyMPDATA')
-            pages = paged(api.issues.list_for_repo, owner='atmos-cloud-sim-uj', repo='PyMPDATA', state='all', per_page=100)
+            pages = paged(
+                api.issues.list_for_repo,
+                owner='atmos-cloud-sim-uj',
+                repo='PyMPDATA',
+                state='all',
+                per_page=100
+            )
             for page in pages:
                 for item in page.items:
                     res[item.number] = item.state

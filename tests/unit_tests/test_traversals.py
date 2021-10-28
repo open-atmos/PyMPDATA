@@ -35,6 +35,7 @@ def cell_id(i, j, k):
 
 
 @numba.njit(**jit_flags)
+# pylint: disable=too-many-arguments
 def _cell_id_scalar(value, arg_1_vec, arg_2_scl, arg_3_scl, arg_4_scl, arg_5_scl):
     focus = arg_1_vec[ARG_FOCUS]
     if focus != arg_2_scl[ARG_FOCUS]:

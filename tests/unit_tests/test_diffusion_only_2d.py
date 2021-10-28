@@ -6,8 +6,8 @@ from PyMPDATA.boundary_conditions import Periodic
 
 def test_diffusion_only_2d(
         data0=np.array([[0, 0, 0], [0, 1., 0], [0, 0, 0]]),
-        mu=(.1, .1),
-        nt=1
+        mu_coeff=(.1, .1),
+        n_steps=1
 ):
     # Arrange
     options = Options(non_zero_mu_coeff=True)
@@ -26,7 +26,7 @@ def test_diffusion_only_2d(
     )
 
     # Act
-    solver.advance(nt=nt, mu_coeff=mu)
+    solver.advance(nt=n_steps, mu_coeff=mu_coeff)
 
     # Assert
     data1 = solver.advectee.get()

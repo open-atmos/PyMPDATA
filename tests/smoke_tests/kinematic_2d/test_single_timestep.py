@@ -23,7 +23,7 @@ def test_single_timestep(options):
     # Arrange
     grid = (75, 75)
     size = (1500, 1500)
-    dt = 1
+    timestep = 1
     w_max = .6
 
     def stream_function(xX, zZ):
@@ -41,7 +41,7 @@ def test_single_timestep(options):
 
     values = {'th': np.full(grid, 300), 'qv': np.full(grid, .001)}
     stepper = Stepper(options=options, grid=grid, non_unit_g_factor=True)
-    advector = nondivergent_vector_field_2d(grid, size, dt, stream_function, options.n_halo)
+    advector = nondivergent_vector_field_2d(grid, size, timestep, stream_function, options.n_halo)
     g_factor = ScalarField(
         rhod.astype(dtype=options.dtype),
         halo=options.n_halo,

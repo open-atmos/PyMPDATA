@@ -18,6 +18,7 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
     )
 
     @numba.njit(**jit_flags)
+    # pylint: disable=too-many-arguments
     def apply_vector_impl(thread_id, out_meta,
                           fun_outer, fun_mid3d, fun_inner,
                           out_outer, out_mid3d, out_inner,
@@ -61,6 +62,7 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                     ))
 
     @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
+    # pylint: disable=too-many-arguments
     def apply_vector(
         fun_outer, fun_mid3d, fun_inner,
         out_meta, out_outer, out_mid3d, out_inner,
@@ -297,6 +299,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                     set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_RIGHT))
 
     @numba.njit(**jit_flags)
+    # pylint: disable=too-many-arguments
     def boundary_cond_vector(thread_id, meta,
                              comp_outer, comp_mid3d, comp_inner,
                              fun_outer, fun_mid3d, fun_inner):

@@ -87,11 +87,11 @@ class VectorField(Field):
         return result
 
     @staticmethod
-    def make_null(n_dims, indexers):
+    def make_null(n_dims, traversals):
         """ returns a vector field instance with no allocated data storage,
             see `Field._make_null` other properties of the returned field """
         return Field._make_null(VectorField(
             tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
             halo=1,
             boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
-        ), indexers)
+        ), traversals)

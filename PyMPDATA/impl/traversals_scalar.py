@@ -13,6 +13,7 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
 
     if loop:
         @numba.njit(**jit_flags)
+        # pylint: disable=too-many-arguments
         def apply_scalar_impl(thread_id, out_meta,
                               fun_outer, fun_mid3d, fun_inner,
                               out,
@@ -60,6 +61,7 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                         ))
     else:
         @numba.njit(**jit_flags)
+        # pylint: disable=too-many-arguments
         def apply_scalar_impl(thread_id, out_meta,
                               fun, _, __,
                               out,
@@ -89,6 +91,7 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                         ))
 
     @numba.njit(**{**jit_flags, **{'parallel': n_threads > 1}})
+    # pylint: disable=too-many-arguments
     def apply_scalar(
         fun_outer, fun_mid3d, fun_inner,
         out_meta, out,
@@ -137,6 +140,7 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
     set_value = indexers[n_dims].set
 
     @numba.njit(**jit_flags)
+    # pylint: disable=too-many-arguments
     def boundary_cond_scalar(thread_id, meta, psi, fun_outer, fun_mid3d, fun_inner):
         if meta[META_HALO_VALID]:
             return
@@ -172,7 +176,11 @@ def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spann
                         for k in range(0,
                                        span[INNER] + 2 * halo):
                             focus = (i, j, k)
-                            set_value(psi, i, j, k, fun_outer((focus, psi), span[OUTER], SIGN_RIGHT))
+                            set_value(psi, i, j, k, fun_outer(
+                                (focus, psi),
+                                span[OUTER],
+                                SIGN_RIGHT
+                            ))
 
         for i in range(rng_outer[RNG_START],
                        rng_outer[RNG_STOP] + (2 * halo if last_thread else 0)

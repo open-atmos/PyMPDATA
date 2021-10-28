@@ -6,25 +6,25 @@ import pytest
 from PyMPDATA import ScalarField, VectorField, Options, Solver, Stepper
 from PyMPDATA.boundary_conditions import Periodic
 
-from .concurrency_fixture import num_threads
+from .fixtures import num_threads
 assert hasattr(num_threads, '_pytestfixturefunction')
 
 
-grid = (126, 101)
+GRID = (126, 101)
 
-dt = .1
-dx = 1
-dy = 1
-omega = .1
-h = 4.
-h0 = 1
+TIMESTEP = .1
+DX = 1
+DY = 1
+OMEGA = .1
+H = 4.
+H_0 = 1
 
-r = .15 * grid[0] * dx
-x0 = int(.5 * grid[0]) * dx
-y0 = int(.2 * grid[0]) * dy
+r = .15 * GRID[0] * DX
+X_0 = int(.5 * GRID[0]) * DX
+Y_0 = int(.2 * GRID[0]) * DY
 
-xc = .5 * grid[0] * dx
-yc = .5 * grid[1] * dy
+X_C = .5 * GRID[0] * DX
+Y_C = .5 * GRID[1] * DY
 
 
 class Settings:
@@ -32,11 +32,11 @@ class Settings:
         self.n_rotations = n_rotations
 
     @property
-    def dt(self):
-        return dt
+    def timestep(self):
+        return TIMESTEP
 
     @property
-    def nt(self):
+    def n_steps(self):
         return int(100 * self.n_rotations)
 
     @property
@@ -45,24 +45,24 @@ class Settings:
 
     @property
     def xrange(self):
-        return 0, grid[0] * dx
+        return 0, GRID[0] * DX
 
     @property
     def yrange(self):
-        return 0, grid[1] * dy
+        return 0, GRID[1] * DY
 
     @property
     def grid(self):
-        return grid
+        return GRID
 
     @staticmethod
     def pdf(x, y):
-        tmp = (x-x0)**2 + (y-y0)**2
-        return h0 + np.where(
+        tmp = (x - X_0) ** 2 + (y - Y_0) ** 2
+        return H_0 + np.where(
             # if
-            tmp - r**2 <= 0,
+            tmp - r ** 2 <= 0,
             # then
-            h - np.sqrt(tmp / (r/h)**2),
+            H - np.sqrt(tmp / (r / H) ** 2),
             # else
             0.
         )
@@ -108,11 +108,11 @@ def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False)
                            yrange=settings.yrange,
                            gridsize=settings.grid)
 
-    C = (-.5, .25)
+    courant = (-.5, .25)
     grid = z.shape
     advector_data = [
-        np.full((grid[0] + 1, grid[1]), C[0], dtype=options.dtype),
-        np.full((grid[0], grid[1] + 1), C[1], dtype=options.dtype)
+        np.full((grid[0] + 1, grid[1]), courant[0], dtype=options.dtype),
+        np.full((grid[0], grid[1] + 1), courant[1], dtype=options.dtype)
     ]
     advector = VectorField(advector_data, halo=options.n_halo,
                            boundary_conditions=(Periodic(), Periodic()))
@@ -127,11 +127,11 @@ def test_timing_2d(benchmark, options, grid_static_str, num_threads, plot=False)
     def set_z():
         solver.advectee.get()[:] = z
 
-    benchmark.pedantic(solver.advance, (settings.nt,), setup=set_z, warmup_rounds=1, rounds=3)
+    benchmark.pedantic(solver.advance, (settings.n_steps,), setup=set_z, warmup_rounds=1, rounds=3)
 
     if options.n_iters == 1 or options.nonoscillatory:
-        np.testing.assert_almost_equal(np.amin(solver.advectee.get()), h0)
-    assert np.amax(solver.advectee.get()) < 10 * h
+        np.testing.assert_almost_equal(np.amin(solver.advectee.get()), H_0)
+    assert np.amax(solver.advectee.get()) < 10 * H
 
     if plot:
         pyplot.imshow(solver.advectee.get())

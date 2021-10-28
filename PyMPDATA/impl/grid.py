@@ -8,6 +8,8 @@ from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
 
 
 def make_chunk(span, n_threads, jit_flags):
+    """ returns an njit-ted function which returns the subdomain extend for a
+        given thread, for static grid size no calculations are done at run-time """
     static = span > 0
 
     subdomain = make_subdomain(jit_flags)
