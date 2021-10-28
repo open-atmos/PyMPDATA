@@ -33,12 +33,14 @@ from .meta import META_HALO_VALID
 from .enumerations import (
     OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_START, RNG_STOP, INVALID_INDEX
 )
+from .traversals_common import make_common
 
 
 def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, chunker, spanner,
                        boundary_cond_vector, boundary_cond_scalar):
     set_value = indexers[n_dims].set
     get_value = indexers[n_dims].get
+    common = make_common(jit_flags, spanner, chunker)
 
     if loop:
         @numba.njit(**jit_flags)
@@ -49,8 +51,7 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                               vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner,
                               scal_arg2, scal_arg3, scal_arg4, scal_arg5
                               ):
-            span = spanner(out_meta)
-            rng_outer = chunker(out_meta, thread_id)
+            span, rng_outer, _, __ = common(out_meta, thread_id)
             rng_mid3d = (0, span[MID3D])
             rng_inner = (0, span[INNER])
 
@@ -97,8 +98,7 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
                               vec_arg1_outer, vec_arg1_mid3d, vec_arg1_inner,
                               scal_arg2, scal_arg3, scal_arg4, scal_arg5
                               ):
-            span = spanner(out_meta)
-            rng_outer = chunker(out_meta, thread_id)
+            span, rng_outer, _, __ = common(out_meta, thread_id)
             rng_mid3d = (0, span[MID3D])
             rng_inner = (0, span[INNER])
 
@@ -167,17 +167,14 @@ def _make_apply_scalar(*, indexers, loop, jit_flags, n_dims, halo, n_threads, ch
 
 def _make_fill_halos_scalar(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
     set_value = indexers[n_dims].set
+    common = make_common(jit_flags, spanner, chunker)
 
     @numba.njit(**jit_flags)
     # pylint: disable=too-many-arguments
     def boundary_cond_scalar(thread_id, meta, psi, fun_outer, fun_mid3d, fun_inner):
         if meta[META_HALO_VALID]:
             return
-
-        span = spanner(meta)
-        rng_outer = chunker(meta, thread_id)
-        last_thread = rng_outer[RNG_STOP] == span[OUTER]
-        first_thread = thread_id == 0
+        span, rng_outer, last_thread, first_thread = common(meta, thread_id)
 
         if n_dims &gt; 2:
             for i in range(rng_outer[RNG_START],

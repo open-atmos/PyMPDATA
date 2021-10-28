@@ -34,12 +34,13 @@ from .enumerations import (
     OUTER, MID3D, INNER, SIGN_LEFT, SIGN_RIGHT, RNG_STOP, RNG_START,
     INVALID_INDEX, ONE_FOR_STAGGERED_GRID
 )
+from .traversals_common import make_common
 
 
 def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                        spanner, chunker, boundary_cond_vector, boundary_cond_scalar):
     set_value = indexers[n_dims].set
-
+    common = make_common(jit_flags, spanner, chunker)
     halos = (
         (halo - 1, halo, halo),
         (halo, halo - 1, halo),
@@ -55,11 +56,9 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
                           vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner,
                           scal_arg3
                           ):
-        span = spanner(out_meta)
-        rng_outer = chunker(out_meta, thread_id)
+        span, rng_outer, last_thread, _ = common(out_meta, thread_id)
         rng_mid3d = (0, span[MID3D])
         rng_inner = (0, span[INNER])
-        last_thread = rng_outer[RNG_STOP] == span[OUTER]
         arg2 = (vec_arg2_outer, vec_arg2_mid3d, vec_arg2_inner)
 
         for i in range(rng_outer[RNG_START] + halos[OUTER][OUTER],
@@ -130,7 +129,7 @@ def _make_apply_vector(*, indexers, jit_flags, halo, n_dims, n_threads,
 
 def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spanner):
     set_value = indexers[n_dims].set
-
+    common = make_common(jit_flags, spanner, chunker)
     halos = (
         (halo - 1, halo, halo),
         (halo, halo - 1, halo),
@@ -334,11 +333,7 @@ def _make_fill_halos_vector(*, indexers, jit_flags, halo, n_dims, chunker, spann
                              fun_outer, fun_mid3d, fun_inner):
         if meta[META_HALO_VALID]:
             return
-
-        span = spanner(meta)
-        rng_outer = chunker(meta, thread_id)
-        last_thread = rng_outer[RNG_STOP] == span[OUTER]
-        first_thread = thread_id == 0
+        span, rng_outer, last_thread, first_thread = common(meta, thread_id)
 
         if n_dims &gt; 1:
             outer_outer(span, comp_outer, fun_outer, first_thread, last_thread)
