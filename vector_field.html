@@ -116,14 +116,14 @@ class VectorField(Field):
         return result
 
     @staticmethod
-    def make_null(n_dims, indexers):
+    def make_null(n_dims, traversals):
         &#34;&#34;&#34; returns a vector field instance with no allocated data storage,
             see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
         return Field._make_null(VectorField(
             tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
             halo=1,
             boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
-        ), indexers)</code></pre>
+        ), traversals)</code></pre>
 </details>
 </section>
 <section>
@@ -222,14 +222,14 @@ class VectorField(Field):
         return result
 
     @staticmethod
-    def make_null(n_dims, indexers):
+    def make_null(n_dims, traversals):
         &#34;&#34;&#34; returns a vector field instance with no allocated data storage,
             see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
         return Field._make_null(VectorField(
             tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
             halo=1,
             boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
-        ), indexers)</code></pre>
+        ), traversals)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -256,7 +256,7 @@ def clone(field):
 </details>
 </dd>
 <dt id="PyMPDATA.vector_field.VectorField.make_null"><code class="name flex">
-<span>def <span class="ident">make_null</span></span>(<span>n_dims, indexers)</span>
+<span>def <span class="ident">make_null</span></span>(<span>n_dims, traversals)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns a vector field instance with no allocated data storage,
@@ -266,14 +266,14 @@ see <code>Field._make_null</code> other properties of the returned field</p></di
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_null(n_dims, indexers):
+def make_null(n_dims, traversals):
     &#34;&#34;&#34; returns a vector field instance with no allocated data storage,
         see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
     return Field._make_null(VectorField(
         tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
         halo=1,
         boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
-    ), indexers)</code></pre>
+    ), traversals)</code></pre>
 </details>
 </dd>
 </dl>
@@ -327,6 +327,14 @@ divergence of the vector field computed using minimal stencil</p></div>
 <li><code><b><a title="PyMPDATA.impl.field.Field" href="impl/field.html#PyMPDATA.impl.field.Field">Field</a></b></code>:
 <ul class="hlist">
 <li><code><a title="PyMPDATA.impl.field.Field.assemble" href="impl/field.html#PyMPDATA.impl.field.Field.assemble">assemble</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.boundary_conditions" href="impl/field.html#PyMPDATA.impl.field.Field.boundary_conditions">boundary_conditions</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.dtype" href="impl/field.html#PyMPDATA.impl.field.Field.dtype">dtype</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.grid" href="impl/field.html#PyMPDATA.impl.field.Field.grid">grid</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.halo" href="impl/field.html#PyMPDATA.impl.field.Field.halo">halo</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.impl" href="impl/field.html#PyMPDATA.impl.field.Field.impl">impl</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.jit_flags" href="impl/field.html#PyMPDATA.impl.field.Field.jit_flags">jit_flags</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.meta" href="impl/field.html#PyMPDATA.impl.field.Field.meta">meta</a></code></li>
+<li><code><a title="PyMPDATA.impl.field.Field.n_dims" href="impl/field.html#PyMPDATA.impl.field.Field.n_dims">n_dims</a></code></li>
 </ul>
 </li>
 </ul>

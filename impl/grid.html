@@ -37,6 +37,8 @@ from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER
 
 
 def make_chunk(span, n_threads, jit_flags):
+    &#34;&#34;&#34; returns an njit-ted function which returns the subdomain extend for a
+        given thread, for static grid size no calculations are done at run-time &#34;&#34;&#34;
     static = span &gt; 0
 
     subdomain = make_subdomain(jit_flags)
@@ -82,12 +84,15 @@ def make_domain(grid, jit_flags):
 <span>def <span class="ident">make_chunk</span></span>(<span>span, n_threads, jit_flags)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns an njit-ted function which returns the subdomain extend for a
+given thread, for static grid size no calculations are done at run-time</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_chunk(span, n_threads, jit_flags):
+    &#34;&#34;&#34; returns an njit-ted function which returns the subdomain extend for a
+        given thread, for static grid size no calculations are done at run-time &#34;&#34;&#34;
     static = span &gt; 0
 
     subdomain = make_subdomain(jit_flags)

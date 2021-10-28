@@ -60,34 +60,29 @@ def make_flux_first_pass(options, traversals):
 
 
 def make_flux_subsequent(options, traversals):
-    if options.n_iters &lt;= 1:
-        @numba.njit(**options.jit_flags)
-        def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
-            return
-    else:
-        idx = traversals.indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector()
+    idx = traversals.indexers[traversals.n_dims]
+    apply_vector = traversals.apply_vector()
 
-        formulae_flux_subsequent = tuple(
-            __make_flux(
-                options.jit_flags,
-                idx.atv[i], idx.ats[i],
-                first_pass=False,
-                infinite_gauge=options.infinite_gauge
-            )
-            if idx.ats[i] is not None else None
-            for i in range(MAX_DIM_NUM)
+    formulae_flux_subsequent = tuple(
+        __make_flux(
+            options.jit_flags,
+            idx.atv[i], idx.ats[i],
+            first_pass=False,
+            infinite_gauge=options.infinite_gauge
         )
+        if idx.ats[i] is not None else None
+        for i in range(MAX_DIM_NUM)
+    )
 
-        null_scalarfield, null_bc = traversals.null_scalar_field.impl
+    null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
-        @numba.njit(**options.jit_flags)
-        def apply(flux, psi, psi_bc, GC_corr, vec_bc):
-            return apply_vector(*formulae_flux_subsequent,
-                                *flux,
-                                *psi, *psi_bc,
-                                *GC_corr, *vec_bc,
-                                *null_scalarfield, *null_bc)
+    @numba.njit(**options.jit_flags)
+    def apply(flux, psi, psi_bc, GC_corr, vec_bc):
+        return apply_vector(*formulae_flux_subsequent,
+                            *flux,
+                            *psi, *psi_bc,
+                            *GC_corr, *vec_bc,
+                            *null_scalarfield, *null_bc)
 
     return apply
 
@@ -168,34 +163,29 @@ def __make_flux(jit_flags, atv, ats, first_pass, infinite_gauge):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_flux_subsequent(options, traversals):
-    if options.n_iters &lt;= 1:
-        @numba.njit(**options.jit_flags)
-        def apply(_flux, _psi, _psi_bc, _GC_corr, _vec_bc):
-            return
-    else:
-        idx = traversals.indexers[traversals.n_dims]
-        apply_vector = traversals.apply_vector()
+    idx = traversals.indexers[traversals.n_dims]
+    apply_vector = traversals.apply_vector()
 
-        formulae_flux_subsequent = tuple(
-            __make_flux(
-                options.jit_flags,
-                idx.atv[i], idx.ats[i],
-                first_pass=False,
-                infinite_gauge=options.infinite_gauge
-            )
-            if idx.ats[i] is not None else None
-            for i in range(MAX_DIM_NUM)
+    formulae_flux_subsequent = tuple(
+        __make_flux(
+            options.jit_flags,
+            idx.atv[i], idx.ats[i],
+            first_pass=False,
+            infinite_gauge=options.infinite_gauge
         )
+        if idx.ats[i] is not None else None
+        for i in range(MAX_DIM_NUM)
+    )
 
-        null_scalarfield, null_bc = traversals.null_scalar_field.impl
+    null_scalarfield, null_bc = traversals.null_scalar_field.impl
 
-        @numba.njit(**options.jit_flags)
-        def apply(flux, psi, psi_bc, GC_corr, vec_bc):
-            return apply_vector(*formulae_flux_subsequent,
-                                *flux,
-                                *psi, *psi_bc,
-                                *GC_corr, *vec_bc,
-                                *null_scalarfield, *null_bc)
+    @numba.njit(**options.jit_flags)
+    def apply(flux, psi, psi_bc, GC_corr, vec_bc):
+        return apply_vector(*formulae_flux_subsequent,
+                            *flux,
+                            *psi, *psi_bc,
+                            *GC_corr, *vec_bc,
+                            *null_scalarfield, *null_bc)
 
     return apply</code></pre>
 </details>

@@ -71,13 +71,13 @@ def __make_laplacian(jit_flags, ats, epsilon, non_unit_g_factor):
         raise NotImplementedError()
 
     @numba.njit(**jit_flags)
-    def A(advectee, _, __):
+    def fun(advectee, _, __):
         return -2 * (
             ats(*advectee, 1) - ats(*advectee, 0)
         ) / (
             ats(*advectee, 1) + ats(*advectee, 0) + epsilon
         )
-    return A</code></pre>
+    return fun</code></pre>
 </details>
 </section>
 <section>
