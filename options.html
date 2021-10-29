@@ -43,7 +43,9 @@ class _HashableDict(dict):
 class Options:
     &#34;&#34;&#34; representation of MPDATA algorithm variant choice, for an overview of
         MPDATA options carried out using PyMPDATA, see
-        [Olesik et al. 2020[(https://doi.org/10.5194/gmd-2020-404) &#34;&#34;&#34;
+        [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
+        equipped with meaningul `__str__` `__hash__`, `__eq__`.
+    &#34;&#34;&#34;
     def __init__(self, *,
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
@@ -93,8 +95,8 @@ class Options:
     @property
     def infinite_gauge(self) -&gt; bool:
         &#34;&#34;&#34; flag enabling the infinite-gauge option, see e.g.:
-            - [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-            - [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+            [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
         &#34;&#34;&#34;
         return self._values[&#39;infinite_gauge&#39;]
 
@@ -107,8 +109,8 @@ class Options:
     @property
     def divergent_flow(self) -&gt; bool:
         &#34;&#34;&#34; flag enabling the divergent-flow option, see e.g.:
-            - [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9)
-            - [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+            [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
         return self._values[&#39;divergent_flow&#39;]
 
@@ -127,9 +129,9 @@ class Options:
     @property
     def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
         &#34;&#34;&#34; flag enabling the double-pass donor-cell option, see:
-            - [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237)
-            - [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-            - [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+            [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
         return self._values[&#39;DPDC&#39;]
 
@@ -162,8 +164,8 @@ class Options:
 
     @property
     def jit_flags(self) -&gt; _HashableDict:
-        &#34;&#34;&#34; options passed to numba.njit(), for description see:
-            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options &#34;&#34;&#34;
+        &#34;&#34;&#34; options passed [to numba.njit()](
+            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
         return _HashableDict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
@@ -187,7 +189,8 @@ class Options:
 <dd>
 <div class="desc"><p>representation of MPDATA algorithm variant choice, for an overview of
 MPDATA options carried out using PyMPDATA, see
-[Olesik et al. 2020[(<a href="https://doi.org/10.5194/gmd-2020-404">https://doi.org/10.5194/gmd-2020-404</a>)</p></div>
+<a href="https://doi.org/10.5194/gmd-2020-404">Olesik et al. 2020</a>;
+equipped with meaningul <code>__str__</code> <code>__hash__</code>, <code>__eq__</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -196,7 +199,9 @@ MPDATA options carried out using PyMPDATA, see
 class Options:
     &#34;&#34;&#34; representation of MPDATA algorithm variant choice, for an overview of
         MPDATA options carried out using PyMPDATA, see
-        [Olesik et al. 2020[(https://doi.org/10.5194/gmd-2020-404) &#34;&#34;&#34;
+        [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
+        equipped with meaningul `__str__` `__hash__`, `__eq__`.
+    &#34;&#34;&#34;
     def __init__(self, *,
                  n_iters: int = 2,
                  infinite_gauge: bool = False,
@@ -246,8 +251,8 @@ class Options:
     @property
     def infinite_gauge(self) -&gt; bool:
         &#34;&#34;&#34; flag enabling the infinite-gauge option, see e.g.:
-            - [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-            - [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+            [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
         &#34;&#34;&#34;
         return self._values[&#39;infinite_gauge&#39;]
 
@@ -260,8 +265,8 @@ class Options:
     @property
     def divergent_flow(self) -&gt; bool:
         &#34;&#34;&#34; flag enabling the divergent-flow option, see e.g.:
-            - [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9)
-            - [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+            [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
         return self._values[&#39;divergent_flow&#39;]
 
@@ -280,9 +285,9 @@ class Options:
     @property
     def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
         &#34;&#34;&#34; flag enabling the double-pass donor-cell option, see:
-            - [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237)
-            - [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-            - [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+            [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
         return self._values[&#39;DPDC&#39;]
 
@@ -315,8 +320,8 @@ class Options:
 
     @property
     def jit_flags(self) -&gt; _HashableDict:
-        &#34;&#34;&#34; options passed to numba.njit(), for description see:
-            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options &#34;&#34;&#34;
+        &#34;&#34;&#34; options passed [to numba.njit()](
+            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
         return _HashableDict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
@@ -328,9 +333,9 @@ class Options:
 <dt id="PyMPDATA.options.Options.DPDC"><code class="name">var <span class="ident">DPDC</span> : bool</code></dt>
 <dd>
 <div class="desc"><p>flag enabling the double-pass donor-cell option, see:
-- <a href="https://www.osti.gov/servlets/purl/7049237">Beason &amp; Margolin, 1988</a>
-- <a href="https://doi.org/10.1002/fld.1070">Margolin &amp; Shashkov, 2006</a>
-- <a href="https://doi.org/10.1137/S106482759324700X">Margolin &amp; Smolarkiewicz, 1998</a></p></div>
+<a href="https://www.osti.gov/servlets/purl/7049237">Beason &amp; Margolin, 1988</a>,
+<a href="https://doi.org/10.1002/fld.1070">Margolin &amp; Shashkov, 2006</a>,
+<a href="https://doi.org/10.1137/S106482759324700X">Margolin &amp; Smolarkiewicz, 1998</a></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -338,9 +343,9 @@ class Options:
 <pre><code class="python">@property
 def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
     &#34;&#34;&#34; flag enabling the double-pass donor-cell option, see:
-        - [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237)
-        - [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-        - [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
     &#34;&#34;&#34;
     return self._values[&#39;DPDC&#39;]</code></pre>
 </details>
@@ -361,8 +366,8 @@ def dimensionally_split(self) -&gt; bool:
 <dt id="PyMPDATA.options.Options.divergent_flow"><code class="name">var <span class="ident">divergent_flow</span> : bool</code></dt>
 <dd>
 <div class="desc"><p>flag enabling the divergent-flow option, see e.g.:
-- <a href="https://doi.org/10.1016/0021-9991(84)90121-9">Smolarkiewicz, 1984</a>
-- <a href="https://doi.org/10.1137/S106482759324700X">Margolin &amp; Smolarkiewicz, 1998</a></p></div>
+<a href="https://doi.org/10.1016/0021-9991(84)90121-9">Smolarkiewicz, 1984</a>,
+<a href="https://doi.org/10.1137/S106482759324700X">Margolin &amp; Smolarkiewicz, 1998</a></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -370,8 +375,8 @@ def dimensionally_split(self) -&gt; bool:
 <pre><code class="python">@property
 def divergent_flow(self) -&gt; bool:
     &#34;&#34;&#34; flag enabling the divergent-flow option, see e.g.:
-        - [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9)
-        - [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
     &#34;&#34;&#34;
     return self._values[&#39;divergent_flow&#39;]</code></pre>
 </details>
@@ -407,8 +412,8 @@ def epsilon(self) -&gt; float:
 <dt id="PyMPDATA.options.Options.infinite_gauge"><code class="name">var <span class="ident">infinite_gauge</span> : bool</code></dt>
 <dd>
 <div class="desc"><p>flag enabling the infinite-gauge option, see e.g.:
-- <a href="https://doi.org/10.1002/fld.1070">Margolin &amp; Shashkov, 2006</a>
-- <a href="https://doi.org/10.1016/0021-9991(86)90270-6">Smolarkiewicz &amp; Clark, 1986</a></p></div>
+<a href="https://doi.org/10.1002/fld.1070">Margolin &amp; Shashkov, 2006</a>,
+<a href="https://doi.org/10.1016/0021-9991(86)90270-6">Smolarkiewicz &amp; Clark, 1986</a></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -416,24 +421,23 @@ def epsilon(self) -&gt; float:
 <pre><code class="python">@property
 def infinite_gauge(self) -&gt; bool:
     &#34;&#34;&#34; flag enabling the infinite-gauge option, see e.g.:
-        - [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070)
-        - [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
     &#34;&#34;&#34;
     return self._values[&#39;infinite_gauge&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.jit_flags"><code class="name">var <span class="ident">jit_flags</span> : PyMPDATA.options._HashableDict</code></dt>
 <dd>
-<div class="desc"><p>options passed to numba.njit(), for description see:
-<a href="https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options">https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options</a></p></div>
+<div class="desc"><p>options passed <a href="https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options">to numba.njit()</a></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def jit_flags(self) -&gt; _HashableDict:
-    &#34;&#34;&#34; options passed to numba.njit(), for description see:
-        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options &#34;&#34;&#34;
+    &#34;&#34;&#34; options passed [to numba.njit()](
+        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
     return _HashableDict({
         &#34;fastmath&#34;: True,
         &#34;error_model&#34;: &#39;numpy&#39;,

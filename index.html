@@ -25,6 +25,9 @@ Advection Transport Algorithm (MPDATA) with examples in Python, Julia …" />
 <section id="section-intro">
 <p>Numba-accelerated Pythonic implementation of Multidimensional Positive Definite
 Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab</p>
+<p>PyMPDATA uses staggered grid with the following node placement for
+<code>PyMPDATA.ScalarField</code> and <code>PyMPDATA.VectorField</code> elements:
+<img alt="" src="https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png"></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -32,6 +35,10 @@ Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab
 <pre><code class="python">&#34;&#34;&#34;
 Numba-accelerated Pythonic implementation of Multidimensional Positive Definite
 Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab
+
+PyMPDATA uses staggered grid with the following node placement for
+`PyMPDATA.ScalarField` and `PyMPDATA.VectorField` elements:
+![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png)
 &#34;&#34;&#34;
 # pylint: disable=invalid-name
 from pkg_resources import get_distribution, DistributionNotFound, VersionConflict

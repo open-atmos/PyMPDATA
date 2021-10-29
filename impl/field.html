@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.impl.field API documentation</title>
-<meta name="description" content="common logic for `ScalarField` and `VectorField` classes" />
+<meta name="description" content="common logic for `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` classes" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>PyMPDATA.impl.field</code></h1>
 </header>
 <section id="section-intro">
-<p>common logic for <code>ScalarField</code> and <code>VectorField</code> classes</p>
+<p>common logic for <code>PyMPDATA.ScalarField</code> and <code>PyMPDATA.VectorField</code> classes</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34; common logic for `ScalarField` and `VectorField` classes &#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34; common logic for `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` classes &#34;&#34;&#34;
 from collections import namedtuple
 import abc
 from PyMPDATA.boundary_conditions.constant import Constant
@@ -99,7 +99,7 @@ class Field:
 
     @property
     def boundary_conditions(self):
-        &#34;&#34;&#34; tuple of boundary conditions as passed to the __init__() &#34;&#34;&#34;
+        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` &#34;&#34;&#34;
         return self.__properties.boundary_conditions
 
     @property
@@ -108,7 +108,8 @@ class Field:
         return self.__jit_flags
 
     def assemble(self, traversals):
-        &#34;&#34;&#34; initialises .impl field with halo_filling logic compiled for given traversals &#34;&#34;&#34;
+        &#34;&#34;&#34; initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+            with halo-filling logic njit-ted using the given traversals &#34;&#34;&#34;
         if traversals.jit_flags != self.__jit_flags:
             fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
@@ -211,7 +212,7 @@ class Field:
 
     @property
     def boundary_conditions(self):
-        &#34;&#34;&#34; tuple of boundary conditions as passed to the __init__() &#34;&#34;&#34;
+        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` &#34;&#34;&#34;
         return self.__properties.boundary_conditions
 
     @property
@@ -220,7 +221,8 @@ class Field:
         return self.__jit_flags
 
     def assemble(self, traversals):
-        &#34;&#34;&#34; initialises .impl field with halo_filling logic compiled for given traversals &#34;&#34;&#34;
+        &#34;&#34;&#34; initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+            with halo-filling logic njit-ted using the given traversals &#34;&#34;&#34;
         if traversals.jit_flags != self.__jit_flags:
             fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
@@ -273,14 +275,14 @@ def make_null(n_dims: int, traversals: tuple):  # pylint: disable=missing-functi
 <dl>
 <dt id="PyMPDATA.impl.field.Field.boundary_conditions"><code class="name">var <span class="ident">boundary_conditions</span></code></dt>
 <dd>
-<div class="desc"><p>tuple of boundary conditions as passed to the <strong>init</strong>()</p></div>
+<div class="desc"><p>tuple of boundary conditions as passed to the <code>__init__()</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def boundary_conditions(self):
-    &#34;&#34;&#34; tuple of boundary conditions as passed to the __init__() &#34;&#34;&#34;
+    &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` &#34;&#34;&#34;
     return self.__properties.boundary_conditions</code></pre>
 </details>
 </dd>
@@ -384,13 +386,15 @@ def n_dims(self):
 <span>def <span class="ident">assemble</span></span>(<span>self, traversals)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>initialises .impl field with halo_filling logic compiled for given traversals</p></div>
+<div class="desc"><p>initialises what can be later accessed through <code><a title="PyMPDATA.impl.field.Field.impl" href="#PyMPDATA.impl.field.Field.impl">Field.impl</a></code> property
+with halo-filling logic njit-ted using the given traversals</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def assemble(self, traversals):
-    &#34;&#34;&#34; initialises .impl field with halo_filling logic compiled for given traversals &#34;&#34;&#34;
+    &#34;&#34;&#34; initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+        with halo-filling logic njit-ted using the given traversals &#34;&#34;&#34;
     if traversals.jit_flags != self.__jit_flags:
         fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
         self.__impl = (self.__properties.meta, *self._impl_data), tuple(
