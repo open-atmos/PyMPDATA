@@ -222,7 +222,7 @@ pyplot.grid()
 pyplot.savefig('grid.png')
 ```
 </details>
-![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png)
+![grid layout plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png)
 
 The ``__init__`` methods of
 [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
