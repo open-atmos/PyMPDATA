@@ -31,4 +31,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            grid.png
+            readme_grid.png
+            readme_state_0.png
+            readme_state.png
