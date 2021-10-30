@@ -481,9 +481,10 @@ Now let's plot the results using `matplotlib` roughly as in Fig.&nbsp;5 in [Arab
 
 ```Python
 def plot(psi, zlim, norm=None):
+    xi, yi = np.indices(psi.shape)
     fig, ax = pyplot.subplots(subplot_kw={"projection": "3d"})
     pyplot.gca().plot_wireframe(
-        *np.indices((nx, ny)), 
+        xi+.5, yi+.5, 
         psi, color='red', linewidth=.5
     )
     ax.set_zlim(zlim)
@@ -493,8 +494,10 @@ def plot(psi, zlim, norm=None):
         axis.pane.set_alpha(1)
     ax.grid(False)
     ax.set_zticks([])
+    ax.set_xlabel('x/dx')
+    ax.set_ylabel('y/dy')
     ax.set_proj_type('ortho') 
-    cnt = ax.contourf(xi, yi, psi, zdir='z', offset=-1, norm=norm)
+    cnt = ax.contourf(xi+.5, yi+.5, psi, zdir='z', offset=-1, norm=norm)
     cbar = pyplot.colorbar(cnt, pad=.1, aspect=10, fraction=.04)
     return cbar.norm
 
@@ -558,7 +561,8 @@ the license of the contributed code must be compatible with GPL v3.
 Developing the code, we follow [The Way of Python](https://www.python.org/dev/peps/pep-0020/) and 
 the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle).
 The codebase has greatly benefited from [PyCharm code inspections](https://www.jetbrains.com/help/pycharm/code-inspection.html)
-and [Pylint](https://pylint.org) code analysis (which constitutes one of the CI workflows).
+and [Pylint](https://pylint.org) code analysis (Pylint checks are part of the
+CI workflows).
 
 Issues regarding any incorrect, unintuitive or undocumented bahaviour of
 PyMPDATA are best to be reported on the [GitHub issue tracker](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues/new).
