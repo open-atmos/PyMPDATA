@@ -160,9 +160,7 @@ options = Options(n_iters=2)
 
 ```Matlab
 Options = py.importlib.import_module('PyMPDATA').Options;
-options = Options(pyargs(...
-  'n_iters', 2, ...
-));
+options = Options(pyargs('n_iters', 2));
 ```
 </details>
 <details open>
