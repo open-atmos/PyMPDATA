@@ -145,52 +145,51 @@ In most use cases of PyMPDATA, the first thing to do is to instantiate the
 [``Options``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/options.html) class 
 with arguments suiting the problem at hand, e.g.:
 <details>
-<summary>Julia (click to expand)</summary>
+<summary>Julia code (click to expand)</summary>
 
 ```Julia
 using Pkg
 Pkg.add("PyCall")
 using PyCall
 Options = pyimport("PyMPDATA").Options
-options = Options(n_iters=3, infinite_gauge=true, nonoscillatory=true)
+options = Options(n_iters=2)
 ```
 </details>
 <details>
-<summary>Matlab (click to expand)</summary>
+<summary>Matlab code (click to expand)</summary>
 
 ```Matlab
 Options = py.importlib.import_module('PyMPDATA').Options;
 options = Options(pyargs(...
-  'n_iters', 3, ...
-  'infinite_gauge', true, ...
-  'nonoscillatory', true ...
+  'n_iters', 2, ...
 ));
 ```
 </details>
 <details open>
-<summary>Python (click to expand)</summary>
+<summary>Python code (click to expand)</summary>
 
-```python
+```Python
 from PyMPDATA import Options
-options = Options(n_iters=3, infinite_gauge=True, nonoscillatory=True)
+options = Options(n_iters=2)
 ```
 </details>
 
 #### Arakawa-C grid layer and boundary conditions
 
 In PyMPDATA, the solution domain is assumed to extend from the
-first cell's boundary to the last cell's boundary (thus
+first cell's boundary to the last cell's boundary (thus the
 first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
 The [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
-and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html) classes implementing the
+and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html) classes implement the
 [Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) logic
 in which:
-- scalar fields are discretised onto cell-center points,
-- vector fields are discretised onto cell-boundary points.
-The code snippet below generates a schematic of the grid layout in 
-two dimensions:
-<details open>
-<summary>Python (click to expand)</summary>
+- scalar fields are discretised onto cell centres (one value per cell),
+- vector field components are discretised onto cell walls.
+
+The schematic of the employed grid/domain layout in two dimensions is given below
+(with the Python code snippet generating the figure):
+<details>
+<summary>Python code (click to expand)</summary>
 
 ```Python
 import numpy as np
@@ -199,31 +198,36 @@ from matplotlib import pyplot
 dx, dy = .2, .3
 grid = (10, 5)
 
-x, y = np.mgrid[
-    dx / 2 : grid[0] * dx : dx, 
-    dy / 2 : grid[1] * dy : dy
-]
-ux, uy = np.mgrid[
-    0 : (grid[0]+1) * dx : dx, 
-    dy / 2 : grid[1] * dy : dy
-]
-vx, vy = np.mgrid[
-    dx / 2 : grid[0] * dx : dx,
-    0: (grid[1] + 1) * dy : dy
-]
-
-pyplot.quiver(ux, uy, 1, 0, pivot='mid')
-pyplot.quiver(vx, vy, 0, 1, pivot='mid')
-pyplot.xticks(ux[:, 0])
-pyplot.yticks(vy[0, :])
-pyplot.scatter(x, y)
-pyplot.title('PyMPDATA staggered grid layout (2D)')
+pyplot.scatter(*np.mgrid[
+        dx / 2 : grid[0] * dx : dx, 
+        dy / 2 : grid[1] * dy : dy
+    ], color='red', 
+    label='scalar-field values at cell centres'
+)
+pyplot.quiver(*np.mgrid[
+        0 : (grid[0]+1) * dx : dx, 
+        dy / 2 : grid[1] * dy : dy
+    ], 1, 0, pivot='mid', color='green', width=.005,
+    label='vector-field x-component values at cell walls'
+)
+pyplot.quiver(*np.mgrid[
+        dx / 2 : grid[0] * dx : dx,
+        0: (grid[1] + 1) * dy : dy
+    ], 0, 1, pivot='mid', color='blue', width=.005,
+    label='vector-field y-component values at cell walls'
+)
+pyplot.xticks(np.linspace(0, grid[0]*dx, grid[0]+1))
+pyplot.yticks(np.linspace(0, grid[1]*dy, grid[1]+1))
+pyplot.title(f'staggered grid layout (grid={grid}, dx={dx}, dy={dy})')
+pyplot.xlabel('x')
+pyplot.ylabel('y')
+pyplot.legend(bbox_to_anchor=(.1, -.1), loc='upper left', ncol=1)
 pyplot.grid()
-pyplot.savefig('grid.png')
+pyplot.savefig('readme_grid.png')
 ```
 </details>
 
-![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png)
+![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)
 
 The ``__init__`` methods of
 [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
@@ -240,16 +244,19 @@ can be easily obtained using the ``Options.n_halo`` property.
 
 As an example, the code below shows how to instantiate a scalar
 and a vector field given a 2D constant-velocity problem,
-using a grid of 100x100 points and cyclic boundary conditions (with all values set to zero):
+using a grid of 24x24 points, Courant numbers of -0.5 and -0.25
+in "x" and "y" directions, respectively, with periodic boundary 
+conditions and with an initial Gaussian signal in the scalar field
+(settings as in Fig.&nbsp;5 in [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)):
 <details>
-<summary>Julia (click to expand)</summary>
+<summary>Julia code (click to expand)</summary>
 
 ```Julia
 ScalarField = pyimport("PyMPDATA").ScalarField
 VectorField = pyimport("PyMPDATA").VectorField
 Periodic = pyimport("PyMPDATA.boundary_conditions").Periodic
 
-nx, ny = 100, 100
+nx, ny = 24, 24
 halo = options.n_halo
 advectee = ScalarField(
     data=zeros((nx, ny)), 
@@ -264,15 +271,15 @@ advector = VectorField(
 ```
 </details>
 <details>
-<summary>Matlab (click to expand)</summary>
+<summary>Matlab code (click to expand)</summary>
 
 ```Matlab
 ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
 VectorField = py.importlib.import_module('PyMPDATA').VectorField;
 Periodic = py.importlib.import_module('PyMPDATA.boundary_conditions').Periodic;
 
-nx = int32(100);
-ny = int32(100);
+nx = int32(24);
+ny = int32(24);
 halo = options.n_halo;
 advectee = ScalarField(pyargs(...
     'data', py.numpy.zeros(int32([nx ny])), ... 
@@ -287,23 +294,29 @@ advector = VectorField(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python (click to expand)</summary>
+<summary>Python code (click to expand)</summary>
 
-```python
+```Python
 from PyMPDATA import ScalarField
 from PyMPDATA import VectorField
 from PyMPDATA.boundary_conditions import Periodic
 import numpy as np
 
-nx, ny = 100, 100
+nx, ny = 24, 24
+Cx, Cy = -.5, -.25
 halo = options.n_halo
+
+xi, yi = np.indices((nx, ny), dtype=float)
 advectee = ScalarField(
-  data=np.zeros((nx, ny)),
+  data=np.exp(
+    -(xi+.5-nx/2)**2 / (2*(nx/10)**2)
+    -(yi+.5-ny/2)**2 / (2*(ny/10)**2)
+  ),
   halo=halo,
   boundary_conditions=(Periodic(), Periodic())
 )
 advector = VectorField(
-  data=(np.zeros((nx + 1, ny)), np.zeros((nx, ny + 1))),
+  data=(np.full((nx + 1, ny), Cx), np.full((nx, ny + 1), Cy)),
   halo=halo,
   boundary_conditions=(Periodic(), Periodic())
 )
@@ -329,7 +342,7 @@ in PyMPDATA by the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/s
 When instantiating the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html), the user has a choice 
 of either supplying just the  number of dimensions or specialising the stepper for a given grid:
 <details>
-<summary>Julia (click to expand)</summary>
+<summary>Julia code (click to expand)</summary>
 
 ```Julia
 Stepper = pyimport("PyMPDATA").Stepper
@@ -338,7 +351,7 @@ stepper = Stepper(options=options, n_dims=2)
 ```
 </details>
 <details>
-<summary>Matlab (click to expand)</summary>
+<summary>Matlab code (click to expand)</summary>
 
 ```Matlab
 Stepper = py.importlib.import_module('PyMPDATA').Stepper;
@@ -350,9 +363,9 @@ steper = Stepper(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python (click to expand)</summary>
+<summary>Python code (click to expand)</summary>
 
-```python
+```Python
 from PyMPDATA import Stepper
 
 stepper = Stepper(options=options, n_dims=2)
@@ -360,14 +373,14 @@ stepper = Stepper(options=options, n_dims=2)
 </details>
 or
 <details>
-<summary>Julia (click to expand)</summary>
+<summary>Julia code (click to expand)</summary>
 
 ```Julia
 stepper = Stepper(options=options, grid=(nx, ny))
 ```
 </details>
 <details>
-<summary>Matlab (click to expand)</summary>
+<summary>Matlab code (click to expand)</summary>
 
 ```Matlab
 stepper = Stepper(pyargs(...
@@ -377,9 +390,9 @@ stepper = Stepper(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python (click to expand)</summary>
+<summary>Python code (click to expand)</summary>
 
-```python
+```Python
 stepper = Stepper(options=options, grid=(nx, ny))
 ```
 </details>
@@ -404,7 +417,7 @@ enabling handling of the G factor term which can be used to
 represent coordinate transformations and/or variable fluid density. 
 
 Optionally, the number of threads to use for domain decomposition
-in first (non-contiguous) dimension during 2D and 3D calculations
+in the first (non-contiguous) dimension during 2D and 3D calculations
 may be specified using the optional ``n_threads`` argument with a
 default value of ``numba.get_num_threads()``. The multi-threaded
 logic of PyMPDATA depends thus on settings of numba, namely on the
@@ -429,38 +442,74 @@ Solution state is accessible through the ``Solver.advectee`` property.
 Multiple solver[s] can share a single stepper, e.g., as exemplified in the shallow-water system solution in the examples package.
 
 Continuing with the above code snippets, instantiating
-a solver and making one integration step looks as follows:
+a solver and making 75 integration steps looks as follows:
 <details>
-<summary>Julia (click to expand)</summary>
+<summary>Julia code (click to expand)</summary>
 
 ```Julia
 Solver = pyimport("PyMPDATA").Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
-solver.advance(n_steps=1)
+solver.advance(n_steps=75)
 state = solver.advectee.get()
 ```
 </details>
 <details>
-<summary>Matlab (click to expand)</summary>
+<summary>Matlab code (click to expand)</summary>
 
 ```Matlab
 Solver = py.importlib.import_module('PyMPDATA').Solver;
 solver = Solver(pyargs('stepper', stepper, 'advectee', advectee, 'advector', advector));
-solver.advance(pyargs('n_steps', 1));
+solver.advance(pyargs('n_steps', 75));
 state = solver.advectee.get();
 ```
 </details>
 <details open>
-<summary>Python (click to expand)</summary>
+<summary>Python code (click to expand)</summary>
 
-```python
+```Python
 from PyMPDATA import Solver
 
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
-solver.advance(n_steps=1)
+state_0 = solver.advectee.get().copy()
+solver.advance(n_steps=75)
 state = solver.advectee.get()
 ```
 </details>
+
+Now let's plot the results using `matplotlib` roughly as in Fig.&nbsp;5 in [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379):
+
+<details>
+<summary>Python code (click to expand)</summary>
+
+```Python
+def plot(psi, zlim, norm=None):
+    fig, ax = pyplot.subplots(subplot_kw={"projection": "3d"})
+    pyplot.gca().plot_wireframe(
+        *np.indices((nx, ny)), 
+        psi, color='red', linewidth=.5
+    )
+    ax.set_zlim(zlim)
+    for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        axis.pane.fill = False
+        axis.pane.set_edgecolor('black')
+        axis.pane.set_alpha(1)
+    ax.grid(False)
+    ax.set_zticks([])
+    ax.set_proj_type('ortho') 
+    cnt = ax.contourf(xi, yi, psi, zdir='z', offset=-1, norm=norm)
+    cbar = pyplot.colorbar(cnt, pad=.1, aspect=10, fraction=.04)
+    return cbar.norm
+
+zlim = (-1, 1)
+norm = plot(state_0, zlim)
+pyplot.savefig('readme_gauss_0.png')
+plot(state, zlim, norm)
+pyplot.savefig('readme_gauss.png')
+```
+</details>
+
+![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_gauss_0.png)    
+![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_gauss.png)
 
 #### Debugging
 
@@ -472,23 +521,23 @@ it also make the entire code of the library susceptible to
 interactive debugging, one way of enabling it is by setting the 
 following environment variable before importing PyMPDATA:
 <details>
-<summary>Julia (click to expand)</summary>
+<summary>Julia code (click to expand)</summary>
 
 ```Julia
 ENV["NUMBA_DISABLE_JIT"] = "1"
 ```
 </details>
 <details>
-<summary>Matlab (click to expand)</summary>
+<summary>Matlab code (click to expand)</summary>
 
 ```Matlab
 setenv('NUMBA_DISABLE_JIT', '1');
 ```
 </details>
 <details open>
-<summary>Python (click to expand)</summary>
+<summary>Python code (click to expand)</summary>
 
-```python
+```Python
 import os
 os.environ["NUMBA_DISABLE_JIT"] = "1"
 ```

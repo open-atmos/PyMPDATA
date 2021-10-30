@@ -4,7 +4,7 @@ Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab
 
 PyMPDATA uses staggered grid with the following node placement for
 `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` elements:
-![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/grid.png)
+![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)
 """
 # pylint: disable=invalid-name
 from pkg_resources import get_distribution, DistributionNotFound, VersionConflict

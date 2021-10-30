@@ -48,6 +48,7 @@ class Solver:
         for field in [advector, advectee] + ([g_factor] if g_factor is not None else []):
             assert field.halo == stepper.options.n_halo
             assert field.dtype == stepper.options.dtype
+            assert field.grid == advector.grid
 
         self.__fields = {
             'advectee': advectee,
