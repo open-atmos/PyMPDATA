@@ -79,13 +79,7 @@ The appendices of the present paper include ``Python``, ``Julia`` and ``Matlab``
   code snippets covering steps needed to complete a basic ``PyMPDATA`` simulation
   depicted in Fig. (\autoref{fig}) and based on Fig. 5 from @Arabas_et_al_2014.
 
-\begin{figure}[t]
-    \includegraphics[width=0.5\textwidth]{readme_gauss_0-crop}
-    \includegraphics[width=0.5\textwidth]{readme_gauss-crop}
-    \caption{Visualisation of the initial condition (left) and simulation state after 75 timesteps (right)
-      from the 2D simulation for which sample codes are given in the appendices, based on Fig. 5 from @Arabas_et_al_2014.}
-    \label{fig}
-\end{figure}
+![Visualisation of the initial condition (left) and simulation state after 75 timesteps (right) from the 2D simulation for which sample codes are given in the appendices, based on Fig. 5 from @Arabas_et_al_2014.\label{fig}](fig-crop.pdf)
 
 As of the current version, ``PyMPDATA`` supports homogeneous transport in one (1D), two (2D), and three dimensions (3D) 
   using structured meshes, optionally generalised by coordinate transformation 
@@ -201,7 +195,6 @@ state = solver.advectee.get()
 
 ```Julia
 using PyCall
-
 Options = pyimport("PyMPDATA").Options
 ScalarField = pyimport("PyMPDATA").ScalarField
 VectorField = pyimport("PyMPDATA").VectorField
@@ -242,7 +235,8 @@ ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
 VectorField = py.importlib.import_module('PyMPDATA').VectorField;
 Stepper = py.importlib.import_module('PyMPDATA').Stepper;
 Solver = py.importlib.import_module('PyMPDATA').Solver;
-Periodic = py.importlib.import_module('PyMPDATA.boundary_conditions').Periodic;
+Periodic = ...
+    py.importlib.import_module('PyMPDATA.boundary_conditions').Periodic;
 
 options = Options(pyargs('n_iters', 2));
 nx = int32(24);
