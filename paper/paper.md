@@ -74,7 +74,18 @@ From developer's and maintainer's perspectives, ``PyMPDATA`` offers a suite of u
 ``PyMPDATA`` interface uses ``NumPy`` for array-oriented input and output. 
 Usage of ``PyMPDATA`` from ``Julia`` (https://julialang.org) and ``Matlab`` (https://mathworks.com) 
   through ``PyCall`` and the built-in ``Python`` interoperability tools, respectively,
-  is depicted in the PyMPDATA README.
+  is depicted in the PyMPDATA README file.
+The appendices of the present paper include ``Python``, ``Julia`` and ``Matlab`` minimal 
+  code snippets covering steps needed to complete a basic ``PyMPDATA`` simulation
+  depicted in Fig. (\autoref{fig}) and based on Fig. 5 from @Arabas_et_al_2014.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{readme_gauss_0-crop}
+    \includegraphics[width=0.5\textwidth]{readme_gauss-crop}
+    \caption{Visualisation of the output from the 2D simulation for which sample codes are given in the appendices (based on Fig. 5 from @Arabas_et_al_2014)}
+    \label{fig}
+\end{figure}
 
 As of the current version, ``PyMPDATA`` supports homogeneous transport in one (1D), two (2D), and three dimensions (3D) 
   using structured meshes, optionally generalised by coordinate transformation 
@@ -153,6 +164,126 @@ The ``Numba``'s deviation from ``Python`` semantics rendering closure variables 
 
 In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation follow the ``libmpdata++`` 
   open-source ``C++`` implementation of ``MPDATA`` [@Jaruga_et_al_2015].
+
+# Appendix P: Python sample code 
+
+```Python
+import numpy as np
+from PyMPDATA import Options, ScalarField, VectorField, Stepper, Solver
+from PyMPDATA.boundary_conditions import Periodic
+
+options = Options(n_iters=2)
+nx, ny = 24, 24
+Cx, Cy = -.5, -.25
+halo = options.n_halo
+
+xi, yi = np.indices((nx, ny), dtype=float)
+advectee = ScalarField(
+  data=np.exp(
+    -(xi+.5-nx/2)**2 / (2*(nx/10)**2)
+    -(yi+.5-ny/2)**2 / (2*(ny/10)**2)
+  ),  
+  halo=halo,
+  boundary_conditions=(Periodic(), Periodic())
+)
+advector = VectorField(
+  data=(np.full((nx + 1, ny), Cx), np.full((nx, ny + 1), Cy)),
+  halo=halo,
+  boundary_conditions=(Periodic(), Periodic())
+)
+stepper = Stepper(options=options, grid=(nx, ny))
+solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
+solver.advance(n_steps=75)
+state = solver.advectee.get()
+```
+
+# Appendix J: Julia sample code
+
+```Julia
+using PyCall
+
+Options = pyimport("PyMPDATA").Options
+ScalarField = pyimport("PyMPDATA").ScalarField
+VectorField = pyimport("PyMPDATA").VectorField
+Stepper = pyimport("PyMPDATA").Stepper
+Solver = pyimport("PyMPDATA").Solver
+Periodic = pyimport("PyMPDATA.boundary_conditions").Periodic
+
+options = Options(n_iters=2)
+nx, ny = 24, 24
+Cx, Cy = -.5, -.25
+idx = CartesianIndices((nx, ny))
+halo = options.n_halo
+advectee = ScalarField(
+    data=exp.(
+        -(getindex.(idx, 1) .- .5 .- nx/2).^2 / (2*(nx/10)^2) 
+        -(getindex.(idx, 2) .- .5 .- ny/2).^2 / (2*(ny/10)^2)
+    ),  
+    halo=halo, 
+    boundary_conditions=(Periodic(), Periodic())
+)
+advector = VectorField(
+    data=(fill(Cx, (nx+1, ny)), fill(Cy, (nx, ny+1))),
+    halo=halo,
+    boundary_conditions=(Periodic(), Periodic())    
+)
+
+stepper = Stepper(options=options, grid=(nx, ny))
+solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
+solver.advance(n_steps=75)
+state = solver.advectee.get()
+```
+
+# Appendix M: Matlab sample code
+
+```Matlab
+Options = py.importlib.import_module('PyMPDATA').Options;
+ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
+VectorField = py.importlib.import_module('PyMPDATA').VectorField;
+Stepper = py.importlib.import_module('PyMPDATA').Stepper;
+Solver = py.importlib.import_module('PyMPDATA').Solver;
+Periodic = py.importlib.import_module('PyMPDATA.boundary_conditions').Periodic;
+
+options = Options(pyargs('n_iters', 2));
+nx = int32(24);
+ny = int32(24);
+  
+Cx = -.5;
+Cy = -.25;
+
+[xi, yi] = meshgrid(double(0:1:nx-1), double(0:1:ny-1));
+
+halo = options.n_halo;
+advectee = ScalarField(pyargs(...
+    'data', py.numpy.array(exp( ... 
+        -(xi+.5-double(nx)/2).^2 / (2*(double(nx)/10)^2) ... 
+        -(yi+.5-double(ny)/2).^2 / (2*(double(ny)/10)^2) ... 
+    )), ... 
+    'halo', halo, ... 
+    'boundary_conditions', py.tuple({Periodic(), Periodic()}) ... 
+));
+advector = VectorField(pyargs(...
+    'data', py.tuple({ ... 
+        Cx * py.numpy.ones(int32([nx+1 ny])), ... 
+        Cy * py.numpy.ones(int32([nx ny+1])) ... 
+     }), ... 
+    'halo', halo, ... 
+    'boundary_conditions', py.tuple({Periodic(), Periodic()}) ... 
+));
+
+stepper = Stepper(pyargs(...
+  'options', options, ... 
+  'grid', py.tuple({nx, ny}) ... 
+));
+solver = Solver(...
+    pyargs('stepper', ...
+    stepper, 'advectee', ...
+    advectee, 'advector', ...
+    advector ...
+));
+solver.advance(pyargs('n_steps', 75));
+state = solver.advectee.get();
+```
 
 # Author contributions
 
