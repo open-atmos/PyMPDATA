@@ -79,11 +79,12 @@ The appendices of the present paper include ``Python``, ``Julia`` and ``Matlab``
   code snippets covering steps needed to complete a basic ``PyMPDATA`` simulation
   depicted in Fig. (\autoref{fig}) and based on Fig. 5 from @Arabas_et_al_2014.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.5\textwidth]{readme_gauss_0-crop}
     \includegraphics[width=0.5\textwidth]{readme_gauss-crop}
-    \caption{Visualisation of the output from the 2D simulation for which sample codes are given in the appendices (based on Fig. 5 from @Arabas_et_al_2014)}
+    \caption{Visualisation of the initial condition (left) and simulation state after 75 timesteps (right)
+      from the 2D simulation for which sample codes are given in the appendices, based on Fig. 5 from @Arabas_et_al_2014.}
     \label{fig}
 \end{figure}
 
