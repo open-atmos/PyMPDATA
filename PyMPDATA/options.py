@@ -6,6 +6,7 @@ from pystrict import strict
 
 
 class _HashableDict(dict):
+    """ serialization enabler """
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
