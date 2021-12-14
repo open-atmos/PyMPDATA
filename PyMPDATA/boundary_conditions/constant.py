@@ -5,7 +5,8 @@ import numba
 
 class Constant:
     """ class which instances are to be passed in boundary_conditions tuple to the
-        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods """
+        `PyMPDATA.scalar_field.ScalarField` and
+        `PyMPDATA.vector_field.VectorField` __init__ methods """
     def __init__(self, value):
         self.value = value
 

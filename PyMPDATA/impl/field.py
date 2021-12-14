@@ -1,4 +1,5 @@
-""" common logic for `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` classes """
+""" common logic for `PyMPDATA.scalar_field.ScalarField` and
+ `PyMPDATA.vector_field.VectorField` classes """
 from collections import namedtuple
 import abc
 from PyMPDATA.boundary_conditions.constant import Constant

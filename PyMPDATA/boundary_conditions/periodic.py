@@ -6,7 +6,8 @@ from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 class Periodic:
     """ class which instances are to be passed in boundary_conditions tuple to the
-        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods """
+        `PyMPDATA.scalar_field.ScalarField` and
+        `PyMPDATA.vector_field.VectorField` __init__ methods """
     def __init__(self):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
