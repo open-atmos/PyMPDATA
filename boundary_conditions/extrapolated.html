@@ -36,7 +36,8 @@ from PyMPDATA.impl.enumerations import META_AND_DATA_META, META_AND_DATA_DATA
 
 class Extrapolated:
     &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
-        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods &#34;&#34;&#34;
+        `PyMPDATA.scalar_field.ScalarField` and
+        `PyMPDATA.vector_field.VectorField` __init__ methods &#34;&#34;&#34;
     def __init__(self, dim=INNER, eps=1e-10):
         self.eps = eps
         self.dim = dim
@@ -105,14 +106,16 @@ def _make_vector(_, ats, __, ___, jit_flags):
 </code></dt>
 <dd>
 <div class="desc"><p>class which instances are to be passed in boundary_conditions tuple to the
-<code>PyMPDATA.ScalarField</code> and <code>PyMPDATA.VectorField</code> <strong>init</strong> methods</p></div>
+<code><a title="PyMPDATA.scalar_field.ScalarField" href="../scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a></code> and
+<code><a title="PyMPDATA.vector_field.VectorField" href="../vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a></code> <strong>init</strong> methods</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Extrapolated:
     &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
-        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods &#34;&#34;&#34;
+        `PyMPDATA.scalar_field.ScalarField` and
+        `PyMPDATA.vector_field.VectorField` __init__ methods &#34;&#34;&#34;
     def __init__(self, dim=INNER, eps=1e-10):
         self.eps = eps
         self.dim = dim

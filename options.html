@@ -34,7 +34,8 @@ import numpy as np
 from pystrict import strict
 
 
-class _HashableDict(dict):
+class HashableDict(dict):
+    &#34;&#34;&#34; serialization enabler &#34;&#34;&#34;
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
@@ -58,7 +59,7 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: [np.float32, np.float64] = np.float64
                  ):
-        self._values = _HashableDict({
+        self._values = HashableDict({
             &#39;n_iters&#39;: n_iters,
             &#39;infinite_gauge&#39;: infinite_gauge,
             &#39;epsilon&#39;: epsilon,
@@ -163,10 +164,10 @@ class Options:
         return 1
 
     @property
-    def jit_flags(self) -&gt; _HashableDict:
+    def jit_flags(self) -&gt; HashableDict:
         &#34;&#34;&#34; options passed [to numba.njit()](
             https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
-        return _HashableDict({
+        return HashableDict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
             &#34;boundscheck&#34;: False,
@@ -182,6 +183,26 @@ class Options:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="PyMPDATA.options.HashableDict"><code class="flex name class">
+<span>class <span class="ident">HashableDict</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>serialization enabler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HashableDict(dict):
+    &#34;&#34;&#34; serialization enabler &#34;&#34;&#34;
+    def __hash__(self):
+        return hash(tuple(sorted(self.items())))</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.dict</li>
+</ul>
+</dd>
 <dt id="PyMPDATA.options.Options"><code class="flex name class">
 <span>class <span class="ident">Options</span></span>
 <span>(</span><span>*, n_iters: int = 2, infinite_gauge: bool = False, divergent_flow: bool = False, nonoscillatory: bool = False, third_order_terms: bool = False, DPDC: bool = False, epsilon: float = 1e-15, non_zero_mu_coeff: bool = False, dimensionally_split: bool = False, dtype: [<class 'numpy.float32'>, <class 'numpy.float64'>] = numpy.float64)</span>
@@ -214,7 +235,7 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: [np.float32, np.float64] = np.float64
                  ):
-        self._values = _HashableDict({
+        self._values = HashableDict({
             &#39;n_iters&#39;: n_iters,
             &#39;infinite_gauge&#39;: infinite_gauge,
             &#39;epsilon&#39;: epsilon,
@@ -319,10 +340,10 @@ class Options:
         return 1
 
     @property
-    def jit_flags(self) -&gt; _HashableDict:
+    def jit_flags(self) -&gt; HashableDict:
         &#34;&#34;&#34; options passed [to numba.njit()](
             https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
-        return _HashableDict({
+        return HashableDict({
             &#34;fastmath&#34;: True,
             &#34;error_model&#34;: &#39;numpy&#39;,
             &#34;boundscheck&#34;: False,
@@ -427,7 +448,7 @@ def infinite_gauge(self) -&gt; bool:
     return self._values[&#39;infinite_gauge&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PyMPDATA.options.Options.jit_flags"><code class="name">var <span class="ident">jit_flags</span> : PyMPDATA.options._HashableDict</code></dt>
+<dt id="PyMPDATA.options.Options.jit_flags"><code class="name">var <span class="ident">jit_flags</span> : <a title="PyMPDATA.options.HashableDict" href="#PyMPDATA.options.HashableDict">HashableDict</a></code></dt>
 <dd>
 <div class="desc"><p>options passed <a href="https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options">to numba.njit()</a></p></div>
 <details class="source">
@@ -435,10 +456,10 @@ def infinite_gauge(self) -&gt; bool:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def jit_flags(self) -&gt; _HashableDict:
+def jit_flags(self) -&gt; HashableDict:
     &#34;&#34;&#34; options passed [to numba.njit()](
         https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
-    return _HashableDict({
+    return HashableDict({
         &#34;fastmath&#34;: True,
         &#34;error_model&#34;: &#39;numpy&#39;,
         &#34;boundscheck&#34;: False,
@@ -534,6 +555,9 @@ def third_order_terms(self) -&gt; bool:
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="PyMPDATA.options.HashableDict" href="#PyMPDATA.options.HashableDict">HashableDict</a></code></h4>
+</li>
 <li>
 <h4><code><a title="PyMPDATA.options.Options" href="#PyMPDATA.options.Options">Options</a></code></h4>
 <ul class="two-column">

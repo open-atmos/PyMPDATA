@@ -35,7 +35,8 @@ from PyMPDATA.impl.enumerations import SIGN_RIGHT, SIGN_LEFT
 
 class Periodic:
     &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
-        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods &#34;&#34;&#34;
+        `PyMPDATA.scalar_field.ScalarField` and
+        `PyMPDATA.vector_field.VectorField` __init__ methods &#34;&#34;&#34;
     def __init__(self):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
@@ -81,14 +82,16 @@ def _make_vector(ats, jit_flags):
 </code></dt>
 <dd>
 <div class="desc"><p>class which instances are to be passed in boundary_conditions tuple to the
-<code>PyMPDATA.ScalarField</code> and <code>PyMPDATA.VectorField</code> <strong>init</strong> methods</p></div>
+<code><a title="PyMPDATA.scalar_field.ScalarField" href="../scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a></code> and
+<code><a title="PyMPDATA.vector_field.VectorField" href="../vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a></code> <strong>init</strong> methods</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Periodic:
     &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
-        `PyMPDATA.ScalarField` and `PyMPDATA.VectorField` __init__ methods &#34;&#34;&#34;
+        `PyMPDATA.scalar_field.ScalarField` and
+        `PyMPDATA.vector_field.VectorField` __init__ methods &#34;&#34;&#34;
     def __init__(self):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
