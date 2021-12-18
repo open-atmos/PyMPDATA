@@ -5,8 +5,8 @@ import numpy as np
 from pystrict import strict
 
 
-class _HashableDict(dict):
-    """ ... """
+class HashableDict(dict):
+    """ serialization enabler """
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
@@ -30,7 +30,7 @@ class Options:
                  dimensionally_split: bool = False,
                  dtype: [np.float32, np.float64] = np.float64
                  ):
-        self._values = _HashableDict({
+        self._values = HashableDict({
             'n_iters': n_iters,
             'infinite_gauge': infinite_gauge,
             'epsilon': epsilon,
@@ -135,10 +135,10 @@ class Options:
         return 1
 
     @property
-    def jit_flags(self) -> _HashableDict:
+    def jit_flags(self) -> HashableDict:
         """ options passed [to numba.njit()](
             https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) """
-        return _HashableDict({
+        return HashableDict({
             "fastmath": True,
             "error_model": 'numpy',
             "boundscheck": False,
