@@ -6,6 +6,7 @@ from pystrict import strict
 
 
 class _HashableDict(dict):
+    """ ... """
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
@@ -15,7 +16,7 @@ class Options:
     """ representation of MPDATA algorithm variant choice, for an overview of
         MPDATA options carried out using PyMPDATA, see
         [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
-        equipped with meaningul `__str__` `__hash__`, `__eq__`.
+        equipped with meaningful `__str__` `__hash__`, `__eq__`.
     """
     def __init__(self, *,
                  n_iters: int = 2,
