@@ -38,11 +38,15 @@ def test_formulae_upwind():
     # Act
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-        upwind(traversals.null_impl,
-               Impl(field=psi_impl[IMPL_META_AND_DATA], bc=psi_impl[IMPL_BC]),
-               Impl(field=flux_impl[IMPL_META_AND_DATA], bc=flux_impl[IMPL_BC]),
-               Impl(field=traversals.null_impl.scalar[IMPL_META_AND_DATA], bc=traversals.null_impl.scalar[IMPL_BC])
-               )
+        upwind(
+            traversals.null_impl,
+            Impl(field=psi_impl[IMPL_META_AND_DATA], bc=psi_impl[IMPL_BC]),
+            Impl(field=flux_impl[IMPL_META_AND_DATA], bc=flux_impl[IMPL_BC]),
+            Impl(
+               field=traversals.null_impl.scalar[IMPL_META_AND_DATA],
+               bc=traversals.null_impl.scalar[IMPL_BC]
+            )
+        )
 
     # Assert
     np.testing.assert_array_equal(psi.get(), np.roll(psi_data, 1))

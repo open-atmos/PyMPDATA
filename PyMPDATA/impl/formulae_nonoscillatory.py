@@ -12,7 +12,7 @@ def make_psi_extrema(options, traversals):
     """ returns an njit-ted function for use with given traversals """
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
-        def apply(_psi_extrema, _psi):
+        def apply(_null_impl, _psi_extrema, _psi):
             return
     else:
         idx = traversals.indexers[traversals.n_dims]
@@ -84,8 +84,7 @@ def make_beta(non_unit_g_factor, options, traversals):
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
         # pylint: disable=too-many-arguments
-        def apply(_beta, _flux, _flux_bc, _psi, _psi_bc, _psi_extrema, _psi_extrema_bc,
-                  _g_factor, _g_factor_bc):
+        def apply(_null_impl, _beta, _flux, _psi, _psi_extrema, _g_factor):
             return
     else:
         idx = traversals.indexers[traversals.n_dims]
@@ -207,7 +206,7 @@ def make_correction(options, traversals):
     """ returns njit-ted function for use with given traversals """
     if not options.nonoscillatory:
         @numba.njit(**options.jit_flags)
-        def apply(_, __, ___, ____):
+        def apply(_, __, ___):
             return
     else:
         idx = traversals.indexers[traversals.n_dims]
