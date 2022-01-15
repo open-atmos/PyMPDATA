@@ -41,7 +41,7 @@ def test_formulae_upwind():
         upwind(traversals.null_impl,
                Impl(field=psi_impl[IMPL_META_AND_DATA], bc=psi_impl[IMPL_BC]),
                Impl(field=flux_impl[IMPL_META_AND_DATA], bc=flux_impl[IMPL_BC]),
-               traversals.null_impl.scalar
+               Impl(field=traversals.null_impl.scalar[IMPL_META_AND_DATA], bc=traversals.null_impl.scalar[IMPL_BC])
                )
 
     # Assert
