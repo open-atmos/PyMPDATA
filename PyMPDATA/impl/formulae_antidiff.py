@@ -21,13 +21,12 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
         for i in range(MAX_DIM_NUM))
 
     @numba.njit(**options.jit_flags)
-    # pylint: disable=too-many-arguments
-    def apply(g_c_corr, psi, psi_bc, g_c_unco, vec_bc, g_factor, g_factor_bc):
+    def apply(g_c_corr, psi, g_c_unco, g_factor):
         return apply_vector(*formulae_antidiff,
-                            *g_c_corr,
-                            *psi, *psi_bc,
-                            *g_c_unco, *vec_bc,
-                            *g_factor, *g_factor_bc)
+                            *g_c_corr.field,
+                            *psi.field, *psi.bc,
+                            *g_c_unco.field, *g_c_unco.bc,
+                            *g_factor.field, *g_factor.bc)
 
     return apply
 

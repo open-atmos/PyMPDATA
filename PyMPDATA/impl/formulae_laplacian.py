@@ -27,12 +27,12 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         )
 
         @numba.njit(**options.jit_flags)
-        def apply(null_impl, advector, advectee, advectee_bc):
+        def apply(null_impl, advector, advectee):
             null_vecfield, null_vecfield_bc = null_impl.vector
             null_scalarfield, null_scalarfield_bc = null_impl.scalar
             return apply_vector(*formulae_laplacian,
-                                *advector,
-                                *advectee, *advectee_bc,
+                                *advector.field,
+                                *advectee.field, *advectee.bc,
                                 *null_vecfield, *null_vecfield_bc,
                                 *null_scalarfield, *null_scalarfield_bc)
 

@@ -22,12 +22,12 @@ def make_flux_first_pass(options, traversals):
     )
 
     @numba.njit(**options.jit_flags)
-    def apply(null_impl, vectmp_a, advector, advectee, advectee_bc, vec_bc):
+    def apply(null_impl, vectmp_a, advector, advectee):
         null_scalarfield, null_bc = null_impl.scalar
         return apply_vector(*formulae_flux_first_pass,
-                            *vectmp_a,
-                            *advectee, *advectee_bc,
-                            *advector, *vec_bc,
+                            *vectmp_a.field,
+                            *advectee.field, *advectee.bc,
+                            *advector.field, *advector.bc,
                             *null_scalarfield, *null_bc)
 
     return apply
@@ -50,12 +50,12 @@ def make_flux_subsequent(options, traversals):
     )
 
     @numba.njit(**options.jit_flags)
-    def apply(null_impl, flux, psi, psi_bc, g_c_corr, vec_bc):
+    def apply(null_impl, flux, psi, g_c_corr):
         null_scalarfield, null_bc = null_impl.scalar
         return apply_vector(*formulae_flux_subsequent,
-                            *flux,
-                            *psi, *psi_bc,
-                            *g_c_corr, *vec_bc,
+                            *flux.field,
+                            *psi.field, *psi.bc,
+                            *g_c_corr.field, *g_c_corr.bc,
                             *null_scalarfield, *null_bc)
 
     return apply

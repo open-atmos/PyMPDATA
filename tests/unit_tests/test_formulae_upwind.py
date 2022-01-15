@@ -4,6 +4,8 @@ from numba.core.errors import NumbaExperimentalFeatureWarning
 import numpy as np
 from PyMPDATA.impl.formulae_upwind import make_upwind
 from PyMPDATA.impl.traversals import Traversals
+from PyMPDATA.impl.meta import Impl
+from PyMPDATA.impl.enumerations import IMPL_META_AND_DATA, IMPL_BC
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
@@ -33,12 +35,14 @@ def test_formulae_upwind():
     flux.assemble(traversals)
     flux_impl = flux.impl
 
-    null_impl = ScalarField.make_null(len(psi_data.shape), traversals).impl
-
     # Act
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-        upwind(traversals.null_impl, psi_impl[0], *flux_impl, *null_impl)
+        upwind(traversals.null_impl,
+               Impl(field=psi_impl[IMPL_META_AND_DATA], bc=psi_impl[IMPL_BC]),
+               Impl(field=flux_impl[IMPL_META_AND_DATA], bc=flux_impl[IMPL_BC]),
+               traversals.null_impl.scalar
+               )
 
     # Assert
     np.testing.assert_array_equal(psi.get(), np.roll(psi_data, 1))

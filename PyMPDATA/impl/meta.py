@@ -1,4 +1,5 @@
 """ constants for indexing and a factory for creating the "meta" tuples """
+from collections import namedtuple
 import numpy as np
 from .enumerations import INNER, MID3D, OUTER
 
@@ -9,6 +10,7 @@ META_N_INNER = 3
 META_IS_NULL = 4
 META_SIZE = 5
 
+Impl = namedtuple("Impl", ("field", "bc"))
 
 def make_meta(halo_valid: bool, grid):
     """ returns a "meta" tuple for a given grid size and halo status """
