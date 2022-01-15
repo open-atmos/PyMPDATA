@@ -104,5 +104,5 @@ class Field:
 
     @staticmethod
     @abc.abstractmethod
-    def make_null(n_dims: int, traversals: tuple):  # pylint: disable=missing-function-docstring
+    def make_null(n_dims: int, traversals):  # pylint: disable=missing-function-docstring
         raise NotImplementedError()

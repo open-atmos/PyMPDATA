@@ -38,7 +38,7 @@ def test_formulae_upwind():
     # Act
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
-        upwind(psi_impl[0], *flux_impl, *null_impl)
+        upwind(traversals.null_impl, psi_impl[0], *flux_impl, *null_impl)
 
     # Assert
     np.testing.assert_array_equal(psi.get(), np.roll(psi_data, 1))

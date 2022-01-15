@@ -25,11 +25,10 @@ def make_psi_extrema(options, traversals):
             None
         )
 
-        null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
-        null_vecfield, null_vecfield_bc = traversals.null_vector_field.impl
-
         @numba.njit(**options.jit_flags)
-        def apply(psi_extrema, psi, psi_bc):
+        def apply(null_impl, psi_extrema, psi, psi_bc):
+            null_scalfield, null_scalfield_bc = null_impl.scalar
+            null_vecfield, null_vecfield_bc = null_impl.vector
             return apply_scalar(*formulae,
                                 *psi_extrema,
                                 *null_vecfield, *null_vecfield_bc,
@@ -105,17 +104,17 @@ def make_beta(non_unit_g_factor, options, traversals):
             None
         )
 
-        null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
-
         @numba.njit(**options.jit_flags)
         # pylint: disable=too-many-arguments
         def apply(
+            null_impl,
             beta,
             flux, flux_bc,
             psi, psi_bc,
             psi_extrema, psi_extrema_bc,
             g_factor, g_factor_bc
         ):
+            null_scalfield, null_scalfield_bc = null_impl.scalar
             return apply_scalar(*formulae,
                                 *beta,
                                 *flux, *flux_bc,
@@ -220,10 +219,9 @@ def make_correction(options, traversals):
             for i in range(MAX_DIM_NUM)
         )
 
-        null_scalfield, null_scalfield_bc = traversals.null_scalar_field.impl
-
         @numba.njit(**options.jit_flags)
-        def apply(g_c_corr, vec_bc, beta, beta_bc):
+        def apply(null_impl, g_c_corr, vec_bc, beta, beta_bc):
+            null_scalfield, null_scalfield_bc = null_impl.scalar
             return apply_vector(*formulae,
                                 *g_c_corr,
                                 *beta, *beta_bc,
