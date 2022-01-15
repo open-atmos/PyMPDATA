@@ -10,7 +10,8 @@ META_N_INNER = 3
 META_IS_NULL = 4
 META_SIZE = 5
 
-Impl = namedtuple("Impl", ("field", "bc"))
+_Impl = namedtuple("Impl", ("field", "bc"))
+
 
 def make_meta(halo_valid: bool, grid):
     """ returns a "meta" tuple for a given grid size and halo status """

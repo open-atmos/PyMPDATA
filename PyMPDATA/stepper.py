@@ -12,7 +12,7 @@ from .impl.formulae_nonoscillatory import make_psi_extrema, make_beta, make_corr
 from .impl.formulae_axpy import make_axpy
 from .impl.traversals import Traversals
 from .impl.enumerations import ARG_DATA, IMPL_META_AND_DATA, IMPL_BC
-from .impl.meta import Impl
+from .impl.meta import _Impl
 from .options import Options
 from .impl.clock import clock
 
@@ -79,7 +79,7 @@ class Stepper:
             warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
             wall_time_per_timestep = self.__call(
                 n_steps, mu_coeff, post_step, post_iter,
-                *(Impl(
+                *(_Impl(
                     field=v.impl[IMPL_META_AND_DATA],
                     bc=v.impl[IMPL_BC]
                 ) for v in fields.values()),
