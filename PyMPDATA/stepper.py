@@ -155,9 +155,9 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                         nonoscillatory_correction(null_impl, advector_nonos, beta)
                         flux_subsequent(null_impl, flux, advectee, advector_nonos)
                 upwind(null_impl, advectee, flux, g_factor)
-                post_iter.__call__(flux, g_factor, step, iteration)
+                post_iter.__call__(flux.field, g_factor.field, step, iteration)
             if non_zero_mu_coeff:
                 advector = advector_orig
-            post_step.__call__(advectee[ARG_DATA], step)
+            post_step.__call__(advectee.field[ARG_DATA], step)
         return (clock() - time) / n_steps
     return step, traversals
