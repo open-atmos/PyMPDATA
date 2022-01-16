@@ -1,10 +1,12 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
+import pytest
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA import ScalarField, VectorField, Solver, Stepper, Options
 
 
-def test_dtypes():
+@pytest.mark.xfail(strict=True)  # TODO #311
+def test_shared_advector():
     n_x = 100
     arr = np.zeros(n_x)
     opt1 = Options(n_iters=2, DPDC=True)
