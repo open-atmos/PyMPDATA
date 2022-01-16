@@ -28,6 +28,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34; staggered-grid traversals orchestration &#34;&#34;&#34;
+from collections import namedtuple
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
 from .grid import make_chunk, make_domain
@@ -51,8 +52,11 @@ class Traversals:
         self.n_dims = len(grid)
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
-        self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
-        self.null_vector_field = VectorField.make_null(self.n_dims, self)
+
+        self.null_impl = namedtuple(&#34;NullFields&#34;, (&#34;scalar&#34;, &#34;vector&#34;))(
+            scalar=ScalarField.make_null(self.n_dims, self).impl,
+            vector=VectorField.make_null(self.n_dims, self).impl
+        )
 
         self._code = {}
         self._code[&#39;fill_halos_scalar&#39;] = _make_fill_halos_scalar(
@@ -136,8 +140,11 @@ class Traversals:
         self.n_dims = len(grid)
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
-        self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
-        self.null_vector_field = VectorField.make_null(self.n_dims, self)
+
+        self.null_impl = namedtuple(&#34;NullFields&#34;, (&#34;scalar&#34;, &#34;vector&#34;))(
+            scalar=ScalarField.make_null(self.n_dims, self).impl,
+            vector=VectorField.make_null(self.n_dims, self).impl
+        )
 
         self._code = {}
         self._code[&#39;fill_halos_scalar&#39;] = _make_fill_halos_scalar(
