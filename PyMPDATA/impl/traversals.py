@@ -1,4 +1,5 @@
 """ staggered-grid traversals orchestration """
+from collections import namedtuple
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
 from .grid import make_chunk, make_domain
@@ -22,8 +23,11 @@ class Traversals:
         self.n_dims = len(grid)
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
-        self.null_scalar_field = ScalarField.make_null(self.n_dims, self)
-        self.null_vector_field = VectorField.make_null(self.n_dims, self)
+
+        self.null_impl = namedtuple("NullFields", ("scalar", "vector"))(
+            scalar=ScalarField.make_null(self.n_dims, self).impl,
+            vector=VectorField.make_null(self.n_dims, self).impl
+        )
 
         self._code = {}
         self._code['fill_halos_scalar'] = _make_fill_halos_scalar(
