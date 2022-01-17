@@ -1,8 +1,11 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
 import pytest
+import numba
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA import ScalarField, VectorField, Solver, Stepper, Options
+
+assert numba.config.DISABLE_JIT is not None  # pylint: disable=no-member
 
 
 @pytest.mark.xfail(strict=True)  # TODO #311
