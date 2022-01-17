@@ -1,4 +1,5 @@
 """ polar boundary condition for use in with spherical coordinates """
+from functools import lru_cache
 import numba
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 
@@ -44,8 +45,12 @@ class Polar:
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
         """ returns (lru-cached) Numba-compiled vector halo-filling callable """
-        @numba.njit(**jit_flags)
-        def fill_halos(psi, ___, ____):
-            return ats(*psi, 0)  # TODO #120
+        return _make_vector(ats, jit_flags)
 
-        return fill_halos
+
+@lru_cache()
+def _make_vector(ats, jit_flags):
+    @numba.njit(**jit_flags)
+    def fill_halos(psi, ___, ____):
+        return ats(*psi, 0)  # TODO #120
+    return fill_halos
