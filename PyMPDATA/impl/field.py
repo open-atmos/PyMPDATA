@@ -17,22 +17,23 @@ _Properties = namedtuple(
 class Field:
     """ abstract base class for scalar and vector fields """
     def __init__(self, *, grid: tuple, boundary_conditions: tuple, halo: int, dtype):
-        assert len(grid) == len(boundary_conditions)
+        assert len(grid) <= len(boundary_conditions)
+
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if len(boundary_conditions) > 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if len(boundary_conditions) > 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
+
         self.__properties = _Properties(
             grid=grid,
             meta=make_meta(False, grid),
             n_dims=len(grid),
             halo=halo,
             dtype=dtype,
-            boundary_conditions=boundary_conditions
+            boundary_conditions=self.fill_halos
         )
-
-        self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
-            if self.n_dims > 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
-            if self.n_dims > 2 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[INNER] = boundary_conditions[INNER]
 
         self.__impl = None
         self.__jit_flags = None
@@ -71,7 +72,8 @@ class Field:
 
     @property
     def boundary_conditions(self):
-        """ tuple of boundary conditions as passed to the `__init__()` """
+        """ tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+            dimensions higher than grid diemensionality) """
         return self.__properties.boundary_conditions
 
     @property
