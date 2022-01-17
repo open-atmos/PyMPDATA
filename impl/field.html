@@ -48,22 +48,23 @@ _Properties = namedtuple(
 class Field:
     &#34;&#34;&#34; abstract base class for scalar and vector fields &#34;&#34;&#34;
     def __init__(self, *, grid: tuple, boundary_conditions: tuple, halo: int, dtype):
-        assert len(grid) == len(boundary_conditions)
+        assert len(grid) &lt;= len(boundary_conditions)
+
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if len(boundary_conditions) &gt; 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if len(boundary_conditions) &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
+
         self.__properties = _Properties(
             grid=grid,
             meta=make_meta(False, grid),
             n_dims=len(grid),
             halo=halo,
             dtype=dtype,
-            boundary_conditions=boundary_conditions
+            boundary_conditions=self.fill_halos
         )
-
-        self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
-            if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
-            if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[INNER] = boundary_conditions[INNER]
 
         self.__impl = None
         self.__jit_flags = None
@@ -102,7 +103,8 @@ class Field:
 
     @property
     def boundary_conditions(self):
-        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` &#34;&#34;&#34;
+        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+            dimensions higher than grid diemensionality) &#34;&#34;&#34;
         return self.__properties.boundary_conditions
 
     @property
@@ -161,22 +163,23 @@ class Field:
 <pre><code class="python">class Field:
     &#34;&#34;&#34; abstract base class for scalar and vector fields &#34;&#34;&#34;
     def __init__(self, *, grid: tuple, boundary_conditions: tuple, halo: int, dtype):
-        assert len(grid) == len(boundary_conditions)
+        assert len(grid) &lt;= len(boundary_conditions)
+
+        self.fill_halos = [None] * MAX_DIM_NUM
+        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
+            if len(boundary_conditions) &gt; 1 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
+            if len(boundary_conditions) &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[INNER] = boundary_conditions[INNER]
+
         self.__properties = _Properties(
             grid=grid,
             meta=make_meta(False, grid),
             n_dims=len(grid),
             halo=halo,
             dtype=dtype,
-            boundary_conditions=boundary_conditions
+            boundary_conditions=self.fill_halos
         )
-
-        self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
-            if self.n_dims &gt; 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
-            if self.n_dims &gt; 2 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[INNER] = boundary_conditions[INNER]
 
         self.__impl = None
         self.__jit_flags = None
@@ -215,7 +218,8 @@ class Field:
 
     @property
     def boundary_conditions(self):
-        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` &#34;&#34;&#34;
+        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+            dimensions higher than grid diemensionality) &#34;&#34;&#34;
         return self.__properties.boundary_conditions
 
     @property
@@ -278,14 +282,16 @@ def make_null(n_dims: int, traversals):  # pylint: disable=missing-function-docs
 <dl>
 <dt id="PyMPDATA.impl.field.Field.boundary_conditions"><code class="name">var <span class="ident">boundary_conditions</span></code></dt>
 <dd>
-<div class="desc"><p>tuple of boundary conditions as passed to the <code>__init__()</code></p></div>
+<div class="desc"><p>tuple of boundary conditions as passed to the <code>__init__()</code> (plus Constant(NaN) in
+dimensions higher than grid diemensionality)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def boundary_conditions(self):
-    &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` &#34;&#34;&#34;
+    &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+        dimensions higher than grid diemensionality) &#34;&#34;&#34;
     return self.__properties.boundary_conditions</code></pre>
 </details>
 </dd>
