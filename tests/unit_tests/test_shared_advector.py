@@ -6,6 +6,7 @@ from PyMPDATA import ScalarField, VectorField, Solver, Stepper, Options
 
 
 @pytest.mark.xfail(strict=True)  # TODO #311
+@pytest.mark.skipif("numba.config.DISABLE_JIT")
 def test_shared_advector():
     n_x = 100
     arr = np.zeros(n_x)
