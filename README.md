@@ -14,10 +14,10 @@
 [![Copyright](https://img.shields.io/static/v1?label=Copyright&color=249fe2&message=Jagiellonian%20University&)](https://en.uj.edu.pl/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/PyMPDATA/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
-[![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=master&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/master)
-[![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/master/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=master)
-[![Github Actions Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/Pylint/badge.svg?branch=master)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml)    
+[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/PyMPDATA/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
+[![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=main&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/main)
+[![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/main/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=main)
+[![Github Actions Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/workflows/Pylint/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml)    
 [![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=)
 [![GitHub issues](https://img.shields.io/github/issues-pr-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=is:closed)    
 [![GitHub issues](https://img.shields.io/github/issues/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)
@@ -84,7 +84,7 @@ To install PyMPDATA, one may use: ``pip install PyMPDATA`` (or
 PyMPDATA depends on ``NumPy`` and ``Numba``.
 
 Running the tests shipped with the package requires additional packages listed in the 
-[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/test-time-requirements.txt) file
+[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/main/test-time-requirements.txt) file
 (which include ``PyMPDATA-examples``, see below).
 
 ## Examples (Jupyter notebooks reproducing results from literature):
@@ -231,8 +231,8 @@ The ``__init__`` methods of
 [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
 and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html)
 have the following signatures:
-- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/scalar_field.py)
-- [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/master/PyMPDATA/vector_field.py)
+- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/main/PyMPDATA/scalar_field.py)
+- [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/main/PyMPDATA/vector_field.py)
 The ``data`` parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
 The ``halo`` parameter is the extent of ghost-cell region that will surround the
 data and will be used to implement boundary conditions. 
