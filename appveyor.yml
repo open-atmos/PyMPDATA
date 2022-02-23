@@ -18,24 +18,31 @@ install:
       if ($env:platform -Match "x86") 
       {
         $env:PYTHON="C:\Python38\python"
+        $env:PATH += ';C:\msys64\mingw32\bin'
       }
       elseif ($env:platform -Match "x64") 
       {
         $env:PYTHON="C:\Python38-x64\python"
+        $env:PATH += ';C:\msys64\mingw64\bin'
       }
-
   - ps: |
       iex "$env:PYTHON -m pip install --upgrade pip"
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
   - ps: |
-      iex "$env:PYTHON -m pip install pywinpty==1.1.0"
-      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
-
+       curl -sSf -o rustup-init.exe https://win.rustup.rs/
+       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+  - ps: |
+       rustup-init.exe -y --default-host %TARGET% --default-toolchain %RUST_VERSION%
+       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+  - ps: |
+       set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
+       rustc -Vv
+       cargo -V
   - ps: |
       iex "$env:PYTHON -m pip install -r test-time-requirements.txt"
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
-
+  - ps: |
       iex "$env:PYTHON -m pip install -e ."
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 test_script:
