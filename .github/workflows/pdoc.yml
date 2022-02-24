@@ -2,9 +2,9 @@ name: pdoc
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
           pip install -e .
           python -We -m pdoc --html PyMPDATA
       - name: Deploy
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           BRANCH: pdoc
