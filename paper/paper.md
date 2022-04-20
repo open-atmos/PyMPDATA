@@ -16,7 +16,7 @@ authors:
     affiliation: "1"
   - name: Maciej&nbsp;Manna
     affiliation: "1"
-  - name: Michael Olesik
+  - name: Michael&nbsp;A.&nbsp;Olesik
     orcid: 0000-0002-6319-9358
     affiliation: "1"
   - name: Paweł Rozwoda
