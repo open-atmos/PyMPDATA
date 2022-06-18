@@ -110,7 +110,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
     axpy = make_axpy(options, traversals)
 
     @numba.njit(**options.jit_flags)
-    # pylint: disable=too-many-arguments,too-many-locals,too-many-branches
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,unnecessary-dunder-call
     def step(n_steps, mu_coeff, post_step, post_iter,
              advectee, advector, g_factor,
              vectmp_a, vectmp_b, vectmp_c,

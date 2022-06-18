@@ -17,9 +17,11 @@ def stream_function(x_01, z_01):
     return - RHOD_W_MAX * x_span / np.pi * np.sin(np.pi * z_01) * np.cos(2 * np.pi * x_01)
 
 
-RHOD_OF_Z = lambda z: 1 - z * 1e-4
+def rhod_of_z(arg):
+    return 1 - arg * 1e-4
+
 RHOD = np.repeat(
-    RHOD_OF_Z(
+    rhod_of_z(
         (np.arange(GRID[1]) + 1 / 2) / GRID[1]
     ).reshape((1, GRID[1])),
     GRID[0],

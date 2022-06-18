@@ -40,10 +40,17 @@ class Solver:
         advector: VectorField,
         g_factor: [ScalarField, None] = None
     ):
-        scalar_field = lambda dtype=None: ScalarField.clone(advectee, dtype=dtype)
-        null_scalar_field = lambda: ScalarField.make_null(advectee.n_dims, stepper.traversals)
-        vector_field = lambda: VectorField.clone(advector)
-        null_vector_field = lambda: VectorField.make_null(advector.n_dims, stepper.traversals)
+        def scalar_field(dtype=None):
+            return ScalarField.clone(advectee, dtype=dtype)
+
+        def null_scalar_field():
+            return ScalarField.make_null(advectee.n_dims, stepper.traversals)
+
+        def vector_field():
+            return VectorField.clone(advector)
+
+        def null_vector_field():
+            return VectorField.make_null(advector.n_dims, stepper.traversals)
 
         for field in [advector, advectee] + ([g_factor] if g_factor is not None else []):
             assert field.halo == stepper.options.n_halo
