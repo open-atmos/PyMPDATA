@@ -16,7 +16,10 @@ setup(
     name='PyMPDATA',
     description='Numba-accelerated Pythonic implementation of MPDATA '
                 'with examples in Python, Julia and Matlab',
-    use_scm_version=True,
+    use_scm_version={
+        "local_scheme": lambda _: "",
+        "version_scheme": "post-release"
+    },
     setup_requires=['setuptools_scm'],
     install_requires=[
         'numba' + ('==0.55.2' if 'CI' in os.environ else ''),
