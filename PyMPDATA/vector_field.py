@@ -15,7 +15,7 @@ class VectorField(Field):
 
     def __init__(self, data: tuple, halo: int, boundary_conditions: tuple):
         super().__init__(
-            grid=tuple(data[d].shape[d] - 1 for d, _ in enumerate(data)),
+            grid=tuple(datum.shape[dim] - 1 for dim, datum in enumerate(data)),
             boundary_conditions=boundary_conditions,
             halo=halo,
             dtype=data[0].dtype
