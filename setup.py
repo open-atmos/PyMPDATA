@@ -45,5 +45,10 @@ setup(
         'Topic :: Software Development :: Libraries'
     ],
     keywords='atmospheric-modelling, numba, numerical-integration, '
-             'advection, pde-solver, advection-diffusion'
+             'advection, pde-solver, advection-diffusion',
+    project_urls={
+        "Tracker": "https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues",
+        "Documentation": "https://atmos-cloud-sim-uj.github.io/PyMPDATA",
+        "Source": "https://github.com/atmos-cloud-sim-uj/PyMPDATA"
+    }
 )
