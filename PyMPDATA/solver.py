@@ -103,7 +103,7 @@ class Solver:
             coefficients (one value per dimension) as well as `post_iter` and `post_step`
             callbacks expected to be `numba.jitclass`es with a `__call__` method, for
             signature see `PostStepNull` and `PostIterNull`;
-            returns wall time per timestep (units as returned by `clock.clock()`) """
+            returns CPU time per timestep (units as returned by `clock.clock()`) """
         if mu_coeff is not None:
             assert self.__stepper.options.non_zero_mu_coeff
         else:
