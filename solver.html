@@ -134,7 +134,7 @@ class Solver:
             coefficients (one value per dimension) as well as `post_iter` and `post_step`
             callbacks expected to be `numba.jitclass`es with a `__call__` method, for
             signature see `PostStepNull` and `PostIterNull`;
-            returns wall time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
+            returns CPU time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
         if mu_coeff is not None:
             assert self.__stepper.options.non_zero_mu_coeff
         else:
@@ -251,7 +251,7 @@ a scala g_factor field</p></div>
             coefficients (one value per dimension) as well as `post_iter` and `post_step`
             callbacks expected to be `numba.jitclass`es with a `__call__` method, for
             signature see `PostStepNull` and `PostIterNull`;
-            returns wall time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
+            returns CPU time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
         if mu_coeff is not None:
             assert self.__stepper.options.non_zero_mu_coeff
         else:
@@ -331,7 +331,7 @@ def g_factor(self) -&gt; ScalarField:
 coefficients (one value per dimension) as well as <code>post_iter</code> and <code>post_step</code>
 callbacks expected to be <code>numba.jitclass</code>es with a <code>__call__</code> method, for
 signature see <code>PostStepNull</code> and <code>PostIterNull</code>;
-returns wall time per timestep (units as returned by <code>clock.clock()</code>)</p></div>
+returns CPU time per timestep (units as returned by <code>clock.clock()</code>)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -346,7 +346,7 @@ returns wall time per timestep (units as returned by <code>clock.clock()</code>)
         coefficients (one value per dimension) as well as `post_iter` and `post_step`
         callbacks expected to be `numba.jitclass`es with a `__call__` method, for
         signature see `PostStepNull` and `PostIterNull`;
-        returns wall time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
+        returns CPU time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
     if mu_coeff is not None:
         assert self.__stepper.options.non_zero_mu_coeff
     else:
