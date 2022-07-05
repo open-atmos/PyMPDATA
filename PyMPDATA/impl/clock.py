@@ -1,4 +1,4 @@
-""" clock() function which works from within njit-ted code """
+""" CPU-time returning clock() function which works from within njit-ted code """
 import ctypes
 import platform
 
