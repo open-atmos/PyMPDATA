@@ -4,8 +4,8 @@ import os
 import re
 import sys
 import pathlib
-import pytest
 import warnings
+import pytest
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=DeprecationWarning)
