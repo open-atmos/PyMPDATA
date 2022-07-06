@@ -5,9 +5,13 @@ import re
 import sys
 import pathlib
 import pytest
-from ghapi.all import GhApi, paged
-from fastcore.net import ExceptionsHTTP
+import warnings
 
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    from fastcore.net import ExceptionsHTTP
+
+from ghapi.all import GhApi, paged
 
 # pylint: disable-next=redefined-outer-name
 def test_todos_annotated(project_file, gh_issues):
