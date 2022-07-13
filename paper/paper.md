@@ -159,6 +159,54 @@ The ``Numba``'s deviation from ``Python`` semantics rendering closure variables 
 In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation follow the ``libmpdata++`` 
   open-source ``C++`` implementation of ``MPDATA`` [@Jaruga_et_al_2015].
 
+# Performance
+
+A basic performance analysis is carried out comparing ``PyMPDATA`` execution (wall) times: 
+  (i) with or without Numba JIT, as well as (ii) comparing performance against the ``C++`` 
+  implementation of ``MPDATA`` in ``libmpdata++``.
+The tests are carried out using a 3D simulation based on the revolving sphere case from 
+  @Smolarkiewicz_1984 (figs. 13-16 therein) as used in @Jaruga_et_al_2015 (fig. 13 therein).
+The simulation setup involves solution of a homogeneous advection problem in a cubic domain
+  with a non-divergent rotational flow.
+Here, for simplicity, all simulations are carried out for 64 timesteps, and the measured
+  wall-time is divided by the number of steps and reported as wall-time per timestep.
+In all reported runs, both for libmpdata++ and PyMPDATA, two corrective iterations of MPDATA
+  are used, and the basic flavour of the algorithm is employed.
+Wall-time measurements are carried out using the build-in C++ timers in libmpdata++, and
+  using Python's ``timeit`` routines, respectively.
+Timing applies to integration only excluding initial condition evaluation or output handling.
+Simulations are repeated four times and the minimal value is reported in order to filter
+  out JIT-compilation and caching overhead and to minimise thread-schedulling differences.
+For PyMPDATA runs with Numba JIT disabled, the number of repetitions is reduced from four to two.
+Simulations are carried out on one, two or three threads on a machine with four physical cores.
+
+![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with the number of threads used, for the case of 16 by 16 by 16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
+
+Figure \autoref{fig:perf} (a) depicts wall-times measured with a domain of 16 by 16 by 16, and
+  for: ``PyMPDATA`` with Numba JIT disabled (red line),
+  ``libmpdata++`` (green connected points), and ``PyMPDATA`` with JIT enabled for both dynamic grid
+  (i.e., grid extents specified at run-time, plotted with orange connected points) and
+  static grid (i.e., grid extents specified ahead of JIT compilation, blue connected points).
+First, an over three orders of magnitude speedup is depicted comparing wall-times with JIT 
+  disabled and enabled.
+Comparison of ``PyMPDATA`` and ``libmpdata++`` reveals comparable performance and scaling with number 
+  of threads with consistently shorter wall-times for ``PyMPDATA``, and a slight further improvement
+  when switching from dynamic to static grid.
+
+Figure \autoref{fig:perf} (b) depicts wall-time dependence on the domain size for the case of three threads,
+  and confirms that the observed higher performance of ``PyMPDATA`` as compared with libmpdata++ can be observed 
+  over a range of domain sizes starting from 16 by 16 by 16 up to 128 by 128 by 128.
+While more comprehensive tests and analyses would be needed to identify the cause of this superior
+  performance, two possible factors include overhead from employment of the ``Blitz++`` library in ``libmpdata++``
+  as well as manual (potentially superfluous) halo-filling triggers in ``libmpdata++`` as opposed to
+  automatic halo-filling design implemented in ``PyMPDATA``.
+Noteworthy, as reported in @Jaruga_et_al_2015 (section 7 therein), for the very test case discussed herein,
+  and for small grid sizes (59 by 59 by 59), ``libmpdata++`` had up to five times longer execution times compared 
+  with the original ``FORTRAN-77`` serial implementaion of MPDATA.
+This indicates that the measured performance of ``PyMPDATA`` approaches the performance of the original 
+  FORTRAN-77 implementation, at the same time offering multi-threading concurrency, hiding the compilation and linking
+  stages from the user, and featuring interoperability with the Python package ecosystem.
+
 # Appendix P: Python sample code 
 
 ```Python
