@@ -183,23 +183,29 @@ Simulations are carried out on one, two or three threads on a machine with four 
 ![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with the number of threads used, for the case of 16 by 16 by 16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
 
 Figure \autoref{fig:perf} (a) depicts wall-times measured with a domain of 16 by 16 by 16, and
-  for: PyMPDATA with Numba JIT disabled (red line),
-  libmpdata++ (green connected points), and PyMPDATA with JIT enabled for both dynamic grid
+  for: ``PyMPDATA`` with Numba JIT disabled (red line),
+  ``libmpdata++`` (green connected points), and ``PyMPDATA`` with JIT enabled for both dynamic grid
   (i.e., grid extents specified at run-time, plotted with orange connected points) and
   static grid (i.e., grid extents specified ahead of JIT compilation, blue connected points).
 First, an over three orders of magnitude speedup is depicted comparing wall-times with JIT 
   disabled and enabled.
-Comparison of PyMPDATA and libmpdata++ reveals comparable performance and scaling with number 
-  of threads with consistently shorter wall-times for PyMPDATA, and a slight further improvement
+Comparison of ``PyMPDATA`` and ``libmpdata++`` reveals comparable performance and scaling with number 
+  of threads with consistently shorter wall-times for ``PyMPDATA``, and a slight further improvement
   when switching from dynamic to static grid.
 
 Figure \autoref{fig:perf} (b) depicts wall-time dependence on the domain size for the case of three threads,
-  and confirms that the observed higher performance of PyMPDATA as compared with libmpdata++ can be observed 
+  and confirms that the observed higher performance of ``PyMPDATA`` as compared with libmpdata++ can be observed 
   over a range of domain sizes starting from 16 by 16 by 16 up to 128 by 128 by 128.
 While more comprehensive tests and analyses would be needed to identify the cause of this superior
-  performance, two possible factors include overhead from employment of the Blitz++ library in libmpdata++
-  as well as manual (potentially superfluous) halo-filling triggers in libmpdata++ as opposed to
-  automatic halo-filling design implemented in PyMPDATA.
+  performance, two possible factors include overhead from employment of the ``Blitz++`` library in ``libmpdata++``
+  as well as manual (potentially superfluous) halo-filling triggers in ``libmpdata++`` as opposed to
+  automatic halo-filling design implemented in ``PyMPDATA``.
+Noteworthy, as reported in @Jaruga_et_al_2015 (section 7 therein), for the very test case discussed herein,
+  and for small grid sizes (59 by 59 by 59), ``libmpdata++`` had up to five times longer execution times compared 
+  with the original ``FORTRAN-77`` serial implementaion of MPDATA.
+This indicates that the measured performance of ``PyMPDATA`` approaches the performance of the original 
+  FORTRAN-77 implementation, at the same time offering multi-threading concurrency, hiding the compilation and linking
+  stages from the user, and featuring interoperability with the Python package ecosystem.
 
 # Appendix P: Python sample code 
 
