@@ -161,7 +161,7 @@ In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation
 
 # Performance
 
-![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with number of threads used for a 16$\times$16$\times$16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
+![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with the number of threads used, for the case of 16 by 16 by 16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
 
 A basic performance analysis is carried out comparing ``PyMPDATA`` execution (wall) times: 
   (i) with or without Numba JIT, as well as (ii) comparing performance against the ``C++`` 
