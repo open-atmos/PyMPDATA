@@ -159,6 +159,47 @@ The ``Numba``'s deviation from ``Python`` semantics rendering closure variables 
 In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation follow the ``libmpdata++`` 
   open-source ``C++`` implementation of ``MPDATA`` [@Jaruga_et_al_2015].
 
+# Performance
+
+A basic performance analysis is carried out comparing ``PyMPDATA`` execution (wall) times: 
+  (i) with or without Numba JIT, as well as (ii) comparing performance against the ``C++`` 
+  implementation of ``MPDATA`` in ``libmpdata++``.
+The tests are carried out using a 3D simulation based on the revolving sphere case from 
+  @Smolarkiewicz_1984 (figs. 13-16 therein) as used in @Jaruga_et_al_2015 (fig. 13 therein).
+The simulation setup involves solution of a homogeneous advection problem in a cubic domain
+  with a non-divergent rotational flow.
+Here, for simplicity, all simulations are carried out for 64 timesteps, and the measured
+  wall-time is divided by the number of steps and reported as wall-time per timestep.
+In all reported runs, both for libmpdata++ and PyMPDATA, two corrective iterations of MPDATA
+  are used, and the basic flavour of the algorithm is employed.
+Wall-time measurements are carried out using the build-in C++ timers in libmpdata++, and
+  using Python's ``timeit`` routines, respectively.
+Simulations are repeated four times and the minimal value is reported in order to filter
+  out JIT-compilation and caching overhead and to minimise thread-schedulling differences.
+For PyMPDATA runs with Numba JIT disabled, the number of repetitions is reduced from four to two.
+Simulations are carried out on one, two or three threads on a machine with four physical cores.
+
+Figure @fig:perf (a) depicts wall-times measured with a domain of 16$\times$16$\times$16 
+  for: PyMPDATA with Numba JIT disabled (red line),
+  libmpdata++ (green connected points), and PyMPDATA with JIT enabled for both dynamic grid
+  (i.e., grid extents specified at run-time, plotted with orange connected points) and
+  static grid (i.e., grid extents specified ahead of JIT compilation, blue connected points).
+First, an over three orders of magnitude speedup is depicted comparing wall-times with JIT 
+  disabled and enabled.
+Comparison of PyMPDATA and libmpdata++ reveals comparable performance and scaling with number 
+  of threads with consistently shorter wall-times for PyMPDATA, and a slight further improvement
+  when switching from dynamic to static grid.
+
+Figure @fig:perf (b) depicts wall-time dependence on the domain size for the case of three threads,
+  and confirms that the observed higher performance of PyMPDATA as compared with libmpdata++ can be observed 
+  over a range of domain sizes starting from 16$\times$16$\times$16 up to 128$\times$128$\times$128.
+While more comprehensive tests and analyses would be needed to identify the cause of this superior
+  performance, two possible factors include overhead from employment of the Blitz++ library in libmpdata++
+  as well as manual (potentially superfluous) halo-filling triggers in libmpdata++ as opposed to
+  automatic halo-filling design implemented in PyMPDATA.
+
+![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with number of threads used for a 16$\times$16$\times$16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.](fig-perf.pdf){#fig:perf}
+
 # Appendix P: Python sample code 
 
 ```Python
