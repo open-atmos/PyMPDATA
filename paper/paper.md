@@ -161,8 +161,6 @@ In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation
 
 # Performance
 
-![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with the number of threads used, for the case of 16 by 16 by 16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
-
 A basic performance analysis is carried out comparing ``PyMPDATA`` execution (wall) times: 
   (i) with or without Numba JIT, as well as (ii) comparing performance against the ``C++`` 
   implementation of ``MPDATA`` in ``libmpdata++``.
@@ -176,10 +174,13 @@ In all reported runs, both for libmpdata++ and PyMPDATA, two corrective iteratio
   are used, and the basic flavour of the algorithm is employed.
 Wall-time measurements are carried out using the build-in C++ timers in libmpdata++, and
   using Python's ``timeit`` routines, respectively.
+Timing applies to integration only excluding initial condition evaluation or output handling.
 Simulations are repeated four times and the minimal value is reported in order to filter
   out JIT-compilation and caching overhead and to minimise thread-schedulling differences.
 For PyMPDATA runs with Numba JIT disabled, the number of repetitions is reduced from four to two.
 Simulations are carried out on one, two or three threads on a machine with four physical cores.
+
+![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with the number of threads used, for the case of 16 by 16 by 16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
 
 Figure \autoref{fig:perf} (a) depicts wall-times measured with a domain of 16 by 16 by 16, and
   for: PyMPDATA with Numba JIT disabled (red line),
