@@ -181,7 +181,7 @@ Simulations are repeated four times and the minimal value is reported in order t
 For PyMPDATA runs with Numba JIT disabled, the number of repetitions is reduced from four to two.
 Simulations are carried out on one, two or three threads on a machine with four physical cores.
 
-Figure @fig:perf (a) depicts wall-times measured with a domain of 16$\times$16$\times$16 
+Figure \autoref{fig:perf} (a) depicts wall-times measured with a domain of 16$\times$16$\times$16 
   for: PyMPDATA with Numba JIT disabled (red line),
   libmpdata++ (green connected points), and PyMPDATA with JIT enabled for both dynamic grid
   (i.e., grid extents specified at run-time, plotted with orange connected points) and
@@ -192,7 +192,7 @@ Comparison of PyMPDATA and libmpdata++ reveals comparable performance and scalin
   of threads with consistently shorter wall-times for PyMPDATA, and a slight further improvement
   when switching from dynamic to static grid.
 
-Figure @fig:perf (b) depicts wall-time dependence on the domain size for the case of three threads,
+Figure \autoref{fig:perf} (b) depicts wall-time dependence on the domain size for the case of three threads,
   and confirms that the observed higher performance of PyMPDATA as compared with libmpdata++ can be observed 
   over a range of domain sizes starting from 16$\times$16$\times$16 up to 128$\times$128$\times$128.
 While more comprehensive tests and analyses would be needed to identify the cause of this superior
