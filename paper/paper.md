@@ -161,6 +161,8 @@ In general, the numerical and concurrency aspects of ``PyMPDATA`` implementation
 
 # Performance
 
+![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with number of threads used for a 16$\times$16$\times$16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.\label{fig:perf}](fig-perf.pdf)
+
 A basic performance analysis is carried out comparing ``PyMPDATA`` execution (wall) times: 
   (i) with or without Numba JIT, as well as (ii) comparing performance against the ``C++`` 
   implementation of ``MPDATA`` in ``libmpdata++``.
@@ -197,8 +199,6 @@ While more comprehensive tests and analyses would be needed to identify the caus
   performance, two possible factors include overhead from employment of the Blitz++ library in libmpdata++
   as well as manual (potentially superfluous) halo-filling triggers in libmpdata++ as opposed to
   automatic halo-filling design implemented in PyMPDATA.
-
-![Comparison of wall-time measurements results for a 3D simulation using PyMPDATA with JIT disabled (red line) and enabled (connected points) corroborated against timings of analogous simulation performed with libmpdata++. Panel (a) presents scaling with number of threads used for a 16$\times$16$\times$16 domain. Panel (b) depicts scaling with domain size for simulations using three threads.](fig-perf.pdf){#fig:perf}
 
 # Appendix P: Python sample code 
 
