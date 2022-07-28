@@ -172,7 +172,7 @@ Here, for simplicity, all simulations are carried out for 64 timesteps, and the 
   wall-time is divided by the number of steps and reported as wall-time per timestep.
 In all reported runs, both for libmpdata++ and PyMPDATA, two corrective iterations of MPDATA
   are used, and the basic flavour of the algorithm is employed.
-Wall-time measurements are carried out using the build-in C++ timers in libmpdata++, and
+Wall-time measurements are carried out using the timers built-in into libmpdata++, and
   using Python's ``timeit`` routines, respectively.
 Timing applies to integration only excluding initial condition evaluation or output handling.
 Simulations are repeated four times and the minimal value is reported in order to filter
@@ -198,8 +198,8 @@ Figure \autoref{fig:perf} (b) depicts wall-time dependence on the domain size fo
   over a range of domain sizes starting from 16 by 16 by 16 up to 128 by 128 by 128.
 While more comprehensive tests and analyses would be needed to identify the cause of this superior
   performance, two possible factors include overhead from employment of the ``Blitz++`` library in ``libmpdata++``
-  as well as manual (potentially superfluous) halo-filling triggers in ``libmpdata++`` as opposed to
-  automatic halo-filling design implemented in ``PyMPDATA``.
+  as well as explicit (potentially superfluous) halo-filling triggers in ``libmpdata++`` as opposed to
+  on-demand halo-filling design implemented in ``PyMPDATA``.
 Noteworthy, as reported in @Jaruga_et_al_2015 (section 7 therein), for the very test case discussed herein,
   and for small grid sizes (59 by 59 by 59), ``libmpdata++`` had up to five times longer execution times compared 
   with the original ``FORTRAN-77`` serial implementaion of MPDATA.
