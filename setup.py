@@ -22,7 +22,7 @@ setup(
     },
     setup_requires=['setuptools_scm'],
     install_requires=[
-        'numba' + ('==0.55.2' if 'CI' in os.environ else ''),
+        'numba' + ('==0.56.0' if 'CI' in os.environ else ''),
         'numpy' + ('==1.21' if 'CI' in os.environ else ''),
         'pystrict'
     ],
