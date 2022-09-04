@@ -26,7 +26,7 @@ authors:
     affiliation: "1"
   - name: Sylwester Arabas
     orcid: 0000-0003-2361-0082
-    affiliation: "2,1"
+    affiliation: "1,2"
 affiliations:
  - name: Jagiellonian University, Kraków, Poland 
    index: 1
