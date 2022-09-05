@@ -1,5 +1,5 @@
 ---
-title: 'PyMPDATA v1: Numba-accelerated implementation of&nbsp;MPDATA with examples in Python, Julia and Matlab'
+title: 'PyMPDATA v1: Numba-accelerated implementation of MPDATA with examples in Python, Julia and Matlab'
 tags:
   - Python
   - pde-solver 
