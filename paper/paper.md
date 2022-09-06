@@ -14,9 +14,9 @@ authors:
     affiliation: "1"
   - name: Szymon Drenda
     affiliation: "1"
-  - name: Maciej&nbsp;Manna
+  - name: Maciej Manna
     affiliation: "1"
-  - name: Michael&nbsp;A.&nbsp;Olesik
+  - name: Michael A. Olesik
     orcid: 0000-0002-6319-9358
     affiliation: "1"
   - name: Paweł Rozwoda
