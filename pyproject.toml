@@ -20,7 +20,7 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    "numpa_mpi",
+    "numba_mpi",
     "PySDM",
     "PyMPDATA"
 ]
