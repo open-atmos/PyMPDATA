@@ -1,2 +1,9 @@
+# pylint: disable=missing-module-docstring,missing-function-docstring
+import numba_mpi
+import PySDM
+import PyMPDATA
+
+
 def test_imports():
-    import numba_mpi, PySDM, PyMPDATA
+    for package in [numba_mpi, PySDM, PyMPDATA]:
+        print(package.__version__)
