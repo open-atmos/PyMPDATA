@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring
 import numpy as np
 from PySDM import Builder
 from PySDM.backends import CPU
@@ -8,6 +9,7 @@ from PySDM.initialisation.sampling import spatial_sampling
 class Env:
     def __init__(self, grid, size):
         self.mesh = Mesh(grid=grid, size=size)
+        self.particulator = None
 
     def register(self, builder):
         self.particulator = builder.particulator
@@ -40,4 +42,5 @@ def test_domain3d(n_sd=44, grid=(5, 6, 7), size=(50, 60, 70)):
     particulator = builder.build(attributes=attributes, products=())
 
     # assert
+    assert len(particulator.mesh.grid) == 3
     # TODO !
