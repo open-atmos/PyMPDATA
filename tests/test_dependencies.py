@@ -4,6 +4,6 @@ import PyMPDATA
 import PySDM
 
 
-def test_imports():
+def test_dependencies():
     for package in [numba_mpi, PySDM, PyMPDATA]:
         print(package.__version__)
