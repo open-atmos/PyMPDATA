@@ -1,7 +1,7 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
 import numba_mpi
-import PySDM
 import PyMPDATA
+import PySDM
 
 
 def test_imports():
