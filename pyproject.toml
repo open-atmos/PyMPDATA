@@ -25,3 +25,6 @@ dependencies = [
     "PyMPDATA"
 ]
 dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "PySuperDropletLES.__version__"}
