@@ -3,8 +3,7 @@
     TODO
 """
 
-from pkg_resources import (DistributionNotFound, VersionConflict,
-                           get_distribution)
+from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
 
 try:
     __version__ = get_distribution(__name__).version
