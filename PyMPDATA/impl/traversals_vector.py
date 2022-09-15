@@ -162,6 +162,7 @@ def _make_apply_vector(
             arg3s_meta[META_HALO_VALID] = True
 
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
+            # pylint: disable=duplicate-code
             apply_vector_impl(
                 thread_id,
                 out_meta,
