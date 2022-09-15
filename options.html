@@ -35,116 +35,127 @@ from pystrict import strict
 
 
 class HashableDict(dict):
-    &#34;&#34;&#34; serialization enabler &#34;&#34;&#34;
+    &#34;&#34;&#34;serialization enabler&#34;&#34;&#34;
+
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
 
 @strict
 class Options:
-    &#34;&#34;&#34; representation of MPDATA algorithm variant choice, for an overview of
-        MPDATA options carried out using PyMPDATA, see
-        [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
-        equipped with meaningful `__str__` `__hash__`, `__eq__`.
+    &#34;&#34;&#34;representation of MPDATA algorithm variant choice, for an overview of
+    MPDATA options carried out using PyMPDATA, see
+    [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
+    equipped with meaningful `__str__` `__hash__`, `__eq__`.
     &#34;&#34;&#34;
-    def __init__(self, *,
-                 n_iters: int = 2,
-                 infinite_gauge: bool = False,
-                 divergent_flow: bool = False,
-                 nonoscillatory: bool = False,
-                 third_order_terms: bool = False,
-                 DPDC: bool = False,  # pylint: disable=invalid-name
-                 epsilon: float = 1e-15,
-                 non_zero_mu_coeff: bool = False,
-                 dimensionally_split: bool = False,
-                 dtype: [np.float32, np.float64] = np.float64
-                 ):
-        self._values = HashableDict({
-            &#39;n_iters&#39;: n_iters,
-            &#39;infinite_gauge&#39;: infinite_gauge,
-            &#39;epsilon&#39;: epsilon,
-            &#39;divergent_flow&#39;: divergent_flow,
-            &#39;nonoscillatory&#39;: nonoscillatory,
-            &#39;third_order_terms&#39;: third_order_terms,
-            &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
-            &#39;dimensionally_split&#39;: dimensionally_split,
-            &#39;dtype&#39;: dtype,
-            &#39;DPDC&#39;: DPDC
-        })
 
-        if any((
-            infinite_gauge,
-            divergent_flow,
-            nonoscillatory,
-            third_order_terms,
-            DPDC
-        )) and n_iters &lt; 2:
+    def __init__(
+        self,
+        *,
+        n_iters: int = 2,
+        infinite_gauge: bool = False,
+        divergent_flow: bool = False,
+        nonoscillatory: bool = False,
+        third_order_terms: bool = False,
+        DPDC: bool = False,  # pylint: disable=invalid-name
+        epsilon: float = 1e-15,
+        non_zero_mu_coeff: bool = False,
+        dimensionally_split: bool = False,
+        dtype: [np.float32, np.float64] = np.float64
+    ):
+        self._values = HashableDict(
+            {
+                &#34;n_iters&#34;: n_iters,
+                &#34;infinite_gauge&#34;: infinite_gauge,
+                &#34;epsilon&#34;: epsilon,
+                &#34;divergent_flow&#34;: divergent_flow,
+                &#34;nonoscillatory&#34;: nonoscillatory,
+                &#34;third_order_terms&#34;: third_order_terms,
+                &#34;non_zero_mu_coeff&#34;: non_zero_mu_coeff,
+                &#34;dimensionally_split&#34;: dimensionally_split,
+                &#34;dtype&#34;: dtype,
+                &#34;DPDC&#34;: DPDC,
+            }
+        )
+
+        if (
+            any(
+                (
+                    infinite_gauge,
+                    divergent_flow,
+                    nonoscillatory,
+                    third_order_terms,
+                    DPDC,
+                )
+            )
+            and n_iters &lt; 2
+        ):
             raise ValueError()
         if n_iters &lt; 1:
             raise ValueError()
 
     @property
     def dtype(self):
-        &#34;&#34;&#34; data type (e.g., np.float64) &#34;&#34;&#34;
-        return self._values[&#39;dtype&#39;]
+        &#34;&#34;&#34;data type (e.g., np.float64)&#34;&#34;&#34;
+        return self._values[&#34;dtype&#34;]
 
     @property
     def n_iters(self) -&gt; int:
-        &#34;&#34;&#34; number of iterations (1: upwind, 2: upwind + one corrective iteration, ...) &#34;&#34;&#34;
-        return self._values[&#39;n_iters&#39;]
+        &#34;&#34;&#34;number of iterations (1: upwind, 2: upwind + one corrective iteration, ...)&#34;&#34;&#34;
+        return self._values[&#34;n_iters&#34;]
 
     @property
     def infinite_gauge(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the infinite-gauge option, see e.g.:
-            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
-            [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+        &#34;&#34;&#34;flag enabling the infinite-gauge option, see e.g.:
+        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
         &#34;&#34;&#34;
-        return self._values[&#39;infinite_gauge&#39;]
+        return self._values[&#34;infinite_gauge&#34;]
 
     @property
     def epsilon(self) -&gt; float:
-        &#34;&#34;&#34; value of constant used to prevent from divisins by zero
-            in statements such as (a - b)/(a + b + eps) &#34;&#34;&#34;
-        return self._values[&#39;epsilon&#39;]
+        &#34;&#34;&#34;value of constant used to prevent from divisins by zero
+        in statements such as (a - b)/(a + b + eps)&#34;&#34;&#34;
+        return self._values[&#34;epsilon&#34;]
 
     @property
     def divergent_flow(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the divergent-flow option, see e.g.:
-            [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
-            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        &#34;&#34;&#34;flag enabling the divergent-flow option, see e.g.:
+        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
-        return self._values[&#39;divergent_flow&#39;]
+        return self._values[&#34;divergent_flow&#34;]
 
     @property
     def nonoscillatory(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the nonoscillatory option, see
-            [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A) &#34;&#34;&#34;
-        return self._values[&#39;nonoscillatory&#39;]
+        &#34;&#34;&#34;flag enabling the nonoscillatory option, see
+        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)&#34;&#34;&#34;
+        return self._values[&#34;nonoscillatory&#34;]
 
     @property
     def third_order_terms(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the third-order-terms option, see
-            [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X) &#34;&#34;&#34;
-        return self._values[&#39;third_order_terms&#39;]
+        &#34;&#34;&#34;flag enabling the third-order-terms option, see
+        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&#34;&#34;&#34;
+        return self._values[&#34;third_order_terms&#34;]
 
     @property
     def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
-        &#34;&#34;&#34; flag enabling the double-pass donor-cell option, see:
-            [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
-            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
-            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        &#34;&#34;&#34;flag enabling the double-pass donor-cell option, see:
+        [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
-        return self._values[&#39;DPDC&#39;]
+        return self._values[&#34;DPDC&#34;]
 
     @property
     def non_zero_mu_coeff(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling handling of Fickian diffusion term &#34;&#34;&#34;
-        return self._values[&#39;non_zero_mu_coeff&#39;]
+        &#34;&#34;&#34;flag enabling handling of Fickian diffusion term&#34;&#34;&#34;
+        return self._values[&#34;non_zero_mu_coeff&#34;]
 
     @property
     def dimensionally_split(self) -&gt; bool:
-        &#34;&#34;&#34; flag disabling cross-dimensional terms in antidiffusive velocities &#34;&#34;&#34;
-        return self._values[&#39;dimensionally_split&#39;]
+        &#34;&#34;&#34;flag disabling cross-dimensional terms in antidiffusive velocities&#34;&#34;&#34;
+        return self._values[&#34;dimensionally_split&#34;]
 
     def __str__(self):
         return str(self._values)
@@ -158,20 +169,22 @@ class Options:
 
     @property
     def n_halo(self) -&gt; int:
-        &#34;&#34;&#34; halo extent for a given options set &#34;&#34;&#34;
+        &#34;&#34;&#34;halo extent for a given options set&#34;&#34;&#34;
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         return 1
 
     @property
     def jit_flags(self) -&gt; HashableDict:
-        &#34;&#34;&#34; options passed [to numba.njit()](
-            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
-        return HashableDict({
-            &#34;fastmath&#34;: True,
-            &#34;error_model&#34;: &#39;numpy&#39;,
-            &#34;boundscheck&#34;: False,
-        })</code></pre>
+        &#34;&#34;&#34;options passed [to numba.njit()](
+        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&#34;&#34;&#34;
+        return HashableDict(
+            {
+                &#34;fastmath&#34;: True,
+                &#34;error_model&#34;: &#34;numpy&#34;,
+                &#34;boundscheck&#34;: False,
+            }
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -194,7 +207,8 @@ class Options:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class HashableDict(dict):
-    &#34;&#34;&#34; serialization enabler &#34;&#34;&#34;
+    &#34;&#34;&#34;serialization enabler&#34;&#34;&#34;
+
     def __hash__(self):
         return hash(tuple(sorted(self.items())))</code></pre>
 </details>
@@ -218,109 +232,119 @@ equipped with meaningful <code>__str__</code> <code>__hash__</code>, <code>__eq_
 </summary>
 <pre><code class="python">@strict
 class Options:
-    &#34;&#34;&#34; representation of MPDATA algorithm variant choice, for an overview of
-        MPDATA options carried out using PyMPDATA, see
-        [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
-        equipped with meaningful `__str__` `__hash__`, `__eq__`.
+    &#34;&#34;&#34;representation of MPDATA algorithm variant choice, for an overview of
+    MPDATA options carried out using PyMPDATA, see
+    [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
+    equipped with meaningful `__str__` `__hash__`, `__eq__`.
     &#34;&#34;&#34;
-    def __init__(self, *,
-                 n_iters: int = 2,
-                 infinite_gauge: bool = False,
-                 divergent_flow: bool = False,
-                 nonoscillatory: bool = False,
-                 third_order_terms: bool = False,
-                 DPDC: bool = False,  # pylint: disable=invalid-name
-                 epsilon: float = 1e-15,
-                 non_zero_mu_coeff: bool = False,
-                 dimensionally_split: bool = False,
-                 dtype: [np.float32, np.float64] = np.float64
-                 ):
-        self._values = HashableDict({
-            &#39;n_iters&#39;: n_iters,
-            &#39;infinite_gauge&#39;: infinite_gauge,
-            &#39;epsilon&#39;: epsilon,
-            &#39;divergent_flow&#39;: divergent_flow,
-            &#39;nonoscillatory&#39;: nonoscillatory,
-            &#39;third_order_terms&#39;: third_order_terms,
-            &#39;non_zero_mu_coeff&#39;: non_zero_mu_coeff,
-            &#39;dimensionally_split&#39;: dimensionally_split,
-            &#39;dtype&#39;: dtype,
-            &#39;DPDC&#39;: DPDC
-        })
 
-        if any((
-            infinite_gauge,
-            divergent_flow,
-            nonoscillatory,
-            third_order_terms,
-            DPDC
-        )) and n_iters &lt; 2:
+    def __init__(
+        self,
+        *,
+        n_iters: int = 2,
+        infinite_gauge: bool = False,
+        divergent_flow: bool = False,
+        nonoscillatory: bool = False,
+        third_order_terms: bool = False,
+        DPDC: bool = False,  # pylint: disable=invalid-name
+        epsilon: float = 1e-15,
+        non_zero_mu_coeff: bool = False,
+        dimensionally_split: bool = False,
+        dtype: [np.float32, np.float64] = np.float64
+    ):
+        self._values = HashableDict(
+            {
+                &#34;n_iters&#34;: n_iters,
+                &#34;infinite_gauge&#34;: infinite_gauge,
+                &#34;epsilon&#34;: epsilon,
+                &#34;divergent_flow&#34;: divergent_flow,
+                &#34;nonoscillatory&#34;: nonoscillatory,
+                &#34;third_order_terms&#34;: third_order_terms,
+                &#34;non_zero_mu_coeff&#34;: non_zero_mu_coeff,
+                &#34;dimensionally_split&#34;: dimensionally_split,
+                &#34;dtype&#34;: dtype,
+                &#34;DPDC&#34;: DPDC,
+            }
+        )
+
+        if (
+            any(
+                (
+                    infinite_gauge,
+                    divergent_flow,
+                    nonoscillatory,
+                    third_order_terms,
+                    DPDC,
+                )
+            )
+            and n_iters &lt; 2
+        ):
             raise ValueError()
         if n_iters &lt; 1:
             raise ValueError()
 
     @property
     def dtype(self):
-        &#34;&#34;&#34; data type (e.g., np.float64) &#34;&#34;&#34;
-        return self._values[&#39;dtype&#39;]
+        &#34;&#34;&#34;data type (e.g., np.float64)&#34;&#34;&#34;
+        return self._values[&#34;dtype&#34;]
 
     @property
     def n_iters(self) -&gt; int:
-        &#34;&#34;&#34; number of iterations (1: upwind, 2: upwind + one corrective iteration, ...) &#34;&#34;&#34;
-        return self._values[&#39;n_iters&#39;]
+        &#34;&#34;&#34;number of iterations (1: upwind, 2: upwind + one corrective iteration, ...)&#34;&#34;&#34;
+        return self._values[&#34;n_iters&#34;]
 
     @property
     def infinite_gauge(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the infinite-gauge option, see e.g.:
-            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
-            [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+        &#34;&#34;&#34;flag enabling the infinite-gauge option, see e.g.:
+        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
         &#34;&#34;&#34;
-        return self._values[&#39;infinite_gauge&#39;]
+        return self._values[&#34;infinite_gauge&#34;]
 
     @property
     def epsilon(self) -&gt; float:
-        &#34;&#34;&#34; value of constant used to prevent from divisins by zero
-            in statements such as (a - b)/(a + b + eps) &#34;&#34;&#34;
-        return self._values[&#39;epsilon&#39;]
+        &#34;&#34;&#34;value of constant used to prevent from divisins by zero
+        in statements such as (a - b)/(a + b + eps)&#34;&#34;&#34;
+        return self._values[&#34;epsilon&#34;]
 
     @property
     def divergent_flow(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the divergent-flow option, see e.g.:
-            [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
-            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        &#34;&#34;&#34;flag enabling the divergent-flow option, see e.g.:
+        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
-        return self._values[&#39;divergent_flow&#39;]
+        return self._values[&#34;divergent_flow&#34;]
 
     @property
     def nonoscillatory(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the nonoscillatory option, see
-            [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A) &#34;&#34;&#34;
-        return self._values[&#39;nonoscillatory&#39;]
+        &#34;&#34;&#34;flag enabling the nonoscillatory option, see
+        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)&#34;&#34;&#34;
+        return self._values[&#34;nonoscillatory&#34;]
 
     @property
     def third_order_terms(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling the third-order-terms option, see
-            [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X) &#34;&#34;&#34;
-        return self._values[&#39;third_order_terms&#39;]
+        &#34;&#34;&#34;flag enabling the third-order-terms option, see
+        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&#34;&#34;&#34;
+        return self._values[&#34;third_order_terms&#34;]
 
     @property
     def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
-        &#34;&#34;&#34; flag enabling the double-pass donor-cell option, see:
-            [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
-            [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
-            [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+        &#34;&#34;&#34;flag enabling the double-pass donor-cell option, see:
+        [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         &#34;&#34;&#34;
-        return self._values[&#39;DPDC&#39;]
+        return self._values[&#34;DPDC&#34;]
 
     @property
     def non_zero_mu_coeff(self) -&gt; bool:
-        &#34;&#34;&#34; flag enabling handling of Fickian diffusion term &#34;&#34;&#34;
-        return self._values[&#39;non_zero_mu_coeff&#39;]
+        &#34;&#34;&#34;flag enabling handling of Fickian diffusion term&#34;&#34;&#34;
+        return self._values[&#34;non_zero_mu_coeff&#34;]
 
     @property
     def dimensionally_split(self) -&gt; bool:
-        &#34;&#34;&#34; flag disabling cross-dimensional terms in antidiffusive velocities &#34;&#34;&#34;
-        return self._values[&#39;dimensionally_split&#39;]
+        &#34;&#34;&#34;flag disabling cross-dimensional terms in antidiffusive velocities&#34;&#34;&#34;
+        return self._values[&#34;dimensionally_split&#34;]
 
     def __str__(self):
         return str(self._values)
@@ -334,20 +358,22 @@ class Options:
 
     @property
     def n_halo(self) -&gt; int:
-        &#34;&#34;&#34; halo extent for a given options set &#34;&#34;&#34;
+        &#34;&#34;&#34;halo extent for a given options set&#34;&#34;&#34;
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         return 1
 
     @property
     def jit_flags(self) -&gt; HashableDict:
-        &#34;&#34;&#34; options passed [to numba.njit()](
-            https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
-        return HashableDict({
-            &#34;fastmath&#34;: True,
-            &#34;error_model&#34;: &#39;numpy&#39;,
-            &#34;boundscheck&#34;: False,
-        })</code></pre>
+        &#34;&#34;&#34;options passed [to numba.njit()](
+        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&#34;&#34;&#34;
+        return HashableDict(
+            {
+                &#34;fastmath&#34;: True,
+                &#34;error_model&#34;: &#34;numpy&#34;,
+                &#34;boundscheck&#34;: False,
+            }
+        )</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -363,12 +389,12 @@ class Options:
 </summary>
 <pre><code class="python">@property
 def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
-    &#34;&#34;&#34; flag enabling the double-pass donor-cell option, see:
-        [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
-        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
-        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+    &#34;&#34;&#34;flag enabling the double-pass donor-cell option, see:
+    [Beason &amp; Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+    [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+    [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
     &#34;&#34;&#34;
-    return self._values[&#39;DPDC&#39;]</code></pre>
+    return self._values[&#34;DPDC&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.dimensionally_split"><code class="name">var <span class="ident">dimensionally_split</span> : bool</code></dt>
@@ -380,8 +406,8 @@ def DPDC(self) -&gt; bool:  # pylint: disable=invalid-name
 </summary>
 <pre><code class="python">@property
 def dimensionally_split(self) -&gt; bool:
-    &#34;&#34;&#34; flag disabling cross-dimensional terms in antidiffusive velocities &#34;&#34;&#34;
-    return self._values[&#39;dimensionally_split&#39;]</code></pre>
+    &#34;&#34;&#34;flag disabling cross-dimensional terms in antidiffusive velocities&#34;&#34;&#34;
+    return self._values[&#34;dimensionally_split&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.divergent_flow"><code class="name">var <span class="ident">divergent_flow</span> : bool</code></dt>
@@ -395,11 +421,11 @@ def dimensionally_split(self) -&gt; bool:
 </summary>
 <pre><code class="python">@property
 def divergent_flow(self) -&gt; bool:
-    &#34;&#34;&#34; flag enabling the divergent-flow option, see e.g.:
-        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
-        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
+    &#34;&#34;&#34;flag enabling the divergent-flow option, see e.g.:
+    [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),
+    [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
     &#34;&#34;&#34;
-    return self._values[&#39;divergent_flow&#39;]</code></pre>
+    return self._values[&#34;divergent_flow&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.dtype"><code class="name">var <span class="ident">dtype</span></code></dt>
@@ -411,8 +437,8 @@ def divergent_flow(self) -&gt; bool:
 </summary>
 <pre><code class="python">@property
 def dtype(self):
-    &#34;&#34;&#34; data type (e.g., np.float64) &#34;&#34;&#34;
-    return self._values[&#39;dtype&#39;]</code></pre>
+    &#34;&#34;&#34;data type (e.g., np.float64)&#34;&#34;&#34;
+    return self._values[&#34;dtype&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.epsilon"><code class="name">var <span class="ident">epsilon</span> : float</code></dt>
@@ -425,9 +451,9 @@ in statements such as (a - b)/(a + b + eps)</p></div>
 </summary>
 <pre><code class="python">@property
 def epsilon(self) -&gt; float:
-    &#34;&#34;&#34; value of constant used to prevent from divisins by zero
-        in statements such as (a - b)/(a + b + eps) &#34;&#34;&#34;
-    return self._values[&#39;epsilon&#39;]</code></pre>
+    &#34;&#34;&#34;value of constant used to prevent from divisins by zero
+    in statements such as (a - b)/(a + b + eps)&#34;&#34;&#34;
+    return self._values[&#34;epsilon&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.infinite_gauge"><code class="name">var <span class="ident">infinite_gauge</span> : bool</code></dt>
@@ -441,11 +467,11 @@ def epsilon(self) -&gt; float:
 </summary>
 <pre><code class="python">@property
 def infinite_gauge(self) -&gt; bool:
-    &#34;&#34;&#34; flag enabling the infinite-gauge option, see e.g.:
-        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
-        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
+    &#34;&#34;&#34;flag enabling the infinite-gauge option, see e.g.:
+    [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),
+    [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)
     &#34;&#34;&#34;
-    return self._values[&#39;infinite_gauge&#39;]</code></pre>
+    return self._values[&#34;infinite_gauge&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.jit_flags"><code class="name">var <span class="ident">jit_flags</span> : <a title="PyMPDATA.options.HashableDict" href="#PyMPDATA.options.HashableDict">HashableDict</a></code></dt>
@@ -457,13 +483,15 @@ def infinite_gauge(self) -&gt; bool:
 </summary>
 <pre><code class="python">@property
 def jit_flags(self) -&gt; HashableDict:
-    &#34;&#34;&#34; options passed [to numba.njit()](
-        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options) &#34;&#34;&#34;
-    return HashableDict({
-        &#34;fastmath&#34;: True,
-        &#34;error_model&#34;: &#39;numpy&#39;,
-        &#34;boundscheck&#34;: False,
-    })</code></pre>
+    &#34;&#34;&#34;options passed [to numba.njit()](
+    https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&#34;&#34;&#34;
+    return HashableDict(
+        {
+            &#34;fastmath&#34;: True,
+            &#34;error_model&#34;: &#34;numpy&#34;,
+            &#34;boundscheck&#34;: False,
+        }
+    )</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.n_halo"><code class="name">var <span class="ident">n_halo</span> : int</code></dt>
@@ -475,7 +503,7 @@ def jit_flags(self) -&gt; HashableDict:
 </summary>
 <pre><code class="python">@property
 def n_halo(self) -&gt; int:
-    &#34;&#34;&#34; halo extent for a given options set &#34;&#34;&#34;
+    &#34;&#34;&#34;halo extent for a given options set&#34;&#34;&#34;
     if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
         return 2
     return 1</code></pre>
@@ -490,8 +518,8 @@ def n_halo(self) -&gt; int:
 </summary>
 <pre><code class="python">@property
 def n_iters(self) -&gt; int:
-    &#34;&#34;&#34; number of iterations (1: upwind, 2: upwind + one corrective iteration, ...) &#34;&#34;&#34;
-    return self._values[&#39;n_iters&#39;]</code></pre>
+    &#34;&#34;&#34;number of iterations (1: upwind, 2: upwind + one corrective iteration, ...)&#34;&#34;&#34;
+    return self._values[&#34;n_iters&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.non_zero_mu_coeff"><code class="name">var <span class="ident">non_zero_mu_coeff</span> : bool</code></dt>
@@ -503,8 +531,8 @@ def n_iters(self) -&gt; int:
 </summary>
 <pre><code class="python">@property
 def non_zero_mu_coeff(self) -&gt; bool:
-    &#34;&#34;&#34; flag enabling handling of Fickian diffusion term &#34;&#34;&#34;
-    return self._values[&#39;non_zero_mu_coeff&#39;]</code></pre>
+    &#34;&#34;&#34;flag enabling handling of Fickian diffusion term&#34;&#34;&#34;
+    return self._values[&#34;non_zero_mu_coeff&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.nonoscillatory"><code class="name">var <span class="ident">nonoscillatory</span> : bool</code></dt>
@@ -517,9 +545,9 @@ def non_zero_mu_coeff(self) -&gt; bool:
 </summary>
 <pre><code class="python">@property
 def nonoscillatory(self) -&gt; bool:
-    &#34;&#34;&#34; flag enabling the nonoscillatory option, see
-        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A) &#34;&#34;&#34;
-    return self._values[&#39;nonoscillatory&#39;]</code></pre>
+    &#34;&#34;&#34;flag enabling the nonoscillatory option, see
+    [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)&#34;&#34;&#34;
+    return self._values[&#34;nonoscillatory&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.options.Options.third_order_terms"><code class="name">var <span class="ident">third_order_terms</span> : bool</code></dt>
@@ -532,9 +560,9 @@ def nonoscillatory(self) -&gt; bool:
 </summary>
 <pre><code class="python">@property
 def third_order_terms(self) -&gt; bool:
-    &#34;&#34;&#34; flag enabling the third-order-terms option, see
-        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X) &#34;&#34;&#34;
-    return self._values[&#39;third_order_terms&#39;]</code></pre>
+    &#34;&#34;&#34;flag enabling the third-order-terms option, see
+    [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&#34;&#34;&#34;
+    return self._values[&#34;third_order_terms&#34;]</code></pre>
 </details>
 </dd>
 </dl>

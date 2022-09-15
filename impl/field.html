@@ -31,30 +31,36 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34; common logic for `PyMPDATA.scalar_field.ScalarField` and
  `PyMPDATA.vector_field.VectorField` classes &#34;&#34;&#34;
-from collections import namedtuple
 import abc
-from PyMPDATA.boundary_conditions.constant import Constant
-from .meta import make_meta
-from .enumerations import MAX_DIM_NUM, OUTER, MID3D, INNER, INVALID_HALO_VALUE
-from .meta import META_IS_NULL, META_HALO_VALID
+from collections import namedtuple
 
+from PyMPDATA.boundary_conditions.constant import Constant
+
+from .enumerations import INNER, INVALID_HALO_VALUE, MAX_DIM_NUM, MID3D, OUTER
+from .meta import META_HALO_VALID, META_IS_NULL, make_meta
 
 _Properties = namedtuple(
-    &#39;__Properties&#39;,
-    (&#39;grid&#39;, &#39;meta&#39;, &#39;n_dims&#39;, &#39;halo&#39;, &#39;dtype&#39;, &#39;boundary_conditions&#39;)
+    &#34;__Properties&#34;, (&#34;grid&#34;, &#34;meta&#34;, &#34;n_dims&#34;, &#34;halo&#34;, &#34;dtype&#34;, &#34;boundary_conditions&#34;)
 )
 
 
 class Field:
-    &#34;&#34;&#34; abstract base class for scalar and vector fields &#34;&#34;&#34;
+    &#34;&#34;&#34;abstract base class for scalar and vector fields&#34;&#34;&#34;
+
     def __init__(self, *, grid: tuple, boundary_conditions: tuple, halo: int, dtype):
         assert len(grid) &lt;= len(boundary_conditions)
 
         self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
-            if len(boundary_conditions) &gt; 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
-            if len(boundary_conditions) &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[OUTER] = (
+            boundary_conditions[OUTER]
+            if len(boundary_conditions) &gt; 1
+            else Constant(INVALID_HALO_VALUE)
+        )
+        self.fill_halos[MID3D] = (
+            boundary_conditions[MID3D]
+            if len(boundary_conditions) &gt; 2
+            else Constant(INVALID_HALO_VALUE)
+        )
         self.fill_halos[INNER] = boundary_conditions[INNER]
 
         self.__properties = _Properties(
@@ -63,7 +69,7 @@ class Field:
             n_dims=len(grid),
             halo=halo,
             dtype=dtype,
-            boundary_conditions=self.fill_halos
+            boundary_conditions=self.fill_halos,
         )
 
         self.__impl = None
@@ -72,57 +78,57 @@ class Field:
 
     @property
     def n_dims(self):
-        &#34;&#34;&#34; dimensionality &#34;&#34;&#34;
+        &#34;&#34;&#34;dimensionality&#34;&#34;&#34;
         return self.__properties.n_dims
 
     @property
     def halo(self):
-        &#34;&#34;&#34; halo extent (in each dimension), for vector fields the staggered dimension
-            of each component has the extent equal to halo-1 &#34;&#34;&#34;
+        &#34;&#34;&#34;halo extent (in each dimension), for vector fields the staggered dimension
+        of each component has the extent equal to halo-1&#34;&#34;&#34;
         return self.__properties.halo
 
     @property
     def dtype(self):
-        &#34;&#34;&#34; data type (e.g., np.float64) &#34;&#34;&#34;
+        &#34;&#34;&#34;data type (e.g., np.float64)&#34;&#34;&#34;
         return self.__properties.dtype
 
     @property
     def grid(self):
-        &#34;&#34;&#34; tuple defining grid geometry without halo (same interpretation as np.ndarray.shape) &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple defining grid geometry without halo (same interpretation as np.ndarray.shape)&#34;&#34;&#34;
         return self.__properties.grid
 
     @property
     def meta(self):
-        &#34;&#34;&#34; tuple encoding meta data abount the scalar field (e.g., if halo was filled, ...) &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple encoding meta data abount the scalar field (e.g., if halo was filled, ...)&#34;&#34;&#34;
         return self.__properties.meta
 
     @property
     def impl(self):
-        &#34;&#34;&#34; tuple combining meta, data and boundary conditions - for passing to njit-ted code &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple combining meta, data and boundary conditions - for passing to njit-ted code&#34;&#34;&#34;
         return self.__impl
 
     @property
     def boundary_conditions(self):
-        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
-            dimensions higher than grid diemensionality) &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+        dimensions higher than grid diemensionality)&#34;&#34;&#34;
         return self.__properties.boundary_conditions
 
     @property
     def jit_flags(self):
-        &#34;&#34;&#34; jit_flags used in the last call to assemble() &#34;&#34;&#34;
+        &#34;&#34;&#34;jit_flags used in the last call to assemble()&#34;&#34;&#34;
         return self.__jit_flags
 
     def assemble(self, traversals):
-        &#34;&#34;&#34; initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
-            with halo-filling logic njit-ted using the given traversals &#34;&#34;&#34;
+        &#34;&#34;&#34;initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+        with halo-filling logic njit-ted using the given traversals&#34;&#34;&#34;
         if traversals.jit_flags != self.__jit_flags:
-            fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
+            fun = f&#34;make_{self.__class__.__name__[:6].lower()}&#34;
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
                 getattr(fh, fun)(
                     traversals.indexers[self.n_dims].ats[i],
                     self.halo,
                     self.dtype,
-                    traversals.jit_flags
+                    traversals.jit_flags,
                 )
                 for i, fh in enumerate(self.fill_halos)
             )
@@ -137,7 +143,9 @@ class Field:
 
     @staticmethod
     @abc.abstractmethod
-    def make_null(n_dims: int, traversals):  # pylint: disable=missing-function-docstring
+    def make_null(
+        n_dims: int, traversals
+    ):  # pylint: disable=missing-function-docstring
         raise NotImplementedError()</code></pre>
 </details>
 </section>
@@ -161,15 +169,22 @@ class Field:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Field:
-    &#34;&#34;&#34; abstract base class for scalar and vector fields &#34;&#34;&#34;
+    &#34;&#34;&#34;abstract base class for scalar and vector fields&#34;&#34;&#34;
+
     def __init__(self, *, grid: tuple, boundary_conditions: tuple, halo: int, dtype):
         assert len(grid) &lt;= len(boundary_conditions)
 
         self.fill_halos = [None] * MAX_DIM_NUM
-        self.fill_halos[OUTER] = boundary_conditions[OUTER] \
-            if len(boundary_conditions) &gt; 1 else Constant(INVALID_HALO_VALUE)
-        self.fill_halos[MID3D] = boundary_conditions[MID3D] \
-            if len(boundary_conditions) &gt; 2 else Constant(INVALID_HALO_VALUE)
+        self.fill_halos[OUTER] = (
+            boundary_conditions[OUTER]
+            if len(boundary_conditions) &gt; 1
+            else Constant(INVALID_HALO_VALUE)
+        )
+        self.fill_halos[MID3D] = (
+            boundary_conditions[MID3D]
+            if len(boundary_conditions) &gt; 2
+            else Constant(INVALID_HALO_VALUE)
+        )
         self.fill_halos[INNER] = boundary_conditions[INNER]
 
         self.__properties = _Properties(
@@ -178,7 +193,7 @@ class Field:
             n_dims=len(grid),
             halo=halo,
             dtype=dtype,
-            boundary_conditions=self.fill_halos
+            boundary_conditions=self.fill_halos,
         )
 
         self.__impl = None
@@ -187,57 +202,57 @@ class Field:
 
     @property
     def n_dims(self):
-        &#34;&#34;&#34; dimensionality &#34;&#34;&#34;
+        &#34;&#34;&#34;dimensionality&#34;&#34;&#34;
         return self.__properties.n_dims
 
     @property
     def halo(self):
-        &#34;&#34;&#34; halo extent (in each dimension), for vector fields the staggered dimension
-            of each component has the extent equal to halo-1 &#34;&#34;&#34;
+        &#34;&#34;&#34;halo extent (in each dimension), for vector fields the staggered dimension
+        of each component has the extent equal to halo-1&#34;&#34;&#34;
         return self.__properties.halo
 
     @property
     def dtype(self):
-        &#34;&#34;&#34; data type (e.g., np.float64) &#34;&#34;&#34;
+        &#34;&#34;&#34;data type (e.g., np.float64)&#34;&#34;&#34;
         return self.__properties.dtype
 
     @property
     def grid(self):
-        &#34;&#34;&#34; tuple defining grid geometry without halo (same interpretation as np.ndarray.shape) &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple defining grid geometry without halo (same interpretation as np.ndarray.shape)&#34;&#34;&#34;
         return self.__properties.grid
 
     @property
     def meta(self):
-        &#34;&#34;&#34; tuple encoding meta data abount the scalar field (e.g., if halo was filled, ...) &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple encoding meta data abount the scalar field (e.g., if halo was filled, ...)&#34;&#34;&#34;
         return self.__properties.meta
 
     @property
     def impl(self):
-        &#34;&#34;&#34; tuple combining meta, data and boundary conditions - for passing to njit-ted code &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple combining meta, data and boundary conditions - for passing to njit-ted code&#34;&#34;&#34;
         return self.__impl
 
     @property
     def boundary_conditions(self):
-        &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
-            dimensions higher than grid diemensionality) &#34;&#34;&#34;
+        &#34;&#34;&#34;tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+        dimensions higher than grid diemensionality)&#34;&#34;&#34;
         return self.__properties.boundary_conditions
 
     @property
     def jit_flags(self):
-        &#34;&#34;&#34; jit_flags used in the last call to assemble() &#34;&#34;&#34;
+        &#34;&#34;&#34;jit_flags used in the last call to assemble()&#34;&#34;&#34;
         return self.__jit_flags
 
     def assemble(self, traversals):
-        &#34;&#34;&#34; initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
-            with halo-filling logic njit-ted using the given traversals &#34;&#34;&#34;
+        &#34;&#34;&#34;initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+        with halo-filling logic njit-ted using the given traversals&#34;&#34;&#34;
         if traversals.jit_flags != self.__jit_flags:
-            fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
+            fun = f&#34;make_{self.__class__.__name__[:6].lower()}&#34;
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
                 getattr(fh, fun)(
                     traversals.indexers[self.n_dims].ats[i],
                     self.halo,
                     self.dtype,
-                    traversals.jit_flags
+                    traversals.jit_flags,
                 )
                 for i, fh in enumerate(self.fill_halos)
             )
@@ -252,7 +267,9 @@ class Field:
 
     @staticmethod
     @abc.abstractmethod
-    def make_null(n_dims: int, traversals):  # pylint: disable=missing-function-docstring
+    def make_null(
+        n_dims: int, traversals
+    ):  # pylint: disable=missing-function-docstring
         raise NotImplementedError()</code></pre>
 </details>
 <h3>Subclasses</h3>
@@ -273,7 +290,9 @@ class Field:
 </summary>
 <pre><code class="python">@staticmethod
 @abc.abstractmethod
-def make_null(n_dims: int, traversals):  # pylint: disable=missing-function-docstring
+def make_null(
+    n_dims: int, traversals
+):  # pylint: disable=missing-function-docstring
     raise NotImplementedError()</code></pre>
 </details>
 </dd>
@@ -290,8 +309,8 @@ dimensions higher than grid diemensionality)</p></div>
 </summary>
 <pre><code class="python">@property
 def boundary_conditions(self):
-    &#34;&#34;&#34; tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
-        dimensions higher than grid diemensionality) &#34;&#34;&#34;
+    &#34;&#34;&#34;tuple of boundary conditions as passed to the `__init__()` (plus Constant(NaN) in
+    dimensions higher than grid diemensionality)&#34;&#34;&#34;
     return self.__properties.boundary_conditions</code></pre>
 </details>
 </dd>
@@ -304,7 +323,7 @@ def boundary_conditions(self):
 </summary>
 <pre><code class="python">@property
 def dtype(self):
-    &#34;&#34;&#34; data type (e.g., np.float64) &#34;&#34;&#34;
+    &#34;&#34;&#34;data type (e.g., np.float64)&#34;&#34;&#34;
     return self.__properties.dtype</code></pre>
 </details>
 </dd>
@@ -317,7 +336,7 @@ def dtype(self):
 </summary>
 <pre><code class="python">@property
 def grid(self):
-    &#34;&#34;&#34; tuple defining grid geometry without halo (same interpretation as np.ndarray.shape) &#34;&#34;&#34;
+    &#34;&#34;&#34;tuple defining grid geometry without halo (same interpretation as np.ndarray.shape)&#34;&#34;&#34;
     return self.__properties.grid</code></pre>
 </details>
 </dd>
@@ -331,8 +350,8 @@ of each component has the extent equal to halo-1</p></div>
 </summary>
 <pre><code class="python">@property
 def halo(self):
-    &#34;&#34;&#34; halo extent (in each dimension), for vector fields the staggered dimension
-        of each component has the extent equal to halo-1 &#34;&#34;&#34;
+    &#34;&#34;&#34;halo extent (in each dimension), for vector fields the staggered dimension
+    of each component has the extent equal to halo-1&#34;&#34;&#34;
     return self.__properties.halo</code></pre>
 </details>
 </dd>
@@ -345,7 +364,7 @@ def halo(self):
 </summary>
 <pre><code class="python">@property
 def impl(self):
-    &#34;&#34;&#34; tuple combining meta, data and boundary conditions - for passing to njit-ted code &#34;&#34;&#34;
+    &#34;&#34;&#34;tuple combining meta, data and boundary conditions - for passing to njit-ted code&#34;&#34;&#34;
     return self.__impl</code></pre>
 </details>
 </dd>
@@ -358,7 +377,7 @@ def impl(self):
 </summary>
 <pre><code class="python">@property
 def jit_flags(self):
-    &#34;&#34;&#34; jit_flags used in the last call to assemble() &#34;&#34;&#34;
+    &#34;&#34;&#34;jit_flags used in the last call to assemble()&#34;&#34;&#34;
     return self.__jit_flags</code></pre>
 </details>
 </dd>
@@ -371,7 +390,7 @@ def jit_flags(self):
 </summary>
 <pre><code class="python">@property
 def meta(self):
-    &#34;&#34;&#34; tuple encoding meta data abount the scalar field (e.g., if halo was filled, ...) &#34;&#34;&#34;
+    &#34;&#34;&#34;tuple encoding meta data abount the scalar field (e.g., if halo was filled, ...)&#34;&#34;&#34;
     return self.__properties.meta</code></pre>
 </details>
 </dd>
@@ -384,7 +403,7 @@ def meta(self):
 </summary>
 <pre><code class="python">@property
 def n_dims(self):
-    &#34;&#34;&#34; dimensionality &#34;&#34;&#34;
+    &#34;&#34;&#34;dimensionality&#34;&#34;&#34;
     return self.__properties.n_dims</code></pre>
 </details>
 </dd>
@@ -402,16 +421,16 @@ with halo-filling logic njit-ted using the given traversals</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def assemble(self, traversals):
-    &#34;&#34;&#34; initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
-        with halo-filling logic njit-ted using the given traversals &#34;&#34;&#34;
+    &#34;&#34;&#34;initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
+    with halo-filling logic njit-ted using the given traversals&#34;&#34;&#34;
     if traversals.jit_flags != self.__jit_flags:
-        fun = f&#39;make_{self.__class__.__name__[:6].lower()}&#39;
+        fun = f&#34;make_{self.__class__.__name__[:6].lower()}&#34;
         self.__impl = (self.__properties.meta, *self._impl_data), tuple(
             getattr(fh, fun)(
                 traversals.indexers[self.n_dims].ats[i],
                 self.halo,
                 self.dtype,
-                traversals.jit_flags
+                traversals.jit_flags,
             )
             for i, fh in enumerate(self.fill_halos)
         )

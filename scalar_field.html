@@ -31,20 +31,23 @@
 scalar field abstractions for the staggered grid
 &#34;&#34;&#34;
 import inspect
+
 import numpy as np
-from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
+
 from PyMPDATA.boundary_conditions import Constant
+from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
 from PyMPDATA.impl.field import Field
 
 
 class ScalarField(Field):
-    &#34;&#34;&#34; n-dimensional scalar field including halo data &#34;&#34;&#34;
+    &#34;&#34;&#34;n-dimensional scalar field including halo data&#34;&#34;&#34;
+
     def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
         super().__init__(
             grid=data.shape,
             boundary_conditions=boundary_conditions,
             halo=halo,
-            dtype=data.dtype
+            dtype=data.dtype,
         )
 
         for dim_length in data.shape:
@@ -56,37 +59,37 @@ class ScalarField(Field):
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
         self._impl_data = (self.data,)
         self.domain = tuple(
-            slice(halo, self.data.shape[i] - halo)
-            for i in range(self.n_dims)
+            slice(halo, self.data.shape[i] - halo) for i in range(self.n_dims)
         )
         self.get()[:] = data[:]
 
     @staticmethod
     def clone(field, dtype=None):
-        &#34;&#34;&#34; returns an instance with the same dimensionality and same halo size as the argument
-            optionally with a different data type&#34;&#34;&#34;
+        &#34;&#34;&#34;returns an instance with the same dimensionality and same halo size as the argument
+        optionally with a different data type&#34;&#34;&#34;
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
         return ScalarField(
-            field.get().astype(dtype, copy=False),
-            field.halo,
-            field.boundary_conditions
+            field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions
         )
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
-        &#34;&#34;&#34; returns a view (not a copy) of the field data excluding halo &#34;&#34;&#34;
+        &#34;&#34;&#34;returns a view (not a copy) of the field data excluding halo&#34;&#34;&#34;
         results = self.data[self.domain]
         return results
 
     @staticmethod
     def make_null(n_dims, traversals):
-        &#34;&#34;&#34; returns a scalar field instance with no allocated data storage,
-            see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
-        return Field._make_null(ScalarField(
-            np.empty([INVALID_NULL_VALUE]*n_dims),
-            halo=0,
-            boundary_conditions=tuple([Constant(np.nan)] * n_dims)
-        ), traversals)</code></pre>
+        &#34;&#34;&#34;returns a scalar field instance with no allocated data storage,
+        see `Field._make_null` other properties of the returned field&#34;&#34;&#34;
+        return Field._make_null(
+            ScalarField(
+                np.empty([INVALID_NULL_VALUE] * n_dims),
+                halo=0,
+                boundary_conditions=tuple([Constant(np.nan)] * n_dims),
+            ),
+            traversals,
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -109,13 +112,14 @@ class ScalarField(Field):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ScalarField(Field):
-    &#34;&#34;&#34; n-dimensional scalar field including halo data &#34;&#34;&#34;
+    &#34;&#34;&#34;n-dimensional scalar field including halo data&#34;&#34;&#34;
+
     def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
         super().__init__(
             grid=data.shape,
             boundary_conditions=boundary_conditions,
             halo=halo,
-            dtype=data.dtype
+            dtype=data.dtype,
         )
 
         for dim_length in data.shape:
@@ -127,37 +131,37 @@ class ScalarField(Field):
         self.data = np.full(shape_with_halo, INVALID_INIT_VALUE, dtype=data.dtype)
         self._impl_data = (self.data,)
         self.domain = tuple(
-            slice(halo, self.data.shape[i] - halo)
-            for i in range(self.n_dims)
+            slice(halo, self.data.shape[i] - halo) for i in range(self.n_dims)
         )
         self.get()[:] = data[:]
 
     @staticmethod
     def clone(field, dtype=None):
-        &#34;&#34;&#34; returns an instance with the same dimensionality and same halo size as the argument
-            optionally with a different data type&#34;&#34;&#34;
+        &#34;&#34;&#34;returns an instance with the same dimensionality and same halo size as the argument
+        optionally with a different data type&#34;&#34;&#34;
         dtype = dtype or field.dtype
         # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
         return ScalarField(
-            field.get().astype(dtype, copy=False),
-            field.halo,
-            field.boundary_conditions
+            field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions
         )
 
     def get(self) -&gt; np.ndarray:  # note: actually a view is returned
-        &#34;&#34;&#34; returns a view (not a copy) of the field data excluding halo &#34;&#34;&#34;
+        &#34;&#34;&#34;returns a view (not a copy) of the field data excluding halo&#34;&#34;&#34;
         results = self.data[self.domain]
         return results
 
     @staticmethod
     def make_null(n_dims, traversals):
-        &#34;&#34;&#34; returns a scalar field instance with no allocated data storage,
-            see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
-        return Field._make_null(ScalarField(
-            np.empty([INVALID_NULL_VALUE]*n_dims),
-            halo=0,
-            boundary_conditions=tuple([Constant(np.nan)] * n_dims)
-        ), traversals)</code></pre>
+        &#34;&#34;&#34;returns a scalar field instance with no allocated data storage,
+        see `Field._make_null` other properties of the returned field&#34;&#34;&#34;
+        return Field._make_null(
+            ScalarField(
+                np.empty([INVALID_NULL_VALUE] * n_dims),
+                halo=0,
+                boundary_conditions=tuple([Constant(np.nan)] * n_dims),
+            ),
+            traversals,
+        )</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -177,14 +181,12 @@ optionally with a different data type</p></div>
 </summary>
 <pre><code class="python">@staticmethod
 def clone(field, dtype=None):
-    &#34;&#34;&#34; returns an instance with the same dimensionality and same halo size as the argument
-        optionally with a different data type&#34;&#34;&#34;
+    &#34;&#34;&#34;returns an instance with the same dimensionality and same halo size as the argument
+    optionally with a different data type&#34;&#34;&#34;
     dtype = dtype or field.dtype
     # note: copy=False is OK as the ctor anyhow copies the data to an array with halo
     return ScalarField(
-        field.get().astype(dtype, copy=False),
-        field.halo,
-        field.boundary_conditions
+        field.get().astype(dtype, copy=False), field.halo, field.boundary_conditions
     )</code></pre>
 </details>
 </dd>
@@ -200,13 +202,16 @@ see <code>Field._make_null</code> other properties of the returned field</p></di
 </summary>
 <pre><code class="python">@staticmethod
 def make_null(n_dims, traversals):
-    &#34;&#34;&#34; returns a scalar field instance with no allocated data storage,
-        see `Field._make_null` other properties of the returned field &#34;&#34;&#34;
-    return Field._make_null(ScalarField(
-        np.empty([INVALID_NULL_VALUE]*n_dims),
-        halo=0,
-        boundary_conditions=tuple([Constant(np.nan)] * n_dims)
-    ), traversals)</code></pre>
+    &#34;&#34;&#34;returns a scalar field instance with no allocated data storage,
+    see `Field._make_null` other properties of the returned field&#34;&#34;&#34;
+    return Field._make_null(
+        ScalarField(
+            np.empty([INVALID_NULL_VALUE] * n_dims),
+            halo=0,
+            boundary_conditions=tuple([Constant(np.nan)] * n_dims),
+        ),
+        traversals,
+    )</code></pre>
 </details>
 </dd>
 </dl>
@@ -222,7 +227,7 @@ def make_null(n_dims, traversals):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get(self) -&gt; np.ndarray:  # note: actually a view is returned
-    &#34;&#34;&#34; returns a view (not a copy) of the field data excluding halo &#34;&#34;&#34;
+    &#34;&#34;&#34;returns a view (not a copy) of the field data excluding halo&#34;&#34;&#34;
     results = self.data[self.domain]
     return results</code></pre>
 </details>

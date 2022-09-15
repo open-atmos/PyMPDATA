@@ -29,7 +29,9 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34; constants for indexing and a factory for creating the &#34;meta&#34; tuples &#34;&#34;&#34;
 from collections import namedtuple
+
 import numpy as np
+
 from .enumerations import INNER, MID3D, OUTER
 
 META_HALO_VALID = 0
@@ -43,7 +45,7 @@ _Impl = namedtuple(&#34;Impl&#34;, (&#34;field&#34;, &#34;bc&#34;))
 
 
 def make_meta(halo_valid: bool, grid):
-    &#34;&#34;&#34; returns a &#34;meta&#34; tuple for a given grid size and halo status &#34;&#34;&#34;
+    &#34;&#34;&#34;returns a &#34;meta&#34; tuple for a given grid size and halo status&#34;&#34;&#34;
     meta = np.empty(META_SIZE, dtype=int)
     meta[META_HALO_VALID] = halo_valid
     meta[META_N_OUTER] = grid[OUTER] if len(grid) &gt; 1 else 0
@@ -70,7 +72,7 @@ def make_meta(halo_valid: bool, grid):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_meta(halo_valid: bool, grid):
-    &#34;&#34;&#34; returns a &#34;meta&#34; tuple for a given grid size and halo status &#34;&#34;&#34;
+    &#34;&#34;&#34;returns a &#34;meta&#34; tuple for a given grid size and halo status&#34;&#34;&#34;
     meta = np.empty(META_SIZE, dtype=int)
     meta[META_HALO_VALID] = halo_valid
     meta[META_N_OUTER] = grid[OUTER] if len(grid) &gt; 1 else 0

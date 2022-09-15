@@ -34,16 +34,19 @@ class grouping user-supplied stepper, fields and post-step/post-iter hooks,
 as well as self-initialised temporary storage
 &#34;&#34;&#34;
 from typing import Union
+
 import numba
-from .scalar_field import ScalarField
-from .vector_field import VectorField
-from .stepper import Stepper
+
 from .impl.meta import META_IS_NULL
+from .scalar_field import ScalarField
+from .stepper import Stepper
+from .vector_field import VectorField
 
 
 @numba.experimental.jitclass([])
 class PostStepNull:  # pylint: disable=too-few-public-methods
-    &#34;&#34;&#34; do-nothing version of the post-step hook &#34;&#34;&#34;
+    &#34;&#34;&#34;do-nothing version of the post-step hook&#34;&#34;&#34;
+
     def __init__(self):
         pass
 
@@ -53,23 +56,28 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
 
 @numba.experimental.jitclass([])
 class PostIterNull:  # pylint: disable=too-few-public-methods
-    &#34;&#34;&#34; do-nothing version of the post-iter hook &#34;&#34;&#34;
+    &#34;&#34;&#34;do-nothing version of the post-iter hook&#34;&#34;&#34;
+
     def __init__(self):
         pass
 
-    def __call__(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
+    def __call__(
+        self, flux, g_factor, step, iteration
+    ):  # pylint: disable=unused-argument
         pass
 
 
 class Solver:
-    &#34;&#34;&#34; solution orchestrator requireing prior instantiation of: a `Stepper`,
-        a scalar advectee field, a vector advector field and optionally
-        a scala g_factor field &#34;&#34;&#34;
-    def __init__(self,
+    &#34;&#34;&#34;solution orchestrator requireing prior instantiation of: a `Stepper`,
+    a scalar advectee field, a vector advector field and optionally
+    a scala g_factor field&#34;&#34;&#34;
+
+    def __init__(
+        self,
         stepper: Stepper,
         advectee: ScalarField,
         advector: VectorField,
-        g_factor: [ScalarField, None] = None
+        g_factor: [ScalarField, None] = None,
     ):
         def scalar_field(dtype=None):
             return ScalarField.clone(advectee, dtype=dtype)
@@ -83,23 +91,28 @@ class Solver:
         def null_vector_field():
             return VectorField.make_null(advector.n_dims, stepper.traversals)
 
-        for field in [advector, advectee] + ([g_factor] if g_factor is not None else []):
+        for field in [advector, advectee] + (
+            [g_factor] if g_factor is not None else []
+        ):
             assert field.halo == stepper.options.n_halo
             assert field.dtype == stepper.options.dtype
             assert field.grid == advector.grid
 
         self.__fields = {
-            &#39;advectee&#39;: advectee,
-            &#39;advector&#39;: advector,
-            &#39;g_factor&#39;: g_factor or null_scalar_field(),
-            &#39;vectmp_a&#39;: vector_field(),
-            &#39;vectmp_b&#39;: vector_field(),
-            &#39;vectmp_c&#39;: vector_field()
-                if stepper.options.non_zero_mu_coeff else null_vector_field(),
-            &#39;nonosc_xtrm&#39;: scalar_field(dtype=complex)
-                if stepper.options.nonoscillatory else null_scalar_field(),
-            &#39;nonosc_beta&#39;: scalar_field(dtype=complex)
-                if stepper.options.nonoscillatory else null_scalar_field()
+            &#34;advectee&#34;: advectee,
+            &#34;advector&#34;: advector,
+            &#34;g_factor&#34;: g_factor or null_scalar_field(),
+            &#34;vectmp_a&#34;: vector_field(),
+            &#34;vectmp_b&#34;: vector_field(),
+            &#34;vectmp_c&#34;: vector_field()
+            if stepper.options.non_zero_mu_coeff
+            else null_vector_field(),
+            &#34;nonosc_xtrm&#34;: scalar_field(dtype=complex)
+            if stepper.options.nonoscillatory
+            else null_scalar_field(),
+            &#34;nonosc_beta&#34;: scalar_field(dtype=complex)
+            if stepper.options.nonoscillatory
+            else null_scalar_field(),
         }
         for field in self.__fields.values():
             field.assemble(stepper.traversals)
@@ -108,40 +121,41 @@ class Solver:
 
     @property
     def advectee(self) -&gt; ScalarField:
-        &#34;&#34;&#34; advectee scalar field (with halo), modified by advance(),
-            may be modified from user code (e.g., source-term handling) &#34;&#34;&#34;
-        return self.__fields[&#39;advectee&#39;]
+        &#34;&#34;&#34;advectee scalar field (with halo), modified by advance(),
+        may be modified from user code (e.g., source-term handling)&#34;&#34;&#34;
+        return self.__fields[&#34;advectee&#34;]
 
     @property
     def advector(self) -&gt; VectorField:
-        &#34;&#34;&#34; advector vector field (with halo), unmodified by advance(),
-            may be modified from user code &#34;&#34;&#34;
-        return self.__fields[&#39;advector&#39;]
+        &#34;&#34;&#34;advector vector field (with halo), unmodified by advance(),
+        may be modified from user code&#34;&#34;&#34;
+        return self.__fields[&#34;advector&#34;]
 
     @property
     def g_factor(self) -&gt; ScalarField:
-        &#34;&#34;&#34; g_factor field (with halo), unmodified by advance(),
-            assumed to be constant-in-time &#34;&#34;&#34;
-        return self.__fields[&#39;g_factor&#39;]
+        &#34;&#34;&#34;g_factor field (with halo), unmodified by advance(),
+        assumed to be constant-in-time&#34;&#34;&#34;
+        return self.__fields[&#34;g_factor&#34;]
 
-    def advance(self,
-                n_steps: int,
-                mu_coeff: Union[tuple, None] = None,
-                post_step=None,
-                post_iter=None
-                ):
-        &#34;&#34;&#34; advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
-            coefficients (one value per dimension) as well as `post_iter` and `post_step`
-            callbacks expected to be `numba.jitclass`es with a `__call__` method, for
-            signature see `PostStepNull` and `PostIterNull`;
-            returns CPU time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
+    def advance(
+        self,
+        n_steps: int,
+        mu_coeff: Union[tuple, None] = None,
+        post_step=None,
+        post_iter=None,
+    ):
+        &#34;&#34;&#34;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
+        coefficients (one value per dimension) as well as `post_iter` and `post_step`
+        callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+        signature see `PostStepNull` and `PostIterNull`;
+        returns CPU time per timestep (units as returned by `clock.clock()`)&#34;&#34;&#34;
         if mu_coeff is not None:
             assert self.__stepper.options.non_zero_mu_coeff
         else:
-            mu_coeff = (0., 0., 0.)
+            mu_coeff = (0.0, 0.0, 0.0)
         if (
-            self.__stepper.options.non_zero_mu_coeff and
-            not self.__fields[&#39;g_factor&#39;].meta[META_IS_NULL]
+            self.__stepper.options.non_zero_mu_coeff
+            and not self.__fields[&#34;g_factor&#34;].meta[META_IS_NULL]
         ):
             raise NotImplementedError()
 
@@ -153,7 +167,7 @@ class Solver:
             mu_coeff=mu_coeff,
             post_step=post_step,
             post_iter=post_iter,
-            fields=self.__fields
+            fields=self.__fields,
         )</code></pre>
 </details>
 </section>
@@ -179,14 +193,16 @@ a scala g_factor field</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Solver:
-    &#34;&#34;&#34; solution orchestrator requireing prior instantiation of: a `Stepper`,
-        a scalar advectee field, a vector advector field and optionally
-        a scala g_factor field &#34;&#34;&#34;
-    def __init__(self,
+    &#34;&#34;&#34;solution orchestrator requireing prior instantiation of: a `Stepper`,
+    a scalar advectee field, a vector advector field and optionally
+    a scala g_factor field&#34;&#34;&#34;
+
+    def __init__(
+        self,
         stepper: Stepper,
         advectee: ScalarField,
         advector: VectorField,
-        g_factor: [ScalarField, None] = None
+        g_factor: [ScalarField, None] = None,
     ):
         def scalar_field(dtype=None):
             return ScalarField.clone(advectee, dtype=dtype)
@@ -200,23 +216,28 @@ a scala g_factor field</p></div>
         def null_vector_field():
             return VectorField.make_null(advector.n_dims, stepper.traversals)
 
-        for field in [advector, advectee] + ([g_factor] if g_factor is not None else []):
+        for field in [advector, advectee] + (
+            [g_factor] if g_factor is not None else []
+        ):
             assert field.halo == stepper.options.n_halo
             assert field.dtype == stepper.options.dtype
             assert field.grid == advector.grid
 
         self.__fields = {
-            &#39;advectee&#39;: advectee,
-            &#39;advector&#39;: advector,
-            &#39;g_factor&#39;: g_factor or null_scalar_field(),
-            &#39;vectmp_a&#39;: vector_field(),
-            &#39;vectmp_b&#39;: vector_field(),
-            &#39;vectmp_c&#39;: vector_field()
-                if stepper.options.non_zero_mu_coeff else null_vector_field(),
-            &#39;nonosc_xtrm&#39;: scalar_field(dtype=complex)
-                if stepper.options.nonoscillatory else null_scalar_field(),
-            &#39;nonosc_beta&#39;: scalar_field(dtype=complex)
-                if stepper.options.nonoscillatory else null_scalar_field()
+            &#34;advectee&#34;: advectee,
+            &#34;advector&#34;: advector,
+            &#34;g_factor&#34;: g_factor or null_scalar_field(),
+            &#34;vectmp_a&#34;: vector_field(),
+            &#34;vectmp_b&#34;: vector_field(),
+            &#34;vectmp_c&#34;: vector_field()
+            if stepper.options.non_zero_mu_coeff
+            else null_vector_field(),
+            &#34;nonosc_xtrm&#34;: scalar_field(dtype=complex)
+            if stepper.options.nonoscillatory
+            else null_scalar_field(),
+            &#34;nonosc_beta&#34;: scalar_field(dtype=complex)
+            if stepper.options.nonoscillatory
+            else null_scalar_field(),
         }
         for field in self.__fields.values():
             field.assemble(stepper.traversals)
@@ -225,40 +246,41 @@ a scala g_factor field</p></div>
 
     @property
     def advectee(self) -&gt; ScalarField:
-        &#34;&#34;&#34; advectee scalar field (with halo), modified by advance(),
-            may be modified from user code (e.g., source-term handling) &#34;&#34;&#34;
-        return self.__fields[&#39;advectee&#39;]
+        &#34;&#34;&#34;advectee scalar field (with halo), modified by advance(),
+        may be modified from user code (e.g., source-term handling)&#34;&#34;&#34;
+        return self.__fields[&#34;advectee&#34;]
 
     @property
     def advector(self) -&gt; VectorField:
-        &#34;&#34;&#34; advector vector field (with halo), unmodified by advance(),
-            may be modified from user code &#34;&#34;&#34;
-        return self.__fields[&#39;advector&#39;]
+        &#34;&#34;&#34;advector vector field (with halo), unmodified by advance(),
+        may be modified from user code&#34;&#34;&#34;
+        return self.__fields[&#34;advector&#34;]
 
     @property
     def g_factor(self) -&gt; ScalarField:
-        &#34;&#34;&#34; g_factor field (with halo), unmodified by advance(),
-            assumed to be constant-in-time &#34;&#34;&#34;
-        return self.__fields[&#39;g_factor&#39;]
+        &#34;&#34;&#34;g_factor field (with halo), unmodified by advance(),
+        assumed to be constant-in-time&#34;&#34;&#34;
+        return self.__fields[&#34;g_factor&#34;]
 
-    def advance(self,
-                n_steps: int,
-                mu_coeff: Union[tuple, None] = None,
-                post_step=None,
-                post_iter=None
-                ):
-        &#34;&#34;&#34; advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
-            coefficients (one value per dimension) as well as `post_iter` and `post_step`
-            callbacks expected to be `numba.jitclass`es with a `__call__` method, for
-            signature see `PostStepNull` and `PostIterNull`;
-            returns CPU time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
+    def advance(
+        self,
+        n_steps: int,
+        mu_coeff: Union[tuple, None] = None,
+        post_step=None,
+        post_iter=None,
+    ):
+        &#34;&#34;&#34;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
+        coefficients (one value per dimension) as well as `post_iter` and `post_step`
+        callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+        signature see `PostStepNull` and `PostIterNull`;
+        returns CPU time per timestep (units as returned by `clock.clock()`)&#34;&#34;&#34;
         if mu_coeff is not None:
             assert self.__stepper.options.non_zero_mu_coeff
         else:
-            mu_coeff = (0., 0., 0.)
+            mu_coeff = (0.0, 0.0, 0.0)
         if (
-            self.__stepper.options.non_zero_mu_coeff and
-            not self.__fields[&#39;g_factor&#39;].meta[META_IS_NULL]
+            self.__stepper.options.non_zero_mu_coeff
+            and not self.__fields[&#34;g_factor&#34;].meta[META_IS_NULL]
         ):
             raise NotImplementedError()
 
@@ -270,7 +292,7 @@ a scala g_factor field</p></div>
             mu_coeff=mu_coeff,
             post_step=post_step,
             post_iter=post_iter,
-            fields=self.__fields
+            fields=self.__fields,
         )</code></pre>
 </details>
 <h3>Instance variables</h3>
@@ -285,9 +307,9 @@ may be modified from user code (e.g., source-term handling)</p></div>
 </summary>
 <pre><code class="python">@property
 def advectee(self) -&gt; ScalarField:
-    &#34;&#34;&#34; advectee scalar field (with halo), modified by advance(),
-        may be modified from user code (e.g., source-term handling) &#34;&#34;&#34;
-    return self.__fields[&#39;advectee&#39;]</code></pre>
+    &#34;&#34;&#34;advectee scalar field (with halo), modified by advance(),
+    may be modified from user code (e.g., source-term handling)&#34;&#34;&#34;
+    return self.__fields[&#34;advectee&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.solver.Solver.advector"><code class="name">var <span class="ident">advector</span> : <a title="PyMPDATA.vector_field.VectorField" href="vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a></code></dt>
@@ -300,9 +322,9 @@ may be modified from user code</p></div>
 </summary>
 <pre><code class="python">@property
 def advector(self) -&gt; VectorField:
-    &#34;&#34;&#34; advector vector field (with halo), unmodified by advance(),
-        may be modified from user code &#34;&#34;&#34;
-    return self.__fields[&#39;advector&#39;]</code></pre>
+    &#34;&#34;&#34;advector vector field (with halo), unmodified by advance(),
+    may be modified from user code&#34;&#34;&#34;
+    return self.__fields[&#34;advector&#34;]</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.solver.Solver.g_factor"><code class="name">var <span class="ident">g_factor</span> : <a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a></code></dt>
@@ -315,9 +337,9 @@ assumed to be constant-in-time</p></div>
 </summary>
 <pre><code class="python">@property
 def g_factor(self) -&gt; ScalarField:
-    &#34;&#34;&#34; g_factor field (with halo), unmodified by advance(),
-        assumed to be constant-in-time &#34;&#34;&#34;
-    return self.__fields[&#39;g_factor&#39;]</code></pre>
+    &#34;&#34;&#34;g_factor field (with halo), unmodified by advance(),
+    assumed to be constant-in-time&#34;&#34;&#34;
+    return self.__fields[&#34;g_factor&#34;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -336,24 +358,25 @@ returns CPU time per timestep (units as returned by <code>clock.clock()</code>)<
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def advance(self,
-            n_steps: int,
-            mu_coeff: Union[tuple, None] = None,
-            post_step=None,
-            post_iter=None
-            ):
-    &#34;&#34;&#34; advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
-        coefficients (one value per dimension) as well as `post_iter` and `post_step`
-        callbacks expected to be `numba.jitclass`es with a `__call__` method, for
-        signature see `PostStepNull` and `PostIterNull`;
-        returns CPU time per timestep (units as returned by `clock.clock()`) &#34;&#34;&#34;
+<pre><code class="python">def advance(
+    self,
+    n_steps: int,
+    mu_coeff: Union[tuple, None] = None,
+    post_step=None,
+    post_iter=None,
+):
+    &#34;&#34;&#34;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
+    coefficients (one value per dimension) as well as `post_iter` and `post_step`
+    callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+    signature see `PostStepNull` and `PostIterNull`;
+    returns CPU time per timestep (units as returned by `clock.clock()`)&#34;&#34;&#34;
     if mu_coeff is not None:
         assert self.__stepper.options.non_zero_mu_coeff
     else:
-        mu_coeff = (0., 0., 0.)
+        mu_coeff = (0.0, 0.0, 0.0)
     if (
-        self.__stepper.options.non_zero_mu_coeff and
-        not self.__fields[&#39;g_factor&#39;].meta[META_IS_NULL]
+        self.__stepper.options.non_zero_mu_coeff
+        and not self.__fields[&#34;g_factor&#34;].meta[META_IS_NULL]
     ):
         raise NotImplementedError()
 
@@ -365,7 +388,7 @@ returns CPU time per timestep (units as returned by <code>clock.clock()</code>)<
         mu_coeff=mu_coeff,
         post_step=post_step,
         post_iter=post_iter,
-        fields=self.__fields
+        fields=self.__fields,
     )</code></pre>
 </details>
 </dd>

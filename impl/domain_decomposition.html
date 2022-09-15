@@ -29,12 +29,14 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34; logic defining domain decomposition scheme for multi-threading &#34;&#34;&#34;
 import math
+
 import numba
 
 
 def make_subdomain(jit_flags):
-    &#34;&#34;&#34; returns an njit-ted function returning start-stop index tuple
-        for a given domain span, thread rank and thread-pool size &#34;&#34;&#34;
+    &#34;&#34;&#34;returns an njit-ted function returning start-stop index tuple
+    for a given domain span, thread rank and thread-pool size&#34;&#34;&#34;
+
     @numba.njit(**jit_flags)
     def subdomain(span, rank, size):
         if rank &gt;= size:
@@ -44,6 +46,7 @@ def make_subdomain(jit_flags):
         start = n_max * rank
         stop = start + (n_max if start + n_max &lt;= span else span - start)
         return start, stop
+
     return subdomain</code></pre>
 </details>
 </section>
@@ -65,8 +68,9 @@ for a given domain span, thread rank and thread-pool size</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_subdomain(jit_flags):
-    &#34;&#34;&#34; returns an njit-ted function returning start-stop index tuple
-        for a given domain span, thread rank and thread-pool size &#34;&#34;&#34;
+    &#34;&#34;&#34;returns an njit-ted function returning start-stop index tuple
+    for a given domain span, thread rank and thread-pool size&#34;&#34;&#34;
+
     @numba.njit(**jit_flags)
     def subdomain(span, rank, size):
         if rank &gt;= size:
@@ -76,6 +80,7 @@ for a given domain span, thread rank and thread-pool size</p></div>
         start = n_max * rank
         stop = start + (n_max if start + n_max &lt;= span else span - start)
         return start, stop
+
     return subdomain</code></pre>
 </details>
 </dd>

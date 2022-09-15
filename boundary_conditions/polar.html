@@ -29,13 +29,16 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34; polar boundary condition for use in with spherical coordinates &#34;&#34;&#34;
 from functools import lru_cache
+
 import numba
+
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 
 
 class Polar:
-    &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
-        `ScalarField` and `VectorField` __init__ methods &#34;&#34;&#34;
+    &#34;&#34;&#34;class which instances are to be passed in boundary_conditions tuple to the
+    `ScalarField` and `VectorField` __init__ methods&#34;&#34;&#34;
+
     def __init__(self, grid, longitude_idx, latitude_idx):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
@@ -49,7 +52,7 @@ class Polar:
         self.lat_idx = latitude_idx
 
     def make_scalar(self, ats, halo, _, jit_flags):
-        &#34;&#34;&#34; returns (lru-cached) Numba-compiled scalar halo-filling callable &#34;&#34;&#34;
+        &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -73,7 +76,7 @@ class Polar:
 
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
-        &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
+        &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
         return _make_vector(ats, jit_flags)
 
 
@@ -82,6 +85,7 @@ def _make_vector(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, ___, ____):
         return ats(*psi, 0)  # TODO #120
+
     return fill_halos</code></pre>
 </details>
 </section>
@@ -106,8 +110,9 @@ def _make_vector(ats, jit_flags):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Polar:
-    &#34;&#34;&#34; class which instances are to be passed in boundary_conditions tuple to the
-        `ScalarField` and `VectorField` __init__ methods &#34;&#34;&#34;
+    &#34;&#34;&#34;class which instances are to be passed in boundary_conditions tuple to the
+    `ScalarField` and `VectorField` __init__ methods&#34;&#34;&#34;
+
     def __init__(self, grid, longitude_idx, latitude_idx):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
@@ -121,7 +126,7 @@ def _make_vector(ats, jit_flags):
         self.lat_idx = latitude_idx
 
     def make_scalar(self, ats, halo, _, jit_flags):
-        &#34;&#34;&#34; returns (lru-cached) Numba-compiled scalar halo-filling callable &#34;&#34;&#34;
+        &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -145,7 +150,7 @@ def _make_vector(ats, jit_flags):
 
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
-        &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
+        &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
         return _make_vector(ats, jit_flags)</code></pre>
 </details>
 <h3>Static methods</h3>
@@ -161,7 +166,7 @@ def _make_vector(ats, jit_flags):
 </summary>
 <pre><code class="python">@staticmethod
 def make_vector(ats, _, __, jit_flags):
-    &#34;&#34;&#34; returns (lru-cached) Numba-compiled vector halo-filling callable &#34;&#34;&#34;
+    &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
     return _make_vector(ats, jit_flags)</code></pre>
 </details>
 </dd>
@@ -178,7 +183,7 @@ def make_vector(ats, _, __, jit_flags):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_scalar(self, ats, halo, _, jit_flags):
-    &#34;&#34;&#34; returns (lru-cached) Numba-compiled scalar halo-filling callable &#34;&#34;&#34;
+    &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
     nlon_half = self.nlon_half
     nlat = self.nlat
     lon_idx = self.lon_idx
