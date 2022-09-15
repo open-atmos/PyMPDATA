@@ -2,23 +2,31 @@
 vector field abstractions for the staggered grid
 """
 import inspect
+
 import numpy as np
-from PyMPDATA.impl.enumerations import INVALID_NULL_VALUE, INVALID_INIT_VALUE, INVALID_HALO_VALUE, \
-    INNER, OUTER, MID3D
-from PyMPDATA.scalar_field import ScalarField
+
 from PyMPDATA.boundary_conditions.constant import Constant
+from PyMPDATA.impl.enumerations import (
+    INNER,
+    INVALID_HALO_VALUE,
+    INVALID_INIT_VALUE,
+    INVALID_NULL_VALUE,
+    MID3D,
+    OUTER,
+)
 from PyMPDATA.impl.field import Field
+from PyMPDATA.scalar_field import ScalarField
 
 
 class VectorField(Field):
-    """ n-component n-dimensional vector field including halo data """
+    """n-component n-dimensional vector field including halo data"""
 
     def __init__(self, data: tuple, halo: int, boundary_conditions: tuple):
         super().__init__(
             grid=tuple(datum.shape[dim] - 1 for dim, datum in enumerate(data)),
             boundary_conditions=boundary_conditions,
             halo=halo,
-            dtype=data[0].dtype
+            dtype=data[0].dtype,
         )
 
         for comp, field in enumerate(data):
@@ -43,7 +51,8 @@ class VectorField(Field):
         self.domain = tuple(
             tuple(
                 slice(halos[dim][comp], halos[dim][comp] + data[dim].shape[comp])
-                for comp in dims)
+                for comp in dims
+            )
             for dim in dims
         )
         for dim in dims:
@@ -54,24 +63,25 @@ class VectorField(Field):
         self._impl_data = (
             self.data[OUTER] if self.n_dims > 1 else empty,
             self.data[MID3D] if self.n_dims > 2 else empty,
-            self.data[INNER]
+            self.data[INNER],
         )
 
     @staticmethod
     def clone(field):
-        """ returns a newly allocated field of the same shape, halo and boundary conditions """
-        return VectorField(tuple(
-            field.get_component(d)
-            for d in range(field.n_dims)
-        ), field.halo, field.boundary_conditions)
+        """returns a newly allocated field of the same shape, halo and boundary conditions"""
+        return VectorField(
+            tuple(field.get_component(d) for d in range(field.n_dims)),
+            field.halo,
+            field.boundary_conditions,
+        )
 
     def get_component(self, i: int) -> np.ndarray:
-        """ returns a view over given component of the field excluding halo """
+        """returns a view over given component of the field excluding halo"""
         return self.data[i][self.domain[i]]
 
     def div(self, grid_step: tuple) -> ScalarField:
-        """ returns a newly allocated scalar field (with no halo) containing the
-            divergence of the vector field computed using minimal stencil """
+        """returns a newly allocated scalar field (with no halo) containing the
+        divergence of the vector field computed using minimal stencil"""
         diff_sum = None
         for dim in range(self.n_dims):
             tmp = np.diff(self.get_component(dim), axis=dim) / grid_step[dim]
@@ -82,16 +92,19 @@ class VectorField(Field):
         result = ScalarField(
             diff_sum,
             halo=0,
-            boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * len(grid_step))
+            boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * len(grid_step)),
         )
         return result
 
     @staticmethod
     def make_null(n_dims, traversals):
-        """ returns a vector field instance with no allocated data storage,
-            see `Field._make_null` other properties of the returned field """
-        return Field._make_null(VectorField(
-            tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
-            halo=1,
-            boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims)
-        ), traversals)
+        """returns a vector field instance with no allocated data storage,
+        see `Field._make_null` other properties of the returned field"""
+        return Field._make_null(
+            VectorField(
+                tuple([np.full([1] * n_dims, INVALID_NULL_VALUE)] * n_dims),
+                halo=1,
+                boundary_conditions=tuple([Constant(INVALID_HALO_VALUE)] * n_dims),
+            ),
+            traversals,
+        )

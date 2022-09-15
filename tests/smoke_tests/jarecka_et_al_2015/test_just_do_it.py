@@ -27,5 +27,5 @@ def test_just_do_it(n_x, n_y, plot=False):
 
     # assert
     for item in plot_data.values():
-        assert 2**L2(item['h_numeric'], item['h_analytic'], nt=settings.nt) < 5e-3
-        assert 2**L2(item['q_h_numeric'], item['q_h_analytic'], nt=settings.nt) < 5e-2
+        assert 2 ** L2(item["h_numeric"], item["h_analytic"], nt=settings.nt) < 5e-3
+        assert 2 ** L2(item["q_h_numeric"], item["q_h_analytic"], nt=settings.nt) < 5e-2

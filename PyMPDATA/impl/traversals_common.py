@@ -1,6 +1,7 @@
 """ commons for scalar and vector field traversals """
 import numba
-from .enumerations import RNG_STOP, OUTER
+
+from .enumerations import OUTER, RNG_STOP
 
 
 def _make_common(jit_flags, spanner, chunker):
@@ -11,4 +12,5 @@ def _make_common(jit_flags, spanner, chunker):
         last_thread = rng_outer[RNG_STOP] == span[OUTER]
         first_thread = thread_id == 0
         return span, rng_outer, last_thread, first_thread
+
     return common

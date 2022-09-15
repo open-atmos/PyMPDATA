@@ -2,7 +2,7 @@
 import numba
 import pytest
 
-__num_threads = [pytest.param(1, id='serial')]
+__num_threads = [pytest.param(1, id="serial")]
 
 try:
     numba.parfors.parfor.ensure_parallel_support()
@@ -15,8 +15,8 @@ except numba.core.errors.UnsupportedParforsError:
 
 @pytest.fixture(params=__num_threads)
 def num_threads(request):
-    """ pytest fixture providing thread-pool size for tests: single-thread case
-        for setups in which Numba reports no parallel support, and single-
-        as well as multi-threaded test runs otherwise. For the multi-threaded
-        case, the number of threads is set to NUMBA_NUM_THREADS. """
+    """pytest fixture providing thread-pool size for tests: single-thread case
+    for setups in which Numba reports no parallel support, and single-
+    as well as multi-threaded test runs otherwise. For the multi-threaded
+    case, the number of threads is set to NUMBA_NUM_THREADS."""
     return request.param

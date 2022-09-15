@@ -1,12 +1,15 @@
 """ polar boundary condition for use in with spherical coordinates """
 from functools import lru_cache
+
 import numba
+
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
 
 
 class Polar:
-    """ class which instances are to be passed in boundary_conditions tuple to the
-        `ScalarField` and `VectorField` __init__ methods """
+    """class which instances are to be passed in boundary_conditions tuple to the
+    `ScalarField` and `VectorField` __init__ methods"""
+
     def __init__(self, grid, longitude_idx, latitude_idx):
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
@@ -20,7 +23,7 @@ class Polar:
         self.lat_idx = latitude_idx
 
     def make_scalar(self, ats, halo, _, jit_flags):
-        """ returns (lru-cached) Numba-compiled scalar halo-filling callable """
+        """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
         nlon_half = self.nlon_half
         nlat = self.nlat
         lon_idx = self.lon_idx
@@ -44,7 +47,7 @@ class Polar:
 
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
-        """ returns (lru-cached) Numba-compiled vector halo-filling callable """
+        """returns (lru-cached) Numba-compiled vector halo-filling callable"""
         return _make_vector(ats, jit_flags)
 
 
@@ -53,4 +56,5 @@ def _make_vector(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, ___, ____):
         return ats(*psi, 0)  # TODO #120
+
     return fill_halos

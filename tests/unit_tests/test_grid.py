@@ -1,9 +1,10 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import pytest
+
 from PyMPDATA import Options
-from PyMPDATA.impl.grid import make_domain, make_chunk
-from PyMPDATA.impl.meta import META_N_OUTER, META_N_MID3D, META_N_INNER, META_SIZE
 from PyMPDATA.impl.domain_decomposition import make_subdomain
+from PyMPDATA.impl.grid import make_chunk, make_domain
+from PyMPDATA.impl.meta import META_N_INNER, META_N_MID3D, META_N_OUTER, META_SIZE
 
 meta = [None] * META_SIZE
 meta[META_N_OUTER] = 200
@@ -31,13 +32,15 @@ class TestStaticGrid:
     @staticmethod
     def test_make_grid_dynamic():
         # arrange
-        grid = (0, )
+        grid = (0,)
 
         # act
         grid_fun = make_domain(grid, jit_flags=JIT_FLAGS)
 
         # assert
-        assert (meta[META_N_OUTER], meta[META_N_MID3D], meta[META_N_INNER]) == grid_fun(meta)
+        assert (meta[META_N_OUTER], meta[META_N_MID3D], meta[META_N_INNER]) == grid_fun(
+            meta
+        )
 
     @staticmethod
     @pytest.mark.parametrize("span", (3, 30, 300))
@@ -66,4 +69,6 @@ class TestStaticGrid:
 
         # assert
         for thread_id in range(n_threads):
-            assert subdomain(meta[META_N_OUTER], thread_id, n_threads) == irng_fun(meta, thread_id)
+            assert subdomain(meta[META_N_OUTER], thread_id, n_threads) == irng_fun(
+                meta, thread_id
+            )

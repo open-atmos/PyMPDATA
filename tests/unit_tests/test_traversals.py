@@ -1,20 +1,29 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
-from functools import lru_cache
 from collections import namedtuple
-import pytest
+from functools import lru_cache
+
 import numba
 import numpy as np
-from PyMPDATA.impl.traversals import Traversals
-from PyMPDATA.impl.meta import META_HALO_VALID
+import pytest
+
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl.enumerations import (
-    MAX_DIM_NUM, INNER, MID3D, OUTER, IMPL_META_AND_DATA, IMPL_BC,
-    META_AND_DATA_META, ARG_FOCUS, INVALID_INDEX
+    ARG_FOCUS,
+    IMPL_BC,
+    IMPL_META_AND_DATA,
+    INNER,
+    INVALID_INDEX,
+    MAX_DIM_NUM,
+    META_AND_DATA_META,
+    MID3D,
+    OUTER,
 )
-
+from PyMPDATA.impl.meta import META_HALO_VALID
+from PyMPDATA.impl.traversals import Traversals
 from tests.unit_tests.fixtures.n_threads import n_threads
-assert hasattr(n_threads, '_pytestfixturefunction')
+
+assert hasattr(n_threads, "_pytestfixturefunction")
 
 jit_flags = Options().jit_flags
 
@@ -62,22 +71,19 @@ def _cell_id_vector(arg_1, arg_2, arg_3):
 def make_commons(grid, halo, num_threads):
     traversals = make_traversals(grid, halo, num_threads)
     n_dims = len(grid)
-    halos = (
-        (halo - 1, halo, halo),
-        (halo, halo - 1, halo),
-        (halo, halo, halo - 1)
-    )
+    halos = ((halo - 1, halo, halo), (halo, halo - 1, halo), (halo, halo, halo - 1))
 
-    _Commons = namedtuple('_Commons', (
-        'n_dims', 'traversals', 'scl_null_arg_impl', 'vec_null_arg_impl', 'halos'
-    ))
+    _Commons = namedtuple(
+        "_Commons",
+        ("n_dims", "traversals", "scl_null_arg_impl", "vec_null_arg_impl", "halos"),
+    )
 
     return _Commons(
         n_dims=n_dims,
         traversals=traversals,
         scl_null_arg_impl=ScalarField.make_null(n_dims, traversals).impl,
         vec_null_arg_impl=VectorField.make_null(n_dims, traversals).impl,
-        halos=halos
+        halos=halos,
     )
 
 
@@ -98,23 +104,33 @@ class TestTraversals:
         out.assemble(cmn.traversals)
 
         # act
-        sut(_cell_id_scalar,
+        sut(
+            _cell_id_scalar,
             _cell_id_scalar if loop else None,
             _cell_id_scalar if loop else None,
             *out.impl[IMPL_META_AND_DATA],
-            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA], *cmn.vec_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC]
-            )
+            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.vec_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.scl_null_arg_impl[IMPL_BC]
+        )
 
         # assert
         data = out.get()
         assert data.shape == grid
         focus = (-halo, -halo, -halo)
-        for i in range(halo, halo + grid[OUTER]) if cmn.n_dims > 1 else (INVALID_INDEX,):
-            for j in range(halo, halo + grid[MID3D]) if cmn.n_dims > 2 else (INVALID_INDEX,):
+        for i in (
+            range(halo, halo + grid[OUTER]) if cmn.n_dims > 1 else (INVALID_INDEX,)
+        ):
+            for j in (
+                range(halo, halo + grid[MID3D]) if cmn.n_dims > 2 else (INVALID_INDEX,)
+            ):
                 for k in range(halo, halo + grid[INNER]):
                     if cmn.n_dims == 1:
                         ijk = (k, INVALID_INDEX, INVALID_INDEX)
@@ -124,12 +140,14 @@ class TestTraversals:
                         ijk = (i, j, k)
                     value = cmn.traversals.indexers[cmn.n_dims].ats[
                         INNER if cmn.n_dims == 1 else OUTER
-                    ](
-                        focus, data, *ijk
-                    )
+                    ](focus, data, *ijk)
                     assert (cmn.n_dims if loop else 1) * cell_id(i, j, k) == value
-        assert cmn.scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-        assert cmn.vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert cmn.scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][
+            META_HALO_VALID
+        ]
+        assert cmn.vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][
+            META_HALO_VALID
+        ]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
 
     @staticmethod
@@ -145,50 +163,53 @@ class TestTraversals:
         sut = cmn.traversals.apply_vector()
 
         data = {
-            1: lambda: (np.zeros(grid[0]+1),),
+            1: lambda: (np.zeros(grid[0] + 1),),
             2: lambda: (
-                np.zeros((grid[0]+1, grid[1])),
-                np.zeros((grid[0], grid[1]+1))
+                np.zeros((grid[0] + 1, grid[1])),
+                np.zeros((grid[0], grid[1] + 1)),
             ),
             3: lambda: (
-                np.zeros((grid[0]+1, grid[1], grid[2])),
-                np.zeros((grid[0], grid[1]+1, grid[2])),
-                np.zeros((grid[0], grid[1], grid[2]+1)),
-            )
+                np.zeros((grid[0] + 1, grid[1], grid[2])),
+                np.zeros((grid[0], grid[1] + 1, grid[2])),
+                np.zeros((grid[0], grid[1], grid[2] + 1)),
+            ),
         }[cmn.n_dims]()
 
         out = VectorField(data, halo, tuple([Constant(np.nan)] * cmn.n_dims))
         out.assemble(cmn.traversals)
 
         # act
-        sut(*[_cell_id_vector] * MAX_DIM_NUM,
+        sut(
+            *[_cell_id_vector] * MAX_DIM_NUM,
             *out.impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA], *cmn.vec_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA], *cmn.scl_null_arg_impl[IMPL_BC]
-            )
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.scl_null_arg_impl[IMPL_BC],
+            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.vec_null_arg_impl[IMPL_BC],
+            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+            *cmn.scl_null_arg_impl[IMPL_BC]
+        )
 
         # assert
-        dims = {
-            1: (INNER,),
-            2: (OUTER, INNER),
-            3: (OUTER, MID3D, INNER)
-        }[cmn.n_dims]
+        dims = {1: (INNER,), 2: (OUTER, INNER), 3: (OUTER, MID3D, INNER)}[cmn.n_dims]
 
         for dim in dims:
             data = out.get_component(dim)
             focus = tuple(-cmn.halos[dim][i] for i in range(MAX_DIM_NUM))
-            for i in range(
-                    cmn.halos[dim][OUTER],
-                    cmn.halos[dim][OUTER] + data.shape[OUTER]
-            ) if cmn.n_dims > 1 else (INVALID_INDEX,):
-                for j in range(
-                        cmn.halos[dim][MID3D],
-                        cmn.halos[dim][MID3D] + data.shape[MID3D]
-                ) if cmn.n_dims > 2 else (INVALID_INDEX,):
+            for i in (
+                range(cmn.halos[dim][OUTER], cmn.halos[dim][OUTER] + data.shape[OUTER])
+                if cmn.n_dims > 1
+                else (INVALID_INDEX,)
+            ):
+                for j in (
+                    range(
+                        cmn.halos[dim][MID3D], cmn.halos[dim][MID3D] + data.shape[MID3D]
+                    )
+                    if cmn.n_dims > 2
+                    else (INVALID_INDEX,)
+                ):
                     for k in range(
-                        cmn.halos[dim][INNER],
-                        cmn.halos[dim][INNER] + data.shape[INNER]
+                        cmn.halos[dim][INNER], cmn.halos[dim][INNER] + data.shape[INNER]
                     ):
                         if cmn.n_dims == 1:
                             ijk = (k, INVALID_INDEX, INVALID_INDEX)
@@ -198,11 +219,13 @@ class TestTraversals:
                             ijk = (i, j, k)
                         value = cmn.traversals.indexers[cmn.n_dims].ats[
                             INNER if cmn.n_dims == 1 else OUTER
-                        ](
-                            focus, data, *ijk
-                        )
+                        ](focus, data, *ijk)
                         assert cell_id(i, j, k) == value
 
-        assert cmn.scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-        assert cmn.vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
+        assert cmn.scl_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][
+            META_HALO_VALID
+        ]
+        assert cmn.vec_null_arg_impl[IMPL_META_AND_DATA][META_AND_DATA_META][
+            META_HALO_VALID
+        ]
         assert not out.impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]

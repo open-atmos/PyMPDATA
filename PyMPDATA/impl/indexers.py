@@ -2,17 +2,19 @@
 # pylint: disable=missing-function-docstring
 
 from collections import namedtuple
+
 import numba
-from .enumerations import INNER, OUTER, MID3D, INVALID_INDEX
+
+from .enumerations import INNER, INVALID_INDEX, MID3D, OUTER
 
 
 def make_indexers(jit_flags):
-    """ returns a tuple indexed by dimension (0: None, 1: 1D, ...)
-        with each element set to a namedtuple with 'at', 'atv', 'set' and 'get' functions """
-    @numba.njit([numba.boolean(numba.float64),
-                 numba.boolean(numba.int64)], **jit_flags)
+    """returns a tuple indexed by dimension (0: None, 1: 1D, ...)
+    with each element set to a namedtuple with 'at', 'atv', 'set' and 'get' functions"""
+
+    @numba.njit([numba.boolean(numba.float64), numba.boolean(numba.int64)], **jit_flags)
     def _is_integral(value):
-        return int(value * 2.) % 2 == 0
+        return int(value * 2.0) % 2 == 0
 
     class _1D:
         @staticmethod
@@ -23,7 +25,7 @@ def make_indexers(jit_flags):
         @staticmethod
         @numba.njit(**jit_flags)
         def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
-            return arrs[INNER][focus[INNER] + int(k - .5)]
+            return arrs[INNER][focus[INNER] + int(k - 0.5)]
 
         @staticmethod
         @numba.njit(**jit_flags)
@@ -50,18 +52,18 @@ def make_indexers(jit_flags):
         @numba.njit(**jit_flags)
         def atv_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
             if _is_integral(i):
-                dim, _ii, _kk = INNER, int(i), int(k - .5)
+                dim, _ii, _kk = INNER, int(i), int(k - 0.5)
             else:
-                dim, _ii, _kk = OUTER, int(i - .5), int(k)
+                dim, _ii, _kk = OUTER, int(i - 0.5), int(k)
             return arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
 
         @staticmethod
         @numba.njit(**jit_flags)
         def atv_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
             if _is_integral(i):
-                dim, _ii, _kk = INNER, int(i), int(k - .5)
+                dim, _ii, _kk = INNER, int(i), int(k - 0.5)
             else:
-                dim, _ii, _kk = OUTER, int(i - .5), int(k)
+                dim, _ii, _kk = OUTER, int(i - 0.5), int(k)
             return arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
 
         @staticmethod
@@ -94,33 +96,33 @@ def make_indexers(jit_flags):
         @numba.njit(**jit_flags)
         def atv_axis0(focus, arrs, i, j=0, k=0):
             if not _is_integral(i):
-                dim, _ii, _jj, _kk = OUTER, int(i - .5), int(j), int(k)
+                dim, _ii, _jj, _kk = OUTER, int(i - 0.5), int(j), int(k)
             elif not _is_integral(j):
-                dim, _ii, _jj, _kk = MID3D, int(i), int(j - .5), int(k)
+                dim, _ii, _jj, _kk = MID3D, int(i), int(j - 0.5), int(k)
             else:
-                dim, _ii, _jj, _kk = INNER, int(i), int(j), int(k - .5)
+                dim, _ii, _jj, _kk = INNER, int(i), int(j), int(k - 0.5)
             return arrs[dim][focus[OUTER] + _ii, focus[MID3D] + _jj, focus[INNER] + _kk]
 
         @staticmethod
         @numba.njit(**jit_flags)
         def atv_axis1(focus, arrs, j, k=0, i=0):
             if not _is_integral(i):
-                dim, _i, _jj, _kk = OUTER, int(i - .5), int(j), int(k)
+                dim, _i, _jj, _kk = OUTER, int(i - 0.5), int(j), int(k)
             elif not _is_integral(j):
-                dim, _i, _jj, _kk = MID3D, int(i), int(j - .5), int(k)
+                dim, _i, _jj, _kk = MID3D, int(i), int(j - 0.5), int(k)
             else:
-                dim, _i, _jj, _kk = INNER, int(i), int(j), int(k - .5)
+                dim, _i, _jj, _kk = INNER, int(i), int(j), int(k - 0.5)
             return arrs[dim][focus[OUTER] + _i, focus[MID3D] + _jj, focus[INNER] + _kk]
 
         @staticmethod
         @numba.njit(**jit_flags)
         def atv_axis2(focus, arrs, k, i=0, j=0):
             if not _is_integral(i):
-                dim, _i, _j, _k = OUTER, int(i - .5), int(j), int(k)
+                dim, _i, _j, _k = OUTER, int(i - 0.5), int(j), int(k)
             elif not _is_integral(j):
-                dim, _i, _j, _k = MID3D, int(i), int(j - .5), int(k)
+                dim, _i, _j, _k = MID3D, int(i), int(j - 0.5), int(k)
             else:
-                dim, _i, _j, _k = INNER, int(i), int(j), int(k - .5)
+                dim, _i, _j, _k = INNER, int(i), int(j), int(k - 0.5)
             return arrs[dim][focus[OUTER] + _i, focus[MID3D] + _j, focus[INNER] + _k]
 
         @staticmethod
@@ -133,27 +135,22 @@ def make_indexers(jit_flags):
         def get(arr, i, j, k):
             return arr[i, j, k]
 
-    Indexers = namedtuple('Indexers', ('ats', 'atv', 'set', 'get'))
+    Indexers = namedtuple("Indexers", ("ats", "atv", "set", "get"))
 
     indexers = (
         None,
-        Indexers(
-            (None, None, _1D.ats_1d),
-            (None, None, _1D.atv_1d),
-            _1D.set,
-            _1D.get
-        ),
+        Indexers((None, None, _1D.ats_1d), (None, None, _1D.atv_1d), _1D.set, _1D.get),
         Indexers(
             (_2D.ats_axis0, None, _2D.ats_axis1),
             (_2D.atv_axis0, None, _2D.atv_axis1),
             _2D.set,
-            _2D.get
+            _2D.get,
         ),
         Indexers(
             (_3D.ats_axis0, _3D.ats_axis1, _3D.ats_axis2),
             (_3D.atv_axis0, _3D.atv_axis1, _3D.atv_axis2),
             _3D.set,
-            _3D.get
-        )
+            _3D.get,
+        ),
     )
     return indexers

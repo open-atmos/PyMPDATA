@@ -1,19 +1,20 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
 import pytest
+
+from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Extrapolated
 from PyMPDATA.impl.traversals import Traversals
-from PyMPDATA import ScalarField, VectorField, Options
 
 JIT_FLAGS = Options().jit_flags
 
 
 class TestBoundaryConditionExtrapolated:
     @staticmethod
-    @pytest.mark.parametrize("data", (
-        np.array([1, 2, 3, 4], dtype=float),
-        np.array([1, 2, 3, 4], dtype=complex)
-    ))
+    @pytest.mark.parametrize(
+        "data",
+        (np.array([1, 2, 3, 4], dtype=float), np.array([1, 2, 3, 4], dtype=complex)),
+    )
     def test_1d_scalar(data, n_threads=1, halo=1):
         # arrange
         boundary_conditions = (Extrapolated(),)
@@ -23,7 +24,7 @@ class TestBoundaryConditionExtrapolated:
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._code['fill_halos_scalar']  # pylint:disable=protected-access
+        sut = traversals._code["fill_halos_scalar"]  # pylint:disable=protected-access
 
         # act
         thread_id = 0
@@ -44,7 +45,7 @@ class TestBoundaryConditionExtrapolated:
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
-        sut = traversals._code['fill_halos_vector']  # pylint:disable=protected-access
+        sut = traversals._code["fill_halos_vector"]  # pylint:disable=protected-access
 
         # act
         thread_id = 0

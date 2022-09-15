@@ -1,5 +1,6 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
+
 from PyMPDATA import ScalarField
 from PyMPDATA.boundary_conditions import Periodic
 
@@ -7,7 +8,7 @@ from PyMPDATA.boundary_conditions import Periodic
 class TestScalarField:
     @staticmethod
     def test_1d_contiguous():
-        grid = (44, )
+        grid = (44,)
         data = np.empty(grid)
         boundary_conditions = (Periodic(),)
         sut = ScalarField(data, halo=1, boundary_conditions=boundary_conditions)

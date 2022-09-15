@@ -1,8 +1,9 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
 import pytest
-from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.simulation import Simulation
 from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.settings import Settings
+from PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12.simulation import Simulation
+
 from PyMPDATA.options import Options
 
 
@@ -26,7 +27,7 @@ class TestSmolarkiewicz2006:
         assert np.amin(psi_0) == 0
         assert np.amax(psi_0) == 2
         assert 0 < np.amin(psi_t) < epsilon
-        assert .45 < np.amax(psi_t) < .5
+        assert 0.45 < np.amax(psi_t) < 0.5
 
     @staticmethod
     @pytest.mark.parametrize("dtype", dtypes)
@@ -52,8 +53,7 @@ class TestSmolarkiewicz2006:
     def test_fig10(dtype: np.floating):
         # Arrange
         simulation = Simulation(
-            Settings("cosine"),
-            Options(infinite_gauge=True, n_iters=2, dtype=dtype)
+            Settings("cosine"), Options(infinite_gauge=True, n_iters=2, dtype=dtype)
         )
 
         # Act
@@ -62,7 +62,7 @@ class TestSmolarkiewicz2006:
 
         # Assert
         assert psi_t.dtype == dtype
-        assert -.1 < np.amin(psi_t) < 0
+        assert -0.1 < np.amin(psi_t) < 0
         assert 1.75 < np.amax(psi_t) < 1.9
 
     @staticmethod
@@ -70,8 +70,7 @@ class TestSmolarkiewicz2006:
     def test_fig11(dtype: np.floating):
         # Arrange
         simulation = Simulation(
-            Settings("rect"),
-            Options(infinite_gauge=True, n_iters=2, dtype=dtype)
+            Settings("rect"), Options(infinite_gauge=True, n_iters=2, dtype=dtype)
         )
 
         # Act
@@ -89,7 +88,7 @@ class TestSmolarkiewicz2006:
         # Arrange
         simulation = Simulation(
             Settings("rect"),
-            Options(n_iters=2, infinite_gauge=True, nonoscillatory=True, dtype=dtype)
+            Options(n_iters=2, infinite_gauge=True, nonoscillatory=True, dtype=dtype),
         )
 
         # Act
