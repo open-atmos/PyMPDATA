@@ -1,8 +1,10 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import time
+
 import numba
-from PyMPDATA.options import Options
+
 from PyMPDATA.impl.clock import clock
+from PyMPDATA.options import Options
 
 jit_flags = Options().jit_flags
 
@@ -17,6 +19,7 @@ class TestClock:
         @numba.jit(**jit_flags)
         def test():
             clock()
+
         test()
 
     @staticmethod
@@ -24,6 +27,7 @@ class TestClock:
         @numba.njit(**jit_flags)
         def test():
             clock()
+
         test()
 
     @staticmethod

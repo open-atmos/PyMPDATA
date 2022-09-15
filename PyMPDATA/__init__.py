@@ -8,13 +8,13 @@ PyMPDATA uses staggered grid with the following node placement for
 ![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)
 """
 # pylint: disable=invalid-name
-from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
+from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
 
-from .scalar_field import ScalarField
-from .vector_field import VectorField
 from .options import Options
-from .stepper import Stepper
+from .scalar_field import ScalarField
 from .solver import Solver
+from .stepper import Stepper
+from .vector_field import VectorField
 
 try:
     __version__ = get_distribution(__name__).version

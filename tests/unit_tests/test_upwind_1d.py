@@ -1,6 +1,7 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import numpy as np
-from PyMPDATA import Solver, Stepper, ScalarField, Options, VectorField
+
+from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
 
@@ -10,17 +11,19 @@ def test_upwind_1d():
 
     options = Options(n_iters=1)
     mpdata = Solver(
-        stepper=Stepper(options=options, n_dims=len(state.shape), non_unit_g_factor=False),
+        stepper=Stepper(
+            options=options, n_dims=len(state.shape), non_unit_g_factor=False
+        ),
         advectee=ScalarField(
             state.astype(options.dtype),
             halo=options.n_halo,
-            boundary_conditions=(Periodic(),)
+            boundary_conditions=(Periodic(),),
         ),
         advector=VectorField(
             (np.full(state.shape[0] + 1, courant, dtype=options.dtype),),
             halo=options.n_halo,
-            boundary_conditions=(Periodic(),)
-        )
+            boundary_conditions=(Periodic(),),
+        ),
     )
     n_steps = 5
 

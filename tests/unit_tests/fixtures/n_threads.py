@@ -1,6 +1,6 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
-import pytest
 import numba
+import pytest
 
 __n_threads = (1, 2, 3)
 try:

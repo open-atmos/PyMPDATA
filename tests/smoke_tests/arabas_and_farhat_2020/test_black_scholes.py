@@ -5,7 +5,7 @@ from PyMPDATA_examples.Arabas_and_Farhat_2020.setup2_american_put import Setting
 
 def test_black_scholes():
     # arrange
-    settings = Settings(T=.25, C_opt=.02, S0=80)
+    settings = Settings(T=0.25, C_opt=0.02, S0=80)
     simulation = Simulation(settings)
 
     # act

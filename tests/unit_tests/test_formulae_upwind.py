@@ -1,13 +1,15 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 import warnings
-from numba.core.errors import NumbaExperimentalFeatureWarning
+
 import numpy as np
-from PyMPDATA.impl.formulae_upwind import make_upwind
-from PyMPDATA.impl.traversals import Traversals
-from PyMPDATA.impl.meta import _Impl
-from PyMPDATA.impl.enumerations import IMPL_META_AND_DATA, IMPL_BC
+from numba.core.errors import NumbaExperimentalFeatureWarning
+
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
+from PyMPDATA.impl.enumerations import IMPL_BC, IMPL_META_AND_DATA
+from PyMPDATA.impl.formulae_upwind import make_upwind
+from PyMPDATA.impl.meta import _Impl
+from PyMPDATA.impl.traversals import Traversals
 
 
 def test_formulae_upwind():
@@ -18,12 +20,11 @@ def test_formulae_upwind():
     options = Options()
     halo = options.n_halo
     traversals = Traversals(
-        grid=psi_data.shape,
-        halo=halo,
-        jit_flags=options.jit_flags,
-        n_threads=1
+        grid=psi_data.shape, halo=halo, jit_flags=options.jit_flags, n_threads=1
     )
-    upwind = make_upwind(options=options, non_unit_g_factor=False, traversals=traversals)
+    upwind = make_upwind(
+        options=options, non_unit_g_factor=False, traversals=traversals
+    )
 
     boundary_conditions = (Periodic(),)
 
@@ -37,15 +38,15 @@ def test_formulae_upwind():
 
     # Act
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore', category=NumbaExperimentalFeatureWarning)
+        warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
         upwind(
             traversals.null_impl,
             _Impl(field=psi_impl[IMPL_META_AND_DATA], bc=psi_impl[IMPL_BC]),
             _Impl(field=flux_impl[IMPL_META_AND_DATA], bc=flux_impl[IMPL_BC]),
             _Impl(
-               field=traversals.null_impl.scalar[IMPL_META_AND_DATA],
-               bc=traversals.null_impl.scalar[IMPL_BC]
-            )
+                field=traversals.null_impl.scalar[IMPL_META_AND_DATA],
+                bc=traversals.null_impl.scalar[IMPL_BC],
+            ),
         )
 
     # Assert
