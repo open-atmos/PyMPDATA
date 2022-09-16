@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-function-docstring
 import numpy as np
 import pytest
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
