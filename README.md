@@ -343,11 +343,11 @@ Note that the shapes of arrays representing components
 of the velocity field are different than the shape of
 the scalar field array due to employment of the staggered grid.
 
-Besides the exemplified [``Periodic``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/periodic.html) class representing 
+Besides the exemplified [``Periodic``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/periodic.html) class representing 
 periodic boundary conditions, PyMPDATA supports 
-[``Extrapolated``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/extrapolated.html), 
-[``Constant``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/constant.html) and
-[``Polar``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/arakawa_c/boundary_condition/polar_boundary_condition.html) 
+[``Extrapolated``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/extrapolated.html), 
+[``Constant``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/constant.html) and
+[``Polar``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/polar.html) 
 boundary conditions.
 
 #### Stepper
