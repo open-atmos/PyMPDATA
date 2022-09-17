@@ -15,7 +15,7 @@
 [![Copyright](https://img.shields.io/static/v1?label=Copyright&color=249fe2&message=Jagiellonian%20University&)](https://en.uj.edu.pl/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/tests+pypi.yml/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
+[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
 [![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=main&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/main)
 [![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/main/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=main)
 [![Github Actions Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml)    
