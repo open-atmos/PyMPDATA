@@ -1,5 +1,6 @@
 # test-time requirements
 matplotlib>=3.2.2
+scipy==1.7.3
 ghapi
 pytest
 pytest-benchmark
