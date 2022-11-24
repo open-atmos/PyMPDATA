@@ -136,7 +136,7 @@ def make_indexers(jit_flags):
         def get(arr, i, j, k):
             return arr[i, j, k]
 
-    Indexers = namedtuple(
+    Indexers = namedtuple(  # pylint: disable=invalid-name
         Path(__file__).stem + "_Indexers", ("ats", "atv", "set", "get")
     )
 
