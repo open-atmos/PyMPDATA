@@ -91,15 +91,17 @@ class Field:
         """initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
         with halo-filling logic njit-ted using the given traversals"""
         if traversals.jit_flags != self.__jit_flags:
-            fun = f"make_{self.__class__.__name__[:6].lower()}"
+            method = {"ScalarField": "make_scalar", "VectorField": "make_vector"}[
+                self.__class__.__name__
+            ]
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
-                getattr(fh, fun)(
+                getattr(fill_halos, method)(
                     traversals.indexers[self.n_dims].ats[i],
                     self.halo,
                     self.dtype,
                     traversals.jit_flags,
                 )
-                for i, fh in enumerate(self.fill_halos)
+                for i, fill_halos in enumerate(self.fill_halos)
             )
         self.__jit_flags = traversals.jit_flags
 

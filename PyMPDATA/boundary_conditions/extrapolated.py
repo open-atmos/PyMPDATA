@@ -23,16 +23,18 @@ class Extrapolated:
 
     def make_scalar(self, ats, halo, dtype, jit_flags):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
-        return _make_scalar(self.dim, self.eps, ats, halo, dtype, jit_flags)
+        return _make_scalar_extrapolated(
+            self.dim, self.eps, ats, halo, dtype, jit_flags
+        )
 
     def make_vector(self, ats, halo, dtype, jit_flags):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
-        return _make_vector(self.dim, ats, halo, dtype, jit_flags)
+        return _make_vector_extrapolated(self.dim, ats, halo, dtype, jit_flags)
 
 
 @lru_cache()
 # pylint: disable=too-many-arguments
-def _make_scalar(dim, eps, ats, halo, dtype, jit_flags):
+def _make_scalar_extrapolated(dim, eps, ats, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
     def impl(psi, span, sign):
         if sign == SIGN_LEFT:
@@ -70,7 +72,7 @@ def _make_scalar(dim, eps, ats, halo, dtype, jit_flags):
 
 
 @lru_cache()
-def _make_vector(_, ats, __, ___, jit_flags):
+def _make_vector_extrapolated(_, ats, __, ___, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, ____, sign):
         return ats(*psi, sign)
