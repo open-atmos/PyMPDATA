@@ -2,12 +2,14 @@
 # pylint: disable=missing-function-docstring
 
 from collections import namedtuple
+from functools import lru_cache
 
 import numba
 
 from .enumerations import INNER, INVALID_INDEX, MID3D, OUTER
 
 
+@lru_cache()
 def make_indexers(jit_flags):
     """returns a tuple indexed by dimension (0: None, 1: 1D, ...)
     with each element set to a namedtuple with 'at', 'atv', 'set' and 'get' functions"""
