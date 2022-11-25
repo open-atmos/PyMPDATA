@@ -1,16 +1,10 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
-import numba
 import numpy as np
-import pytest
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
-assert numba.config.DISABLE_JIT is not None  # pylint: disable=no-member
 
-
-@pytest.mark.xfail(strict=True)  # TODO #311
-@pytest.mark.skipif("numba.config.DISABLE_JIT")
 def test_shared_advector():
     n_x = 100
     arr = np.zeros(n_x)
