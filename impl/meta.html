@@ -29,6 +29,7 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34; constants for indexing and a factory for creating the &#34;meta&#34; tuples &#34;&#34;&#34;
 from collections import namedtuple
+from pathlib import Path
 
 import numpy as np
 
@@ -41,7 +42,7 @@ META_N_INNER = 3
 META_IS_NULL = 4
 META_SIZE = 5
 
-_Impl = namedtuple(&#34;Impl&#34;, (&#34;field&#34;, &#34;bc&#34;))
+_Impl = namedtuple(Path(__file__).stem + &#34;_Impl&#34;, (&#34;field&#34;, &#34;bc&#34;))
 
 
 def make_meta(halo_valid: bool, grid):

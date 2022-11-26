@@ -47,16 +47,16 @@ class Periodic:
     @staticmethod
     def make_scalar(ats, _, __, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
-        return _make_scalar(ats, jit_flags)
+        return _make_scalar_periodic(ats, jit_flags)
 
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-        return _make_vector(ats, jit_flags)
+        return _make_vector_periodic(ats, jit_flags)
 
 
 @lru_cache()
-def _make_scalar(ats, jit_flags):
+def _make_scalar_periodic(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, span, sign):
         return ats(*psi, sign * span)
@@ -65,7 +65,7 @@ def _make_scalar(ats, jit_flags):
 
 
 @lru_cache()
-def _make_vector(ats, jit_flags):
+def _make_vector_periodic(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, span, sign):
         return ats(*psi, sign * span)
@@ -105,12 +105,12 @@ def _make_vector(ats, jit_flags):
     @staticmethod
     def make_scalar(ats, _, __, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
-        return _make_scalar(ats, jit_flags)
+        return _make_scalar_periodic(ats, jit_flags)
 
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-        return _make_vector(ats, jit_flags)</code></pre>
+        return _make_vector_periodic(ats, jit_flags)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -126,7 +126,7 @@ def _make_vector(ats, jit_flags):
 <pre><code class="python">@staticmethod
 def make_scalar(ats, _, __, jit_flags):
     &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
-    return _make_scalar(ats, jit_flags)</code></pre>
+    return _make_scalar_periodic(ats, jit_flags)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA.boundary_conditions.periodic.Periodic.make_vector"><code class="name flex">
@@ -141,7 +141,7 @@ def make_scalar(ats, _, __, jit_flags):
 <pre><code class="python">@staticmethod
 def make_vector(ats, _, __, jit_flags):
     &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-    return _make_vector(ats, jit_flags)</code></pre>
+    return _make_vector_periodic(ats, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>

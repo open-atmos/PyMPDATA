@@ -122,15 +122,17 @@ class Field:
         &#34;&#34;&#34;initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
         with halo-filling logic njit-ted using the given traversals&#34;&#34;&#34;
         if traversals.jit_flags != self.__jit_flags:
-            fun = f&#34;make_{self.__class__.__name__[:6].lower()}&#34;
+            method = {&#34;ScalarField&#34;: &#34;make_scalar&#34;, &#34;VectorField&#34;: &#34;make_vector&#34;}[
+                self.__class__.__name__
+            ]
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
-                getattr(fh, fun)(
+                getattr(fill_halos, method)(
                     traversals.indexers[self.n_dims].ats[i],
                     self.halo,
                     self.dtype,
                     traversals.jit_flags,
                 )
-                for i, fh in enumerate(self.fill_halos)
+                for i, fill_halos in enumerate(self.fill_halos)
             )
         self.__jit_flags = traversals.jit_flags
 
@@ -246,15 +248,17 @@ class Field:
         &#34;&#34;&#34;initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
         with halo-filling logic njit-ted using the given traversals&#34;&#34;&#34;
         if traversals.jit_flags != self.__jit_flags:
-            fun = f&#34;make_{self.__class__.__name__[:6].lower()}&#34;
+            method = {&#34;ScalarField&#34;: &#34;make_scalar&#34;, &#34;VectorField&#34;: &#34;make_vector&#34;}[
+                self.__class__.__name__
+            ]
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
-                getattr(fh, fun)(
+                getattr(fill_halos, method)(
                     traversals.indexers[self.n_dims].ats[i],
                     self.halo,
                     self.dtype,
                     traversals.jit_flags,
                 )
-                for i, fh in enumerate(self.fill_halos)
+                for i, fill_halos in enumerate(self.fill_halos)
             )
         self.__jit_flags = traversals.jit_flags
 
@@ -424,15 +428,17 @@ with halo-filling logic njit-ted using the given traversals</p></div>
     &#34;&#34;&#34;initialises what can be later accessed through `PyMPDATA.impl.field.Field.impl` property
     with halo-filling logic njit-ted using the given traversals&#34;&#34;&#34;
     if traversals.jit_flags != self.__jit_flags:
-        fun = f&#34;make_{self.__class__.__name__[:6].lower()}&#34;
+        method = {&#34;ScalarField&#34;: &#34;make_scalar&#34;, &#34;VectorField&#34;: &#34;make_vector&#34;}[
+            self.__class__.__name__
+        ]
         self.__impl = (self.__properties.meta, *self._impl_data), tuple(
-            getattr(fh, fun)(
+            getattr(fill_halos, method)(
                 traversals.indexers[self.n_dims].ats[i],
                 self.halo,
                 self.dtype,
                 traversals.jit_flags,
             )
-            for i, fh in enumerate(self.fill_halos)
+            for i, fill_halos in enumerate(self.fill_halos)
         )
     self.__jit_flags = traversals.jit_flags</code></pre>
 </details>

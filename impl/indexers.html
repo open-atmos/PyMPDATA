@@ -32,6 +32,7 @@
 
 from collections import namedtuple
 from functools import lru_cache
+from pathlib import Path
 
 import numba
 
@@ -166,7 +167,9 @@ def make_indexers(jit_flags):
         def get(arr, i, j, k):
             return arr[i, j, k]
 
-    Indexers = namedtuple(&#34;Indexers&#34;, (&#34;ats&#34;, &#34;atv&#34;, &#34;set&#34;, &#34;get&#34;))
+    Indexers = namedtuple(  # pylint: disable=invalid-name
+        Path(__file__).stem + &#34;_Indexers&#34;, (&#34;ats&#34;, &#34;atv&#34;, &#34;set&#34;, &#34;get&#34;)
+    )
 
     indexers = (
         None,
@@ -332,7 +335,9 @@ def make_indexers(jit_flags):
         def get(arr, i, j, k):
             return arr[i, j, k]
 
-    Indexers = namedtuple(&#34;Indexers&#34;, (&#34;ats&#34;, &#34;atv&#34;, &#34;set&#34;, &#34;get&#34;))
+    Indexers = namedtuple(  # pylint: disable=invalid-name
+        Path(__file__).stem + &#34;_Indexers&#34;, (&#34;ats&#34;, &#34;atv&#34;, &#34;set&#34;, &#34;get&#34;)
+    )
 
     indexers = (
         None,
