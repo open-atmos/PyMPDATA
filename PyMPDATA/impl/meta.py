@@ -1,5 +1,6 @@
 """ constants for indexing and a factory for creating the "meta" tuples """
 from collections import namedtuple
+from pathlib import Path
 
 import numpy as np
 
@@ -12,7 +13,7 @@ META_N_INNER = 3
 META_IS_NULL = 4
 META_SIZE = 5
 
-_Impl = namedtuple("Impl", ("field", "bc"))
+_Impl = namedtuple(Path(__file__).stem + "_Impl", ("field", "bc"))
 
 
 def make_meta(halo_valid: bool, grid):

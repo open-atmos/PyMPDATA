@@ -1,5 +1,6 @@
 """ staggered-grid traversals orchestration """
 from collections import namedtuple
+from pathlib import Path
 
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
@@ -29,7 +30,9 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        self.null_impl = namedtuple("NullFields", ("scalar", "vector"))(
+        self.null_impl = namedtuple(
+            Path(__file__).stem + "NullFields", ("scalar", "vector")
+        )(
             scalar=ScalarField.make_null(self.n_dims, self).impl,
             vector=VectorField.make_null(self.n_dims, self).impl,
         )

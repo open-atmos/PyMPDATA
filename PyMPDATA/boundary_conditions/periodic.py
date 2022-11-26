@@ -18,16 +18,16 @@ class Periodic:
     @staticmethod
     def make_scalar(ats, _, __, jit_flags):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
-        return _make_scalar(ats, jit_flags)
+        return _make_scalar_periodic(ats, jit_flags)
 
     @staticmethod
     def make_vector(ats, _, __, jit_flags):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
-        return _make_vector(ats, jit_flags)
+        return _make_vector_periodic(ats, jit_flags)
 
 
 @lru_cache()
-def _make_scalar(ats, jit_flags):
+def _make_scalar_periodic(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, span, sign):
         return ats(*psi, sign * span)
@@ -36,7 +36,7 @@ def _make_scalar(ats, jit_flags):
 
 
 @lru_cache()
-def _make_vector(ats, jit_flags):
+def _make_vector_periodic(ats, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, span, sign):
         return ats(*psi, sign * span)

@@ -3,6 +3,7 @@
 
 from collections import namedtuple
 from functools import lru_cache
+from pathlib import Path
 
 import numba
 
@@ -137,7 +138,9 @@ def make_indexers(jit_flags):
         def get(arr, i, j, k):
             return arr[i, j, k]
 
-    Indexers = namedtuple("Indexers", ("ats", "atv", "set", "get"))
+    Indexers = namedtuple(  # pylint: disable=invalid-name
+        Path(__file__).stem + "_Indexers", ("ats", "atv", "set", "get")
+    )
 
     indexers = (
         None,
