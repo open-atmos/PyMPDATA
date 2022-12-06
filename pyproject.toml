@@ -20,9 +20,11 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    "numba_mpi>=0.14",
+    "numba_mpi>=0.26",
     "PySDM",
-    "PyMPDATA"
+    "PyMPDATA",
+    "mpi4py",
+    "h5py"
 ]
 dynamic = ["version"]
 

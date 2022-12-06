@@ -75,7 +75,7 @@ jobs:
     needs: [pylint, pdoc, precommit]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        platform: [ubuntu-latest, macos-latest]
         python-version: ["3.10"]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -84,6 +84,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: mpi4py/setup-mpi@v1
+      - if: startsWith(matrix.platform, 'ubuntu-')
+        run: |
+             sudo apt-get update && sudo apt-get install -y libhdf5-mpi-dev pkg-config
+      - if: startsWith(matrix.platform, 'macos-')
+        run: |
+             brew unlink mpich && brew install hdf5-mpi 
+             echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+      - run: HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py
       - run: pip install -e .
       - run: python -We -c "import PySuperDropletLES"
       - run: pip install pytest
