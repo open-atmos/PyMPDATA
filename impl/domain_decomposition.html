@@ -40,7 +40,7 @@ def make_subdomain(jit_flags):
     @numba.njit(**jit_flags)
     def subdomain(span, rank, size):
         if rank &gt;= size:
-            raise ValueError()
+            raise ValueError(&#34;rank &gt;= size&#34;)
 
         n_max = math.ceil(span / size)
         start = n_max * rank
@@ -74,7 +74,7 @@ for a given domain span, thread rank and thread-pool size</p></div>
     @numba.njit(**jit_flags)
     def subdomain(span, rank, size):
         if rank &gt;= size:
-            raise ValueError()
+            raise ValueError(&#34;rank &gt;= size&#34;)
 
         n_max = math.ceil(span / size)
         start = n_max * rank
