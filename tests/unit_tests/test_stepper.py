@@ -6,8 +6,10 @@ import pytest
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
+assert numba.config.DISABLE_JIT is not None  # pylint: disable=no-member
 
-class TestStepper:  # pylint: disable:too-few-methods
+
+class TestStepper:  # pylint: disable:too-few-public-methods
     @staticmethod
     @pytest.mark.skipif("not numba.config.DISABLE_JIT")
     def test_zero_steps():
