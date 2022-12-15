@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,too-few-public-methods
 import numba
 import numpy as np
 import pytest
@@ -9,8 +9,7 @@ from PyMPDATA.boundary_conditions import Periodic
 assert numba.config.DISABLE_JIT is not None  # pylint: disable=no-member
 
 
-class TestStepper:  # pylint: disable:too-few-public-methods
-    @staticmethod
+class TestStepper:
     @pytest.mark.skipif("not numba.config.DISABLE_JIT")
     def test_zero_steps():
         # arrange
