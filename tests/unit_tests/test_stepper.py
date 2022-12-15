@@ -1,8 +1,7 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
-import pytest
-
 import numba
 import numpy as np
+import pytest
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
@@ -21,7 +20,9 @@ class TestStepper:  # pylint: disable:too-few-methods
         )
         solver = Solver(
             stepper=Stepper(options=opt, grid=(n_x,)),
-            advectee=ScalarField(data=np.zeros(n_x), halo=opt.n_halo, boundary_conditions=b_c),
+            advectee=ScalarField(
+                data=np.zeros(n_x), halo=opt.n_halo, boundary_conditions=b_c
+            ),
             advector=advector,
         )
 
