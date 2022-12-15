@@ -4,6 +4,7 @@ import warnings
 from functools import lru_cache
 
 import numba
+import numpy as np
 from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from .impl.clock import clock
@@ -191,6 +192,6 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
             if non_zero_mu_coeff:
                 advector = advector_orig
             post_step.__call__(advectee.field[ARG_DATA], step)
-        return (clock() - time) / n_steps
+        return (clock() - time) / n_steps if n_steps > 0 else np.nan
 
     return step, traversals
