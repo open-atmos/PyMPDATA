@@ -30,7 +30,7 @@ jobs:
           pre-commit autoupdate
           pre-commit run --all-files
 
-  codecov:
+  nojit_and_codecov:
     runs-on: ubuntu-latest
     env:
       NUMBA_DISABLE_JIT: 1
@@ -93,7 +93,7 @@ jobs:
           CLEAN: true
 
   build:
-    needs: [codecov, pylint, pdoc, precommit]
+    needs: [nojit_and_codecov, pylint, pdoc, precommit]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
