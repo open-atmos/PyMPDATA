@@ -5,8 +5,12 @@ from pathlib import Path
 import h5py
 import numba
 import numba_mpi as mpi
-import numpy as np
 from mpi4py import MPI
+
+from .fixtures import mpi_tmp_path
+
+assert hasattr(mpi_tmp_path, "_pytestfixturefunction")
+
 
 RANK = mpi.rank()
 
@@ -16,12 +20,8 @@ def step(dset):
     dset[RANK] = RANK
 
 
-def test_hdf5(tmp_path):
-    path_data = np.array(str(tmp_path), "c")
-    path = np.empty_like(path_data) if mpi.rank() != 0 else path_data
-    mpi.bcast(path, 0)
-
-    path = Path(path.tobytes().decode("utf-8")) / "parallel_test.hdf5"
+def test_hdf5(mpi_tmp_path):  # pylint: disable=redefined-outer-name
+    path = Path(mpi_tmp_path) / "parallel_test.hdf5"
 
     with h5py.File(path, "w", driver="mpio", comm=MPI.COMM_WORLD) as file:
         dset = file.create_dataset("test", (mpi.size(),), dtype="i")
