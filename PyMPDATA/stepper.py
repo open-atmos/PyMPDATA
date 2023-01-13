@@ -31,7 +31,8 @@ class Stepper:
         n_dims: (int, None) = None,
         non_unit_g_factor: bool = False,
         grid: (tuple, None) = None,
-        n_threads: (int, None) = None
+        n_threads: (int, None) = None,
+        left_first: bool = True,
     ):
         if n_dims is not None and grid is not None:
             raise ValueError()
@@ -61,7 +62,7 @@ class Stepper:
 
         self.__n_dims = n_dims
         self.__call, self.traversals = make_step_impl(
-            options, non_unit_g_factor, grid, self.n_threads
+            options, non_unit_g_factor, grid, self.n_threads, left_first=left_first
         )
 
     @property
@@ -93,17 +94,21 @@ class Stepper:
                     _Impl(field=v.impl[IMPL_META_AND_DATA], bc=v.impl[IMPL_BC])
                     for v in fields.values()
                 ),
-                self.traversals.null_impl
+                self.traversals.null_impl,
             )
         return wall_time_per_timestep
 
 
 @lru_cache()
 # pylint: disable=too-many-locals,too-many-statements
-def make_step_impl(options, non_unit_g_factor, grid, n_threads):
+def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first):
     """returns (and caches) an njit-ted stepping function and a traversals pair"""
     traversals = Traversals(
-        grid, options.n_halo, options.jit_flags, n_threads=n_threads
+        grid=grid,
+        halo=options.n_halo,
+        jit_flags=options.jit_flags,
+        n_threads=n_threads,
+        left_first=left_first,
     )
 
     n_iters = options.n_iters
@@ -156,7 +161,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads):
                             *advector.field,
                             mu_coeff,
                             *advector.field,
-                            *advector_orig.field
+                            *advector_orig.field,
                         )
                     flux_first_pass(null_impl, vectmp_a, advector, advectee)
                     flux = vectmp_a
