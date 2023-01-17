@@ -20,7 +20,11 @@ def test_formulae_upwind():
     options = Options()
     halo = options.n_halo
     traversals = Traversals(
-        grid=psi_data.shape, halo=halo, jit_flags=options.jit_flags, n_threads=1
+        grid=psi_data.shape,
+        halo=halo,
+        jit_flags=options.jit_flags,
+        n_threads=1,
+        left_first=True,
     )
     upwind = make_upwind(
         options=options, non_unit_g_factor=False, traversals=traversals

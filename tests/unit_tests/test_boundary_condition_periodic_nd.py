@@ -50,8 +50,14 @@ JIT_FLAGS = Options().jit_flags
 
 @lru_cache()
 # pylint: disable-next=redefined-outer-name
-def make_traversals(grid, halo, n_threads):
-    return Traversals(grid=grid, halo=halo, jit_flags=JIT_FLAGS, n_threads=n_threads)
+def make_traversals(grid, halo, n_threads, left_first):
+    return Traversals(
+        grid=grid,
+        halo=halo,
+        jit_flags=JIT_FLAGS,
+        n_threads=n_threads,
+        left_first=left_first,
+    )
 
 
 class TestPeriodicBoundaryCondition:
@@ -67,8 +73,8 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("dim", DIMENSIONS)
-    # pylint: disable-next=redefined-outer-name
-    def test_scalar(data, halo, side, n_threads, dim):
+    # pylint: disable-next=redefined-outer-name,too-many-arguments
+    def test_scalar(data, halo, side, n_threads, dim, left_first=True):
         n_dims = len(data.shape)
         if n_dims == 1 and dim != INNER:
             return
@@ -79,7 +85,9 @@ class TestPeriodicBoundaryCondition:
 
         # arrange
         field = ScalarField(data, halo, tuple(Periodic() for _ in range(n_dims)))
-        traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
+        traversals = make_traversals(
+            grid=field.grid, halo=halo, n_threads=n_threads, left_first=left_first
+        )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
         sut = traversals._code["fill_halos_scalar"]  # pylint:disable=protected-access
@@ -128,7 +136,7 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("comp", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
     # pylint: disable=redefined-outer-name,too-many-arguments
-    def test_vector(data, halo, side, n_threads, comp, dim_offset):
+    def test_vector(data, halo, side, n_threads, comp, dim_offset, left_first=True):
         n_dims = len(data)
         if n_dims == 1 and n_threads > 1:
             return
@@ -139,7 +147,9 @@ class TestPeriodicBoundaryCondition:
 
         # arrange
         field = VectorField(data, halo, tuple(Periodic() for _ in range(n_dims)))
-        traversals = make_traversals(grid=field.grid, halo=halo, n_threads=n_threads)
+        traversals = make_traversals(
+            grid=field.grid, halo=halo, n_threads=n_threads, left_first=left_first
+        )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
         sut = traversals._code["fill_halos_vector"]  # pylint:disable=protected-access

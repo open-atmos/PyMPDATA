@@ -30,8 +30,14 @@ jit_flags = Options().jit_flags
 
 @lru_cache()
 # pylint: disable-next=redefined-outer-name
-def make_traversals(grid, halo, n_threads):
-    return Traversals(grid=grid, halo=halo, jit_flags=jit_flags, n_threads=n_threads)
+def make_traversals(grid, halo, n_threads, left_first):
+    return Traversals(
+        grid=grid,
+        halo=halo,
+        jit_flags=jit_flags,
+        n_threads=n_threads,
+        left_first=left_first,
+    )
 
 
 @numba.njit(**jit_flags)
@@ -68,8 +74,8 @@ def _cell_id_vector(arg_1, arg_2, arg_3):
     return cell_id(*focus)
 
 
-def make_commons(grid, halo, num_threads):
-    traversals = make_traversals(grid, halo, num_threads)
+def make_commons(grid, halo, num_threads, left_first):
+    traversals = make_traversals(grid, halo, num_threads, left_first)
     n_dims = len(grid)
     halos = ((halo - 1, halo, halo), (halo, halo - 1, halo), (halo, halo, halo - 1))
 
@@ -92,11 +98,17 @@ class TestTraversals:
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     @pytest.mark.parametrize("loop", (True, False))
-    # pylint: disable-next=redefined-outer-name
-    def test_apply_scalar(n_threads: int, halo: int, grid: tuple, loop: bool):
+    # pylint:disable=redefined-outer-name
+    def test_apply_scalar(
+        n_threads,
+        halo: int,
+        grid: tuple,
+        loop: bool,
+        left_first: bool = True,
+    ):
         if len(grid) == 1 and n_threads > 1:
             return
-        cmn = make_commons(grid, halo, n_threads)
+        cmn = make_commons(grid, halo, n_threads, left_first)
 
         # arrange
         sut = cmn.traversals.apply_scalar(loop=loop)
@@ -153,11 +165,11 @@ class TestTraversals:
     @staticmethod
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
-    # pylint: disable-next=redefined-outer-name
-    def test_apply_vector(n_threads: int, halo: int, grid: tuple):
+    # pylint: disable-next=too-many-locals,redefined-outer-name
+    def test_apply_vector(n_threads, halo: int, grid: tuple, left_first: bool = True):
         if len(grid) == 1 and n_threads > 1:
             return
-        cmn = make_commons(grid, halo, n_threads)
+        cmn = make_commons(grid, halo, n_threads, left_first)
 
         # arrange
         sut = cmn.traversals.apply_vector()
