@@ -2,7 +2,7 @@
 
 import pytest
 
-from PySuperDropletLES.simulation import Simulation
+from PySuperDropletLES.domain_decomposition import mpi_indices
 
 
 @pytest.mark.parametrize(
@@ -17,5 +17,5 @@ from PySuperDropletLES.simulation import Simulation
     ),
 )
 def test_mpi_indices(grid, rank, size, expected):
-    xi, _ = Simulation.mpi_indices(grid, rank, size)
+    xi, _ = mpi_indices(grid, rank, size)
     assert (xi == expected).all()
