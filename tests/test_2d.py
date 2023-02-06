@@ -87,7 +87,6 @@ def test_2d(
         with Storage.mpi_context(
             path, "r+", mpi4py.MPI.COMM_WORLD.Split(rank < truncated_size, rank)
         ) as storage:
-
             dataset = storage[dataset_name]
             if rank < truncated_size:
                 simulation = Simulation(
