@@ -54,13 +54,13 @@ def cell_id(i, j, k):
 def _cell_id_scalar(value, arg_1_vec, arg_2_scl, arg_3_scl, arg_4_scl, arg_5_scl):
     focus = arg_1_vec[ARG_FOCUS]
     if focus != arg_2_scl[ARG_FOCUS]:
-        raise Exception()
+        raise ValueError()
     if focus != arg_3_scl[ARG_FOCUS]:
-        raise Exception()
+        raise ValueError()
     if focus != arg_4_scl[ARG_FOCUS]:
-        raise Exception()
+        raise ValueError()
     if focus != arg_5_scl[ARG_FOCUS]:
-        raise Exception()
+        raise ValueError()
     return value + cell_id(*focus)
 
 
@@ -68,9 +68,9 @@ def _cell_id_scalar(value, arg_1_vec, arg_2_scl, arg_3_scl, arg_4_scl, arg_5_scl
 def _cell_id_vector(arg_1, arg_2, arg_3):
     focus = arg_1[ARG_FOCUS]
     if focus != arg_2[ARG_FOCUS]:
-        raise Exception()
+        raise ValueError()
     if focus != arg_3[ARG_FOCUS]:
-        raise Exception()
+        raise ValueError()
     return cell_id(*focus)
 
 
