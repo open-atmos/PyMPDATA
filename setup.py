@@ -24,7 +24,7 @@ setup(
         "numpy" + ("==1.21.6" if "CI" in os.environ else ""),
         "pystrict",
     ],
-    author="https://github.com/atmos-cloud-sim-uj/PyMPDATA/graphs/contributors",
+    author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     author_email="sylwester.arabas@uj.edu.pl",
     license="GPL-3.0",
     packages=find_packages(include=["PyMPDATA", "PyMPDATA.*"]),
@@ -45,8 +45,8 @@ setup(
     keywords="atmospheric-modelling, numba, numerical-integration, "
     "advection, pde-solver, advection-diffusion",
     project_urls={
-        "Tracker": "https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues",
-        "Documentation": "https://atmos-cloud-sim-uj.github.io/PyMPDATA",
-        "Source": "https://github.com/atmos-cloud-sim-uj/PyMPDATA",
+        "Tracker": "https://github.com/open-atmos/PyMPDATA/issues",
+        "Documentation": "https://open-atmos.github.io/PyMPDATA",
+        "Source": "https://github.com/open-atmos/PyMPDATA",
     },
 )
