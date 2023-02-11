@@ -6,7 +6,7 @@
 [![macOS OK](https://img.shields.io/static/v1?label=macOS&logo=Apple&color=silver&message=%E2%9C%93)](https://en.wikipedia.org/wiki/macOS)
 [![Windows OK](https://img.shields.io/static/v1?label=Windows&logo=Windows&color=white&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Windows)
 [![Jupyter](https://img.shields.io/static/v1?label=Jupyter&logo=Jupyter&color=f37626&message=%E2%9C%93)](https://jupyter.org/)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/atmos-cloud-sim-uj/PyMPDATA/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/open-atmos/PyMPDATA/graphs/commit-activity)
 [![OpenHub](https://www.openhub.net/p/atmos-cloud-sim-uj-PyMPDATA/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/atmos-cloud-sim-uj-PyMPDATA)
 [![status](https://joss.theoj.org/papers/10e7361e43785dbb1b3d659c5b01757a/status.svg)](https://joss.theoj.org/papers/10e7361e43785dbb1b3d659c5b01757a)
 [![DOI](https://zenodo.org/badge/225610671.svg)](https://zenodo.org/badge/latestdoi/225610671)     
@@ -15,16 +15,16 @@
 [![Copyright](https://img.shields.io/static/v1?label=Copyright&color=249fe2&message=Jagiellonian%20University&)](https://en.uj.edu.pl/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions)
-[![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/atmos-cloud-sim-uj/PyMPDATA?branch=main&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/main)
-[![Coverage Status](https://codecov.io/gh/atmos-cloud-sim-uj/PyMPDATA/branch/main/graph/badge.svg)](https://codecov.io/github/atmos-cloud-sim-uj/PyMPDATA?branch=main)
-[![Github Actions Status](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/actions/workflows/pylint.yml)    
-[![GitHub issues](https://img.shields.io/github/issues-pr/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=)
-[![GitHub issues](https://img.shields.io/github/issues-pr-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls?q=is:closed)    
-[![GitHub issues](https://img.shields.io/github/issues/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)
-[![GitHub issues](https://img.shields.io/github/issues-closed/atmos-cloud-sim-uj/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues?q=)    
+[![Github Actions Build Status](https://github.com/open-atmos/PyMPDATA/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/open-atmos/PyMPDATA/actions)
+[![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/open-atmos/PyMPDATA?branch=main&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/main)
+[![Coverage Status](https://codecov.io/gh/open-atmos/PyMPDATA/branch/main/graph/badge.svg)](https://codecov.io/github/open-atmos/PyMPDATA?branch=main)
+[![Github Actions Status](https://github.com/open-atmos/PyMPDATA/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/open-atmos/PyMPDATA/actions/workflows/pylint.yml)    
+[![GitHub issues](https://img.shields.io/github/issues-pr/open-atmos/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/open-atmos/PyMPDATA/pulls?q=)
+[![GitHub issues](https://img.shields.io/github/issues-pr-closed/open-atmos/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/open-atmos/PyMPDATA/pulls?q=is:closed)    
+[![GitHub issues](https://img.shields.io/github/issues/open-atmos/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/open-atmos/PyMPDATA/issues?q=)
+[![GitHub issues](https://img.shields.io/github/issues-closed/open-atmos/PyMPDATA.svg?logo=github&logoColor=white)](https://github.com/open-atmos/PyMPDATA/issues?q=)    
 [![PyPI version](https://badge.fury.io/py/PyMPDATA.svg)](https://pypi.org/project/PyMPDATA)
-[![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://atmos-cloud-sim-uj.github.io/PyMPDATA/)
+[![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://open-atmos.github.io/PyMPDATA/)
 
 PyMPDATA is a high-performance Numba-accelerated Pythonic implementation of the MPDATA 
   algorithm of Smolarkiewicz et al. used in geophysical fluid dynamics and beyond.
@@ -81,22 +81,22 @@ The examples reproduce results from several published
 ## Dependencies and installation
 
 To install PyMPDATA, one may use: ``pip install PyMPDATA`` (or 
-``pip install git+https://github.com/atmos-cloud-sim-uj/PyMPDATA.git`` to get updates beyond the latest release).
+``pip install git+https://github.com/open-atmos/PyMPDATA.git`` to get updates beyond the latest release).
 PyMPDATA depends on ``NumPy`` and ``Numba``.
 
 Running the tests shipped with the package requires additional packages listed in the 
-[test-time-requirements.txt](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/main/test-time-requirements.txt) file
+[test-time-requirements.txt](https://github.com/open-atmos/PyMPDATA/blob/main/test-time-requirements.txt) file
 (which include ``PyMPDATA-examples``, see below).
 
 ## Examples (Jupyter notebooks reproducing results from literature):
 
 PyMPDATA examples are hosted in a separate repository and constitute 
-the [``PyMPDATA_examples``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples) package.
-The examples have additional dependencies listed in [``PyMPDATA_examples`` package ``setup.py``](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/blob/main/setup.py) file.
+the [``PyMPDATA_examples``](https://github.com/open-atmos/PyMPDATA-examples) package.
+The examples have additional dependencies listed in [``PyMPDATA_examples`` package ``setup.py``](https://github.com/open-atmos/PyMPDATA-examples/blob/main/setup.py) file.
 Running the examples requires the ``PyMPDATA_examples`` package to be installed.
 Since the examples package includes Jupyter notebooks (and their execution requires write access), the suggested install and launch steps are:
 ```
-git clone https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples.git
+git clone https://github.com/open-atmos/PyMPDATA-examples.git
 cd PyMPDATA-examples
 pip install -e .
 jupyter-notebook
@@ -118,11 +118,11 @@ see, e.g. [Smolarkiewicz and Margolin 1998](https://doi.org/10.1006/jcph.1998.59
 The key classes constituting the PyMPDATA interface are summarised below with code
 snippets exemplifying usage of PyMPDATA from Python, Julia and Matlab.
 
-A [pdoc-generated](https://pdoc3.github.io/pdoc) documentation of PyMPDATA public API is maintained at: [https://atmos-cloud-sim-uj.github.io/PyMPDATA](https://atmos-cloud-sim-uj.github.io/PyMPDATA) 
+A [pdoc-generated](https://pdoc3.github.io/pdoc) documentation of PyMPDATA public API is maintained at: [https://open-atmos.github.io/PyMPDATA](https://open-atmos.github.io/PyMPDATA) 
 
 #### Options class
 
-The [``Options``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/options.html) class
+The [``Options``](https://open-atmos.github.io/PyMPDATA/options.html) class
 groups both algorithm variant options as well as some implementation-related
 flags that need to be set at the first place. All are set at the time
 of instantiation using the following keyword arguments of the constructor 
@@ -143,7 +143,7 @@ For a discussion of the above options, see e.g., [Smolarkiewicz & Margolin 1998]
 (the last with examples using PyMPDATA).
 
 In most use cases of PyMPDATA, the first thing to do is to instantiate the 
-[``Options``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/options.html) class 
+[``Options``](https://open-atmos.github.io/PyMPDATA/options.html) class 
 with arguments suiting the problem at hand, e.g.:
 <details>
 <summary>Julia code (click to expand)</summary>
@@ -178,8 +178,8 @@ options = Options(n_iters=2)
 In PyMPDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus the
 first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
-The [``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
-and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html) classes implement the
+The [``ScalarField``](https://open-atmos.github.io/PyMPDATA/scalar_field.html)
+and [``VectorField``](https://open-atmos.github.io/PyMPDATA/vector_field.html) classes implement the
 [Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) logic
 in which:
 - scalar fields are discretised onto cell centres (one value per cell),
@@ -226,14 +226,14 @@ pyplot.savefig('readme_grid.png')
 ```
 </details>
 
-![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)
+![plot](https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_grid.png)
 
 The ``__init__`` methods of
-[``ScalarField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/scalar_field.html)
-and [``VectorField``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/vector_field.html)
+[``ScalarField``](https://open-atmos.github.io/PyMPDATA/scalar_field.html)
+and [``VectorField``](https://open-atmos.github.io/PyMPDATA/vector_field.html)
 have the following signatures:
-- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/main/PyMPDATA/scalar_field.py)
-- [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/atmos-cloud-sim-uj/PyMPDATA/blob/main/PyMPDATA/vector_field.py)
+- [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/open-atmos/PyMPDATA/blob/main/PyMPDATA/scalar_field.py)
+- [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/open-atmos/PyMPDATA/blob/main/PyMPDATA/vector_field.py)
 The ``data`` parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
 The ``halo`` parameter is the extent of ghost-cell region that will surround the
 data and will be used to implement boundary conditions. 
@@ -343,19 +343,19 @@ Note that the shapes of arrays representing components
 of the velocity field are different than the shape of
 the scalar field array due to employment of the staggered grid.
 
-Besides the exemplified [``Periodic``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/periodic.html) class representing 
+Besides the exemplified [``Periodic``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/periodic.html) class representing 
 periodic boundary conditions, PyMPDATA supports 
-[``Extrapolated``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/extrapolated.html), 
-[``Constant``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/constant.html) and
-[``Polar``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/boundary_conditions/polar.html) 
+[``Extrapolated``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/extrapolated.html), 
+[``Constant``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/constant.html) and
+[``Polar``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/polar.html) 
 boundary conditions.
 
 #### Stepper
 
 The logic of the MPDATA iterative solver is represented
-in PyMPDATA by the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) class.
+in PyMPDATA by the [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) class.
 
-When instantiating the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html), the user has a choice 
+When instantiating the [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html), the user has a choice 
 of either supplying just the  number of dimensions or specialising the stepper for a given grid:
 <details>
 <summary>Julia code (click to expand)</summary>
@@ -420,14 +420,14 @@ If number of dimensions is supplied only, the integration
 might take longer, yet same instance of the
 stepper can be used for different grids.  
 
-Since creating an instance of the [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) class
+Since creating an instance of the [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) class
 involves time-consuming compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
-instantiated objects. Instances of [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) contain no
+instantiated objects. Instances of [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) contain no
 mutable data and are (thread-)safe to be reused.
 
-The init method of [``Stepper``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/stepper.html) has an optional
+The init method of [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) has an optional
 ``non_unit_g_factor`` argument which is a Boolean flag 
 enabling handling of the G factor term which can be used to 
 represent coordinate transformations and/or variable fluid density. 
@@ -444,13 +444,13 @@ thread pool (``NUMBA_NUM_THREADS`` env var or ``numba.config.NUMBA_NUM_THREADS``
 
 #### Solver
 
-Instances of the [``Solver``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html) class are used to control
+Instances of the [``Solver``](https://open-atmos.github.io/PyMPDATA/solver.html) class are used to control
 the integration and access solution data. During instantiation, 
 additional memory required by the solver is 
 allocated according to the options provided. 
 
-The only method of the [``Solver``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html) class besides the
-init is [``advance(n_steps, mu_coeff, ...)``](https://atmos-cloud-sim-uj.github.io/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
+The only method of the [``Solver``](https://open-atmos.github.io/PyMPDATA/solver.html) class besides the
+init is [``advance(n_steps, mu_coeff, ...)``](https://open-atmos.github.io/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
 which advances the solution by ``n_steps`` timesteps, optionally
 taking into account a given diffusion coefficient ``mu_coeff``.
 
@@ -527,8 +527,8 @@ pyplot.savefig('readme_gauss.png')
 ```
 </details>
 
-![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_gauss_0.png)    
-![plot](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_gauss.png)
+![plot](https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_gauss_0.png)    
+![plot](https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_gauss.png)
 
 #### Debugging
 
@@ -564,8 +564,8 @@ os.environ["NUMBA_DISABLE_JIT"] = "1"
 
 ## Contributing, reporting issues, seeking support 
 
-Submitting new code to the project, please preferably use [GitHub pull requests](https://github.com/atmos-cloud-sim-uj/PyMPDATA/pulls) 
-(or the [PyMPDATA-examples PR site](https://github.com/atmos-cloud-sim-uj/PyMPDATA-examples/pulls) if working on examples) - it helps to keep record of code authorship, 
+Submitting new code to the project, please preferably use [GitHub pull requests](https://github.com/open-atmos/PyMPDATA/pulls) 
+(or the [PyMPDATA-examples PR site](https://github.com/open-atmos/PyMPDATA-examples/pulls) if working on examples) - it helps to keep record of code authorship, 
 track and archive the code review workflow and allows to benefit
 from the continuous integration setup which automates execution of tests 
 with the newly added code. 
@@ -583,10 +583,10 @@ and [Pylint](https://pylint.org) code analysis (Pylint checks are part of the
 CI workflows).
 
 Issues regarding any incorrect, unintuitive or undocumented bahaviour of
-PyMPDATA are best to be reported on the [GitHub issue tracker](https://github.com/atmos-cloud-sim-uj/PyMPDATA/issues/new).
-Feature requests are recorded in the "Ideas..." [PyMPDATA wiki page](https://github.com/atmos-cloud-sim-uj/PyMPDATA/wiki/Ideas-for-new-features-and-examples).
+PyMPDATA are best to be reported on the [GitHub issue tracker](https://github.com/open-atmos/PyMPDATA/issues/new).
+Feature requests are recorded in the "Ideas..." [PyMPDATA wiki page](https://github.com/open-atmos/PyMPDATA/wiki/Ideas-for-new-features-and-examples).
 
-We encourage to use the [GitHub Discussions](https://github.com/atmos-cloud-sim-uj/PyMPDATA/discussions) feature
+We encourage to use the [GitHub Discussions](https://github.com/open-atmos/PyMPDATA/discussions) feature
 (rather than the issue tracker) for seeking support in understanding, using and extending PyMPDATA code.
 
 Please use the PyMPDATA issue-tracking and dicsussion infrastructure for `PyMPDATA-examples` as well.
