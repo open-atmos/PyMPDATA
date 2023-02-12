@@ -95,6 +95,7 @@ jobs:
   zenodo_json:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: notiz-dev/github-action-json-property@release
         with: 
           path: '.zenodo.json'
