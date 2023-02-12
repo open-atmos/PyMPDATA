@@ -92,8 +92,17 @@ jobs:
           FOLDER: html/PyMPDATA
           CLEAN: true
 
+  zenodo_json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: notiz-dev/github-action-json-property@release
+        with: 
+          path: '.zenodo.json'
+          prop_path: 'creators'
+
   build:
-    needs: [nojit_and_codecov, pylint, pdoc, precommit]
+    needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
