@@ -99,6 +99,7 @@ jobs:
       - uses: notiz-dev/github-action-json-property@release
         with: 
           path: '.zenodo.json'
+          prop_path: 'creators'
 
   build:
     needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
