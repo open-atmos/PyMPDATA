@@ -26,7 +26,7 @@
     },
     {
       "affiliation": "Jagiellonian University, Kraków, Poland",
-      "name": "Manna, Maciej",
+      "name": "Manna, Maciej"
     },
     {
       "affiliation": "Jagiellonian University, Kraków, Poland",
@@ -35,10 +35,10 @@
     },
     {
       "affiliation": "Jagiellonian University, Kraków, Poland",
-      "name": "Manna, Maciej",
+      "name": "Manna, Maciej"
     },
     {
-      "affiliation": "Jagiellonian University, Kraków, Poland"
+      "affiliation": "Jagiellonian University, Kraków, Poland",
       "name": "Rozwoda, Paweł"
     },
     {
@@ -50,7 +50,7 @@
     "advection-diffusion",
     "MPDATA",
     "numerical solver",
-    "atmospheric physics",
+    "atmospheric physics"
   ],
   "license": "GPL-3.0-only",
   "upload_type": "software"
