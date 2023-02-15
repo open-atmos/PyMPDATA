@@ -12,4 +12,4 @@ pytest-benchmark
 joblib @ git+https://github.com/joblib/joblib@3d80506#egg=joblib
 
 # note: if cloning both PyMPDATA and PyMPDATA examples, consider "pip install -e"
-PyMPDATA-examples @ git+https://github.com/slayoo/PyMPDATA-examples@cbf7fff#egg=PyMPDATA-examples
+PyMPDATA-examples @ git+https://github.com/slayoo/PyMPDATA-examples@938ea8a#egg=PyMPDATA-examples
