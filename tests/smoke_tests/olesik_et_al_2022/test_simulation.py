@@ -4,14 +4,14 @@ import warnings
 import numpy as np
 import pytest
 from numba.core.errors import NumbaExperimentalFeatureWarning
-from PyMPDATA_examples.Olesik_et_al_2020.analysis import compute_figure_data
-from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
-from PyMPDATA_examples.Olesik_et_al_2020.settings import (
+from PyMPDATA_examples.Olesik_et_al_2022.analysis import compute_figure_data
+from PyMPDATA_examples.Olesik_et_al_2022.coordinates import x_id, x_log_of_pn, x_p2
+from PyMPDATA_examples.Olesik_et_al_2022.settings import (
     Settings,
     default_GC_max,
     default_nr,
 )
-from PyMPDATA_examples.Olesik_et_al_2020.simulation import Simulation
+from PyMPDATA_examples.Olesik_et_al_2022.simulation import Simulation
 
 from PyMPDATA.options import Options
 

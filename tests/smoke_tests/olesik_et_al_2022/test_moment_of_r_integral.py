@@ -2,7 +2,7 @@
 import numpy as np
 import pint
 import pytest
-from PyMPDATA_examples.Olesik_et_al_2020.coordinates import x_id, x_log_of_pn, x_p2
+from PyMPDATA_examples.Olesik_et_al_2022.coordinates import x_id, x_log_of_pn, x_p2
 
 si = pint.UnitRegistry()
 
