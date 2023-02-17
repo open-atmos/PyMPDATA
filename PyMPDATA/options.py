@@ -100,7 +100,8 @@ class Options:
     @property
     def nonoscillatory(self) -> bool:
         """flag enabling the nonoscillatory option, see
-        [Smolarkiewicz & Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)"""
+        [Smolarkiewicz & Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)
+        """
         return self._values["nonoscillatory"]
 
     @property
