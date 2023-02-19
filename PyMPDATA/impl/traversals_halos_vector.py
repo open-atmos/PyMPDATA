@@ -18,15 +18,11 @@ from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA.impl.traversals_common import _make_common
 
 
-def _make_fill_halos_vector(
-    *, indexers, jit_flags, halo, n_dims, chunker, spanner, left_first
-):
-    set_value = indexers[n_dims].set
+def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_first):
     common = _make_common(jit_flags, spanner, chunker)
     halos = ((halo - 1, halo, halo), (halo, halo - 1, halo), (halo, halo, halo - 1))
     # pylint:disable=duplicate-code
     kwargs = {
-        "set_value": set_value,
         "jit_flags": jit_flags,
         "halo": halo,
         "n_dims": n_dims,
@@ -75,47 +71,27 @@ def _make_fill_halos_vector(
     return boundary_cond_vector
 
 
-def __make_outer_outer(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_outer_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def outer_outer_left(first_thread, _last_thread, span, comp, fun):
         if first_thread:
-            for i in range(
+            i_rng = range(
                 halos[OUTER][OUTER] - 1, -1, -1
-            ):  # note: non-reverse order assumed in Extrapolated
-                for j in (
-                    range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-                ):
-                    for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
-                        focus = (i, j, k)
-                        set_value(
-                            comp,
-                            i,
-                            j,
-                            k,
-                            fun((focus, comp), span[OUTER] + 1, SIGN_LEFT),
-                        )
+            )  # note: non-reverse order assumed in Extrapolated
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
+            k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
+            fun(i_rng, j_rng, k_rng, comp, span[OUTER] + 1, SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def outer_outer_right(_first_thread, last_thread, span, comp, fun):
         if last_thread:
-            for i in range(
+            i_rng = range(
                 span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
                 span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER],
-            ):  # note: non-reverse order assumed in Extrapolated
-                for j in (
-                    range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-                ):
-                    for k in range(0, span[INNER] + 2 * halos[OUTER][INNER]):
-                        focus = (i, j, k)
-                        set_value(
-                            comp,
-                            i,
-                            j,
-                            k,
-                            fun((focus, comp), span[OUTER] + 1, SIGN_RIGHT),
-                        )
+            )  # note: non-reverse order assumed in Extrapolated
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
+            k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
+            fun(i_rng, j_rng, k_rng, comp, span[OUTER] + 1, SIGN_RIGHT)
 
     if left_first:
         outer_outer_first = outer_outer_left
@@ -133,24 +109,21 @@ def __make_outer_outer(
     return outer_outer
 
 
-def __make_outer_mid3d(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_outer_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def outer_mid3d_left_jk(span, comp, fun, i):
-        for j in range(0, halos[OUTER][MID3D]):
-            for k in range(0, span[INNER] + 2 * halo):
-                focus = (i, j, k)
-                set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_LEFT))
+        j_rng = range(0, halos[OUTER][MID3D])
+        k_rng = range(0, span[INNER] + 2 * halo)
+        fun(i, j_rng, k_rng, comp, span[MID3D], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def outer_mid3d_right_jk(span, comp, fun, i):
-        for j in range(
+        j_rng = range(
             span[MID3D] + halos[OUTER][MID3D], span[MID3D] + 2 * halos[OUTER][MID3D]
-        ):
-            for k in range(0, span[INNER] + 2 * halo):
-                focus = (i, j, k)
-                set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_RIGHT))
+        )
+        k_rng = range(0, span[INNER] + 2 * halo)
+
+        fun(i, j_rng, k_rng, comp, span[MID3D], SIGN_RIGHT)
 
     if left_first:
         outer_mid3d_first_jk = outer_mid3d_left_jk
@@ -162,7 +135,7 @@ def __make_outer_mid3d(
     @numba.njit(**jit_flags)
     def outer_mid3d(span, comp, fun, rng_outer, last_thread):
         if n_dims > 2:
-            for i in range(
+            i_rng = range(
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP]
                 + (
@@ -170,30 +143,26 @@ def __make_outer_mid3d(
                     if last_thread
                     else 0
                 ),
-            ):
-                outer_mid3d_first_jk(span, comp, fun, i)
-                outer_mid3d_last_jk(span, comp, fun, i)
+            )
+            outer_mid3d_first_jk(span, comp, fun, i_rng)
+            outer_mid3d_last_jk(span, comp, fun, i_rng)
 
     return outer_mid3d
 
 
-def __make_outer_inner(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_outer_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def outer_inner_left_k(span, comp, fun, i, j):
-        for k in range(0, halos[OUTER][INNER]):
-            focus = (i, j, k)
-            set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
+        k_rng = range(0, halos[OUTER][INNER])
+        fun(i, j, k_rng, comp, span[INNER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def outer_inner_right_k(span, comp, fun, i, j):
-        for k in range(
+        k_rng = range(
             span[INNER] + halos[OUTER][INNER],
             span[INNER] + 2 * halos[OUTER][INNER],
-        ):
-            focus = (i, j, k)
-            set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
+        )
+        fun(i, j, k_rng, comp, span[INNER], SIGN_RIGHT)
 
     if left_first:
         outer_inner_first_k = outer_inner_left_k
@@ -205,7 +174,7 @@ def __make_outer_inner(
     @numba.njit(**jit_flags)
     def outer_inner(span, comp, fun, rng_outer, last_thread):
         if n_dims > 1:
-            for i in range(
+            i_rng = range(
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP]
                 + (
@@ -213,46 +182,38 @@ def __make_outer_inner(
                     if last_thread
                     else 0
                 ),
-            ):
-                for j in (
-                    range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-                ):
-                    outer_inner_first_k(span, comp, fun, i, j)
-                    outer_inner_last_k(span, comp, fun, i, j)
+            )
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
+            outer_inner_first_k(span, comp, fun, i_rng, j_rng)
+            outer_inner_last_k(span, comp, fun, i_rng, j_rng)
 
     return outer_inner
 
 
-def __make_mid3d_outer(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_mid3d_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def mid3d_outer_left(first_thread, _last_thread, span, comp, fun):
         if first_thread:
-            for i in range(0, halos[MID3D][OUTER]):
-                for j in range(
-                    0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
-                ):
-                    for k in range(0, span[INNER] + 2 * halo):
-                        focus = (i, j, k)
-                        set_value(
-                            comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT)
-                        )
+            i_rng = range(0, halos[MID3D][OUTER])
+            j_rng = range(
+                0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
+            )
+            k_rng = range(0, span[INNER] + 2 * halo)
+
+            fun(i_rng, k_rng, j_rng, comp, span[OUTER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def mid3d_outer_right(_first_thread, last_thread, span, comp, fun):
         if last_thread:
-            for i in range(
+            i_rng = range(
                 span[OUTER] + halos[MID3D][OUTER], span[OUTER] + 2 * halos[MID3D][OUTER]
-            ):
-                for j in range(
-                    0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
-                ):
-                    for k in range(0, span[INNER] + 2 * halo):
-                        focus = (i, j, k)
-                        set_value(
-                            comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT)
-                        )
+            )
+            j_rng = range(
+                0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
+            )
+            k_rng = range(0, span[INNER] + 2 * halo)
+
+            fun(i_rng, j_rng, k_rng, span[OUTER], SIGN_RIGHT)
 
     if left_first:
         mid3d_outer_first = mid3d_outer_left
@@ -270,45 +231,23 @@ def __make_mid3d_outer(
     return mid3d_outer
 
 
-def __make_mid3d_mid3d(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_mid3d_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def mid3d_mid3d_left_jk(span, comp, fun, i):
-        for j in range(0, halos[MID3D][MID3D]):
-            for k in range(0, span[INNER] + 2 * halo):
-                focus = (i, j, k)
-                set_value(
-                    comp,
-                    i,
-                    j,
-                    k,
-                    fun(
-                        (focus, comp),
-                        span[MID3D] + ONE_FOR_STAGGERED_GRID,
-                        SIGN_LEFT,
-                    ),
-                )
+        j_rng = range(0, halos[MID3D][MID3D])
+        k_rng = range(0, span[INNER] + 2 * halo)
+
+        fun(i, j_rng, k_rng, comp, span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def mid3d_mid3d_right_jk(span, comp, fun, i):
-        for j in range(
+        j_rng = range(
             span[MID3D] + 1 + halos[MID3D][MID3D],
             span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D],
-        ):
-            for k in range(0, span[INNER] + 2 * halo):
-                focus = (i, j, k)
-                set_value(
-                    comp,
-                    i,
-                    j,
-                    k,
-                    fun(
-                        (focus, comp),
-                        span[MID3D] + ONE_FOR_STAGGERED_GRID,
-                        SIGN_RIGHT,
-                    ),
-                )
+        )
+        k_rng = range(0, span[INNER] + 2 * halo)
+
+        fun(i, j_rng, k_rng, comp, span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_RIGHT)
 
     if left_first:
         mid3d_mid3d_first_jk = mid3d_mid3d_left_jk
@@ -320,31 +259,30 @@ def __make_mid3d_mid3d(
     @numba.njit(**jit_flags)
     def mid3d_mid3d(span, comp, fun, rng_outer, last_thread):
         if n_dims > 2:
-            for i in range(
+            i_rng = range(
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP] + (2 * halos[MID3D][OUTER] if last_thread else 0),
-            ):
-                mid3d_mid3d_first_jk(span, comp, fun, i)
-                mid3d_mid3d_last_jk(span, comp, fun, i)
+            )
+            mid3d_mid3d_first_jk(span, comp, fun, i_rng)
+            mid3d_mid3d_last_jk(span, comp, fun, i_rng)
 
     return mid3d_mid3d
 
 
-def __make_mid3d_inner(*, set_value, jit_flags, n_dims, halos, left_first, **_kwargs):
+def __make_mid3d_inner(*, jit_flags, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def mid3d_inner_left_k(span, comp, fun, i, j):
-        for k in range(0, halos[MID3D][INNER]):
-            focus = (i, j, k)
-            set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_LEFT))
+        k_rng = range(0, halos[MID3D][INNER])
+
+        fun(i, j, k_rng, comp, span[INNER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def mid3d_inner_right_k(span, comp, fun, i, j):
-        for k in range(
+        k_rng = range(
             span[INNER] + halos[MID3D][INNER],
             span[INNER] + 2 * halos[MID3D][INNER],
-        ):
-            focus = (i, j, k)
-            set_value(comp, i, j, k, fun((focus, comp), span[INNER], SIGN_RIGHT))
+        )
+        fun(i, j, k_rng, comp, span[INNER], SIGN_RIGHT)
 
     if left_first:
         mid3d_inner_first_k = mid3d_inner_left_k
@@ -356,55 +294,44 @@ def __make_mid3d_inner(*, set_value, jit_flags, n_dims, halos, left_first, **_kw
     @numba.njit(**jit_flags)
     def mid3d_inner(span, comp, fun, rng_outer, last_thread):
         if n_dims > 2:
-            for i in range(
+            i_rng = range(
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP] + (2 * halos[MID3D][OUTER] if last_thread else 0),
-            ):
-                for j in range(
-                    0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
-                ):
-                    mid3d_inner_first_k(span, comp, fun, i, j)
-                    mid3d_inner_last_k(span, comp, fun, i, j)
+            )
+            j_rng = range(
+                0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
+            )
+            mid3d_inner_first_k(span, comp, fun, i_rng, j_rng)
+            mid3d_inner_last_k(span, comp, fun, i_rng, j_rng)
 
     return mid3d_inner
 
 
-def __make_inner_outer(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def inner_outer_left(first_thread, _last_thread, span, comp, fun):
         if first_thread:
-            for i in range(0, halos[INNER][OUTER]):
-                for j in (
-                    range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-                ):
-                    for k in range(
-                        0,
-                        span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
-                    ):
-                        focus = (i, j, k)
-                        set_value(
-                            comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_LEFT)
-                        )
+            i_rng = range(0, halos[INNER][OUTER])
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
+            k_rng = range(
+                0,
+                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
+            )
+
+            fun(i_rng, j_rng, k_rng, comp, span[OUTER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def inner_outer_right(_first_thread, last_thread, span, comp, fun):
         if last_thread:
-            for i in range(
+            i_rng = range(
                 span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]
-            ):
-                for j in (
-                    range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-                ):
-                    for k in range(
-                        0,
-                        span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
-                    ):
-                        focus = (i, j, k)
-                        set_value(
-                            comp, i, j, k, fun((focus, comp), span[OUTER], SIGN_RIGHT)
-                        )
+            )
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
+            k_rng = range(
+                0,
+                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
+            )
+            fun(i_rng, j_rng, k_rng, comp, span[OUTER], SIGN_RIGHT)
 
     if left_first:
         inner_outer_first = inner_outer_left
@@ -422,43 +349,33 @@ def __make_inner_outer(
     return inner_outer
 
 
-def __make_inner_inner(
-    *, set_value, jit_flags, halo, n_dims, halos, left_first, **_kwargs
-):
+def __make_inner_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def inner_inner_left_k(span, comp, fun, i, j):
-        for k in range(0, halos[INNER][INNER]):
-            focus = (i, j, k)
-            set_value(
-                comp,
-                i,
-                j,
-                k,
-                fun(
-                    (focus, comp),
-                    span[INNER] + ONE_FOR_STAGGERED_GRID,
-                    SIGN_LEFT,
-                ),
-            )
+        k_rng = range(0, halos[INNER][INNER])
+        fun(
+            i,
+            j,
+            k_rng,
+            comp,
+            span[INNER] + ONE_FOR_STAGGERED_GRID,
+            SIGN_LEFT,
+        )
 
     @numba.njit(**jit_flags)
     def inner_inner_right_k(span, comp, fun, i, j):
-        for k in range(
+        k_rng = range(
             span[INNER] + 1 + halos[INNER][INNER],
             span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
-        ):
-            focus = (i, j, k)
-            set_value(
-                comp,
-                i,
-                j,
-                k,
-                fun(
-                    (focus, comp),
-                    span[INNER] + ONE_FOR_STAGGERED_GRID,
-                    SIGN_RIGHT,
-                ),
-            )
+        )
+        fun(
+            i,
+            j,
+            k_rng,
+            comp,
+            span[INNER] + ONE_FOR_STAGGERED_GRID,
+            SIGN_RIGHT,
+        )
 
     if left_first:
         inner_inner_first_k = inner_inner_left_k
@@ -469,43 +386,36 @@ def __make_inner_inner(
 
     @numba.njit(**jit_flags)
     def inner_inner(span, comp, fun, last_thread, rng_outer):
-        for i in (
+        i_rng = (
             range(
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0),
             )
             if n_dims > 1
             else (INVALID_INDEX,)
-        ):
-            for j in (
-                range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-            ):
-                inner_inner_first_k(span, comp, fun, i, j)
-                inner_inner_last_k(span, comp, fun, i, j)
+        )
+        j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
+
+        inner_inner_first_k(span, comp, fun, i_rng, j_rng)
+        inner_inner_last_k(span, comp, fun, i_rng, j_rng)
 
     return inner_inner
 
 
-def __make_inner_mid3d(*, set_value, jit_flags, n_dims, halos, left_first, **_kwargs):
+def __make_inner_mid3d(*, jit_flags, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def inner_mid3d_left_jk(span, comp, fun, i):
-        for j in range(0, halos[INNER][MID3D]):
-            for k in range(
-                0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]
-            ):
-                focus = (i, j, k)
-                set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_LEFT))
+        j_rng = range(0, halos[INNER][MID3D])
+        k_rng = range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER])
+        fun(i, j_rng, k_rng, comp, span[MID3D], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def inner_mid3d_right_jk(span, comp, fun, i):
-        for j in range(
+        j_rng = range(
             span[MID3D] + halos[INNER][MID3D], span[MID3D] + 2 * halos[INNER][MID3D]
-        ):
-            for k in range(
-                0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER]
-            ):
-                focus = (i, j, k)
-                set_value(comp, i, j, k, fun((focus, comp), span[MID3D], SIGN_RIGHT))
+        )
+        k_rng = range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER])
+        fun(i, j_rng, k_rng, comp, span[MID3D], SIGN_RIGHT)
 
     if left_first:
         inner_mid3d_first_jk = inner_mid3d_left_jk
@@ -517,11 +427,11 @@ def __make_inner_mid3d(*, set_value, jit_flags, n_dims, halos, left_first, **_kw
     @numba.njit(**jit_flags)
     def inner_mid3d(span, comp, fun, rng_outer, last_thread):
         if n_dims > 2:
-            for i in range(
+            i_rng = range(
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0),
-            ):
-                inner_mid3d_first_jk(span, comp, fun, i)
-                inner_mid3d_last_jk(span, comp, fun, i)
+            )
+            inner_mid3d_first_jk(span, comp, fun, i_rng)
+            inner_mid3d_last_jk(span, comp, fun, i_rng)
 
     return inner_mid3d
