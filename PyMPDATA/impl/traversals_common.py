@@ -7,6 +7,7 @@ from .enumerations import OUTER, RNG_STOP
 
 def make_common(jit_flags, spanner, chunker):
     """returns Numba-compiled callable producing common parameters"""
+
     @numba.njit(**jit_flags)
     def common(meta, thread_id):
         span = spanner(meta)
@@ -20,6 +21,7 @@ def make_common(jit_flags, spanner, chunker):
 
 def make_fill_halos_loop(jit_flags, set_value, fill_halos):
     """returns Numba-compiled halo-filling callable"""
+
     @numba.njit(**jit_flags)
     def fill_halos_loop(i_rng, j_rng, k_rng, psi, span, sign):
         for i in i_rng:
