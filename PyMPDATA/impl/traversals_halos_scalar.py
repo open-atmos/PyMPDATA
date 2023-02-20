@@ -12,11 +12,11 @@ from PyMPDATA.impl.enumerations import (
     SIGN_RIGHT,
 )
 from PyMPDATA.impl.meta import META_HALO_VALID
-from PyMPDATA.impl.traversals_common import _make_common
+from PyMPDATA.impl.traversals_common import make_common
 
 
 def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner, left_first):
-    common = _make_common(jit_flags, spanner, chunker)
+    common = make_common(jit_flags, spanner, chunker)
     kwargs = {
         "jit_flags": jit_flags,
         "halo": halo,

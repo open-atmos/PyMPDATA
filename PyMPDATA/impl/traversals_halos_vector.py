@@ -15,11 +15,11 @@ from PyMPDATA.impl.enumerations import (
     SIGN_RIGHT,
 )
 from PyMPDATA.impl.meta import META_HALO_VALID
-from PyMPDATA.impl.traversals_common import _make_common
+from PyMPDATA.impl.traversals_common import make_common
 
 
 def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_first):
-    common = _make_common(jit_flags, spanner, chunker)
+    common = make_common(jit_flags, spanner, chunker)
     halos = ((halo - 1, halo, halo), (halo, halo - 1, halo), (halo, halo, halo - 1))
     # pylint:disable=duplicate-code
     kwargs = {
@@ -213,7 +213,7 @@ def __make_mid3d_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
             )
             k_rng = range(0, span[INNER] + 2 * halo)
 
-            fun(i_rng, j_rng, k_rng, span[OUTER], SIGN_RIGHT)
+            fun(i_rng, j_rng, k_rng, comp, span[OUTER], SIGN_RIGHT)
 
     if left_first:
         mid3d_outer_first = mid3d_outer_left
