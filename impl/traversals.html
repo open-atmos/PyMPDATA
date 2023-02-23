@@ -69,7 +69,6 @@ class Traversals:
         )
 
         common_kwargs = {
-            &#34;indexers&#34;: self.indexers,
             &#34;jit_flags&#34;: jit_flags,
             &#34;halo&#34;: halo,
             &#34;n_dims&#34;: self.n_dims,
@@ -88,6 +87,7 @@ class Traversals:
         }
         common_kwargs = {
             **common_kwargs,
+            &#34;indexers&#34;: self.indexers,
             **{
                 &#34;boundary_cond_vector&#34;: self._code[&#34;fill_halos_vector&#34;],
                 &#34;boundary_cond_scalar&#34;: self._code[&#34;fill_halos_scalar&#34;],
@@ -171,7 +171,6 @@ class Traversals:
         )
 
         common_kwargs = {
-            &#34;indexers&#34;: self.indexers,
             &#34;jit_flags&#34;: jit_flags,
             &#34;halo&#34;: halo,
             &#34;n_dims&#34;: self.n_dims,
@@ -190,6 +189,7 @@ class Traversals:
         }
         common_kwargs = {
             **common_kwargs,
+            &#34;indexers&#34;: self.indexers,
             **{
                 &#34;boundary_cond_vector&#34;: self._code[&#34;fill_halos_vector&#34;],
                 &#34;boundary_cond_scalar&#34;: self._code[&#34;fill_halos_scalar&#34;],

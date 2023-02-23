@@ -33,6 +33,7 @@ from functools import lru_cache
 import numba
 
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
+from PyMPDATA.impl.traversals_common import make_fill_halos_loop
 
 
 class Polar:
@@ -51,7 +52,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, halo, _, jit_flags):
+    def make_scalar(self, ats, set_value, halo, _, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
         nlon_half = self.nlon_half
         nlat = self.nlat
@@ -72,21 +73,21 @@ class Polar:
             val = nlon_half * (-1 if lon &gt; nlon_half else 1)
             return ats(*psi, sign * step, val)
 
-        return fill_halos
+        return make_fill_halos_loop(jit_flags, set_value, fill_halos)
 
     @staticmethod
-    def make_vector(ats, _, __, jit_flags):
+    def make_vector(ats, set_value, _, __, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-        return _make_vector_polar(ats, jit_flags)
+        return _make_vector_polar(ats, set_value, jit_flags)
 
 
 @lru_cache()
-def _make_vector_polar(ats, jit_flags):
+def _make_vector_polar(ats, set_value, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, ___, ____):
         return ats(*psi, 0)  # TODO #120
 
-    return fill_halos</code></pre>
+    return make_fill_halos_loop(jit_flags, set_value, fill_halos)</code></pre>
 </details>
 </section>
 <section>
@@ -125,7 +126,7 @@ def _make_vector_polar(ats, jit_flags):
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, halo, _, jit_flags):
+    def make_scalar(self, ats, set_value, halo, _, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
         nlon_half = self.nlon_half
         nlat = self.nlat
@@ -146,17 +147,17 @@ def _make_vector_polar(ats, jit_flags):
             val = nlon_half * (-1 if lon &gt; nlon_half else 1)
             return ats(*psi, sign * step, val)
 
-        return fill_halos
+        return make_fill_halos_loop(jit_flags, set_value, fill_halos)
 
     @staticmethod
-    def make_vector(ats, _, __, jit_flags):
+    def make_vector(ats, set_value, _, __, jit_flags):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-        return _make_vector_polar(ats, jit_flags)</code></pre>
+        return _make_vector_polar(ats, set_value, jit_flags)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>ats, _, __, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>ats, set_value, _, __, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns (lru-cached) Numba-compiled vector halo-filling callable</p></div>
@@ -165,16 +166,16 @@ def _make_vector_polar(ats, jit_flags):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_vector(ats, _, __, jit_flags):
+def make_vector(ats, set_value, _, __, jit_flags):
     &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-    return _make_vector_polar(ats, jit_flags)</code></pre>
+    return _make_vector_polar(ats, set_value, jit_flags)</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, ats, halo, _, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, ats, set_value, halo, _, jit_flags)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns (lru-cached) Numba-compiled scalar halo-filling callable</p></div>
@@ -182,7 +183,7 @@ def make_vector(ats, _, __, jit_flags):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, ats, halo, _, jit_flags):
+<pre><code class="python">def make_scalar(self, ats, set_value, halo, _, jit_flags):
     &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
     nlon_half = self.nlon_half
     nlat = self.nlat
@@ -203,7 +204,7 @@ def make_vector(ats, _, __, jit_flags):
         val = nlon_half * (-1 if lon &gt; nlon_half else 1)
         return ats(*psi, sign * step, val)
 
-    return fill_halos</code></pre>
+    return make_fill_halos_loop(jit_flags, set_value, fill_halos)</code></pre>
 </details>
 </dd>
 </dl>

@@ -32,7 +32,7 @@ import numba
 
 from .enumerations import INNER, INVALID_INDEX, MID3D, RNG_START, RNG_STOP
 from .meta import META_HALO_VALID
-from .traversals_common import _make_common
+from .traversals_common import make_common
 
 
 def _make_apply_scalar(
@@ -50,7 +50,7 @@ def _make_apply_scalar(
 ):
     set_value = indexers[n_dims].set
     get_value = indexers[n_dims].get
-    common = _make_common(jit_flags, spanner, chunker)
+    common = make_common(jit_flags, spanner, chunker)
 
     if loop:
 

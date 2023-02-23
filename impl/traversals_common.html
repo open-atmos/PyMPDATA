@@ -28,12 +28,59 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34; commons for scalar and vector field traversals &#34;&#34;&#34;
+# pylint: disable=too-many-arguments
 import numba
 
 from .enumerations import OUTER, RNG_STOP
 
 
-def _make_common(jit_flags, spanner, chunker):
+def make_common(jit_flags, spanner, chunker):
+    &#34;&#34;&#34;returns Numba-compiled callable producing common parameters&#34;&#34;&#34;
+
+    @numba.njit(**jit_flags)
+    def common(meta, thread_id):
+        span = spanner(meta)
+        rng_outer = chunker(meta, thread_id)
+        last_thread = rng_outer[RNG_STOP] == span[OUTER]
+        first_thread = thread_id == 0
+        return span, rng_outer, last_thread, first_thread
+
+    return common
+
+
+def make_fill_halos_loop(jit_flags, set_value, fill_halos):
+    &#34;&#34;&#34;returns Numba-compiled halo-filling callable&#34;&#34;&#34;
+
+    @numba.njit(**jit_flags)
+    def fill_halos_loop(i_rng, j_rng, k_rng, psi, span, sign):
+        for i in i_rng:
+            for j in j_rng:
+                for k in k_rng:
+                    focus = (i, j, k)
+                    set_value(psi, *focus, fill_halos((focus, psi), span, sign))
+
+    return fill_halos_loop</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="PyMPDATA.impl.traversals_common.make_common"><code class="name flex">
+<span>def <span class="ident">make_common</span></span>(<span>jit_flags, spanner, chunker)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns Numba-compiled callable producing common parameters</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_common(jit_flags, spanner, chunker):
+    &#34;&#34;&#34;returns Numba-compiled callable producing common parameters&#34;&#34;&#34;
+
     @numba.njit(**jit_flags)
     def common(meta, thread_id):
         span = spanner(meta)
@@ -44,12 +91,31 @@ def _make_common(jit_flags, spanner, chunker):
 
     return common</code></pre>
 </details>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+</dd>
+<dt id="PyMPDATA.impl.traversals_common.make_fill_halos_loop"><code class="name flex">
+<span>def <span class="ident">make_fill_halos_loop</span></span>(<span>jit_flags, set_value, fill_halos)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns Numba-compiled halo-filling callable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_fill_halos_loop(jit_flags, set_value, fill_halos):
+    &#34;&#34;&#34;returns Numba-compiled halo-filling callable&#34;&#34;&#34;
+
+    @numba.njit(**jit_flags)
+    def fill_halos_loop(i_rng, j_rng, k_rng, psi, span, sign):
+        for i in i_rng:
+            for j in j_rng:
+                for k in k_rng:
+                    focus = (i, j, k)
+                    set_value(psi, *focus, fill_halos((focus, psi), span, sign))
+
+    return fill_halos_loop</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -63,6 +129,12 @@ def _make_common(jit_flags, spanner, chunker):
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="PyMPDATA.impl" href="index.html">PyMPDATA.impl</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="PyMPDATA.impl.traversals_common.make_common" href="#PyMPDATA.impl.traversals_common.make_common">make_common</a></code></li>
+<li><code><a title="PyMPDATA.impl.traversals_common.make_fill_halos_loop" href="#PyMPDATA.impl.traversals_common.make_fill_halos_loop">make_fill_halos_loop</a></code></li>
 </ul>
 </li>
 </ul>
