@@ -200,7 +200,7 @@ def __make_mid3d_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
             )
             k_rng = range(0, span[INNER] + 2 * halo)
 
-            fun(i_rng, k_rng, j_rng, comp, span[OUTER], SIGN_LEFT)
+            fun(i_rng, j_rng, k_rng, comp, span[OUTER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def mid3d_outer_right(_first_thread, last_thread, span, comp, fun):
