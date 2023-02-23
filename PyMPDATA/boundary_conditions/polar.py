@@ -4,6 +4,7 @@ from functools import lru_cache
 import numba
 
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
+from PyMPDATA.impl.traversals_common import make_fill_halos_loop
 
 
 class Polar:
@@ -22,7 +23,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, halo, _, jit_flags):
+    def make_scalar(self, ats, set_value, halo, _, jit_flags):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
         nlon_half = self.nlon_half
         nlat = self.nlat
@@ -43,18 +44,18 @@ class Polar:
             val = nlon_half * (-1 if lon > nlon_half else 1)
             return ats(*psi, sign * step, val)
 
-        return fill_halos
+        return make_fill_halos_loop(jit_flags, set_value, fill_halos)
 
     @staticmethod
-    def make_vector(ats, _, __, jit_flags):
+    def make_vector(ats, set_value, _, __, jit_flags):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
-        return _make_vector_polar(ats, jit_flags)
+        return _make_vector_polar(ats, set_value, jit_flags)
 
 
 @lru_cache()
-def _make_vector_polar(ats, jit_flags):
+def _make_vector_polar(ats, set_value, jit_flags):
     @numba.njit(**jit_flags)
     def fill_halos(psi, ___, ____):
         return ats(*psi, 0)  # TODO #120
 
-    return fill_halos
+    return make_fill_halos_loop(jit_flags, set_value, fill_halos)

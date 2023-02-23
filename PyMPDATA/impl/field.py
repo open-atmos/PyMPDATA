@@ -97,6 +97,7 @@ class Field:
             self.__impl = (self.__properties.meta, *self._impl_data), tuple(
                 getattr(fill_halos, method)(
                     traversals.indexers[self.n_dims].ats[i],
+                    traversals.indexers[self.n_dims].set,
                     self.halo,
                     self.dtype,
                     traversals.jit_flags,
