@@ -44,6 +44,8 @@ licence: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
 #### C++
 - https://github.com/microhh/microhh
 - https://github.com/igfuw/UWLCM
+#### C/CUDA
+- https://github.com/NCAR/FastEddy-model
 #### FORTRAN
 - https://github.com/dalesteam/dales
 - https://github.com/uclales/uclales
