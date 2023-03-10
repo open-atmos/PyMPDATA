@@ -27,7 +27,6 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
         for i in i_rng:
             for j in j_rng:
                 for k in k_rng:
-                    focus = (i, j, k)
-                    set_value(psi, *focus, fill_halos((focus, psi), span, sign))
+                    set_value(psi, i, j, k, fill_halos(((i, j, k), psi), span, sign))
 
     return fill_halos_loop
