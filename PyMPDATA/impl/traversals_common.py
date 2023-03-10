@@ -31,3 +31,21 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
                     set_value(psi, *focus, fill_halos((focus, psi), span, sign))
 
     return fill_halos_loop
+
+
+def make_fill_halos_loop_vector(jit_flags, set_value, fill_halos, dimension_index):
+    """returns Numba-compiled halo-filling callable"""
+
+    @numba.njit(**jit_flags)
+    def fill_halos_loop(i_rng, j_rng, k_rng, components, span, sign):
+        for i in i_rng:
+            for j in j_rng:
+                for k in k_rng:
+                    focus = (i, j, k)
+                    set_value(
+                        components[dimension_index],
+                        *focus,
+                        fill_halos((focus, components), span, sign)
+                    )
+
+    return fill_halos_loop

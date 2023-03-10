@@ -142,9 +142,11 @@ def _make_apply_vector(
             boundary_cond_vector(
                 thread_id,
                 arg2v_meta,
-                arg2v_data_o,
-                arg2v_data_m,
-                arg2v_data_i,
+                (
+                    arg2v_data_o,
+                    arg2v_data_m,
+                    arg2v_data_i
+                ),
                 arg2v_bc_o,
                 arg2v_bc_m,
                 arg2v_bc_i,
