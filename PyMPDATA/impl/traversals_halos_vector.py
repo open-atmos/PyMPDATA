@@ -1,5 +1,5 @@
 """ halo-filling logic for vector field traversals (incl. multi-threading) """
-# pylint: disable=too-many-statements,too-many-locals,too-many-lines
+# pylint: disable=too-many-statements,too-many-locals,too-many-lines,too-many-function-args,too-many-arguments
 
 import numba
 
@@ -78,7 +78,7 @@ def __make_outer_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
             )  # note: non-reverse order assumed in Extrapolated
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
             k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
-            fun(i_rng, j_rng, k_rng, components, span[OUTER] + 1, SIGN_LEFT)
+            fun(i_rng, j_rng, k_rng, components, OUTER, span[OUTER] + 1, SIGN_LEFT)
 
     @numba.njit(**jit_flags)
     def outer_outer_right(_first_thread, last_thread, span, components, fun):
@@ -89,7 +89,7 @@ def __make_outer_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
             )  # note: non-reverse order assumed in Extrapolated
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
             k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
-            fun(i_rng, j_rng, k_rng, components, span[OUTER] + 1, SIGN_RIGHT)
+            fun(i_rng, j_rng, k_rng, components, OUTER, span[OUTER] + 1, SIGN_RIGHT)
 
     if left_first:
         outer_outer_first = outer_outer_left
@@ -150,17 +150,17 @@ def __make_outer_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
 
 def __make_outer_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
-    def outer_inner_left_k(span, components, fun, i, j):
+    def outer_inner_left_k(span, components, dim, fun, i, j):
         k_rng = range(0, halos[OUTER][INNER])
-        fun(i, j, k_rng, components, span[INNER], SIGN_LEFT)
+        fun(i, j, k_rng, components, dim, span[INNER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
-    def outer_inner_right_k(span, components, fun, i, j):
+    def outer_inner_right_k(span, components, dim, fun, i, j):
         k_rng = range(
             span[INNER] + halos[OUTER][INNER],
             span[INNER] + 2 * halos[OUTER][INNER],
         )
-        fun(i, j, k_rng, components, span[INNER], SIGN_RIGHT)
+        fun(i, j, k_rng, components, dim, span[INNER], SIGN_RIGHT)
 
     if left_first:
         outer_inner_first_k = outer_inner_left_k
@@ -182,8 +182,8 @@ def __make_outer_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
                 ),
             )
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
-            outer_inner_first_k(span, components, fun, i_rng, j_rng)
-            outer_inner_last_k(span, components, fun, i_rng, j_rng)
+            outer_inner_first_k(span, components, OUTER, fun, i_rng, j_rng)
+            outer_inner_last_k(span, components, OUTER, fun, i_rng, j_rng)
 
     return outer_inner
 
@@ -223,8 +223,8 @@ def __make_mid3d_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
     @numba.njit(**jit_flags)
     def mid3d_outer(span, components, fun, first_thread, last_thread):
         if n_dims > 2:
-            mid3d_outer_first(first_thread, last_thread, span, components, fun)
-            mid3d_outer_last(first_thread, last_thread, span, components, fun)
+            mid3d_outer_first(first_thread, last_thread, span, components, MID3D, fun)
+            mid3d_outer_last(first_thread, last_thread, span, components, MID3D, fun)
 
     return mid3d_outer
 
@@ -235,7 +235,9 @@ def __make_mid3d_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
         j_rng = range(0, halos[MID3D][MID3D])
         k_rng = range(0, span[INNER] + 2 * halo)
 
-        fun(i, j_rng, k_rng, components, span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT)
+        fun(
+            i, j_rng, k_rng, components, span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_LEFT
+        )
 
     @numba.njit(**jit_flags)
     def mid3d_mid3d_right_jk(span, components, fun, i):
@@ -245,7 +247,14 @@ def __make_mid3d_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
         )
         k_rng = range(0, span[INNER] + 2 * halo)
 
-        fun(i, j_rng, k_rng, components, span[MID3D] + ONE_FOR_STAGGERED_GRID, SIGN_RIGHT)
+        fun(
+            i,
+            j_rng,
+            k_rng,
+            components,
+            span[MID3D] + ONE_FOR_STAGGERED_GRID,
+            SIGN_RIGHT,
+        )
 
     if left_first:
         mid3d_mid3d_first_jk = mid3d_mid3d_left_jk
@@ -261,8 +270,8 @@ def __make_mid3d_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
                 rng_outer[RNG_START],
                 rng_outer[RNG_STOP] + (2 * halos[MID3D][OUTER] if last_thread else 0),
             )
-            mid3d_mid3d_first_jk(span, components, fun, i_rng)
-            mid3d_mid3d_last_jk(span, components, fun, i_rng)
+            mid3d_mid3d_first_jk(span, components, MID3D, fun, i_rng)
+            mid3d_mid3d_last_jk(span, components, MID3D, fun, i_rng)
 
     return mid3d_mid3d
 
@@ -307,7 +316,7 @@ def __make_mid3d_inner(*, jit_flags, n_dims, halos, left_first, **_kwargs):
 
 def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
-    def inner_outer_left(first_thread, _last_thread, span, components, fun):
+    def inner_outer_left(first_thread, _last_thread, span, components, dim, fun):
         if first_thread:
             i_rng = range(0, halos[INNER][OUTER])
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
@@ -316,10 +325,10 @@ def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
                 span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
             )
 
-            fun(i_rng, j_rng, k_rng, components, span[OUTER], SIGN_LEFT)
+            fun(i_rng, j_rng, k_rng, components, dim, span[OUTER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
-    def inner_outer_right(_first_thread, last_thread, span, components, fun):
+    def inner_outer_right(_first_thread, last_thread, span, components, dim, fun):
         if last_thread:
             i_rng = range(
                 span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]
@@ -329,7 +338,7 @@ def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
                 0,
                 span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
             )
-            fun(i_rng, j_rng, k_rng, components, span[OUTER], SIGN_RIGHT)
+            fun(i_rng, j_rng, k_rng, components, dim, span[OUTER], SIGN_RIGHT)
 
     if left_first:
         inner_outer_first = inner_outer_left
@@ -341,27 +350,28 @@ def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
     @numba.njit(**jit_flags)
     def inner_outer(span, components, fun, first_thread, last_thread):
         if n_dims > 1:
-            inner_outer_first(first_thread, last_thread, span, components, fun)
-            inner_outer_last(first_thread, last_thread, span, components, fun)
+            inner_outer_first(first_thread, last_thread, span, components, INNER, fun)
+            inner_outer_last(first_thread, last_thread, span, components, INNER, fun)
 
     return inner_outer
 
 
 def __make_inner_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
-    def inner_inner_left_k(span, components, fun, i, j):
+    def inner_inner_left_k(span, components, dim, fun, i, j):
         k_rng = range(0, halos[INNER][INNER])
         fun(
             i,
             j,
             k_rng,
             components,
+            dim,
             span[INNER] + ONE_FOR_STAGGERED_GRID,
             SIGN_LEFT,
         )
 
     @numba.njit(**jit_flags)
-    def inner_inner_right_k(span, components, fun, i, j):
+    def inner_inner_right_k(span, components, dim, fun, i, j):
         k_rng = range(
             span[INNER] + 1 + halos[INNER][INNER],
             span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
@@ -371,6 +381,7 @@ def __make_inner_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
             j,
             k_rng,
             components,
+            dim,
             span[INNER] + ONE_FOR_STAGGERED_GRID,
             SIGN_RIGHT,
         )
@@ -394,8 +405,8 @@ def __make_inner_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
         )
         j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
 
-        inner_inner_first_k(span, components, fun, i_rng, j_rng)
-        inner_inner_last_k(span, components, fun, i_rng, j_rng)
+        inner_inner_first_k(span, components, INNER, fun, i_rng, j_rng)
+        inner_inner_last_k(span, components, INNER, fun, i_rng, j_rng)
 
     return inner_inner
 

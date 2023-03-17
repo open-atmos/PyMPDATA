@@ -1,5 +1,5 @@
 """ commons for scalar and vector field traversals """
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,line-too-long
 import numba
 
 from .enumerations import OUTER, RNG_STOP
@@ -33,19 +33,26 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
     return fill_halos_loop
 
 
-def make_fill_halos_loop_vector(jit_flags, set_value, fill_halos, dimension_index):
+def make_fill_halos_loop_vector(
+    jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
+):
     """returns Numba-compiled halo-filling callable"""
 
     @numba.njit(**jit_flags)
-    def fill_halos_loop(i_rng, j_rng, k_rng, components, span, sign):
+    def fill_halos_loop_vector(i_rng, j_rng, k_rng, components, dim, span, sign):
+        fill_halos = (
+            fill_halos_parallel
+            if dim % len(components) == dimension_index
+            else fill_halos_normal
+        )
         for i in i_rng:
             for j in j_rng:
                 for k in k_rng:
                     focus = (i, j, k)
                     set_value(
-                        components[dimension_index],
+                        components[dim],
                         *focus,
                         fill_halos((focus, components), span, sign)
                     )
 
-    return fill_halos_loop
+    return fill_halos_loop_vector

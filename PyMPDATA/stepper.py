@@ -135,6 +135,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first):
         mu_coeff,
         post_step,
         post_iter,
+        # <TODO>: encapsulate all what is below in a namedtuple "state"
         advectee,
         advector,
         g_factor,
@@ -143,7 +144,8 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first):
         vectmp_c,
         psi_extrema,
         beta,
-        null_impl,
+        # </TODO>
+        null_impl,  # TODO: better name
     ):
         time = clock()
         for step in range(n_steps):

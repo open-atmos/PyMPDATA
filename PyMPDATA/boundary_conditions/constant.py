@@ -15,13 +15,27 @@ class Constant:
     def __init__(self, value):
         self.value = value
 
-    def make_scalar(self, ats, _, set_value, halo, dtype, jit_flags, dimension_index):
+    def make_scalar(self, indexers, halo, dtype, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
-        return _make_scalar_constant(self.value, ats, set_value, halo, dtype, jit_flags)
+        return _make_scalar_constant(
+            self.value,
+            indexers.ats[dimension_index],
+            indexers.set,
+            halo,
+            dtype,
+            jit_flags,
+        )
 
-    def make_vector(self, ats, _, set_value, halo, dtype, jit_flags, dimension_index):
+    def make_vector(self, indexers, halo, dtype, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
-        return _make_scalar_constant(self.value, ats, set_value, halo, dtype, jit_flags)
+        return _make_scalar_constant(
+            self.value,
+            indexers.ats[dimension_index],
+            indexers.set,
+            halo,
+            dtype,
+            jit_flags,
+        )
 
 
 @lru_cache()

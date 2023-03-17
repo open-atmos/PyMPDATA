@@ -199,11 +199,7 @@ def _make_apply_scalar(
             boundary_cond_vector(
                 thread_id,
                 arg1v_meta,
-                (
-                    arg1v_data_o,
-                    arg1v_data_m,
-                    arg1v_data_i
-                ),
+                (arg1v_data_o, arg1v_data_m, arg1v_data_i),
                 arg1v_bc_o,
                 arg1v_bc_m,
                 arg1v_bc_i,
