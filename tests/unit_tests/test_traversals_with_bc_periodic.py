@@ -135,7 +135,7 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("comp", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
-    # pylint: disable=redefined-outer-name,too-many-arguments
+    # pylint: disable=redefined-outer-name,too-many-arguments,too-many-branches
     def test_vector(data, halo, side, n_threads, comp, dim_offset, left_first=True):
         n_dims = len(data)
         if n_dims == 1 and n_threads > 1:

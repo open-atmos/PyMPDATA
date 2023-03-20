@@ -47,10 +47,11 @@ def _make_scalar_periodic(ats, set_value, jit_flags):
 def _make_vector_periodic(atv, set_value, jit_flags, dimension_index):
     @numba.njit(**jit_flags)
     def fill_halos_parallel(focus_psi, span, sign):
-        if sign == SIGN_LEFT:
-            return atv(*focus_psi, sign * (span - 0.5))
-        if sign == SIGN_RIGHT:
-            return atv(*focus_psi, sign * (span - 1.5))
+        return (
+            atv(*focus_psi, sign * (span - 0.5))
+            if sign == SIGN_LEFT
+            else atv(*focus_psi, sign * (span - 1.5))
+        )
 
     @numba.njit(**jit_flags)
     def fill_halos_normal(focus_psi, span, sign):
