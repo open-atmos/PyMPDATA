@@ -40,19 +40,22 @@ def make_fill_halos_loop_vector(
 
     @numba.njit(**jit_flags)
     def fill_halos_loop_vector(i_rng, j_rng, k_rng, components, dim, span, sign):
-        fill_halos = (
-            fill_halos_parallel
-            if dim % len(components) == dimension_index
-            else fill_halos_normal
-        )
+        parallel = dim % len(components) == dimension_index
         for i in i_rng:
             for j in j_rng:
                 for k in k_rng:
                     focus = (i, j, k)
-                    set_value(
-                        components[dim],
-                        *focus,
-                        fill_halos((focus, components), span, sign)
-                    )
+                    if parallel:
+                        set_value(
+                            components[dim],
+                            *focus,
+                            fill_halos_parallel((focus, components), span, sign)
+                        )
+                    else:
+                        set_value(
+                            components[dim],
+                            *focus,
+                            fill_halos_normal((focus, components), span, sign)
+                        )
 
     return fill_halos_loop_vector
