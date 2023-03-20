@@ -213,11 +213,13 @@ class TestPeriodicBoundaryCondition:
                     ],
                     data[comp][
                         shift(
-                            indices((-(halo - 1), None), ALL, ALL)[:n_dims],
+                            indices((-(halo - 1) - 1, -1), ALL, ALL)[:n_dims],
                             -comp + dim_offset,
                         )
                     ],
                 )
+            else:
+                raise NotImplementedError()
         else:
             if dim_offset == 1:
                 np.testing.assert_array_equal(
@@ -261,8 +263,10 @@ class TestPeriodicBoundaryCondition:
                     ],
                     data[comp][
                         shift(
-                            indices((None, halo - 1), ALL, ALL)[:n_dims],
+                            indices((1, halo - 1 + 1), ALL, ALL)[:n_dims],
                             -comp + dim_offset,
                         )
                     ],
                 )
+            else:
+                raise NotImplementedError()
