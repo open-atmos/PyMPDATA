@@ -139,23 +139,27 @@ def make_indexers(jit_flags):
             return arr[i, j, k]
 
     Indexers = namedtuple(  # pylint: disable=invalid-name
-        Path(__file__).stem + "_Indexers", ("ats", "atv", "set", "get")
+        Path(__file__).stem + "_Indexers", ("ats", "atv", "set", "get", "n_dims")
     )
 
     indexers = (
         None,
-        Indexers((None, None, _1D.ats_1d), (None, None, _1D.atv_1d), _1D.set, _1D.get),
+        Indexers(
+            (None, None, _1D.ats_1d), (None, None, _1D.atv_1d), _1D.set, _1D.get, 1
+        ),
         Indexers(
             (_2D.ats_axis0, None, _2D.ats_axis1),
             (_2D.atv_axis0, None, _2D.atv_axis1),
             _2D.set,
             _2D.get,
+            2,
         ),
         Indexers(
             (_3D.ats_axis0, _3D.ats_axis1, _3D.ats_axis2),
             (_3D.atv_axis0, _3D.atv_axis1, _3D.atv_axis2),
             _3D.set,
             _3D.get,
+            3,
         ),
     )
     return indexers
