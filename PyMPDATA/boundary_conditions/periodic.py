@@ -47,29 +47,13 @@ def _make_scalar_periodic(ats, set_value, jit_flags):
 def _make_vector_periodic(atv, set_value, jit_flags, dimension_index, n_dims):
     @numba.njit(**jit_flags)
     def fill_halos_parallel(focus_psi, span, sign):
-        return atv[dimension_index](
-            *focus_psi, sign * (span - (0.5 if sign == SIGN_LEFT else 1.5))
-        )
+        offset = 0.5 if sign == SIGN_LEFT else 1.5
+        return atv[dimension_index](*focus_psi, sign * (span - offset))
 
     @numba.njit(**jit_flags)
     def fill_halos_normal(focus_psi, span, sign, dim):
-        # pylint: disable=too-many-return-statements
-        if n_dims == 3:
-            if dim == 0:
-                if dimension_index == 1:
-                    return atv[0](*focus_psi, 0.5, sign * span, 0)
-                if dimension_index == 2:
-                    return atv[0](*focus_psi, 0.5, 0, sign * span)
-            if dim == 1:
-                if dimension_index == 0:
-                    return atv[0](*focus_psi, sign * span, 0.5, 0)
-                if dimension_index == 2:
-                    return atv[0](*focus_psi, 0, 0.5, sign * span)
-            if dim == -1:
-                if dimension_index == 0:
-                    return atv[0](*focus_psi, sign * span, 0, 0.5)
-                if dimension_index == 1:
-                    return atv[0](*focus_psi, 0, sign * span, 0.5)
+        if n_dims == 3 and dimension_index == dim + 1:
+            return atv[dim](*focus_psi, 0.5, sign * span)
         return atv[dimension_index](*focus_psi, sign * span, 0.5)
 
     return make_fill_halos_loop_vector(
