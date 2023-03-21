@@ -55,7 +55,7 @@ def make_fill_halos_loop_vector(
                         set_value(
                             components[dim],
                             *focus,
-                            fill_halos_normal((focus, components), span, sign)
+                            fill_halos_normal((focus, components), span, sign, dim)
                         )
 
     return fill_halos_loop_vector

@@ -30,7 +30,7 @@ class Periodic:
     def make_vector(indexers, __, ___, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
         return _make_vector_periodic(
-            indexers.atv[dimension_index], indexers.set, jit_flags, dimension_index
+            indexers.atv, indexers.set, jit_flags, dimension_index, indexers.n_dims
         )
 
 
@@ -44,18 +44,33 @@ def _make_scalar_periodic(ats, set_value, jit_flags):
 
 
 @lru_cache()
-def _make_vector_periodic(atv, set_value, jit_flags, dimension_index):
+def _make_vector_periodic(atv, set_value, jit_flags, dimension_index, n_dims):
     @numba.njit(**jit_flags)
     def fill_halos_parallel(focus_psi, span, sign):
-        return (
-            atv(*focus_psi, sign * (span - 0.5))
-            if sign == SIGN_LEFT
-            else atv(*focus_psi, sign * (span - 1.5))
+        return atv[dimension_index](
+            *focus_psi, sign * (span - (0.5 if sign == SIGN_LEFT else 1.5))
         )
 
     @numba.njit(**jit_flags)
-    def fill_halos_normal(focus_psi, span, sign):
-        return atv(*focus_psi, sign * span, 0.5)
+    def fill_halos_normal(focus_psi, span, sign, dim):
+        # pylint: disable=too-many-return-statements
+        if n_dims == 3:
+            if dim == 0:
+                if dimension_index == 1:
+                    return atv[0](*focus_psi, 0.5, sign * span, 0)
+                if dimension_index == 2:
+                    return atv[0](*focus_psi, 0.5, 0, sign * span)
+            if dim == 1:
+                if dimension_index == 0:
+                    return atv[0](*focus_psi, sign * span, 0.5, 0)
+                if dimension_index == 2:
+                    return atv[0](*focus_psi, 0, 0.5, sign * span)
+            if dim == -1:
+                if dimension_index == 0:
+                    return atv[0](*focus_psi, sign * span, 0, 0.5)
+                if dimension_index == 1:
+                    return atv[0](*focus_psi, 0, sign * span, 0.5)
+        return atv[dimension_index](*focus_psi, sign * span, 0.5)
 
     return make_fill_halos_loop_vector(
         jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
