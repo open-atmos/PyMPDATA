@@ -38,7 +38,7 @@ class TestPolarBoundaryCondition:
         # act
         # pylint: disable-next=not-an-iterable
         for thread_id in numba.prange(n_threads):
-            sut(thread_id, *meta_and_data, *fill_halos)
+            sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         np.testing.assert_array_equal(
@@ -92,12 +92,16 @@ class TestPolarBoundaryCondition:
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
+        meta_and_data = (
+            meta_and_data[0],
+            (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
+        )
         sut = traversals._code["fill_halos_vector"]  # pylint:disable=protected-access
 
         # act
         # pylint: disable-next=not-an-iterable
         for thread_id in numba.prange(n_threads):
-            sut(thread_id, *meta_and_data, *fill_halos)
+            sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         # TODO #228

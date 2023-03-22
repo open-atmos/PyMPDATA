@@ -40,7 +40,7 @@ class TestBoundaryConditionExtrapolated:
 
         # act
         thread_id = 0
-        sut(thread_id, *meta_and_data, *fill_halos)
+        sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         extrapolator = interpolate.interp1d(
@@ -86,7 +86,7 @@ class TestBoundaryConditionExtrapolated:
 
         # act
         thread_id = 0
-        sut(thread_id, *meta_and_data, *fill_halos)
+        sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         assert (field.data[0][0 : halo - 1] == data[0]).all()
