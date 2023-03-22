@@ -42,29 +42,22 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_f
 
     @numba.njit(**jit_flags)
     # pylint: disable=too-many-arguments
-    def boundary_cond_vector(
-        thread_id,
-        meta,
-        components,
-        fun_outer,
-        fun_mid3d,
-        fun_inner,
-    ):
+    def boundary_cond_vector(thread_id, meta, components, halo_fillers):
         if meta[META_HALO_VALID]:
             return
         span, rng_outer, last_thread, first_thread = common(meta, thread_id)
 
-        outer_outer(span, components, fun_outer, first_thread, last_thread)
-        outer_mid3d(span, components, fun_mid3d, rng_outer, last_thread)
-        outer_inner(span, components, fun_inner, rng_outer, last_thread)
+        outer_outer(span, components, halo_fillers[OUTER], first_thread, last_thread)
+        outer_mid3d(span, components, halo_fillers[MID3D], rng_outer, last_thread)
+        outer_inner(span, components, halo_fillers[INNER], rng_outer, last_thread)
 
-        mid3d_outer(span, components, fun_outer, first_thread, last_thread)
-        mid3d_mid3d(span, components, fun_mid3d, rng_outer, last_thread)
-        mid3d_inner(span, components, fun_inner, rng_outer, last_thread)
+        mid3d_outer(span, components, halo_fillers[OUTER], first_thread, last_thread)
+        mid3d_mid3d(span, components, halo_fillers[MID3D], rng_outer, last_thread)
+        mid3d_inner(span, components, halo_fillers[INNER], rng_outer, last_thread)
 
-        inner_outer(span, components, fun_outer, first_thread, last_thread)
-        inner_mid3d(span, components, fun_mid3d, rng_outer, last_thread)
-        inner_inner(span, components, fun_inner, last_thread, rng_outer)
+        inner_outer(span, components, halo_fillers[OUTER], first_thread, last_thread)
+        inner_mid3d(span, components, halo_fillers[MID3D], rng_outer, last_thread)
+        inner_inner(span, components, halo_fillers[INNER], last_thread, rng_outer)
 
     return boundary_cond_vector
 
