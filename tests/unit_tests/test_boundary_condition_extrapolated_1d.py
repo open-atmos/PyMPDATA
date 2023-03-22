@@ -45,7 +45,7 @@ class TestBoundaryConditionExtrapolated:
         thread_id = 0
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
-            sut(thread_id, *meta_and_data, fill_halos)
+            sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
         extrapolator = interpolate.interp1d(
@@ -93,7 +93,7 @@ class TestBoundaryConditionExtrapolated:
         thread_id = 0
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
-            sut(thread_id, *meta_and_data, fill_halos)
+            sut(thread_id, *meta_and_data, *fill_halos)
 
         # assert
         assert (field.data[0][0 : halo - 1] == data[0]).all()

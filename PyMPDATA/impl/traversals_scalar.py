@@ -200,19 +200,21 @@ def _make_apply_scalar(
                 thread_id,
                 arg1v_meta,
                 (arg1v_data_o, arg1v_data_m, arg1v_data_i),
-                (arg1v_bc_o, arg1v_bc_m, arg1v_bc_i),
+                arg1v_bc_o,
+                arg1v_bc_m,
+                arg1v_bc_i,
             )
             boundary_cond_scalar(
-                thread_id, arg2s_meta, arg2s_data, (arg2s_bc_o, arg2s_bc_m, arg2s_bc_i)
+                thread_id, arg2s_meta, arg2s_data, arg2s_bc_o, arg2s_bc_m, arg2s_bc_i
             )
             boundary_cond_scalar(
-                thread_id, arg3s_meta, arg3s_data, (arg3s_bc_o, arg3s_bc_m, arg3s_bc_i)
+                thread_id, arg3s_meta, arg3s_data, arg3s_bc_o, arg3s_bc_m, arg3s_bc_i
             )
             boundary_cond_scalar(
-                thread_id, arg4s_meta, arg4s_data, (arg4s_bc_o, arg4s_bc_m, arg4s_bc_i)
+                thread_id, arg4s_meta, arg4s_data, arg4s_bc_o, arg4s_bc_m, arg4s_bc_i
             )
             boundary_cond_scalar(
-                thread_id, arg5s_meta, arg5s_data, (arg5s_bc_o, arg5s_bc_m, arg5s_bc_i)
+                thread_id, arg5s_meta, arg5s_data, arg5s_bc_o, arg5s_bc_m, arg5s_bc_i
             )
         if not arg1v_meta[META_HALO_VALID]:
             arg1v_meta[META_HALO_VALID] = True
