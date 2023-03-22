@@ -126,15 +126,15 @@ class TestTraversals:
                 _cell_id_scalar if loop else None,
                 *out.impl[IMPL_META_AND_DATA],
                 *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.vec_null_arg_impl[IMPL_BC],
+                *cmn.vec_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC]
+                *cmn.scl_null_arg_impl[IMPL_BC]
             )
 
         # assert
@@ -201,11 +201,11 @@ class TestTraversals:
                 *[_cell_id_vector] * MAX_DIM_NUM,
                 *out.impl[IMPL_META_AND_DATA],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_BC],
                 *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.vec_null_arg_impl[IMPL_BC],
+                *cmn.vec_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC]
+                *cmn.scl_null_arg_impl[IMPL_BC]
             )
 
         # assert

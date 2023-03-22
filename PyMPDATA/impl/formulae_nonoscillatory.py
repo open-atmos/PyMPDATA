@@ -40,15 +40,15 @@ def make_psi_extrema(options, traversals):
                 *formulae,
                 *psi_extrema.field,
                 *null_vecfield,
-                null_vecfield_bc,
+                *null_vecfield_bc,
                 *psi.field,
-                psi.bc,
+                *psi.bc,
                 *null_scalfield,
-                null_scalfield_bc,
+                *null_scalfield_bc,
                 *null_scalfield,
-                null_scalfield_bc,
+                *null_scalfield_bc,
                 *null_scalfield,
-                null_scalfield_bc
+                *null_scalfield_bc
             )
 
     return apply
@@ -131,15 +131,15 @@ def make_beta(non_unit_g_factor, options, traversals):
                 *formulae,
                 *beta.field,
                 *flux.field,
-                flux.bc,
+                *flux.bc,
                 *psi.field,
-                psi.bc,
+                *psi.bc,
                 *psi_extrema.field,
-                psi_extrema.bc,
+                *psi_extrema.bc,
                 *g_factor.field,
-                g_factor.bc,
+                *g_factor.bc,
                 *null_scalfield,
-                null_scalfield_bc
+                *null_scalfield_bc
             )
 
     return apply
@@ -299,11 +299,11 @@ def make_correction(options, traversals):
                 *formulae,
                 *g_c_corr.field,
                 *beta.field,
-                beta.bc,
+                *beta.bc,
                 *g_c_corr.field,
-                g_c_corr.bc,
+                *g_c_corr.bc,
                 *null_scalfield,
-                null_scalfield_bc
+                *null_scalfield_bc
             )
 
     return apply
