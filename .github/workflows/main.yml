@@ -130,9 +130,11 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pytest -p no:unraisableexception -We tests/unit_tests
-          pytest -p no:unraisableexception -We tests/smoke_tests
           pytest -p no:unraisableexception -We tests/devops_tests
+      - run: |
+          pytest -p no:unraisableexception -We tests/unit_tests
+          pytest -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
+          pytest -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   dist:
     runs-on: ubuntu-latest
