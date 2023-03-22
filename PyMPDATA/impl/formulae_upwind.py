@@ -23,15 +23,15 @@ def make_upwind(options, non_unit_g_factor, traversals):
             *formulae_upwind,
             *psi.field,
             *flux.field,
-            *flux.bc,
+            flux.bc,
             *g_factor.field,
-            *g_factor.bc,
+            g_factor.bc,
             *null_scalarfield,
-            *null_scalarfield_bc,
+            null_scalarfield_bc,
             *null_scalarfield,
-            *null_scalarfield_bc,
+            null_scalarfield_bc,
             *null_scalarfield,
-            *null_scalarfield_bc
+            null_scalarfield_bc
         )
 
     return apply
