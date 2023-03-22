@@ -30,11 +30,11 @@ def make_flux_first_pass(options, traversals):
             *formulae_flux_first_pass,
             *vectmp_a.field,
             *advectee.field,
-            *advectee.bc,
+            advectee.bc,
             *advector.field,
-            *advector.bc,
+            advector.bc,
             *null_scalarfield,
-            *null_bc
+            null_bc
         )
 
     return apply
@@ -65,11 +65,11 @@ def make_flux_subsequent(options, traversals):
             *formulae_flux_subsequent,
             *flux.field,
             *psi.field,
-            *psi.bc,
+            psi.bc,
             *g_c_corr.field,
-            *g_c_corr.bc,
+            g_c_corr.bc,
             *null_scalarfield,
-            *null_bc
+            null_bc
         )
 
     return apply
