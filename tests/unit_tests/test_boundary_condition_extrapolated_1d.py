@@ -1,6 +1,9 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import warnings
+
 import numpy as np
 import pytest
+from numba.core.errors import NumbaExperimentalFeatureWarning
 from scipy import interpolate
 
 from PyMPDATA import Options, ScalarField, VectorField
@@ -40,7 +43,9 @@ class TestBoundaryConditionExtrapolated:
 
         # act
         thread_id = 0
-        sut(thread_id, *meta_and_data, fill_halos)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         extrapolator = interpolate.interp1d(
@@ -86,7 +91,9 @@ class TestBoundaryConditionExtrapolated:
 
         # act
         thread_id = 0
-        sut(thread_id, *meta_and_data, fill_halos)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         assert (field.data[0][0 : halo - 1] == data[0]).all()

@@ -1,8 +1,10 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import warnings
 from functools import lru_cache
 
 import numpy as np
 import pytest
+from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
@@ -93,10 +95,12 @@ class TestPeriodicBoundaryCondition:
         sut = traversals._code["fill_halos_scalar"]  # pylint:disable=protected-access
 
         # act
-        for thread_id in range(
-            n_threads
-        ):  # TODO #96: xfail if not all threads executed?
-            sut(thread_id, *meta_and_data, fill_halos)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            for thread_id in range(
+                n_threads
+            ):  # TODO #96: xfail if not all threads executed?
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         interior = (halo, -halo)
@@ -159,10 +163,12 @@ class TestPeriodicBoundaryCondition:
         sut = traversals._code["fill_halos_vector"]  # pylint:disable=protected-access
 
         # act
-        for thread_id in range(
-            n_threads
-        ):  # TODO #96: xfail if not all threads executed?
-            sut(thread_id, *meta_and_data, fill_halos)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            for thread_id in range(
+                n_threads
+            ):  # TODO #96: xfail if not all threads executed?
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         interior = (halo, -halo)
