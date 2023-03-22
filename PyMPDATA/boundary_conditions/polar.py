@@ -23,7 +23,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, set_value, halo, _, jit_flags):
+    def make_scalar(self, indexers, halo, _, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
         nlon_half = self.nlon_half
         nlat = self.nlat
@@ -31,6 +31,8 @@ class Polar:
         lat_idx = self.lat_idx
         left_edge_idx = halo - 1
         right_edge_idx = nlat + halo
+        ats = indexers.ats[dimension_index]
+        set_value = indexers.set
 
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, sign):
@@ -47,9 +49,11 @@ class Polar:
         return make_fill_halos_loop(jit_flags, set_value, fill_halos)
 
     @staticmethod
-    def make_vector(ats, set_value, _, __, jit_flags):
+    def make_vector(indexers, _, __, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
-        return _make_vector_polar(ats, set_value, jit_flags)
+        return _make_vector_polar(
+            indexers.ats[dimension_index], indexers.set, jit_flags
+        )
 
 
 @lru_cache()
