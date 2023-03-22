@@ -4,7 +4,10 @@ from functools import lru_cache
 import numba
 
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
-from PyMPDATA.impl.traversals_common import make_fill_halos_loop
+from PyMPDATA.impl.traversals_common import (
+    make_fill_halos_loop,
+    make_fill_halos_loop_vector,
+)
 
 
 class Polar:
@@ -52,14 +55,20 @@ class Polar:
     def make_vector(indexers, _, __, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
         return _make_vector_polar(
-            indexers.ats[dimension_index], indexers.set, jit_flags
+            indexers.atv, indexers.set, jit_flags, dimension_index
         )
 
 
 @lru_cache()
-def _make_vector_polar(ats, set_value, jit_flags):
+def _make_vector_polar(_atv, set_value, jit_flags, dimension_index):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, ___, ____):
-        return ats(*psi, 0)  # TODO #120
+    def fill_halos_parallel(_1, _2, _3):
+        return 0  # TODO #120
 
-    return make_fill_halos_loop(jit_flags, set_value, fill_halos)
+    @numba.njit(**jit_flags)
+    def fill_halos_normal(_1, _2, _3, _4):
+        return 0  # TODO #120
+
+    return make_fill_halos_loop_vector(
+        jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
+    )

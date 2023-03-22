@@ -104,4 +104,4 @@ class TestPolarBoundaryCondition:
             sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
-        # TODO #228
+        # TODO #120
