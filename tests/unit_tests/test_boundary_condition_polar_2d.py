@@ -42,7 +42,7 @@ class TestPolarBoundaryCondition:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
             for thread_id in numba.prange(n_threads):  # pylint: disable=not-an-iterable
-                sut(thread_id, *meta_and_data, *fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         np.testing.assert_array_equal(
@@ -106,7 +106,7 @@ class TestPolarBoundaryCondition:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
             for thread_id in numba.prange(n_threads):  # pylint: disable=not-an-iterable
-                sut(thread_id, *meta_and_data, *fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         # TODO #120

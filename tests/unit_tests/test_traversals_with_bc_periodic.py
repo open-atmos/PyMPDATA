@@ -100,7 +100,7 @@ class TestPeriodicBoundaryCondition:
             for thread_id in range(
                 n_threads
             ):  # TODO #96: xfail if not all threads executed?
-                sut(thread_id, *meta_and_data, *fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         interior = (halo, -halo)
@@ -168,7 +168,7 @@ class TestPeriodicBoundaryCondition:
             for thread_id in range(
                 n_threads
             ):  # TODO #96: xfail if not all threads executed?
-                sut(thread_id, *meta_and_data, *fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         interior = (halo, -halo)

@@ -42,14 +42,10 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_f
 
     @numba.njit(**jit_flags)
     # pylint: disable=too-many-arguments
-    def boundary_cond_vector(
-        thread_id, meta, components, halo_fillers_o, halo_fillers_m, halo_fillers_i
-    ):
+    def boundary_cond_vector(thread_id, meta, components, halo_fillers):
         if meta[META_HALO_VALID]:
             return
         span, rng_outer, last_thread, first_thread = common(meta, thread_id)
-
-        halo_fillers = (halo_fillers_o, halo_fillers_m, halo_fillers_i)
 
         outer_outer(span, components, halo_fillers[OUTER], first_thread, last_thread)
         outer_mid3d(span, components, halo_fillers[MID3D], rng_outer, last_thread)
