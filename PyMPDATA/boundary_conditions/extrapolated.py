@@ -1,8 +1,11 @@
-""" boundary condition extrapolating values from the edge to the halo """
+""" boundary condition extrapolating values from the edge to the halo for scalars
+and returning edge-of-the-domain value for vectors (with all negative scalar values
+set to zero) """
 # pylint: disable=too-many-arguments
 from functools import lru_cache
 
 import numba
+import numpy as np
 
 from PyMPDATA.impl.enumerations import (
     ARG_FOCUS,
@@ -11,7 +14,10 @@ from PyMPDATA.impl.enumerations import (
     META_AND_DATA_META,
     SIGN_LEFT,
 )
-from PyMPDATA.impl.traversals_common import make_fill_halos_loop
+from PyMPDATA.impl.traversals_common import (
+    make_fill_halos_loop,
+    make_fill_halos_loop_vector,
+)
 
 
 class Extrapolated:
@@ -23,16 +29,23 @@ class Extrapolated:
         self.eps = eps
         self.dim = dim
 
-    def make_scalar(self, ats, set_value, halo, dtype, jit_flags):
+    def make_scalar(self, indexers, halo, dtype, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
         return _make_scalar_extrapolated(
-            self.dim, self.eps, ats, set_value, halo, dtype, jit_flags
+            self.dim,
+            self.eps,
+            indexers.ats[dimension_index],
+            indexers.set,
+            halo,
+            dtype,
+            jit_flags,
         )
 
-    def make_vector(self, ats, set_value, halo, dtype, jit_flags):
+    @staticmethod
+    def make_vector(indexers, _, __, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
         return _make_vector_extrapolated(
-            self.dim, ats, set_value, halo, dtype, jit_flags
+            indexers.atv[dimension_index], indexers.set, jit_flags, dimension_index
         )
 
 
@@ -76,9 +89,15 @@ def _make_scalar_extrapolated(dim, eps, ats, set_value, halo, dtype, jit_flags):
 
 
 @lru_cache()
-def _make_vector_extrapolated(_, ats, set_value, __, ___, jit_flags):
+def _make_vector_extrapolated(atv, set_value, jit_flags, dimension_index):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, ____, sign):
-        return ats(*psi, sign)
+    def fill_halos_parallel(focus_psi, _, sign):
+        return atv(*focus_psi, sign + 0.5)
 
-    return make_fill_halos_loop(jit_flags, set_value, fill_halos)
+    @numba.njit(**jit_flags)
+    def fill_halos_normal(_, __, ___, ____):
+        return np.nan
+
+    return make_fill_halos_loop_vector(
+        jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
+    )

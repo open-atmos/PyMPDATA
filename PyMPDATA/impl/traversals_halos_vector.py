@@ -366,7 +366,7 @@ def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
 def __make_inner_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def inner_inner_left_k(span, components, dim, fun, i, j):
-        k_rng = range(0, halos[INNER][INNER])
+        k_rng = range(halos[INNER][INNER] - 1, -1, -1)
         fun(
             i,
             j,
