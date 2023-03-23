@@ -22,7 +22,7 @@ classifiers = [
 dependencies = [
     "numba_mpi>=0.26",
     "PySDM",
-    "PyMPDATA==1.0.7",
+    "PyMPDATA>=1.0.9",
     "mpi4py",
     "h5py"
 ]
