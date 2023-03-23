@@ -15,12 +15,16 @@ assert hasattr(num_threads, "_pytestfixturefunction")
     "options",
     [
         {"n_iters": 1},
-        # TODO #96
-        # {'n_iters': 2},
-        # {'n_iters': 3, 'infinite_gauge': True},
-        # {'n_iters': 2, 'infinite_gauge': True, 'nonoscillatory': True},
-        # {'n_iters': 3, 'infinite_gauge': False, 'third_order_terms': True},
-        # {'n_iters': 3, 'infinite_gauge': True, 'third_order_terms': True, 'nonoscillatory': True},
+        {"n_iters": 2},
+        {"n_iters": 3, "infinite_gauge": True},
+        {"n_iters": 2, "infinite_gauge": True, "nonoscillatory": True},
+        {"n_iters": 3, "infinite_gauge": False, "third_order_terms": True},
+        {
+            "n_iters": 3,
+            "infinite_gauge": True,
+            "third_order_terms": True,
+            "nonoscillatory": True,
+        },
     ],
 )
 @pytest.mark.parametrize("dtype", (np.float64,))
