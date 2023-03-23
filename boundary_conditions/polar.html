@@ -33,7 +33,10 @@ from functools import lru_cache
 import numba
 
 from PyMPDATA.impl.enumerations import ARG_FOCUS, SIGN_LEFT, SIGN_RIGHT
-from PyMPDATA.impl.traversals_common import make_fill_halos_loop
+from PyMPDATA.impl.traversals_common import (
+    make_fill_halos_loop,
+    make_fill_halos_loop_vector,
+)
 
 
 class Polar:
@@ -52,7 +55,7 @@ class Polar:
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, set_value, halo, _, jit_flags):
+    def make_scalar(self, indexers, halo, _, jit_flags, dimension_index):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
         nlon_half = self.nlon_half
         nlat = self.nlat
@@ -60,6 +63,8 @@ class Polar:
         lat_idx = self.lat_idx
         left_edge_idx = halo - 1
         right_edge_idx = nlat + halo
+        ats = indexers.ats[dimension_index]
+        set_value = indexers.set
 
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, sign):
@@ -76,18 +81,26 @@ class Polar:
         return make_fill_halos_loop(jit_flags, set_value, fill_halos)
 
     @staticmethod
-    def make_vector(ats, set_value, _, __, jit_flags):
+    def make_vector(indexers, _, __, jit_flags, dimension_index):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-        return _make_vector_polar(ats, set_value, jit_flags)
+        return _make_vector_polar(
+            indexers.atv, indexers.set, jit_flags, dimension_index
+        )
 
 
 @lru_cache()
-def _make_vector_polar(ats, set_value, jit_flags):
+def _make_vector_polar(_atv, set_value, jit_flags, dimension_index):
     @numba.njit(**jit_flags)
-    def fill_halos(psi, ___, ____):
-        return ats(*psi, 0)  # TODO #120
+    def fill_halos_parallel(_1, _2, _3):
+        return 0  # TODO #120
 
-    return make_fill_halos_loop(jit_flags, set_value, fill_halos)</code></pre>
+    @numba.njit(**jit_flags)
+    def fill_halos_normal(_1, _2, _3, _4):
+        return 0  # TODO #120
+
+    return make_fill_halos_loop_vector(
+        jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -126,7 +139,7 @@ def _make_vector_polar(ats, set_value, jit_flags):
         self.lon_idx = longitude_idx
         self.lat_idx = latitude_idx
 
-    def make_scalar(self, ats, set_value, halo, _, jit_flags):
+    def make_scalar(self, indexers, halo, _, jit_flags, dimension_index):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
         nlon_half = self.nlon_half
         nlat = self.nlat
@@ -134,6 +147,8 @@ def _make_vector_polar(ats, set_value, jit_flags):
         lat_idx = self.lat_idx
         left_edge_idx = halo - 1
         right_edge_idx = nlat + halo
+        ats = indexers.ats[dimension_index]
+        set_value = indexers.set
 
         @numba.njit(**jit_flags)
         def fill_halos(psi, _, sign):
@@ -150,14 +165,16 @@ def _make_vector_polar(ats, set_value, jit_flags):
         return make_fill_halos_loop(jit_flags, set_value, fill_halos)
 
     @staticmethod
-    def make_vector(ats, set_value, _, __, jit_flags):
+    def make_vector(indexers, _, __, jit_flags, dimension_index):
         &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-        return _make_vector_polar(ats, set_value, jit_flags)</code></pre>
+        return _make_vector_polar(
+            indexers.atv, indexers.set, jit_flags, dimension_index
+        )</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_vector"><code class="name flex">
-<span>def <span class="ident">make_vector</span></span>(<span>ats, set_value, _, __, jit_flags)</span>
+<span>def <span class="ident">make_vector</span></span>(<span>indexers, _, __, jit_flags, dimension_index)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns (lru-cached) Numba-compiled vector halo-filling callable</p></div>
@@ -166,16 +183,18 @@ def _make_vector_polar(ats, set_value, jit_flags):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_vector(ats, set_value, _, __, jit_flags):
+def make_vector(indexers, _, __, jit_flags, dimension_index):
     &#34;&#34;&#34;returns (lru-cached) Numba-compiled vector halo-filling callable&#34;&#34;&#34;
-    return _make_vector_polar(ats, set_value, jit_flags)</code></pre>
+    return _make_vector_polar(
+        indexers.atv, indexers.set, jit_flags, dimension_index
+    )</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
 <dt id="PyMPDATA.boundary_conditions.polar.Polar.make_scalar"><code class="name flex">
-<span>def <span class="ident">make_scalar</span></span>(<span>self, ats, set_value, halo, _, jit_flags)</span>
+<span>def <span class="ident">make_scalar</span></span>(<span>self, indexers, halo, _, jit_flags, dimension_index)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns (lru-cached) Numba-compiled scalar halo-filling callable</p></div>
@@ -183,7 +202,7 @@ def make_vector(ats, set_value, _, __, jit_flags):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_scalar(self, ats, set_value, halo, _, jit_flags):
+<pre><code class="python">def make_scalar(self, indexers, halo, _, jit_flags, dimension_index):
     &#34;&#34;&#34;returns (lru-cached) Numba-compiled scalar halo-filling callable&#34;&#34;&#34;
     nlon_half = self.nlon_half
     nlat = self.nlat
@@ -191,6 +210,8 @@ def make_vector(ats, set_value, _, __, jit_flags):
     lat_idx = self.lat_idx
     left_edge_idx = halo - 1
     right_edge_idx = nlat + halo
+    ats = indexers.ats[dimension_index]
+    set_value = indexers.set
 
     @numba.njit(**jit_flags)
     def fill_halos(psi, _, sign):

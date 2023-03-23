@@ -28,7 +28,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34; commons for scalar and vector field traversals &#34;&#34;&#34;
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,line-too-long
 import numba
 
 from .enumerations import OUTER, RNG_STOP
@@ -59,7 +59,35 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
                     focus = (i, j, k)
                     set_value(psi, *focus, fill_halos((focus, psi), span, sign))
 
-    return fill_halos_loop</code></pre>
+    return fill_halos_loop
+
+
+def make_fill_halos_loop_vector(
+    jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
+):
+    &#34;&#34;&#34;returns Numba-compiled halo-filling callable&#34;&#34;&#34;
+
+    @numba.njit(**jit_flags)
+    def fill_halos_loop_vector(i_rng, j_rng, k_rng, components, dim, span, sign):
+        parallel = dim % len(components) == dimension_index
+        for i in i_rng:
+            for j in j_rng:
+                for k in k_rng:
+                    focus = (i, j, k)
+                    if parallel:
+                        set_value(
+                            components[dim],
+                            *focus,
+                            fill_halos_parallel((focus, components), span, sign)
+                        )
+                    else:
+                        set_value(
+                            components[dim],
+                            *focus,
+                            fill_halos_normal((focus, components), span, sign, dim)
+                        )
+
+    return fill_halos_loop_vector</code></pre>
 </details>
 </section>
 <section>
@@ -115,6 +143,43 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
     return fill_halos_loop</code></pre>
 </details>
 </dd>
+<dt id="PyMPDATA.impl.traversals_common.make_fill_halos_loop_vector"><code class="name flex">
+<span>def <span class="ident">make_fill_halos_loop_vector</span></span>(<span>jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns Numba-compiled halo-filling callable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_fill_halos_loop_vector(
+    jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
+):
+    &#34;&#34;&#34;returns Numba-compiled halo-filling callable&#34;&#34;&#34;
+
+    @numba.njit(**jit_flags)
+    def fill_halos_loop_vector(i_rng, j_rng, k_rng, components, dim, span, sign):
+        parallel = dim % len(components) == dimension_index
+        for i in i_rng:
+            for j in j_rng:
+                for k in k_rng:
+                    focus = (i, j, k)
+                    if parallel:
+                        set_value(
+                            components[dim],
+                            *focus,
+                            fill_halos_parallel((focus, components), span, sign)
+                        )
+                    else:
+                        set_value(
+                            components[dim],
+                            *focus,
+                            fill_halos_normal((focus, components), span, sign, dim)
+                        )
+
+    return fill_halos_loop_vector</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -135,6 +200,7 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
 <ul class="">
 <li><code><a title="PyMPDATA.impl.traversals_common.make_common" href="#PyMPDATA.impl.traversals_common.make_common">make_common</a></code></li>
 <li><code><a title="PyMPDATA.impl.traversals_common.make_fill_halos_loop" href="#PyMPDATA.impl.traversals_common.make_fill_halos_loop">make_fill_halos_loop</a></code></li>
+<li><code><a title="PyMPDATA.impl.traversals_common.make_fill_halos_loop_vector" href="#PyMPDATA.impl.traversals_common.make_fill_halos_loop_vector">make_fill_halos_loop_vector</a></code></li>
 </ul>
 </li>
 </ul>
