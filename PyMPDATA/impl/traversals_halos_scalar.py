@@ -29,13 +29,13 @@ def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner, left_f
 
     @numba.njit(**jit_flags)
     # pylint: disable=too-many-arguments,too-many-branches
-    def boundary_cond_scalar(thread_id, meta, psi, fun_outer, fun_mid3d, fun_inner):
+    def boundary_cond_scalar(thread_id, meta, psi, halo_fillers):
         if meta[META_HALO_VALID]:
             return
         span, rng_outer, last_thread, first_thread = common(meta, thread_id)
-        mid3d(last_thread, rng_outer, span, psi, fun_mid3d)
-        outer(first_thread, last_thread, span, psi, fun_outer)
-        inner(last_thread, rng_outer, span, psi, fun_inner)
+        mid3d(last_thread, rng_outer, span, psi, halo_fillers[MID3D])
+        outer(first_thread, last_thread, span, psi, halo_fillers[OUTER])
+        inner(last_thread, rng_outer, span, psi, halo_fillers[INNER])
 
     return boundary_cond_scalar
 

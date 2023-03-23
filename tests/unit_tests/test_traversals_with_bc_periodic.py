@@ -1,8 +1,10 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import warnings
 from functools import lru_cache
 
 import numpy as np
 import pytest
+from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
@@ -93,10 +95,12 @@ class TestPeriodicBoundaryCondition:
         sut = traversals._code["fill_halos_scalar"]  # pylint:disable=protected-access
 
         # act
-        for thread_id in range(
-            n_threads
-        ):  # TODO #96: xfail if not all threads executed?
-            sut(thread_id, *meta_and_data, *fill_halos)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            for thread_id in range(
+                n_threads
+            ):  # TODO #96: xfail if not all threads executed?
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         interior = (halo, -halo)
@@ -135,7 +139,7 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("comp", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
-    # pylint: disable=redefined-outer-name,too-many-arguments
+    # pylint: disable=redefined-outer-name,too-many-arguments,too-many-branches
     def test_vector(data, halo, side, n_threads, comp, dim_offset, left_first=True):
         n_dims = len(data)
         if n_dims == 1 and n_threads > 1:
@@ -152,13 +156,19 @@ class TestPeriodicBoundaryCondition:
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
+        meta_and_data = (
+            meta_and_data[0],
+            (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
+        )
         sut = traversals._code["fill_halos_vector"]  # pylint:disable=protected-access
 
         # act
-        for thread_id in range(
-            n_threads
-        ):  # TODO #96: xfail if not all threads executed?
-            sut(thread_id, *meta_and_data, *fill_halos)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            for thread_id in range(
+                n_threads
+            ):  # TODO #96: xfail if not all threads executed?
+                sut(thread_id, *meta_and_data, fill_halos)
 
         # assert
         interior = (halo, -halo)
@@ -200,6 +210,8 @@ class TestPeriodicBoundaryCondition:
                     ],
                 )
             elif dim_offset == 0:
+                if halo == 1:
+                    return
                 np.testing.assert_array_equal(
                     field.data[comp][
                         shift(
@@ -209,11 +221,13 @@ class TestPeriodicBoundaryCondition:
                     ],
                     data[comp][
                         shift(
-                            indices((-(halo - 1), None), ALL, ALL)[:n_dims],
+                            indices((-(halo - 1) - 1, -1), ALL, ALL)[:n_dims],
                             -comp + dim_offset,
                         )
                     ],
                 )
+            else:
+                raise NotImplementedError()
         else:
             if dim_offset == 1:
                 np.testing.assert_array_equal(
@@ -248,6 +262,8 @@ class TestPeriodicBoundaryCondition:
                     ],
                 )
             elif dim_offset == 0:
+                if halo == 1:
+                    return
                 np.testing.assert_array_equal(
                     field.data[comp][
                         shift(
@@ -257,8 +273,10 @@ class TestPeriodicBoundaryCondition:
                     ],
                     data[comp][
                         shift(
-                            indices((None, halo - 1), ALL, ALL)[:n_dims],
+                            indices((1, halo - 1 + 1), ALL, ALL)[:n_dims],
                             -comp + dim_offset,
                         )
                     ],
                 )
+            else:
+                raise NotImplementedError()

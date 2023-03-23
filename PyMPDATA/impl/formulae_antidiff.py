@@ -31,11 +31,11 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
             *formulae_antidiff,
             *g_c_corr.field,
             *psi.field,
-            *psi.bc,
+            psi.bc,
             *g_c_unco.field,
-            *g_c_unco.bc,
+            g_c_unco.bc,
             *g_factor.field,
-            *g_factor.bc
+            g_factor.bc
         )
 
     return apply

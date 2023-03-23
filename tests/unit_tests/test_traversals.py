@@ -1,10 +1,12 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+import warnings
 from collections import namedtuple
 from functools import lru_cache
 
 import numba
 import numpy as np
 import pytest
+from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Constant
@@ -116,22 +118,24 @@ class TestTraversals:
         out.assemble(cmn.traversals)
 
         # act
-        sut(
-            _cell_id_scalar,
-            _cell_id_scalar if loop else None,
-            _cell_id_scalar if loop else None,
-            *out.impl[IMPL_META_AND_DATA],
-            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.vec_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_BC]
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            sut(
+                _cell_id_scalar,
+                _cell_id_scalar if loop else None,
+                _cell_id_scalar if loop else None,
+                *out.impl[IMPL_META_AND_DATA],
+                *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.vec_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.scl_null_arg_impl[IMPL_BC]
+            )
 
         # assert
         data = out.get()
@@ -191,16 +195,18 @@ class TestTraversals:
         out.assemble(cmn.traversals)
 
         # act
-        sut(
-            *[_cell_id_vector] * MAX_DIM_NUM,
-            *out.impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_BC],
-            *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.vec_null_arg_impl[IMPL_BC],
-            *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-            *cmn.scl_null_arg_impl[IMPL_BC]
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
+            sut(
+                *[_cell_id_vector] * MAX_DIM_NUM,
+                *out.impl[IMPL_META_AND_DATA],
+                *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.scl_null_arg_impl[IMPL_BC],
+                *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.vec_null_arg_impl[IMPL_BC],
+                *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
+                cmn.scl_null_arg_impl[IMPL_BC]
+            )
 
         # assert
         dims = {1: (INNER,), 2: (OUTER, INNER), 3: (OUTER, MID3D, INNER)}[cmn.n_dims]
