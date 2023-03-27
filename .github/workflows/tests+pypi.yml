@@ -1,4 +1,4 @@
-name: tests+artifacts+pypi
+name: tests+pypi
 
 defaults:
   run:
@@ -44,7 +44,7 @@ jobs:
         pip install -r test-time-requirements.txt
         pip install -e .
         pip install pytest-cov
-        pytest -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
+        pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -130,11 +130,11 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pytest -p no:unraisableexception -We tests/devops_tests
+          pytest --durations=10 -p no:unraisableexception -We tests/devops_tests
       - run: |
-          pytest -p no:unraisableexception -We tests/unit_tests
-          pytest -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
-          pytest -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
+          pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
+          pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
+          pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   dist:
     runs-on: ubuntu-latest
