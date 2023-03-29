@@ -1,4 +1,4 @@
-name: main
+name: tests+pypi
 
 defaults:
   run:
@@ -71,38 +71,67 @@ jobs:
         run: |
           pylint --unsafe-load-any-extension=y --disable=fixme $(git ls-files '*.py')
 
-  build:
+  tests:
     needs: [pylint, pdoc, precommit]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest]
+        mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
+        disable-jit: [1, 0]
+        mpi-np: [1, 2, 3, 4]
+        exclude:
+          # as of time of writing, mpi4py/setup-mpi does not support it
+          - platform: macos-latest
+            mpi: intelmpi
+
+          # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
+          - platform: ubuntu-latest
+            mpi: intelmpi
+
+          # https://github.com/Homebrew/homebrew-core/issues/26974
+          - platform: macos-latest
+            mpi: mpich
+
+          # TODO: bug...
+          - platform: macos-latest
+            disable-jit: 1
+            mpi-np: 3
+          - platform: macos-latest
+            disable-jit: 1
+            mpi-np: 4
+
+      fail-fast: false
     runs-on: ${{ matrix.platform }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
       - uses: mpi4py/setup-mpi@v1
+        with:
+          mpi: ${{ matrix.mpi }}
+      - if: matrix.mpi == 'mpich'
+        run: echo _ch="ch" >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'ubuntu-')
+        run: sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
+      - if: startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
         run: |
-             sudo apt-get update && sudo apt-get install -y libhdf5-mpi-dev pkg-config
+          echo HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/mpich >> $GITHUB_ENV
+          echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'macos-')
-        run: |
-             brew unlink mpich && brew install hdf5-mpi 
-             echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+        run: brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
       - run: HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py "git+https://github.com/h5py/h5py@81f6c01#egg=h5py"
       - run: pip install -e .
       - run: python -We -c "import PySuperDropletLES"
-      - run: pip install pytest
-      - run: |
-          for np in 1 2 3; do
-            mpiexec --oversubscribe -n $np pytest -p no:unraisableexception -We;
-          done;
-
+      - run: pip install pytest pytest-timeout pytest-mpi
+      - if: matrix.mpi == 'openmpi'
+        run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
+      - run: NUMBA_DISABLE_JIT=${{ matrix.disable-jit }} mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=360 --timeout_method=thread -s -vv -We;
   dist:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [tests]
     steps:
       - uses: actions/checkout@v2
         with:
