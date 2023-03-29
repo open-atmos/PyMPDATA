@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: "3.10" 
+          python-version: "3.10"
       - name: Linting
         run: |
           pip install pre-commit
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: '.zenodo.json'
           prop_path: 'creators'
 
@@ -106,7 +106,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10"]
+        python-version: ["3.7", "3.8" , "3.9", "3.10"]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -126,7 +126,11 @@ jobs:
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
+<<<<<<< HEAD:.github/workflows/tests+pypi.yml
         
+=======
+
+>>>>>>> b61f66d (add results):.github/workflows/tests+artifacts+pypi.yml
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -165,4 +169,3 @@ jobs:
         uses: pypa/gh-action-pypi-publish@unstable/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-

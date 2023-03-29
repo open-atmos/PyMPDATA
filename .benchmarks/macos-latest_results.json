@@ -1,0 +1,1368 @@
+{
+    "machine_info": {
+        "node": "Mac-1680100503936.local",
+        "processor": "i386",
+        "machine": "x86_64",
+        "python_compiler": "Clang 13.0.0 (clang-1300.0.29.30)",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.10.10",
+        "python_version": "3.10.10",
+        "python_build": [
+            "main",
+            "Feb  8 2023 17:07:08"
+        ],
+        "release": "21.6.0",
+        "system": "Darwin",
+        "cpu": {
+            "python_version": "3.10.10.final.0 (64 bit)",
+            "cpuinfo_version": [
+                9,
+                0,
+                0
+            ],
+            "cpuinfo_version_string": "9.0.0",
+            "arch": "X86_64",
+            "bits": 64,
+            "count": 3,
+            "arch_string_raw": "x86_64",
+            "vendor_id_raw": "GenuineIntel",
+            "brand_raw": "Intel(R) Xeon(R) CPU E5-1650 v2 @ 3.50GHz",
+            "hz_advertised_friendly": "3.5000 GHz",
+            "hz_actual_friendly": "3.3370 GHz",
+            "hz_advertised": [
+                3500000000,
+                0
+            ],
+            "hz_actual": [
+                3337000000,
+                0
+            ],
+            "l2_cache_size": 262144,
+            "stepping": 9,
+            "model": 58,
+            "family": 6,
+            "flags": [
+                "acapmsr",
+                "aes",
+                "apic",
+                "avx",
+                "avx1.0",
+                "clflush",
+                "clfsh",
+                "cmov",
+                "cx16",
+                "cx8",
+                "de",
+                "em64t",
+                "erms",
+                "f16c",
+                "fpu",
+                "fxsr",
+                "ht",
+                "htt",
+                "hypervisor",
+                "ibrs",
+                "l1df",
+                "lahf",
+                "lahf_lm",
+                "mca",
+                "mce",
+                "mdclear",
+                "mmx",
+                "mon",
+                "monitor",
+                "msr",
+                "mtrr",
+                "osxsave",
+                "pae",
+                "pat",
+                "pcid",
+                "pclmulqdq",
+                "pge",
+                "pni",
+                "popcnt",
+                "pse",
+                "pse36",
+                "rdrand",
+                "rdrnd",
+                "rdtscp",
+                "rdwrfsgs",
+                "sep",
+                "smep",
+                "ss",
+                "ssbd",
+                "sse",
+                "sse2",
+                "sse3",
+                "sse4.1",
+                "sse4.2",
+                "sse4_1",
+                "sse4_2",
+                "ssse3",
+                "stibp",
+                "syscall",
+                "tsc",
+                "tsc_thread_offset",
+                "tscdeadline",
+                "tsci",
+                "tsctmr",
+                "vme",
+                "vmm",
+                "vmx",
+                "x2apic",
+                "xd",
+                "xsave"
+            ],
+            "l2_cache_line_size": 256,
+            "l2_cache_associativity": 6
+        }
+    },
+    "commit_info": {
+        "id": "929517f1fa646d90d44fa29cc82796b7c134cd8e",
+        "time": "2023-03-29T16:28:27+02:00",
+        "author_time": "2023-03-29T16:28:27+02:00",
+        "dirty": false,
+        "project": "PyMPDATA",
+        "branch": "(detached head)"
+    },
+    "benchmarks": [
+        {
+            "group": null,
+            "name": "test_timing_1d[options0]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options0]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x104292bf0>]"
+            },
+            "param": "options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.02728310899999542,
+                "max": 0.10006434199999603,
+                "mean": 0.05299605000000914,
+                "stddev": 0.040820524635275524,
+                "rounds": 3,
+                "median": 0.031640699000035966,
+                "iqr": 0.05458592475000046,
+                "q1": 0.028372506500005557,
+                "q3": 0.08295843125000602,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.02728310899999542,
+                "hd15iqr": 0.10006434199999603,
+                "ops": 18.869330827482944,
+                "total": 0.15898815000002742,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options1]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options1]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x10398e8c0>]"
+            },
+            "param": "options1",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.021152382000025227,
+                "max": 0.02184779599997455,
+                "mean": 0.02139244199999742,
+                "stddev": 0.00039454250425014224,
+                "rounds": 3,
+                "median": 0.021177147999992485,
+                "iqr": 0.0005215604999619927,
+                "q1": 0.02115857350001704,
+                "q3": 0.021680133999979034,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.021152382000025227,
+                "hd15iqr": 0.02184779599997455,
+                "ops": 46.74548141816257,
+                "total": 0.06417732599999226,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options2]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options2]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x10398f970>]"
+            },
+            "param": "options2",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.028660181000020657,
+                "max": 0.029098012000019935,
+                "mean": 0.02887692033334588,
+                "stddev": 0.0002189479464262601,
+                "rounds": 3,
+                "median": 0.028872567999997045,
+                "iqr": 0.0003283732499994585,
+                "q1": 0.028713277750014754,
+                "q3": 0.029041651000014213,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.028660181000020657,
+                "hd15iqr": 0.029098012000019935,
+                "ops": 34.62973157997188,
+                "total": 0.08663076100003764,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options3]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options3]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x10398d330>]"
+            },
+            "param": "options3",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.03717982099999517,
+                "max": 0.045175440000036815,
+                "mean": 0.03987745133334405,
+                "stddev": 0.004588450544007205,
+                "rounds": 3,
+                "median": 0.03727709300000015,
+                "iqr": 0.005996714250031232,
+                "q1": 0.03720413899999642,
+                "q3": 0.04320085325002765,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.03717982099999517,
+                "hd15iqr": 0.045175440000036815,
+                "ops": 25.07682829679331,
+                "total": 0.11963235400003214,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options4]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options4]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x104340610>]"
+            },
+            "param": "options4",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.018367888999989646,
+                "max": 0.01856302900000628,
+                "mean": 0.018455243666664956,
+                "stddev": 9.916130297115178e-05,
+                "rounds": 3,
+                "median": 0.01843481299999894,
+                "iqr": 0.00014635500001247692,
+                "q1": 0.01838461999999197,
+                "q3": 0.018530975000004446,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.018367888999989646,
+                "hd15iqr": 0.01856302900000628,
+                "ops": 54.185142069203025,
+                "total": 0.05536573099999487,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options5]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options5]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x10860d360>]"
+            },
+            "param": "options5",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.023137555999994674,
+                "max": 0.02334011300001748,
+                "mean": 0.023261603333329123,
+                "stddev": 0.00010868575747188728,
+                "rounds": 3,
+                "median": 0.023307140999975218,
+                "iqr": 0.0001519177500171054,
+                "q1": 0.02317995224998981,
+                "q3": 0.023331870000006916,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.023137555999994674,
+                "hd15iqr": 0.02334011300001748,
+                "ops": 42.9892981008409,
+                "total": 0.06978480999998737,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options6]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options6]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11e46f1f0>]"
+            },
+            "param": "options6",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.034577639000019644,
+                "max": 0.035483708999947794,
+                "mean": 0.0349306259999859,
+                "stddev": 0.00048504589278040383,
+                "rounds": 3,
+                "median": 0.03473052999999027,
+                "iqr": 0.0006795524999461122,
+                "q1": 0.0346158617500123,
+                "q3": 0.03529541424995841,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.034577639000019644,
+                "hd15iqr": 0.035483708999947794,
+                "ops": 28.62817288188318,
+                "total": 0.1047918779999577,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options7]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options7]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11e46f400>]"
+            },
+            "param": "options7",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.05662720600003013,
+                "max": 0.059584346999997706,
+                "mean": 0.058002709333341805,
+                "stddev": 0.0014893083112504824,
+                "rounds": 3,
+                "median": 0.057796574999997574,
+                "iqr": 0.0022178557499756835,
+                "q1": 0.05691954825002199,
+                "q3": 0.05913740399999767,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.05662720600003013,
+                "hd15iqr": 0.059584346999997706,
+                "ops": 17.240573957554222,
+                "total": 0.1740081280000254,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options8]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options8]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11e46f760>]"
+            },
+            "param": "options8",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.023938204999979007,
+                "max": 0.02742171300002383,
+                "mean": 0.02562934799999539,
+                "stddev": 0.0017439585478327456,
+                "rounds": 3,
+                "median": 0.02552812599998333,
+                "iqr": 0.002612631000033616,
+                "q1": 0.024335685249980088,
+                "q3": 0.026948316250013704,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.023938204999979007,
+                "hd15iqr": 0.02742171300002383,
+                "ops": 39.0177697848646,
+                "total": 0.07688804399998617,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options9]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options9]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11e46f7c0>]"
+            },
+            "param": "options9",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.03247759200002065,
+                "max": 0.032559992000017246,
+                "mean": 0.032516662666694174,
+                "stddev": 4.136474563059403e-05,
+                "rounds": 3,
+                "median": 0.032512404000044626,
+                "iqr": 6.179999999744723e-05,
+                "q1": 0.032486295000026644,
+                "q3": 0.03254809500002409,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.03247759200002065,
+                "hd15iqr": 0.032559992000017246,
+                "ops": 30.753463547299074,
+                "total": 0.09754998800008252,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options10]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options10]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11e46f820>]"
+            },
+            "param": "options10",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.02329412999995384,
+                "max": 0.023563017999947533,
+                "mean": 0.023451167333291778,
+                "stddev": 0.0001400234454280331,
+                "rounds": 3,
+                "median": 0.023496353999973962,
+                "iqr": 0.0002016659999952708,
+                "q1": 0.02334468599995887,
+                "q3": 0.02354635199995414,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.02329412999995384,
+                "hd15iqr": 0.023563017999947533,
+                "ops": 42.64180054612372,
+                "total": 0.07035350199987533,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_1d[options11]",
+            "fullname": "tests/performance/test_timing_1d.py::test_timing_1d[options11]",
+            "params": {
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11e46f880>]"
+            },
+            "param": "options11",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.03955039999999599,
+                "max": 0.046963590000018485,
+                "mean": 0.043319206666675804,
+                "stddev": 0.003708160914593301,
+                "rounds": 3,
+                "median": 0.043443630000012945,
+                "iqr": 0.005559892500016872,
+                "q1": 0.04052370750000023,
+                "q3": 0.0460836000000171,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.03955039999999599,
+                "hd15iqr": 0.046963590000018485,
+                "ops": 23.084448607164145,
+                "total": 0.12995762000002742,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-static-options0]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-static-options0]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb55420>]"
+            },
+            "param": "serial-static-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09297505000006367,
+                "max": 0.13144883799998297,
+                "mean": 0.10972279899999648,
+                "stddev": 0.019714096967884665,
+                "rounds": 3,
+                "median": 0.10474450899994281,
+                "iqr": 0.02885534099993947,
+                "q1": 0.09591741475003346,
+                "q3": 0.12477275574997293,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.09297505000006367,
+                "hd15iqr": 0.13144883799998297,
+                "ops": 9.113876141639734,
+                "total": 0.32916839699998945,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-static-options1]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-static-options1]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb554e0>]"
+            },
+            "param": "serial-static-options1",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.2458523590000823,
+                "max": 0.25537231199996313,
+                "mean": 0.2493748526666574,
+                "stddev": 0.0052202938201413975,
+                "rounds": 3,
+                "median": 0.24689988699992682,
+                "iqr": 0.007139964749910632,
+                "q1": 0.24611424100004342,
+                "q3": 0.25325420574995405,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.2458523590000823,
+                "hd15iqr": 0.25537231199996313,
+                "ops": 4.010027431822538,
+                "total": 0.7481245579999722,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-static-options2]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-static-options2]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb574c0>]"
+            },
+            "param": "serial-static-options2",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.30251818800002184,
+                "max": 0.3075580519999903,
+                "mean": 0.3055278613333409,
+                "stddev": 0.0026588713780990396,
+                "rounds": 3,
+                "median": 0.30650734400001056,
+                "iqr": 0.003779897999976356,
+                "q1": 0.303515477000019,
+                "q3": 0.3072953749999954,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.30251818800002184,
+                "hd15iqr": 0.3075580519999903,
+                "ops": 3.2730239253334976,
+                "total": 0.9165835840000227,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-static-options3]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-static-options3]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb56ec0>]"
+            },
+            "param": "serial-static-options3",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.33340929600001346,
+                "max": 0.3433492579999893,
+                "mean": 0.3371450346666431,
+                "stddev": 0.005410247087943586,
+                "rounds": 3,
+                "median": 0.33467654999992646,
+                "iqr": 0.007454971499981866,
+                "q1": 0.3337261094999917,
+                "q3": 0.3411810809999736,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.33340929600001346,
+                "hd15iqr": 0.3433492579999893,
+                "ops": 2.9660825377089246,
+                "total": 1.0114351039999292,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-dynamic-options0]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-dynamic-options0]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb55420>]"
+            },
+            "param": "serial-dynamic-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0654978759999949,
+                "max": 0.06831876799992642,
+                "mean": 0.06706285166664354,
+                "stddev": 0.0014356170006219516,
+                "rounds": 3,
+                "median": 0.06737191100000928,
+                "iqr": 0.002115668999948639,
+                "q1": 0.0659663847499985,
+                "q3": 0.06808205374994714,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.0654978759999949,
+                "hd15iqr": 0.06831876799992642,
+                "ops": 14.911384994047175,
+                "total": 0.2011885549999306,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-dynamic-options1]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-dynamic-options1]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb554e0>]"
+            },
+            "param": "serial-dynamic-options1",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.2497424850000698,
+                "max": 0.25083080100000643,
+                "mean": 0.25017583999999715,
+                "stddev": 0.0005770093962698987,
+                "rounds": 3,
+                "median": 0.24995423399991523,
+                "iqr": 0.0008162369999524799,
+                "q1": 0.24979542225003115,
+                "q3": 0.25061165924998363,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.2497424850000698,
+                "hd15iqr": 0.25083080100000643,
+                "ops": 3.9971885374703304,
+                "total": 0.7505275199999915,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-dynamic-options2]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-dynamic-options2]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb574c0>]"
+            },
+            "param": "serial-dynamic-options2",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.3445727769999394,
+                "max": 0.3469112989999985,
+                "mean": 0.34573948599999466,
+                "stddev": 0.0011692693548972127,
+                "rounds": 3,
+                "median": 0.345734382000046,
+                "iqr": 0.0017538915000443467,
+                "q1": 0.34486317824996604,
+                "q3": 0.3466170697500104,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.3445727769999394,
+                "hd15iqr": 0.3469112989999985,
+                "ops": 2.892351150195253,
+                "total": 1.037218457999984,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[serial-dynamic-options3]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[serial-dynamic-options3]",
+            "params": {
+                "num_threads": 1,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb56ec0>]"
+            },
+            "param": "serial-dynamic-options3",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.4303040539999756,
+                "max": 0.43326723999996375,
+                "mean": 0.431573475666634,
+                "stddev": 0.0015264887296340408,
+                "rounds": 3,
+                "median": 0.4311491329999626,
+                "iqr": 0.0022223894999910954,
+                "q1": 0.43051532374997237,
+                "q3": 0.43273771324996346,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.4303040539999756,
+                "hd15iqr": 0.43326723999996375,
+                "ops": 2.31710254773035,
+                "total": 1.294720426999902,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-static-options0]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-static-options0]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb55420>]"
+            },
+            "param": "threads (3)-static-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.15506210099999862,
+                "max": 0.17165739999995822,
+                "mean": 0.16131943699997464,
+                "stddev": 0.009018848305599111,
+                "rounds": 3,
+                "median": 0.1572388099999671,
+                "iqr": 0.012446474249969697,
+                "q1": 0.15560627824999074,
+                "q3": 0.16805275249996043,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.15506210099999862,
+                "hd15iqr": 0.17165739999995822,
+                "ops": 6.198881043703104,
+                "total": 0.4839583109999239,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-static-options1]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-static-options1]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb554e0>]"
+            },
+            "param": "threads (3)-static-options1",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.34433423899997706,
+                "max": 0.37070483499996953,
+                "mean": 0.3602583136666529,
+                "stddev": 0.014012664851431754,
+                "rounds": 3,
+                "median": 0.36573586700001215,
+                "iqr": 0.019777946999994356,
+                "q1": 0.34968464599998583,
+                "q3": 0.3694625929999802,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.34433423899997706,
+                "hd15iqr": 0.37070483499996953,
+                "ops": 2.7757860459128785,
+                "total": 1.0807749409999587,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-static-options2]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-static-options2]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb574c0>]"
+            },
+            "param": "threads (3)-static-options2",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.5925002660000018,
+                "max": 0.7113862219999874,
+                "mean": 0.6389633440000276,
+                "stddev": 0.0635523488593069,
+                "rounds": 3,
+                "median": 0.6130035440000938,
+                "iqr": 0.08916446699998914,
+                "q1": 0.5976260855000248,
+                "q3": 0.686790552500014,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.5925002660000018,
+                "hd15iqr": 0.7113862219999874,
+                "ops": 1.565035004574467,
+                "total": 1.916890032000083,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-static-options3]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-static-options3]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "static",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb56ec0>]"
+            },
+            "param": "threads (3)-static-options3",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.618860980999898,
+                "max": 0.6795673019998958,
+                "mean": 0.6441522096665722,
+                "stddev": 0.03159404712907754,
+                "rounds": 3,
+                "median": 0.6340283459999227,
+                "iqr": 0.04552974074999838,
+                "q1": 0.6226528222499041,
+                "q3": 0.6681825629999025,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.618860980999898,
+                "hd15iqr": 0.6795673019998958,
+                "ops": 1.5524281140285505,
+                "total": 1.9324566289997165,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-dynamic-options0]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-dynamic-options0]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb55420>]"
+            },
+            "param": "threads (3)-dynamic-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.13192550099984146,
+                "max": 0.16311211800007186,
+                "mean": 0.1429678936666884,
+                "stddev": 0.017472371754980478,
+                "rounds": 3,
+                "median": 0.13386606200015194,
+                "iqr": 0.0233899627501728,
+                "q1": 0.13241064124991908,
+                "q3": 0.15580060400009188,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.13192550099984146,
+                "hd15iqr": 0.16311211800007186,
+                "ops": 6.99457741422262,
+                "total": 0.42890368100006526,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-dynamic-options1]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-dynamic-options1]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb554e0>]"
+            },
+            "param": "threads (3)-dynamic-options1",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.38384978799990677,
+                "max": 0.3918797750000067,
+                "mean": 0.3873986436666807,
+                "stddev": 0.004095366435897693,
+                "rounds": 3,
+                "median": 0.38646636800012857,
+                "iqr": 0.006022490250074952,
+                "q1": 0.3845039329999622,
+                "q3": 0.39052642325003717,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.38384978799990677,
+                "hd15iqr": 0.3918797750000067,
+                "ops": 2.5813203436520133,
+                "total": 1.162195931000042,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-dynamic-options2]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-dynamic-options2]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb574c0>]"
+            },
+            "param": "threads (3)-dynamic-options2",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.5466231649998008,
+                "max": 0.5654353620000165,
+                "mean": 0.5545939326665726,
+                "stddev": 0.009729091057087837,
+                "rounds": 3,
+                "median": 0.5517232709999007,
+                "iqr": 0.01410914775016181,
+                "q1": 0.5478981914998258,
+                "q3": 0.5620073392499876,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.5466231649998008,
+                "hd15iqr": 0.5654353620000165,
+                "ops": 1.8031210604700392,
+                "total": 1.663781797999718,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_2d[threads (3)-dynamic-options3]",
+            "fullname": "tests/performance/test_timing_2d.py::test_timing_2d[threads (3)-dynamic-options3]",
+            "params": {
+                "num_threads": 3,
+                "grid_static_str": "dynamic",
+                "options": "UNSERIALIZABLE[<PyMPDATA.options.Options object at 0x11eb56ec0>]"
+            },
+            "param": "threads (3)-dynamic-options3",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.6497161500001312,
+                "max": 0.6628494229998978,
+                "mean": 0.657169830999995,
+                "stddev": 0.006743979445137485,
+                "rounds": 3,
+                "median": 0.658943919999956,
+                "iqr": 0.009849954749824974,
+                "q1": 0.6520230925000874,
+                "q3": 0.6618730472499124,
+                "iqr_outliers": 0,
+                "stddev_outliers": 1,
+                "outliers": "1;0",
+                "ld15iqr": 0.6497161500001312,
+                "hd15iqr": 0.6628494229998978,
+                "ops": 1.521676669907885,
+                "total": 1.971509492999985,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_3d[serial-True-float64-options0]",
+            "fullname": "tests/performance/test_timing_3d.py::test_timing_3d[serial-True-float64-options0]",
+            "params": {
+                "num_threads": 1,
+                "static": true,
+                "dtype": "UNSERIALIZABLE[<class 'numpy.float64'>]",
+                "options": {
+                    "n_iters": 1
+                }
+            },
+            "param": "serial-True-float64-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00844647700000678,
+                "max": 0.00844647700000678,
+                "mean": 0.00844647700000678,
+                "stddev": 0,
+                "rounds": 1,
+                "median": 0.00844647700000678,
+                "iqr": 0.0,
+                "q1": 0.00844647700000678,
+                "q3": 0.00844647700000678,
+                "iqr_outliers": 0,
+                "stddev_outliers": 0,
+                "outliers": "0;0",
+                "ld15iqr": 0.00844647700000678,
+                "hd15iqr": 0.00844647700000678,
+                "ops": 118.39255585484898,
+                "total": 0.00844647700000678,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_3d[serial-False-float64-options0]",
+            "fullname": "tests/performance/test_timing_3d.py::test_timing_3d[serial-False-float64-options0]",
+            "params": {
+                "num_threads": 1,
+                "static": false,
+                "dtype": "UNSERIALIZABLE[<class 'numpy.float64'>]",
+                "options": {
+                    "n_iters": 1
+                }
+            },
+            "param": "serial-False-float64-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.008642717999919114,
+                "max": 0.008642717999919114,
+                "mean": 0.008642717999919114,
+                "stddev": 0,
+                "rounds": 1,
+                "median": 0.008642717999919114,
+                "iqr": 0.0,
+                "q1": 0.008642717999919114,
+                "q3": 0.008642717999919114,
+                "iqr_outliers": 0,
+                "stddev_outliers": 0,
+                "outliers": "0;0",
+                "ld15iqr": 0.008642717999919114,
+                "hd15iqr": 0.008642717999919114,
+                "ops": 115.70434208420996,
+                "total": 0.008642717999919114,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_3d[threads (3)-True-float64-options0]",
+            "fullname": "tests/performance/test_timing_3d.py::test_timing_3d[threads (3)-True-float64-options0]",
+            "params": {
+                "num_threads": 3,
+                "static": true,
+                "dtype": "UNSERIALIZABLE[<class 'numpy.float64'>]",
+                "options": {
+                    "n_iters": 1
+                }
+            },
+            "param": "threads (3)-True-float64-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.009818639000059193,
+                "max": 0.009818639000059193,
+                "mean": 0.009818639000059193,
+                "stddev": 0,
+                "rounds": 1,
+                "median": 0.009818639000059193,
+                "iqr": 0.0,
+                "q1": 0.009818639000059193,
+                "q3": 0.009818639000059193,
+                "iqr_outliers": 0,
+                "stddev_outliers": 0,
+                "outliers": "0;0",
+                "ld15iqr": 0.009818639000059193,
+                "hd15iqr": 0.009818639000059193,
+                "ops": 101.84710935945108,
+                "total": 0.009818639000059193,
+                "iterations": 1
+            }
+        },
+        {
+            "group": null,
+            "name": "test_timing_3d[threads (3)-False-float64-options0]",
+            "fullname": "tests/performance/test_timing_3d.py::test_timing_3d[threads (3)-False-float64-options0]",
+            "params": {
+                "num_threads": 3,
+                "static": false,
+                "dtype": "UNSERIALIZABLE[<class 'numpy.float64'>]",
+                "options": {
+                    "n_iters": 1
+                }
+            },
+            "param": "threads (3)-False-float64-options0",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.010259679000000688,
+                "max": 0.010259679000000688,
+                "mean": 0.010259679000000688,
+                "stddev": 0,
+                "rounds": 1,
+                "median": 0.010259679000000688,
+                "iqr": 0.0,
+                "q1": 0.010259679000000688,
+                "q3": 0.010259679000000688,
+                "iqr_outliers": 0,
+                "stddev_outliers": 0,
+                "outliers": "0;0",
+                "ld15iqr": 0.010259679000000688,
+                "hd15iqr": 0.010259679000000688,
+                "ops": 97.46893640628844,
+                "total": 0.010259679000000688,
+                "iterations": 1
+            }
+        }
+    ],
+    "datetime": "2023-03-29T14:59:28.254884",
+    "version": "4.0.0"
+}
