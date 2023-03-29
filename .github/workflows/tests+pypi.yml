@@ -95,10 +95,10 @@ jobs:
 
           # TODO: bug...
           - platform: macos-latest
-            disable-jit: 1
+            mpi-np: 2
+          - platform: macos-latest
             mpi-np: 3
           - platform: macos-latest
-            disable-jit: 1
             mpi-np: 4
 
       fail-fast: false
