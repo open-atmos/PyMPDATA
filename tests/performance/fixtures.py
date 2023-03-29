@@ -1,4 +1,4 @@
-""" pytest fixtures for timing tests """
+""" pytest fixtures for performance tests """
 import numba
 import pytest
 
