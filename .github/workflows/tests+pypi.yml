@@ -135,9 +135,25 @@ jobs:
           pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
           pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
 
-      - if: startsWith(matrix.python-version, '3.10')
-        run: pytest --durations=10 -p no:unraisableexception -We --benchmark-save=latest --benchmark-compare=${{matrix.platform}} --benchmark-compare-fail=mean:10% tests/performance
+  performance_tests:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10"]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
 
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: > 
+          pytest --durations=10 -p no:unraisableexception -We 
+          --benchmark-save=latest 
+          --benchmark-compare=${{matrix.platform}} 
+          --benchmark-compare-fail=mean:10% 
+          tests/performance
+          
   dist:
     runs-on: ubuntu-latest
     needs: [build]
