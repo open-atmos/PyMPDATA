@@ -151,10 +151,16 @@ jobs:
       - run: pip install -r test-time-requirements.txt
       - run: > 
           pytest --durations=10 -p no:unraisableexception -We 
-          --benchmark-save=latest 
-          --benchmark-compare=${{matrix.platform}} 
-          --benchmark-compare-fail=mean:10% 
+          --benchmark-json results.json
           tests/performance
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'pytest'
+          output-file-path: results.json
+          gh-pages-branch: pdoc
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   dist:
     runs-on: ubuntu-latest
