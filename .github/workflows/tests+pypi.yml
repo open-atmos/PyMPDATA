@@ -161,6 +161,7 @@ jobs:
           output-file-path: results.json
           gh-pages-branch: pdoc
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
 
   dist:
     runs-on: ubuntu-latest
