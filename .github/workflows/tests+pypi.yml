@@ -93,14 +93,6 @@ jobs:
           - platform: macos-latest
             mpi: mpich
 
-          # TODO: bug...
-          - platform: macos-latest
-            mpi-np: 2
-          - platform: macos-latest
-            mpi-np: 3
-          - platform: macos-latest
-            mpi-np: 4
-
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 30

@@ -14,7 +14,7 @@ from PySuperDropletLES.hdf_storage import HDFStorage
 from PySuperDropletLES.settings import Settings
 from PySuperDropletLES.simulation import Simulation
 
-from .utils import barrier_enclosed
+from .utils import barrier_enclosed, setup_dataset_and_sync_all_workers
 
 
 class ReadmeSettings(Settings):
@@ -113,8 +113,7 @@ def test_2d(
         with Storage.mpi_context(
             path, "r+", mpi4py.MPI.COMM_WORLD.Split(rank < truncated_size, rank)
         ) as storage:
-            dataset = storage[dataset_name]
-            mpi.barrier()
+            dataset = setup_dataset_and_sync_all_workers(storage, dataset_name)
             if rank < truncated_size:
                 simulation = Simulation(
                     mpdata_options=Options(**options_kwargs),
