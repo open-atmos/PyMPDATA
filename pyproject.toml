@@ -20,7 +20,7 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    "numba_mpi>=0.26",
+    "numba_mpi>=0.30",
     "PySDM<=2.16",
     "PyMPDATA>=1.0.10",
     "mpi4py",

@@ -10,7 +10,6 @@ from mpi4py import MPI
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.enumerations import INVALID_INDEX, SIGN_LEFT, SIGN_RIGHT
 
-TAG = 44
 comm = MPI.COMM_WORLD
 IRRELEVANT = 666
 
@@ -57,13 +56,13 @@ def _make_send_recv(set_value, jit_flags, fill_buf):
 
         if SIGN_LEFT == sign:
             fill_buf(buf, psi, i_rng, k_rng, sign, dim)
-            mpi.send(buf, dest=peers[sign], tag=TAG)
-            mpi.recv(buf, source=peers[sign], tag=TAG)
+            mpi.send(buf, dest=peers[sign])
+            mpi.recv(buf, source=peers[sign])
         elif SIGN_RIGHT == sign:
-            mpi.recv(buf, source=peers[sign], tag=TAG)
+            mpi.recv(buf, source=peers[sign])
             tmp = np.empty_like(buf)
             fill_buf(tmp, psi, i_rng, k_rng, sign, dim)
-            mpi.send(tmp, dest=peers[sign], tag=TAG)
+            mpi.send(tmp, dest=peers[sign])
 
         for i in i_rng:
             for j in j_rng:
