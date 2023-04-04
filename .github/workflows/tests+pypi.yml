@@ -66,7 +66,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-          pip install pylint pytest
+          pip install pylint pytest matplotlib
       - name: Analysing the code with pylint
         run: |
           pylint --unsafe-load-any-extension=y --disable=fixme $(git ls-files '*.py')
@@ -117,7 +117,7 @@ jobs:
       - run: HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py "git+https://github.com/h5py/h5py@81f6c01#egg=h5py"
       - run: pip install -e .
       - run: python -We -c "import PyMPDATA_MPI"
-      - run: pip install pytest pytest-timeout pytest-mpi
+      - run: pip install pytest pytest-timeout pytest-mpi matplotlib
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
       - run: NUMBA_DISABLE_JIT=${{ matrix.disable-jit }} mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=360 --timeout_method=thread -s -vv -We;
