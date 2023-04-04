@@ -1,6 +1,6 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
-import PySuperDropletLES
+import PyMPDATA_MPI
 
 
 def test_version():
-    print(PySuperDropletLES.__version__)
+    print(PyMPDATA_MPI.__version__)

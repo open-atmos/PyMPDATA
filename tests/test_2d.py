@@ -9,10 +9,10 @@ import pytest
 from matplotlib import pyplot
 from PyMPDATA import Options
 
-from PySuperDropletLES.domain_decomposition import subdomain
-from PySuperDropletLES.hdf_storage import HDFStorage
-from PySuperDropletLES.settings import Settings
-from PySuperDropletLES.simulation import Simulation
+from PyMPDATA_MPI.domain_decomposition import subdomain
+from PyMPDATA_MPI.hdf_storage import HDFStorage
+from PyMPDATA_MPI.settings import Settings
+from PyMPDATA_MPI.simulation import Simulation
 
 from .utils import barrier_enclosed, setup_dataset_and_sync_all_workers
 

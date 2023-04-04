@@ -2,7 +2,7 @@
 
 import pytest
 
-from PySuperDropletLES.domain_decomposition import mpi_indices
+from PyMPDATA_MPI.domain_decomposition import mpi_indices
 
 
 @pytest.mark.parametrize(

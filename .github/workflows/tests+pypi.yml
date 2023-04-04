@@ -43,13 +43,13 @@ jobs:
         run: |
           pip install pdoc3
           pip install -e .
-          python -We -m pdoc --html PySuperDropletLES
+          python -We -m pdoc --html PyMPDATA_MPI
       - name: Deploy
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           BRANCH: pdoc
-          FOLDER: html/PySuperDropletLES
+          FOLDER: html/PyMPDATA-MPI
           CLEAN: true
 
   pylint:
@@ -116,7 +116,7 @@ jobs:
         run: brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
       - run: HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py "git+https://github.com/h5py/h5py@81f6c01#egg=h5py"
       - run: pip install -e .
-      - run: python -We -c "import PySuperDropletLES"
+      - run: python -We -c "import PyMPDATA_MPI"
       - run: pip install pytest pytest-timeout pytest-mpi
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
