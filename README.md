@@ -19,7 +19,7 @@
 [![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://open-atmos.github.io/PyMPDATA-MPI/)
 
 [PyMPDATA](https://github.com/open-atmos/PyMPDATA) +
-[numba-mpi](https://github.com/open-atmos/numba-mpi) coupler sandbox (with a long-term goal of developing a pure-Python LES system)
+[numba-mpi](https://github.com/numba-mpi/numba-mpi) coupler sandbox (with a long-term goal of developing a pure-Python LES system)
 
 ## Credits:
 
