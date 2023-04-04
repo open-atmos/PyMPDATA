@@ -58,12 +58,19 @@ class ReadmeSettings(Settings):
     (
         {"n_iters": 1},
         {"n_iters": 2},
-        # {'n_iters': 2, 'nonoscillatory': True},  # TODO
+        {"n_iters": 2, "third_order_terms": True},
+        # {'n_iters': 2, 'nonoscillatory': True},  # TODO #36
         {"n_iters": 3},
     ),
 )
-@pytest.mark.parametrize("n_threads", (1,))  # TODO: 2+
-@pytest.mark.parametrize("output_steps", ((0,), (0, 1)))
+@pytest.mark.parametrize("n_threads", (1,))  # TODO #35 : 2+
+@pytest.mark.parametrize(
+    "output_steps",
+    (
+        (0,),
+        (0, 1),
+    ),
+)
 @pytest.mark.parametrize(
     "courant_field",
     (

@@ -24,10 +24,12 @@ class MPIPeriodic:
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-    def make_scalar(self, indexers, _, __, jit_flags, dimension_index):
+    def make_scalar(self, indexers, halo, dtype, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
         if self.__size == 1:
-            return Periodic.make_scalar(indexers, _, __, jit_flags, dimension_index)
+            return Periodic.make_scalar(
+                indexers, halo, dtype, jit_flags, dimension_index
+            )
         return _make_scalar_periodic(indexers, jit_flags, dimension_index, self.__size)
 
     def make_vector(self, indexers, halo, dtype, jit_flags, dimension_index):
@@ -85,7 +87,7 @@ def _make_scalar_periodic(indexers, jit_flags, dimension_index, size):
         for i in i_rng:
             for k in k_rng:
                 buf[i - i_rng.start, k - k_rng.start] = indexers.ats[dimension_index](
-                    (i, INVALID_INDEX, k), psi, sign  # TODO: * halo ?
+                    (i, INVALID_INDEX, k), psi, sign
                 )
 
     send_recv = _make_send_recv(indexers.set, jit_flags, fill_buf)
@@ -102,13 +104,19 @@ def _make_vector_periodic(indexers, halo, jit_flags, dimension_index, size):
     @numba.njit(**jit_flags)
     def fill_buf(buf, components, i_rng, k_rng, sign, dim):
         parallel = dim % len(components) == dimension_index
-        assert not parallel
 
         for i in i_rng:
             for k in k_rng:
-                buf[i - i_rng.start, k - k_rng.start] = indexers.atv[dimension_index](
-                    (i, INVALID_INDEX, k), components, sign  # TODO: * halo ?
-                )
+                if parallel:
+                    value = indexers.atv[dimension_index](
+                        (i, INVALID_INDEX, k), components, sign * halo + 0.5
+                    )
+                else:
+                    value = indexers.atv[dimension_index](
+                        (i, INVALID_INDEX, k), components, sign * halo, 0.5
+                    )
+
+                buf[i - i_rng.start, k - k_rng.start] = value
 
     send_recv = _make_send_recv(indexers.set, jit_flags, fill_buf)
 
