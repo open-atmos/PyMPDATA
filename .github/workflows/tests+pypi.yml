@@ -49,7 +49,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           BRANCH: pdoc
-          FOLDER: html/PyMPDATA-MPI
+          FOLDER: html/PyMPDATA_MPI
           CLEAN: true
 
   pylint:
