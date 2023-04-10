@@ -50,7 +50,8 @@ def _make_send_recv(set_value, jit_flags, fill_buf):
             (
                 len(i_rng),
                 len(k_rng),
-            )
+            ),
+            dtype=output.dtype,
         )
 
         rank = mpi.rank()

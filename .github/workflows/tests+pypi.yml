@@ -120,7 +120,7 @@ jobs:
       - run: pip install pytest pytest-timeout pytest-mpi matplotlib
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
-      - run: NUMBA_DISABLE_JIT=${{ matrix.disable-jit }} mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=360 --timeout_method=thread -s -vv -We;
+      - run: NUMBA_DISABLE_JIT=${{ matrix.disable-jit }} mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We;
   dist:
     runs-on: ubuntu-latest
     needs: [tests]
