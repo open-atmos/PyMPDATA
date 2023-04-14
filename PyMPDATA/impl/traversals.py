@@ -1,6 +1,7 @@
 """ staggered-grid traversals orchestration """
 from collections import namedtuple
 from pathlib import Path
+import numpy as np  # TODO
 
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
@@ -18,12 +19,13 @@ class Traversals:
 
     def __init__(self, *, grid, halo, jit_flags, n_threads, left_first):
         assert not (n_threads > 1 and len(grid) == 1)
-        domain = make_domain(
-            (
+        tmp =  (
                 grid[OUTER] if len(grid) > 1 else 0,
                 grid[MID3D] if len(grid) > 2 else 0,
                 grid[INNER],
-            ),
+            )
+        domain = make_domain(
+            tmp,
             jit_flags,
         )
         chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
@@ -32,11 +34,14 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
+        buffer_size = (44,44,44)#(tmp[0] + 2*halo, tmp[1] + 2*halo, tmp[2] + 2*halo)  # TODO
+
         self.null_impl = namedtuple(
-            Path(__file__).stem + "NullFields", ("scalar", "vector")
+            Path(__file__).stem + "NullFields", ("scalar", "vector", "buffer")
         )(
             scalar=ScalarField.make_null(self.n_dims, self).impl,
             vector=VectorField.make_null(self.n_dims, self).impl,
+            buffer=np.empty(buffer_size)
         )
 
         common_kwargs = {

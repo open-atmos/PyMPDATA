@@ -31,7 +31,8 @@ def make_upwind(options, non_unit_g_factor, traversals):
             *null_scalarfield,
             null_scalarfield_bc,
             *null_scalarfield,
-            null_scalarfield_bc
+            null_scalarfield_bc,
+            null_impl.buffer
         )
 
     return apply

@@ -23,7 +23,7 @@ def make_fill_halos_loop(jit_flags, set_value, fill_halos):
     """returns Numba-compiled halo-filling callable"""
 
     @numba.njit(**jit_flags)
-    def fill_halos_loop(i_rng, j_rng, k_rng, psi, span, sign):
+    def fill_halos_loop(buffer, i_rng, j_rng, k_rng, psi, span, sign):
         for i in i_rng:
             for j in j_rng:
                 for k in k_rng:
@@ -39,7 +39,7 @@ def make_fill_halos_loop_vector(
     """returns Numba-compiled halo-filling callable"""
 
     @numba.njit(**jit_flags)
-    def fill_halos_loop_vector(i_rng, j_rng, k_rng, components, dim, span, sign):
+    def fill_halos_loop_vector(buffer, i_rng, j_rng, k_rng, components, dim, span, sign):
         parallel = dim % len(components) == dimension_index
         for i in i_rng:
             for j in j_rng:

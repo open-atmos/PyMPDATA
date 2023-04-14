@@ -108,7 +108,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first):
         halo=options.n_halo,
         jit_flags=options.jit_flags,
         n_threads=n_threads,
-        left_first=left_first,
+        left_first=left_first
     )
 
     n_iters = options.n_iters
@@ -178,10 +178,10 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first):
                         advector_nonos = vectmp_a
                         flux = vectmp_b
                     if iteration < n_iters - 1:
-                        antidiff(advector_nonos, advectee, advector_oscil, g_factor)
+                        antidiff(null_impl, advector_nonos, advectee, advector_oscil, g_factor)
                     else:
                         antidiff_last_pass(
-                            advector_nonos, advectee, advector_oscil, g_factor
+                            null_impl, advector_nonos, advectee, advector_oscil, g_factor
                         )
                     flux_subsequent(null_impl, flux, advectee, advector_nonos)
                     if nonoscillatory:

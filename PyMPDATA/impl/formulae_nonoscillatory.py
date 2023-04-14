@@ -48,7 +48,8 @@ def make_psi_extrema(options, traversals):
                 *null_scalfield,
                 null_scalfield_bc,
                 *null_scalfield,
-                null_scalfield_bc
+                null_scalfield_bc,
+                null_impl.buffer
             )
 
     return apply

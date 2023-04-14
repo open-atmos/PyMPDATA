@@ -39,7 +39,8 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
                 *null_vecfield,
                 null_vecfield_bc,
                 *null_scalarfield,
-                null_scalarfield_bc
+                null_scalarfield_bc,
+                null_impl.buffer
             )
 
     return apply

@@ -34,7 +34,8 @@ def make_flux_first_pass(options, traversals):
             *advector.field,
             advector.bc,
             *null_scalarfield,
-            null_bc
+            null_bc,
+            null_impl.buffer
         )
 
     return apply
@@ -69,7 +70,8 @@ def make_flux_subsequent(options, traversals):
             *g_c_corr.field,
             g_c_corr.bc,
             *null_scalarfield,
-            null_bc
+            null_bc,
+            null_impl.buffer
         )
 
     return apply
