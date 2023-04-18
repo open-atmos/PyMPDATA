@@ -5,7 +5,7 @@ import numpy as np  # TODO
 
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
-from .enumerations import INNER, MID3D, OUTER
+from .enumerations import INNER, MID3D, OUTER, BUFFER_DEFAULT_VALUE
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
 from .traversals_halos_scalar import _make_fill_halos_scalar
@@ -17,7 +17,7 @@ from .traversals_vector import _make_apply_vector
 class Traversals:
     """groups njit-ted traversals for a given grid, halo, jit_flags and threading settings"""
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first):
+    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
         assert not (n_threads > 1 and len(grid) == 1)
         tmp =  (
                 grid[OUTER] if len(grid) > 1 else 0,
@@ -34,14 +34,12 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        buffer_size = (44,44,44)#(tmp[0] + 2*halo, tmp[1] + 2*halo, tmp[2] + 2*halo)  # TODO
-
-        self.null_impl = namedtuple(
+        self.data = namedtuple( # TODO: rename to data
             Path(__file__).stem + "NullFields", ("scalar", "vector", "buffer")
         )(
-            scalar=ScalarField.make_null(self.n_dims, self).impl,
-            vector=VectorField.make_null(self.n_dims, self).impl,
-            buffer=np.empty(buffer_size)
+            scalar=ScalarField.make_null(self.n_dims, self).impl, # null_scalar
+            vector=VectorField.make_null(self.n_dims, self).impl, # null_vector
+            buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE)
         )
 
         common_kwargs = {

@@ -140,7 +140,8 @@ def make_beta(non_unit_g_factor, options, traversals):
                 *g_factor.field,
                 g_factor.bc,
                 *null_scalfield,
-                null_scalfield_bc
+                null_scalfield_bc,
+                null_impl.buffer
             )
 
     return apply
@@ -304,7 +305,8 @@ def make_correction(options, traversals):
                 *g_c_corr.field,
                 g_c_corr.bc,
                 *null_scalfield,
-                null_scalfield_bc
+                null_scalfield_bc,
+                null_impl.buffer
             )
 
     return apply

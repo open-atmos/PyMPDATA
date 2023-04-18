@@ -33,6 +33,7 @@ class Stepper:
         grid: (tuple, None) = None,
         n_threads: (int, None) = None,
         left_first: bool = True,
+        buffer_size: int = 0
     ):
         if n_dims is not None and grid is not None:
             raise ValueError()
@@ -62,7 +63,7 @@ class Stepper:
 
         self.__n_dims = n_dims
         self.__call, self.traversals = make_step_impl(
-            options, non_unit_g_factor, grid, self.n_threads, left_first=left_first
+            options, non_unit_g_factor, grid, self.n_threads, left_first=left_first, buffer_size=buffer_size
         )
 
     @property
@@ -94,21 +95,22 @@ class Stepper:
                     _Impl(field=v.impl[IMPL_META_AND_DATA], bc=v.impl[IMPL_BC])
                     for v in fields.values()
                 ),
-                self.traversals.null_impl,
+                self.traversals.data,
             )
         return wall_time_per_timestep
 
 
 @lru_cache()
 # pylint: disable=too-many-locals,too-many-statements
-def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first):
+def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first, buffer_size):
     """returns (and caches) an njit-ted stepping function and a traversals pair"""
     traversals = Traversals(
         grid=grid,
         halo=options.n_halo,
         jit_flags=options.jit_flags,
         n_threads=n_threads,
-        left_first=left_first
+        left_first=left_first,
+        buffer_size=buffer_size
     )
 
     n_iters = options.n_iters
