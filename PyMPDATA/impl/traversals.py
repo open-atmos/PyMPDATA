@@ -1,11 +1,12 @@
 """ staggered-grid traversals orchestration """
 from collections import namedtuple
 from pathlib import Path
+
 import numpy as np  # TODO
 
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
-from .enumerations import INNER, MID3D, OUTER, BUFFER_DEFAULT_VALUE
+from .enumerations import BUFFER_DEFAULT_VALUE, INNER, MID3D, OUTER
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
 from .traversals_halos_scalar import _make_fill_halos_scalar
@@ -19,11 +20,11 @@ class Traversals:
 
     def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
         assert not (n_threads > 1 and len(grid) == 1)
-        tmp =  (
-                grid[OUTER] if len(grid) > 1 else 0,
-                grid[MID3D] if len(grid) > 2 else 0,
-                grid[INNER],
-            )
+        tmp = (
+            grid[OUTER] if len(grid) > 1 else 0,
+            grid[MID3D] if len(grid) > 2 else 0,
+            grid[INNER],
+        )
         domain = make_domain(
             tmp,
             jit_flags,
@@ -34,12 +35,12 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        self.data = namedtuple( # TODO: rename to data
+        self.data = namedtuple(  # TODO: rename to data
             Path(__file__).stem + "NullFields", ("scalar", "vector", "buffer")
         )(
-            scalar=ScalarField.make_null(self.n_dims, self).impl, # null_scalar
-            vector=VectorField.make_null(self.n_dims, self).impl, # null_vector
-            buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE)
+            scalar=ScalarField.make_null(self.n_dims, self).impl,  # null_scalar
+            vector=VectorField.make_null(self.n_dims, self).impl,  # null_vector
+            buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE),
         )
 
         common_kwargs = {

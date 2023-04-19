@@ -128,7 +128,7 @@ def _make_apply_vector(
         arg3s_meta,
         arg3s_data,
         arg3s_bc,
-        buffer
+        buffer,
     ):
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             boundary_cond_scalar(thread_id, arg1s_meta, arg1s_data, arg1s_bc, buffer)
@@ -137,7 +137,7 @@ def _make_apply_vector(
                 arg2v_meta,
                 (arg2v_data_o, arg2v_data_m, arg2v_data_i),
                 arg2v_bc,
-                buffer
+                buffer,
             )
             boundary_cond_scalar(thread_id, arg3s_meta, arg3s_data, arg3s_bc, buffer)
         if not arg1s_meta[META_HALO_VALID]:

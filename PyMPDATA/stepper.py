@@ -63,7 +63,12 @@ class Stepper:
 
         self.__n_dims = n_dims
         self.__call, self.traversals = make_step_impl(
-            options, non_unit_g_factor, grid, self.n_threads, left_first=left_first, buffer_size=buffer_size
+            options,
+            non_unit_g_factor,
+            grid,
+            self.n_threads,
+            left_first=left_first,
+            buffer_size=buffer_size,
         )
 
     @property
@@ -102,7 +107,9 @@ class Stepper:
 
 @lru_cache()
 # pylint: disable=too-many-locals,too-many-statements
-def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first, buffer_size):
+def make_step_impl(
+    options, non_unit_g_factor, grid, n_threads, left_first, buffer_size
+):
     """returns (and caches) an njit-ted stepping function and a traversals pair"""
     traversals = Traversals(
         grid=grid,
@@ -110,7 +117,7 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first, buff
         jit_flags=options.jit_flags,
         n_threads=n_threads,
         left_first=left_first,
-        buffer_size=buffer_size
+        buffer_size=buffer_size,
     )
 
     n_iters = options.n_iters
@@ -180,10 +187,20 @@ def make_step_impl(options, non_unit_g_factor, grid, n_threads, left_first, buff
                         advector_nonos = vectmp_a
                         flux = vectmp_b
                     if iteration < n_iters - 1:
-                        antidiff(null_impl, advector_nonos, advectee, advector_oscil, g_factor)
+                        antidiff(
+                            null_impl,
+                            advector_nonos,
+                            advectee,
+                            advector_oscil,
+                            g_factor,
+                        )
                     else:
                         antidiff_last_pass(
-                            null_impl, advector_nonos, advectee, advector_oscil, g_factor
+                            null_impl,
+                            advector_nonos,
+                            advectee,
+                            advector_oscil,
+                            g_factor,
                         )
                     flux_subsequent(null_impl, flux, advectee, advector_nonos)
                     if nonoscillatory:
