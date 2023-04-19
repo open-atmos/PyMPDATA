@@ -102,7 +102,7 @@ Alternatively, one can also install the examples package from pypi.org by using 
 
 In short, PyMPDATA numerically solves the following equation:
 
-![\partial_t (G \psi) + \nabla \cdot (Gu \psi) + \mu \Delta (G \psi) = 0](https://render.githubusercontent.com/render/math?math=%5Cpartial_t%20(G%20%5Cpsi)%20%2B%20%5Cnabla%20%5Ccdot%20(Gu%20%5Cpsi)%20%2B%20%5Cmu%20%5CDelta%20%28G%20%5Cpsi%29%20%3D%200)
+$$ \partial_t (G \psi) + \nabla \cdot (Gu \psi) + \mu \Delta (G \psi) = 0 $$
 
 where scalar field ![\psi](https://render.githubusercontent.com/render/math?math=%5Cpsi) is referred to as the advectee,
 vector field u is referred to as advector, and the G factor corresponds to optional coordinate transformation.
