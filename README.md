@@ -104,7 +104,7 @@ In short, PyMPDATA numerically solves the following equation:
 
 $$ \partial_t (G \psi) + \nabla \cdot (Gu \psi) + \mu \Delta (G \psi) = 0 $$
 
-where scalar field ![\psi](https://render.githubusercontent.com/render/math?math=%5Cpsi) is referred to as the advectee,
+where scalar field $\psi$ is referred to as the advectee,
 vector field u is referred to as advector, and the G factor corresponds to optional coordinate transformation.
 The inclusion of the Fickian diffusion term is optional and is realised through modification of the
 advective velocity field with MPDATA handling both the advection and diffusion (for discussion
@@ -172,7 +172,7 @@ options = Options(n_iters=2)
 
 In PyMPDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus the
-first scalar field value is at ![\[\Delta x/2, \Delta y/2\]](https://render.githubusercontent.com/render/math?math=%5B%5CDelta%20x%2F2%2C%20%5CDelta%20y%2F2%5D)).
+first scalar field value is at $\[\Delta x/2, \Delta y/2\]$.
 The [``ScalarField``](https://open-atmos.github.io/PyMPDATA/scalar_field.html)
 and [``VectorField``](https://open-atmos.github.io/PyMPDATA/vector_field.html) classes implement the
 [Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) logic
