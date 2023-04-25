@@ -192,9 +192,8 @@ jobs:
           path: plots/${{ env.arbitrarily_selected_artefact_set }}/*/anim.gif
 
       - if: github.ref == 'refs/heads/main'
-        uses: pyTooling/Actions/releaser@r0
+        uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: plots/${{ env.arbitrarily_selected_artefact_set }}/*/anim.gif
           tag: 'latest-generated-plots'
-
