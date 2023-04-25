@@ -21,7 +21,7 @@ classifiers = [
 ]
 dependencies = [
     "numba_mpi>=0.30",
-    "PyMPDATA>=1.0.10",
+    "PyMPDATA==1.0.10",
     "mpi4py",
     "h5py",
     "pytest-mpi"
