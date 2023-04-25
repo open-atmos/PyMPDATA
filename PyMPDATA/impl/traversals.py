@@ -2,9 +2,11 @@
 from collections import namedtuple
 from pathlib import Path
 
+import numpy as np
+
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
-from .enumerations import INNER, MID3D, OUTER
+from .enumerations import BUFFER_DEFAULT_VALUE, INNER, MID3D, OUTER
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
 from .traversals_halos_scalar import _make_fill_halos_scalar
@@ -16,14 +18,15 @@ from .traversals_vector import _make_apply_vector
 class Traversals:
     """groups njit-ted traversals for a given grid, halo, jit_flags and threading settings"""
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first):
+    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
         assert not (n_threads > 1 and len(grid) == 1)
+        tmp = (
+            grid[OUTER] if len(grid) > 1 else 0,
+            grid[MID3D] if len(grid) > 2 else 0,
+            grid[INNER],
+        )
         domain = make_domain(
-            (
-                grid[OUTER] if len(grid) > 1 else 0,
-                grid[MID3D] if len(grid) > 2 else 0,
-                grid[INNER],
-            ),
+            tmp,
             jit_flags,
         )
         chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
@@ -32,11 +35,13 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        self.null_impl = namedtuple(
-            Path(__file__).stem + "NullFields", ("scalar", "vector")
+        self.data = namedtuple(
+            Path(__file__).stem + "TraversalsData",
+            ("null_scalar_field", "null_vector_field", "buffer"),  # NullFields
         )(
-            scalar=ScalarField.make_null(self.n_dims, self).impl,
-            vector=VectorField.make_null(self.n_dims, self).impl,
+            null_scalar_field=ScalarField.make_null(self.n_dims, self).impl,
+            null_vector_field=VectorField.make_null(self.n_dims, self).impl,
+            buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE),
         )
 
         common_kwargs = {
