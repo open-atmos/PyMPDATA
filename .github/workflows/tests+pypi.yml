@@ -195,6 +195,6 @@ jobs:
         uses: pyTooling/Actions/releaser@r0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: plots/${{ matrix.arbitrarily_selected_artefact_set }}/*/anim.gif
+          files: plots/${{ env.arbitrarily_selected_artefact_set }}/*/anim.gif
           tag: 'latest-generated-plots'
 
