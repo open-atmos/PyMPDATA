@@ -4,6 +4,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  arbitrarily_selected_artefact_set: '3.10/ubuntu-latest/0/openmpi'
+
 on:
   push:
     branches: [ main ]
@@ -120,7 +123,20 @@ jobs:
       - run: pip install pytest pytest-timeout pytest-mpi matplotlib
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
-      - run: NUMBA_DISABLE_JIT=${{ matrix.disable-jit }} mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We;
+      - name: "mpiexec pytest"
+        env:
+          NUMBA_DISABLE_JIT: ${{ matrix.disable-jit }} 
+        run: |
+          if [ "$arbitrarily_selected_artefact_set" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+            export CI_PLOTS_PATH=plots/$arbitrarily_selected_artefact_set
+            mkdir -p $CI_PLOTS_PATH
+          fi
+          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We;
+      - uses: actions/upload-artifact@v2
+        with:
+          name: plots
+          path: plots
+
   dist:
     runs-on: ubuntu-latest
     needs: [tests]
@@ -150,4 +166,35 @@ jobs:
         uses: pypa/gh-action-pypi-publish@unstable/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+  tip-release-uploads:
+    runs-on: ubuntu-latest
+    needs: [tests]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: plots
+          path: plots
+      - run: |
+          sudo apt install -y librsvg2-bin
+          for path in plots/${{ env.arbitrarily_selected_artefact_set }}/*; do
+              for file in $path/*.svg; do
+                  rsvg-convert $file -o tmp.png
+                  convert tmp.png -flatten -trim +repage -bordercolor white -border 10 $file.png
+              done;
+              rm tmp.png
+              convert $path/*.png $path/anim.gif 
+          done;
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: anims
+          path: plots/${{ env.arbitrarily_selected_artefact_set }}/*/anim.gif
+
+      - if: github.ref == 'refs/heads/main'
+        uses: pyTooling/Actions/releaser@r0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: plots/${{ matrix.arbitrarily_selected_artefact_set }}/*/anim.gif
+          tag: 'latest-generated-plots'
 
