@@ -39,6 +39,7 @@ def make_traversals(grid, halo, n_threads, left_first):
         jit_flags=jit_flags,
         n_threads=n_threads,
         left_first=left_first,
+        buffer_size=0,
     )
 
 
@@ -134,7 +135,8 @@ class TestTraversals:
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
                 cmn.scl_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC]
+                cmn.scl_null_arg_impl[IMPL_BC],
+                cmn.traversals.data.buffer
             )
 
         # assert
@@ -205,7 +207,8 @@ class TestTraversals:
                 *cmn.vec_null_arg_impl[IMPL_META_AND_DATA],
                 cmn.vec_null_arg_impl[IMPL_BC],
                 *cmn.scl_null_arg_impl[IMPL_META_AND_DATA],
-                cmn.scl_null_arg_impl[IMPL_BC]
+                cmn.scl_null_arg_impl[IMPL_BC],
+                cmn.traversals.data.buffer
             )
 
         # assert

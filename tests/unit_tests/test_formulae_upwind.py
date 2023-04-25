@@ -25,6 +25,7 @@ def test_formulae_upwind():
         jit_flags=options.jit_flags,
         n_threads=1,
         left_first=True,
+        buffer_size=0,
     )
     upwind = make_upwind(
         options=options, non_unit_g_factor=False, traversals=traversals
@@ -44,12 +45,12 @@ def test_formulae_upwind():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
         upwind(
-            traversals.null_impl,
+            traversals.data,
             _Impl(field=psi_impl[IMPL_META_AND_DATA], bc=psi_impl[IMPL_BC]),
             _Impl(field=flux_impl[IMPL_META_AND_DATA], bc=flux_impl[IMPL_BC]),
             _Impl(
-                field=traversals.null_impl.scalar[IMPL_META_AND_DATA],
-                bc=traversals.null_impl.scalar[IMPL_BC],
+                field=traversals.data.null_scalar_field[IMPL_META_AND_DATA],
+                bc=traversals.data.null_scalar_field[IMPL_BC],
             ),
         )
 

@@ -36,6 +36,7 @@ class TestBoundaryConditionExtrapolated:
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
             left_first=left_first,
+            buffer_size=0,
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
@@ -45,7 +46,7 @@ class TestBoundaryConditionExtrapolated:
         thread_id = 0
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
-            sut(thread_id, *meta_and_data, fill_halos)
+            sut(thread_id, *meta_and_data, fill_halos, traversals.data.buffer)
 
         # assert
         extrapolator = interpolate.interp1d(
@@ -80,6 +81,7 @@ class TestBoundaryConditionExtrapolated:
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
             left_first=left_first,
+            buffer_size=0,
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
@@ -93,7 +95,7 @@ class TestBoundaryConditionExtrapolated:
         thread_id = 0
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
-            sut(thread_id, *meta_and_data, fill_halos)
+            sut(thread_id, *meta_and_data, fill_halos, traversals.data.buffer)
 
         # assert
         assert (field.data[0][0 : halo - 1] == data[0]).all()

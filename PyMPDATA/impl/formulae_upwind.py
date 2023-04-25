@@ -17,8 +17,8 @@ def make_upwind(options, non_unit_g_factor, traversals):
     )
 
     @numba.njit(**options.jit_flags)
-    def apply(null_impl, psi, flux, g_factor):
-        null_scalarfield, null_scalarfield_bc = null_impl.scalar
+    def apply(traversals_data, psi, flux, g_factor):
+        null_scalarfield, null_scalarfield_bc = traversals_data.null_scalar_field
         return apply_scalar(
             *formulae_upwind,
             *psi.field,
@@ -32,7 +32,7 @@ def make_upwind(options, non_unit_g_factor, traversals):
             null_scalarfield_bc,
             *null_scalarfield,
             null_scalarfield_bc,
-            null_impl.buffer
+            traversals_data.buffer
         )
 
     return apply

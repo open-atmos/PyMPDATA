@@ -2,7 +2,7 @@
 from collections import namedtuple
 from pathlib import Path
 
-import numpy as np  # TODO
+import numpy as np
 
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
@@ -35,11 +35,12 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        self.data = namedtuple(  # TODO: rename to data
-            Path(__file__).stem + "NullFields", ("scalar", "vector", "buffer")
+        self.data = namedtuple(
+            Path(__file__).stem + "TraversalsData",
+            ("null_scalar_field", "null_vector_field", "buffer"),  # NullFields
         )(
-            scalar=ScalarField.make_null(self.n_dims, self).impl,  # null_scalar
-            vector=VectorField.make_null(self.n_dims, self).impl,  # null_vector
+            null_scalar_field=ScalarField.make_null(self.n_dims, self).impl,
+            null_vector_field=VectorField.make_null(self.n_dims, self).impl,
             buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE),
         )
 

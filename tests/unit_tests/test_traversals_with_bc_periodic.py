@@ -59,6 +59,7 @@ def make_traversals(grid, halo, n_threads, left_first):
         jit_flags=JIT_FLAGS,
         n_threads=n_threads,
         left_first=left_first,
+        buffer_size=0,
     )
 
 
@@ -100,7 +101,7 @@ class TestPeriodicBoundaryCondition:
             for thread_id in range(
                 n_threads
             ):  # TODO #96: xfail if not all threads executed?
-                sut(thread_id, *meta_and_data, fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos, traversals.data.buffer)
 
         # assert
         interior = (halo, -halo)
@@ -168,7 +169,7 @@ class TestPeriodicBoundaryCondition:
             for thread_id in range(
                 n_threads
             ):  # TODO #96: xfail if not all threads executed?
-                sut(thread_id, *meta_and_data, fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos, traversals.data.buffer)
 
         # assert
         interior = (halo, -halo)

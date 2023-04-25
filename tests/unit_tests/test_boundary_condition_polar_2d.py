@@ -33,6 +33,7 @@ class TestPolarBoundaryCondition:
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
             left_first=left_first,
+            buffer_size=0,
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
@@ -42,7 +43,7 @@ class TestPolarBoundaryCondition:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
             for thread_id in numba.prange(n_threads):  # pylint: disable=not-an-iterable
-                sut(thread_id, *meta_and_data, fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos, traversals.data.buffer)
 
         # assert
         np.testing.assert_array_equal(
@@ -93,6 +94,7 @@ class TestPolarBoundaryCondition:
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
             left_first=left_first,
+            buffer_size=0,
         )
         field.assemble(traversals)
         meta_and_data, fill_halos = field.impl
@@ -106,7 +108,7 @@ class TestPolarBoundaryCondition:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=NumbaExperimentalFeatureWarning)
             for thread_id in numba.prange(n_threads):  # pylint: disable=not-an-iterable
-                sut(thread_id, *meta_and_data, fill_halos)
+                sut(thread_id, *meta_and_data, fill_halos, traversals.data.buffer)
 
         # assert
         # TODO #120
