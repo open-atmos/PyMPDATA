@@ -1,4 +1,5 @@
 """ halo-filling logic for scalar field traversals (incl. multi-threading) """
+# pylint: disable=too-many-arguments
 import numba
 
 from PyMPDATA.impl.enumerations import (

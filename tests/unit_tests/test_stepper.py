@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,unused-argument,too-many-arguments,protected-access,invalid-name
 from functools import lru_cache
 
 import numba
@@ -52,7 +52,7 @@ class TestStepper:
 
         class Custom:
             @lru_cache()
-            def make_scalar(*args):
+            def make_scalar(self, *args):
                 @numba.njit
                 def fill_halos(buffer, i_rng, j_rng, k_rng, psi, span, sign):
                     buffer[:] = VALUE
@@ -60,7 +60,7 @@ class TestStepper:
                 return fill_halos
 
             @lru_cache()
-            def make_vector(*args):
+            def make_vector(self, *args):
                 @numba.njit
                 def fill_halos(buffer, i_rng, j_rng, k_rng, comp, psi, span, sign):
                     buffer[:] = VALUE

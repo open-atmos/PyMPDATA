@@ -1,5 +1,5 @@
 """ commons for scalar and vector field traversals """
-# pylint: disable=too-many-arguments,line-too-long
+# pylint: disable=too-many-arguments,line-too-long,unused-argument
 import numba
 
 from .enumerations import OUTER, RNG_STOP

@@ -106,7 +106,7 @@ class Stepper:
 
 
 @lru_cache()
-# pylint: disable=too-many-locals,too-many-statements
+# pylint: disable=too-many-locals,too-many-statements,too-many-arguments
 def make_step_impl(
     options, non_unit_g_factor, grid, n_threads, left_first, buffer_size
 ):
