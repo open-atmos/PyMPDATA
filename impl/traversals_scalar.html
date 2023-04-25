@@ -213,6 +213,7 @@ def _make_apply_scalar(
         arg5s_meta,
         arg5s_data,
         arg5s_bc,
+        buffer,
     ):
         for thread_id in range(1) if n_threads == 1 else numba.prange(n_threads):
             boundary_cond_vector(
@@ -220,11 +221,12 @@ def _make_apply_scalar(
                 arg1v_meta,
                 (arg1v_data_o, arg1v_data_m, arg1v_data_i),
                 arg1v_bc,
+                buffer,
             )
-            boundary_cond_scalar(thread_id, arg2s_meta, arg2s_data, arg2s_bc)
-            boundary_cond_scalar(thread_id, arg3s_meta, arg3s_data, arg3s_bc)
-            boundary_cond_scalar(thread_id, arg4s_meta, arg4s_data, arg4s_bc)
-            boundary_cond_scalar(thread_id, arg5s_meta, arg5s_data, arg5s_bc)
+            boundary_cond_scalar(thread_id, arg2s_meta, arg2s_data, arg2s_bc, buffer)
+            boundary_cond_scalar(thread_id, arg3s_meta, arg3s_data, arg3s_bc, buffer)
+            boundary_cond_scalar(thread_id, arg4s_meta, arg4s_data, arg4s_bc, buffer)
+            boundary_cond_scalar(thread_id, arg5s_meta, arg5s_data, arg5s_bc, buffer)
         if not arg1v_meta[META_HALO_VALID]:
             arg1v_meta[META_HALO_VALID] = True
         if not arg2s_meta[META_HALO_VALID]:

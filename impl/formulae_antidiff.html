@@ -57,7 +57,7 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
     )
 
     @numba.njit(**options.jit_flags)
-    def apply(g_c_corr, psi, g_c_unco, g_factor):
+    def apply(traversals_data, g_c_corr, psi, g_c_unco, g_factor):
         return apply_vector(
             *formulae_antidiff,
             *g_c_corr.field,
@@ -66,7 +66,8 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
             *g_c_unco.field,
             g_c_unco.bc,
             *g_factor.field,
-            g_factor.bc
+            g_factor.bc,
+            traversals_data.buffer
         )
 
     return apply
@@ -239,7 +240,7 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
     )
 
     @numba.njit(**options.jit_flags)
-    def apply(g_c_corr, psi, g_c_unco, g_factor):
+    def apply(traversals_data, g_c_corr, psi, g_c_unco, g_factor):
         return apply_vector(
             *formulae_antidiff,
             *g_c_corr.field,
@@ -248,7 +249,8 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
             *g_c_unco.field,
             g_c_unco.bc,
             *g_factor.field,
-            g_factor.bc
+            g_factor.bc,
+            traversals_data.buffer
         )
 
     return apply</code></pre>

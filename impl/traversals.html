@@ -31,9 +31,11 @@
 from collections import namedtuple
 from pathlib import Path
 
+import numpy as np
+
 from ..scalar_field import ScalarField
 from ..vector_field import VectorField
-from .enumerations import INNER, MID3D, OUTER
+from .enumerations import BUFFER_DEFAULT_VALUE, INNER, MID3D, OUTER
 from .grid import make_chunk, make_domain
 from .indexers import make_indexers
 from .traversals_halos_scalar import _make_fill_halos_scalar
@@ -45,14 +47,15 @@ from .traversals_vector import _make_apply_vector
 class Traversals:
     &#34;&#34;&#34;groups njit-ted traversals for a given grid, halo, jit_flags and threading settings&#34;&#34;&#34;
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first):
+    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
         assert not (n_threads &gt; 1 and len(grid) == 1)
+        tmp = (
+            grid[OUTER] if len(grid) &gt; 1 else 0,
+            grid[MID3D] if len(grid) &gt; 2 else 0,
+            grid[INNER],
+        )
         domain = make_domain(
-            (
-                grid[OUTER] if len(grid) &gt; 1 else 0,
-                grid[MID3D] if len(grid) &gt; 2 else 0,
-                grid[INNER],
-            ),
+            tmp,
             jit_flags,
         )
         chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
@@ -61,11 +64,13 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        self.null_impl = namedtuple(
-            Path(__file__).stem + &#34;NullFields&#34;, (&#34;scalar&#34;, &#34;vector&#34;)
+        self.data = namedtuple(
+            Path(__file__).stem + &#34;TraversalsData&#34;,
+            (&#34;null_scalar_field&#34;, &#34;null_vector_field&#34;, &#34;buffer&#34;),  # NullFields
         )(
-            scalar=ScalarField.make_null(self.n_dims, self).impl,
-            vector=VectorField.make_null(self.n_dims, self).impl,
+            null_scalar_field=ScalarField.make_null(self.n_dims, self).impl,
+            null_vector_field=VectorField.make_null(self.n_dims, self).impl,
+            buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE),
         )
 
         common_kwargs = {
@@ -136,7 +141,7 @@ class Traversals:
 <dl>
 <dt id="PyMPDATA.impl.traversals.Traversals"><code class="flex name class">
 <span>class <span class="ident">Traversals</span></span>
-<span>(</span><span>*, grid, halo, jit_flags, n_threads, left_first)</span>
+<span>(</span><span>*, grid, halo, jit_flags, n_threads, left_first, buffer_size)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>groups njit-ted traversals for a given grid, halo, jit_flags and threading settings</p></div>
@@ -147,14 +152,15 @@ class Traversals:
 <pre><code class="python">class Traversals:
     &#34;&#34;&#34;groups njit-ted traversals for a given grid, halo, jit_flags and threading settings&#34;&#34;&#34;
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first):
+    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
         assert not (n_threads &gt; 1 and len(grid) == 1)
+        tmp = (
+            grid[OUTER] if len(grid) &gt; 1 else 0,
+            grid[MID3D] if len(grid) &gt; 2 else 0,
+            grid[INNER],
+        )
         domain = make_domain(
-            (
-                grid[OUTER] if len(grid) &gt; 1 else 0,
-                grid[MID3D] if len(grid) &gt; 2 else 0,
-                grid[INNER],
-            ),
+            tmp,
             jit_flags,
         )
         chunk = make_chunk(grid[OUTER], n_threads, jit_flags)
@@ -163,11 +169,13 @@ class Traversals:
         self.jit_flags = jit_flags
         self.indexers = make_indexers(jit_flags)
 
-        self.null_impl = namedtuple(
-            Path(__file__).stem + &#34;NullFields&#34;, (&#34;scalar&#34;, &#34;vector&#34;)
+        self.data = namedtuple(
+            Path(__file__).stem + &#34;TraversalsData&#34;,
+            (&#34;null_scalar_field&#34;, &#34;null_vector_field&#34;, &#34;buffer&#34;),  # NullFields
         )(
-            scalar=ScalarField.make_null(self.n_dims, self).impl,
-            vector=VectorField.make_null(self.n_dims, self).impl,
+            null_scalar_field=ScalarField.make_null(self.n_dims, self).impl,
+            null_vector_field=VectorField.make_null(self.n_dims, self).impl,
+            buffer=np.full((buffer_size,), BUFFER_DEFAULT_VALUE),
         )
 
         common_kwargs = {
