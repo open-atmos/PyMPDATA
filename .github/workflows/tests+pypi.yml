@@ -183,17 +183,17 @@ jobs:
                   convert tmp.png -flatten -trim +repage -bordercolor white -border 10 $file.png
               done;
               rm tmp.png
-              convert $path/*.png $path/anim.gif 
+              convert $path/*.png plots/`basename $path`-anim.gif 
           done;
 
       - uses: actions/upload-artifact@v2
         with:
           name: anims
-          path: plots/${{ env.arbitrarily_selected_artefact_set }}/*/anim.gif
+          path: plots/*-anim.gif
 
       - if: github.ref == 'refs/heads/main'
         uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: plots/${{ env.arbitrarily_selected_artefact_set }}/*/anim.gif
+          files: plots/*-anim.gif
           tag: 'latest-generated-plots'
