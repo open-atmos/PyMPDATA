@@ -22,30 +22,34 @@
 [numba-mpi](https://github.com/numba-mpi/numba-mpi) coupler sandbox (with a long-term goal of developing a pure-Python LES system)
 
 In principle, PyMPDATA-MPI adapts to API of PyMPDATA to solve the following equation in an environment with multiple nodes:
-$$ \partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0 $$
+$$\partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0$$
 
 It is done with the help of MPI(Message Passing Interface). Every worker is responsible for computing its part of the decomposed domain.
 
 ### 1 worker
 <p align="middle">
-  <img src="rhttps://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_0_size_1_c_field_(0.5,0.25)/anim.gif" width="49%" /> 
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_1_c_field_.-0.5.-0.25.-anim.gif" width="49%" /> 
 </p>
 
 ### 2 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_0_size_2_c_field_(0.5,0.25)/anim.gif" width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_1_size_2_c_field_(0.5,0.25)/anim.gif"  width="49%" /> 
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_2_c_field_.-0.5.-0.25.-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.-0.5.-0.25.-anim.gif"  width="49%" /> 
 </p>
 
 ### 3 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_0_size_3_c_field_(0.5,0.25)/anim.gif" width="32%" />  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_1_size_3_c_field_(0.5,0.25)/anim.gif" width="32%" />  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_2_size_3_c_field_(0.5,0.25)/anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_3_c_field_.-0.5.-0.25.-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_3_c_field_.-0.5.-0.25.-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_3_c_field_.-0.5.-0.25.-anim.gif" width="32%" />
 </p>
 
 ### 4 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_0_size_4_c_field_(0.5,0.25)/anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_1_size_4_c_field_(0.5,0.25)/anim.gif" width="24%" />  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_2_size_4_c_field_(0.5,0.25)/anim.gif" width="24%" />  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/plots/3.10/ubuntu-latest/0/openmpi/n_iters=2_rank_3_size_4_c_field_(0.5,0.25)/anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_3_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
 </p>
 
 ## Credits:
