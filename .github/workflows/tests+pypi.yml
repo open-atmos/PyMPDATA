@@ -155,6 +155,7 @@ jobs:
           pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   examples:
+    needs: [pylint, precommit]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
