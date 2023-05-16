@@ -13,6 +13,8 @@ def get_long_description():
     return long_description
 
 
+CI = "CI" in os.environ
+
 setup(
     name="PyMPDATA",
     description="Numba-accelerated Pythonic implementation of MPDATA "
@@ -20,27 +22,32 @@ setup(
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "numba" + ("==0.56.4" if "CI" in os.environ else ""),
-        "numpy" + ("==1.21.6" if "CI" in os.environ else ""),
+        "numba" + ("==0.56.4" if CI else ""),
+        "numpy" + ("==1.21.6" if CI else ""),
         "pystrict",
     ],
     extras_require={
         "tests": [
-            "matplotlib>=3.2.2",
-            "scipy==1.7.3",
-            "jupyter-core<5.0.0",
-            "ipywidgets!=8.0.3",
+            "matplotlib" + (">=3.2.2" if CI else ""),
+            "scipy" + ("==1.7.3" if CI else ""),
+            "jupyter-core" + ("<5.0.0" if CI else ""),
+            "ipywidgets" + ("!=8.0.3" if CI else ""),
             "ghapi",
             "pytest",
             "pytest-benchmark",
             # this is a PyMPDATA-examples dependency, as of time of writing
             # the pip package depends on deprecated distutils, which cause
             # a warning on Python 3.10, to be removed after joblib release
-            "joblib @ git+https://github.com/joblib/joblib@3d80506#egg=joblib",
+            "joblib"
+            + (
+                " @ git+https://github.com/joblib/joblib@3d80506#egg=joblib"
+                if CI
+                else ""
+            ),
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
-    author_email="sylwester.arabas@uj.edu.pl",
+    author_email="sylwester.arabas@agh.edu.pl",
     license="GPL-3.0",
     packages=find_packages(include=["PyMPDATA", "PyMPDATA.*"]),
     long_description=get_long_description(),
