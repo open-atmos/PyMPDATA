@@ -24,6 +24,20 @@ setup(
         "numpy" + ("==1.21.6" if "CI" in os.environ else ""),
         "pystrict",
     ],
+    extras_require={
+        "tests": [
+            "matplotlib>=3.2.2",
+            "scipy==1.7.3",
+            "jupyter-core<5.0.0",
+            "ipywidgets!=8.0.3",
+            "ghapi",
+            "pytest",
+            "pytest-benchmark",
+            # this is a PyMPDATA-examples dependency, as of time of writing the pip package depends on
+            # deprecated distutils, which cause a warning on Python 3.10, to be removed after joblib release
+            "joblib @ git+https://github.com/joblib/joblib@3d80506#egg=joblib",
+        ]
+    },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     author_email="sylwester.arabas@uj.edu.pl",
     license="GPL-3.0",

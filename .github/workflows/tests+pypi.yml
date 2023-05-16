@@ -36,13 +36,16 @@ jobs:
       NUMBA_DISABLE_JIT: 1
     steps:
     - uses: actions/checkout@master
+      with:
+        submodules: recursive
+        fetch-depth: 0 
     - uses: actions/setup-python@master
       with:
         python-version: 3.9
     - name: Generate coverage report
       run: |
-        pip install -r test-time-requirements.txt
-        pip install -e .
+        pip install -e .[tests]
+        pip install -e PyMPDATA-examples  #TODO: [tests]
         pip install pytest-cov
         pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
     - name: Upload coverage to Codecov
@@ -64,8 +67,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         python setup.py egg_info
-        pip install -r *.egg-info/requires.txt
-        pip install -r test-time-requirements.txt
+        pip install -r *.egg-info/requires.txt  # TODO: [tests]
     - name: Analysing the code with pylint
       run: |
         pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py')
@@ -110,6 +112,9 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0 
 
       - uses: actions/setup-python@v1
         with:
@@ -120,9 +125,8 @@ jobs:
       - run: |
           python -We -c "import PyMPDATA"
       - run: |
-          pip install -r test-time-requirements.txt
-      - run: |
-          pip install -e .
+          pip install -e PyMPDATA-examples
+          pip install -e .[tests]
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
