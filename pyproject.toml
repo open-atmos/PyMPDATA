@@ -20,11 +20,14 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
+    # TODO: these should be handled within PyMPDATA?
+    "numba<0.57.0",
+    "numpy<1.24.0",
     "numba_mpi>=0.30",
-    "PyMPDATA==1.0.10",
+    "PyMPDATA==1.0.11",
     "mpi4py",
     "h5py",
-    "pytest-mpi"
+    "pytest-mpi"  # TODO: move it to optional dependencies (extras_require?)
 ]
 dynamic = ["version"]
 
