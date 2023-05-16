@@ -45,7 +45,7 @@ jobs:
     - name: Generate coverage report
       run: |
         pip install -e .[tests]
-        pip install -e PyMPDATA-examples  #TODO: [tests]
+        pip install -e PyMPDATA-examples
         pip install pytest-cov
         pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
     - name: Upload coverage to Codecov
