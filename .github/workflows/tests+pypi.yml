@@ -69,8 +69,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        pip install -e .[tests]
         pip install -e PyMPDATA-examples
+        pip install -r PyMPDATA-examples/test-time-requirements.txt
+        pip install -e .[tests]
     - run: |
         pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py')
     - run: |
