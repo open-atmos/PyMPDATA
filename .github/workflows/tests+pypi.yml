@@ -175,6 +175,7 @@ jobs:
       - run: |
           python -We -c "import PyMPDATA_examples"
       - run: |
+          pip install -r PyMPDATA-examples/test-time-requirements.txt
           pip install -e .[tests]
       - if: matrix.platform == 'ubuntu-latest'
         run: |
