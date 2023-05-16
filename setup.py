@@ -20,8 +20,8 @@ setup(
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "numba" + ("==0.56.4" if "CI" in os.environ else ""),
-        "numpy" + ("==1.21.6" if "CI" in os.environ else ""),
+        "numba" + ("==0.57.0" if "CI" in os.environ else ""),
+        "numpy" + ("==1.24.3" if "CI" in os.environ else ""),
         "pystrict",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
