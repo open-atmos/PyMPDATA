@@ -58,6 +58,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 0 
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
@@ -66,12 +69,22 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        python setup.py egg_info
-        pip install -r *.egg-info/requires.txt  # TODO: [tests]
-    - name: Analysing the code with pylint
-      run: |
+        pip install -e .[tests]
+        pip install -e PyMPDATA-examples
+    - run: |
         pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py')
-
+    - run: |
+        # TODO #299
+        cd PyMPDATA-examples
+        pylint --disable=fixme --max-module-lines=200 \
+               --disable=too-many-locals,too-many-branches,duplicate-code,invalid-name,missing-function-docstring,missing-module-docstring,too-many-arguments,missing-class-docstring,too-many-instance-attributes $(git ls-files '*.py')
+        cd ..
+    - run: |
+        # TODO #299
+        cd PyMPDATA-examples
+        nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,ungrouped-imports \
+                    --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
+        cd ..
   pdoc:
     runs-on: ubuntu-latest
     steps:
