@@ -87,25 +87,28 @@ jobs:
                     --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
         cd ..
   pdoc:
+    strategy:
+      matrix:
+        pkg-dir: ["PyMPDATA", "PyMPDATA-examples/PyMPDATA_examples"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
+          submodules: recursive
           persist-credentials: false
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Build
-        run: |
+      - run: |
           pip3 install pdoc3
           pip install -e .
-          python -We -m pdoc --html PyMPDATA
-      - name: Deploy
-        if: github.ref == 'refs/heads/main'
+          python -We -m pdoc --html ${{ matrix.pkg-dir }}
+          echo PKG_NAME=`ls -1 html` >> $GITHUB_ENV
+      - if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           BRANCH: pdoc
-          FOLDER: html/PyMPDATA
+          FOLDER: html/${{ env.PKG_NAME }}
           CLEAN: true
 
   zenodo_json:
