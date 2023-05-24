@@ -70,7 +70,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint nbqa
+        pip install pylint nbqa pdoc3 # (pdoc3 for checking the .github/workflows/pdoc_index_workaround.py)
         pip install -e ./PyMPDATA-examples[tests]
         pip install -e .[tests]
     - run: |
