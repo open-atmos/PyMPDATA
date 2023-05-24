@@ -38,7 +38,9 @@ def test_todos_annotated(project_file, gh_issues):
 
 
 # https://stackoverflow.com/questions/7012921/recursive-grep-using-python
-def _findfiles(path, regex):
+def findfiles(path, regex):
+    """returns a list of filenames within a specified path matching a given regex
+    (depending on the regex pattern, it can be recursive or not)"""
     reg_obj = re.compile(regex)
     res = []
     for root, _, fnames in os.walk(path):
@@ -59,12 +61,13 @@ def _grep(filepath, regex):
 
 
 @pytest.fixture(
-    params=_findfiles(
+    params=findfiles(
         pathlib.Path(__file__).parent.parent.parent.absolute(),
         r".*\.(ipynb|py|txt|yml|m|jl|md)$",
-    )
+    ),
+    name="project_file",
 )
-def project_file(request):
+def _project_file(request):
     """pytest fixture enabling execution of the test for each project file"""
     return request.param
 
