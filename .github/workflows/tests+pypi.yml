@@ -124,6 +124,7 @@ jobs:
           prop_path: 'creators'
 
   tests:
+    timeout-minutes: 100
     needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
     strategy:
       matrix:
