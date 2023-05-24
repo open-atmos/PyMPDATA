@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>PyMPDATA_examples API documentation</title>
+<title>PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,83 +19,129 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>PyMPDATA_examples</code></h1>
+<h1 class="title">Module <code>PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
-try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, VersionConflict):
-    # package is not installed
-    pass</code></pre>
+<pre><code class="python">from PyMPDATA import Options, Stepper, ScalarField, Solver
+from PyMPDATA.boundary_conditions import Periodic
+from PyMPDATA_examples.utils.discretisation import from_pdf_2d
+from PyMPDATA_examples.utils import nondivergent_vector_field_2d
+from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings import Settings
+
+
+class Simulation:
+    def __init__(self, settings: Settings, options: Options):
+        _, __, z = from_pdf_2d(
+            settings.pdf,
+            xrange=settings.xrange,
+            yrange=settings.yrange,
+            gridsize=settings.grid
+        )
+        stepper = Stepper(options=options, grid=settings.grid, non_unit_g_factor=False)
+        advector = nondivergent_vector_field_2d(
+            settings.grid,
+            settings.size,
+            settings.dt,
+            settings.stream_function,
+            options.n_halo
+        )
+        advectee = ScalarField(z.astype(dtype=options.dtype), halo=options.n_halo,
+                               boundary_conditions=(Periodic(), Periodic()))
+        self.mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
+        self.nt = settings.nt
+
+    @property
+    def state(self):
+        return self.mpdata.advectee.get().copy()
+
+    def run(self):
+        self.mpdata.advance(self.nt)</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="PyMPDATA_examples.Arabas_and_Farhat_2020" href="Arabas_and_Farhat_2020/index.html">PyMPDATA_examples.Arabas_and_Farhat_2020</a></code></dt>
+<dt id="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation"><code class="flex name class">
+<span>class <span class="ident">Simulation</span></span>
+<span>(</span><span>settings: <a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings.Settings" href="settings.html#PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings.Settings">Settings</a>, options: PyMPDATA.options.Options)</span>
+</code></dt>
 <dd>
 <div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Bartman_et_al_2022" href="Bartman_et_al_2022/index.html">PyMPDATA_examples.Bartman_et_al_2022</a></code></dt>
-<dd>
-<div class="desc"><p>example documented in
-<a href="https://joss.theoj.org/papers/10e7361e43785dbb1b3d659c5b01757a">Bartman et al. 2022</a></p></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.DPDC" href="DPDC/index.html">PyMPDATA_examples.DPDC</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Jarecka_et_al_2015" href="Jarecka_et_al_2015/index.html">PyMPDATA_examples.Jarecka_et_al_2015</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12" href="Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/index.html">PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12</a></code></dt>
-<dd>
-<div class="desc"><p>example based on the solid-body rotation test from
-<a href="http://dx.doi.org/10.1175/1520-0450(1968)007%3C0160:AOFDMA%3E2.0.CO;2">Molenkap 1968</a>
-(as in Fig …</p></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Olesik_et_al_2022" href="Olesik_et_al_2022/index.html">PyMPDATA_examples.Olesik_et_al_2022</a></code></dt>
-<dd>
-<div class="desc"><p>example documented in <a href="https://arxiv.org/abs/2011.14726">Olesik et al. 2020</a></p></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Shipway_and_Hill_2012" href="Shipway_and_Hill_2012/index.html">PyMPDATA_examples.Shipway_and_Hill_2012</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Smolarkiewicz_1984" href="Smolarkiewicz_1984/index.html">PyMPDATA_examples.Smolarkiewicz_1984</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12" href="Smolarkiewicz_2006_Figs_3_4_10_11_12/index.html">PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12</a></code></dt>
-<dd>
-<div class="desc"><p>example based on basic 1D advection test from
-<a href="https://doi.org/10.1002/fld.1071">Smolarkiewicz 2006</a></p></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14" href="Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/index.html">PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14</a></code></dt>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Simulation:
+    def __init__(self, settings: Settings, options: Options):
+        _, __, z = from_pdf_2d(
+            settings.pdf,
+            xrange=settings.xrange,
+            yrange=settings.yrange,
+            gridsize=settings.grid
+        )
+        stepper = Stepper(options=options, grid=settings.grid, non_unit_g_factor=False)
+        advector = nondivergent_vector_field_2d(
+            settings.grid,
+            settings.size,
+            settings.dt,
+            settings.stream_function,
+            options.n_halo
+        )
+        advectee = ScalarField(z.astype(dtype=options.dtype), halo=options.n_halo,
+                               boundary_conditions=(Periodic(), Periodic()))
+        self.mpdata = Solver(stepper=stepper, advectee=advectee, advector=advector)
+        self.nt = settings.nt
+
+    @property
+    def state(self):
+        return self.mpdata.advectee.get().copy()
+
+    def run(self):
+        self.mpdata.advance(self.nt)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation.state"><code class="name">var <span class="ident">state</span></code></dt>
 <dd>
 <div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.advection_diffusion_1d" href="advection_diffusion_1d/index.html">PyMPDATA_examples.advection_diffusion_1d</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="PyMPDATA_examples.utils" href="utils/index.html">PyMPDATA_examples.utils</a></code></dt>
-<dd>
-<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def state(self):
+    return self.mpdata.advectee.get().copy()</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+<h3>Methods</h3>
+<dl>
+<dt id="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self):
+    self.mpdata.advance(self.nt)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -104,20 +150,20 @@ except (DistributionNotFound, VersionConflict):
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="PyMPDATA_examples.Arabas_and_Farhat_2020" href="Arabas_and_Farhat_2020/index.html">PyMPDATA_examples.Arabas_and_Farhat_2020</a></code></li>
-<li><code><a title="PyMPDATA_examples.Bartman_et_al_2022" href="Bartman_et_al_2022/index.html">PyMPDATA_examples.Bartman_et_al_2022</a></code></li>
-<li><code><a title="PyMPDATA_examples.DPDC" href="DPDC/index.html">PyMPDATA_examples.DPDC</a></code></li>
-<li><code><a title="PyMPDATA_examples.Jarecka_et_al_2015" href="Jarecka_et_al_2015/index.html">PyMPDATA_examples.Jarecka_et_al_2015</a></code></li>
-<li><code><a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12" href="Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/index.html">PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12</a></code></li>
-<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022" href="Olesik_et_al_2022/index.html">PyMPDATA_examples.Olesik_et_al_2022</a></code></li>
-<li><code><a title="PyMPDATA_examples.Shipway_and_Hill_2012" href="Shipway_and_Hill_2012/index.html">PyMPDATA_examples.Shipway_and_Hill_2012</a></code></li>
-<li><code><a title="PyMPDATA_examples.Smolarkiewicz_1984" href="Smolarkiewicz_1984/index.html">PyMPDATA_examples.Smolarkiewicz_1984</a></code></li>
-<li><code><a title="PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12" href="Smolarkiewicz_2006_Figs_3_4_10_11_12/index.html">PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12</a></code></li>
-<li><code><a title="PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14" href="Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/index.html">PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14</a></code></li>
-<li><code><a title="PyMPDATA_examples.advection_diffusion_1d" href="advection_diffusion_1d/index.html">PyMPDATA_examples.advection_diffusion_1d</a></code></li>
-<li><code><a title="PyMPDATA_examples.utils" href="utils/index.html">PyMPDATA_examples.utils</a></code></li>
+<li><code><a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12" href="index.html">PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation" href="#PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation">Simulation</a></code></h4>
+<ul class="">
+<li><code><a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation.run" href="#PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation.run">run</a></code></li>
+<li><code><a title="PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation.state" href="#PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation.Simulation.state">state</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

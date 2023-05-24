@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>PyMPDATA_examples.Olesik_et_al_2022.analysis API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>PyMPDATA_examples.Olesik_et_al_2022.analysis</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from collections import namedtuple
+from copy import deepcopy
+import numpy as np
+from joblib import Parallel, parallel_backend, delayed
+from PyMPDATA import Options
+from PyMPDATA_examples.Olesik_et_al_2022.simulation import Simulation
+from PyMPDATA_examples.Olesik_et_al_2022.equilibrium_drop_growth import PdfEvolver
+from PyMPDATA_examples.utils.error_norms import L2
+from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
+from PyMPDATA_examples.Olesik_et_al_2022.coordinates import x_id, x_log_of_pn, x_p2
+from PyMPDATA_examples.Olesik_et_al_2022.settings import Settings, default_mixing_ratios_g_kg
+
+
+def analysis(settings, grid_layout, psi_coord, options_dict, GC_max):
+    options_str = str(options_dict)
+    options = Options(**options_dict)
+    simulation = Simulation(settings, grid_layout, psi_coord, options, GC_max)
+    result = {&#34;n&#34;: [], &#34;n_analytical&#34;: [], &#34;error_norm_L2&#34;: [], &#34;wall_time&#34;:[]}
+    last_step = 0
+    for n_steps in simulation.out_steps:
+        steps = n_steps - last_step
+        wall_time = simulation.step(steps) if steps &gt; 0 else 0
+        last_step += steps
+        result[&#39;n&#39;].append(simulation.n_of_r.copy())
+        result[&#39;wall_time&#39;].append(wall_time)
+    result[&#39;r&#39;] = simulation.r.copy()
+    result[&#39;rh&#39;] = simulation.rh.copy()
+    result[&#39;dx&#39;] = simulation.dx
+    return Result(
+        grid_layout_str=grid_layout.__class__.__name__,
+        option_str=options_str,
+        result=result,
+        out_steps=simulation.out_steps,
+        dt=simulation.dt
+    )
+
+
+def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
+                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
+                        opt_set=({&#39;n_iters&#39;: 1},),
+                        mixing_ratios_g_kg=default_mixing_ratios_g_kg
+                        ):
+    settings = Settings(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
+    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+        results = Parallel(verbose=10)(
+            delayed(analysis)(settings, grid_layout, psi_coord, options, GC_max)
+            for grid_layout in grid_layouts
+            for options in deepcopy(opt_set)
+        )
+
+    cases = {}
+    for result in results:
+        case = Case(result)
+        if case.grid_layout_str not in cases:
+            cases[case.grid_layout_str] = case
+
+
+    output = {}
+    for coord, case in cases.items():
+        output[coord] = {&#34;numerical&#34;: {}, &#34;wall_time&#34;: {}}
+        for result in results:
+            if coord == result.grid_layout_str:
+                opts = result.option_str
+                data = result.result
+                rh = data.pop(&#34;rh&#34;)
+                r = data.pop(&#39;r&#39;)
+                dx = data.pop(&#39;dx&#39;)
+
+                if &#39;grid&#39; not in output[coord]:
+                    output[coord][&#34;grid&#34;] = {
+                        &#39;rh&#39;: rh, &#39;r&#39;: r, &#39;dx&#39;: dx, &#39;dt&#39;: case.dt, &#39;out_steps&#39;: case.out_steps
+                    }
+                output[coord][&#34;numerical&#34;][opts] = data[&#39;n&#39;]
+
+    for coord, case in cases.items():
+        analytical = []
+        for t in [case.dt * nt for nt in case.out_steps]:
+            pdf_t = PdfEvolver(settings.pdf, settings.drdt, t)
+            rh = output[coord][&#34;grid&#34;][&#39;rh&#39;]
+            analytical.append(discretised_analytical_solution(
+                rh.magnitude,
+                lambda r, pdf_t=pdf_t, rh=rh: pdf_t(r * rh.units).magnitude,
+                midpoint_value=True,
+                r=output[coord][&#34;grid&#34;][&#39;r&#39;].magnitude
+            ) * pdf_t(rh[0]).units)
+        output[coord][&#34;analytical&#34;] = analytical
+
+    for coord, case in cases.items():
+        error_L2 = {}
+        analytical = output[coord][&#34;analytical&#34;]
+        for opts in output[coord][&#34;numerical&#34;]:
+            numerical = output[coord][&#34;numerical&#34;][opts]
+            error_L2[opts] = L2(
+                numerical[-1].magnitude,
+                analytical[-1].magnitude,
+                case.out_steps[-1]
+            )
+        output[coord][&#34;error_L2&#34;] = error_L2
+
+    for coord, case in cases.items():
+        for result in results:
+            data = result.result
+            for opts in output[coord][&#34;numerical&#34;]:
+                output[coord][&#34;wall_time&#34;][opts] = data[&#34;wall_time&#34;]
+
+    return output, settings
+
+
+class Result(namedtuple(&#34;Result&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;, &#39;option_str&#39;, &#39;result&#39;))):
+    __slots__ = ()
+
+
+def Case(result: Result):
+    return namedtuple(&#34;Case&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;))(
+        dt=result.dt,
+        out_steps=result.out_steps,
+        grid_layout_str=result.grid_layout_str
+    )
+
+
+def rel_disp(r, psi, psi_coord):
+    mom0 = 0
+    mom1 = 0
+    mom2 = 0
+    for i, psi_i in enumerate(psi):
+        dp_i = (
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        )
+        A_i = (
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 1) -
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
+        )
+        B_i = (
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 2) -
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
+        )
+        bin_mom0 = psi_i * dp_i
+        bin_mom1 = psi_i * A_i
+        bin_mom2 = psi_i * B_i
+        mom0 += bin_mom0
+        mom1 += bin_mom1
+        mom2 += bin_mom2
+    mu = mom1 / mom0
+    std = np.sqrt(mom2/mom0 - mu**2)
+    d = std/mu
+    return d
+
+
+def third_moment(r, psi, psi_coord, normalised=True):
+    mom0 = 0
+    mom3 = 0
+    for i, psi_i in enumerate(psi):
+        dp_i = (psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
+                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0))
+        integral_i = (
+                psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 3) -
+                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3))
+        bin_mom0 = psi_i * dp_i
+        bin_mom3 = psi_i * integral_i
+        mom0 += bin_mom0
+        mom3 += bin_mom3
+    if normalised:
+        mom3 /= mom0
+    return mom3</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="PyMPDATA_examples.Olesik_et_al_2022.analysis.Case"><code class="name flex">
+<span>def <span class="ident">Case</span></span>(<span>result: <a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.Result" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.Result">Result</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Case(result: Result):
+    return namedtuple(&#34;Case&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;))(
+        dt=result.dt,
+        out_steps=result.out_steps,
+        grid_layout_str=result.grid_layout_str
+    )</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA_examples.Olesik_et_al_2022.analysis.analysis"><code class="name flex">
+<span>def <span class="ident">analysis</span></span>(<span>settings, grid_layout, psi_coord, options_dict, GC_max)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def analysis(settings, grid_layout, psi_coord, options_dict, GC_max):
+    options_str = str(options_dict)
+    options = Options(**options_dict)
+    simulation = Simulation(settings, grid_layout, psi_coord, options, GC_max)
+    result = {&#34;n&#34;: [], &#34;n_analytical&#34;: [], &#34;error_norm_L2&#34;: [], &#34;wall_time&#34;:[]}
+    last_step = 0
+    for n_steps in simulation.out_steps:
+        steps = n_steps - last_step
+        wall_time = simulation.step(steps) if steps &gt; 0 else 0
+        last_step += steps
+        result[&#39;n&#39;].append(simulation.n_of_r.copy())
+        result[&#39;wall_time&#39;].append(wall_time)
+    result[&#39;r&#39;] = simulation.r.copy()
+    result[&#39;rh&#39;] = simulation.rh.copy()
+    result[&#39;dx&#39;] = simulation.dx
+    return Result(
+        grid_layout_str=grid_layout.__class__.__name__,
+        option_str=options_str,
+        result=result,
+        out_steps=simulation.out_steps,
+        dt=simulation.dt
+    )</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA_examples.Olesik_et_al_2022.analysis.compute_figure_data"><code class="name flex">
+<span>def <span class="ident">compute_figure_data</span></span>(<span>*, nr, GC_max, psi_coord=&lt;PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_id object&gt;, grid_layouts=(&lt;PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_id object&gt;, &lt;PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_p2 object&gt;, &lt;PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_log_of_pn object&gt;), opt_set=({'n_iters': 1},), mixing_ratios_g_kg=array([ 1,
+2,
+4,
+6,
+8, 10]))</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
+                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
+                        opt_set=({&#39;n_iters&#39;: 1},),
+                        mixing_ratios_g_kg=default_mixing_ratios_g_kg
+                        ):
+    settings = Settings(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
+    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+        results = Parallel(verbose=10)(
+            delayed(analysis)(settings, grid_layout, psi_coord, options, GC_max)
+            for grid_layout in grid_layouts
+            for options in deepcopy(opt_set)
+        )
+
+    cases = {}
+    for result in results:
+        case = Case(result)
+        if case.grid_layout_str not in cases:
+            cases[case.grid_layout_str] = case
+
+
+    output = {}
+    for coord, case in cases.items():
+        output[coord] = {&#34;numerical&#34;: {}, &#34;wall_time&#34;: {}}
+        for result in results:
+            if coord == result.grid_layout_str:
+                opts = result.option_str
+                data = result.result
+                rh = data.pop(&#34;rh&#34;)
+                r = data.pop(&#39;r&#39;)
+                dx = data.pop(&#39;dx&#39;)
+
+                if &#39;grid&#39; not in output[coord]:
+                    output[coord][&#34;grid&#34;] = {
+                        &#39;rh&#39;: rh, &#39;r&#39;: r, &#39;dx&#39;: dx, &#39;dt&#39;: case.dt, &#39;out_steps&#39;: case.out_steps
+                    }
+                output[coord][&#34;numerical&#34;][opts] = data[&#39;n&#39;]
+
+    for coord, case in cases.items():
+        analytical = []
+        for t in [case.dt * nt for nt in case.out_steps]:
+            pdf_t = PdfEvolver(settings.pdf, settings.drdt, t)
+            rh = output[coord][&#34;grid&#34;][&#39;rh&#39;]
+            analytical.append(discretised_analytical_solution(
+                rh.magnitude,
+                lambda r, pdf_t=pdf_t, rh=rh: pdf_t(r * rh.units).magnitude,
+                midpoint_value=True,
+                r=output[coord][&#34;grid&#34;][&#39;r&#39;].magnitude
+            ) * pdf_t(rh[0]).units)
+        output[coord][&#34;analytical&#34;] = analytical
+
+    for coord, case in cases.items():
+        error_L2 = {}
+        analytical = output[coord][&#34;analytical&#34;]
+        for opts in output[coord][&#34;numerical&#34;]:
+            numerical = output[coord][&#34;numerical&#34;][opts]
+            error_L2[opts] = L2(
+                numerical[-1].magnitude,
+                analytical[-1].magnitude,
+                case.out_steps[-1]
+            )
+        output[coord][&#34;error_L2&#34;] = error_L2
+
+    for coord, case in cases.items():
+        for result in results:
+            data = result.result
+            for opts in output[coord][&#34;numerical&#34;]:
+                output[coord][&#34;wall_time&#34;][opts] = data[&#34;wall_time&#34;]
+
+    return output, settings</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA_examples.Olesik_et_al_2022.analysis.rel_disp"><code class="name flex">
+<span>def <span class="ident">rel_disp</span></span>(<span>r, psi, psi_coord)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rel_disp(r, psi, psi_coord):
+    mom0 = 0
+    mom1 = 0
+    mom2 = 0
+    for i, psi_i in enumerate(psi):
+        dp_i = (
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        )
+        A_i = (
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 1) -
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
+        )
+        B_i = (
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 2) -
+            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
+        )
+        bin_mom0 = psi_i * dp_i
+        bin_mom1 = psi_i * A_i
+        bin_mom2 = psi_i * B_i
+        mom0 += bin_mom0
+        mom1 += bin_mom1
+        mom2 += bin_mom2
+    mu = mom1 / mom0
+    std = np.sqrt(mom2/mom0 - mu**2)
+    d = std/mu
+    return d</code></pre>
+</details>
+</dd>
+<dt id="PyMPDATA_examples.Olesik_et_al_2022.analysis.third_moment"><code class="name flex">
+<span>def <span class="ident">third_moment</span></span>(<span>r, psi, psi_coord, normalised=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def third_moment(r, psi, psi_coord, normalised=True):
+    mom0 = 0
+    mom3 = 0
+    for i, psi_i in enumerate(psi):
+        dp_i = (psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
+                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0))
+        integral_i = (
+                psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 3) -
+                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3))
+        bin_mom0 = psi_i * dp_i
+        bin_mom3 = psi_i * integral_i
+        mom0 += bin_mom0
+        mom3 += bin_mom3
+    if normalised:
+        mom3 /= mom0
+    return mom3</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="PyMPDATA_examples.Olesik_et_al_2022.analysis.Result"><code class="flex name class">
+<span>class <span class="ident">Result</span></span>
+<span>(</span><span>dt, out_steps, grid_layout_str, option_str, result)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Result(dt, out_steps, grid_layout_str, option_str, result)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Result(namedtuple(&#34;Result&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;, &#39;option_str&#39;, &#39;result&#39;))):
+    __slots__ = ()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022" href="index.html">PyMPDATA_examples.Olesik_et_al_2022</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.Case" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.Case">Case</a></code></li>
+<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.analysis" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.analysis">analysis</a></code></li>
+<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.compute_figure_data" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.compute_figure_data">compute_figure_data</a></code></li>
+<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.rel_disp" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.rel_disp">rel_disp</a></code></li>
+<li><code><a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.third_moment" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.third_moment">third_moment</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="PyMPDATA_examples.Olesik_et_al_2022.analysis.Result" href="#PyMPDATA_examples.Olesik_et_al_2022.analysis.Result">Result</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
