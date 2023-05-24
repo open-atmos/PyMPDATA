@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>PyMPDATA.impl.traversals_halos_vector API documentation</title>
+<meta name="description" content="halo-filling logic for vector field traversals (incl. multi-threading)" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>PyMPDATA.impl.traversals_halos_vector</code></h1>
+</header>
+<section id="section-intro">
+<p>halo-filling logic for vector field traversals (incl. multi-threading)</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34; halo-filling logic for vector field traversals (incl. multi-threading) &#34;&#34;&#34;
+# pylint: disable=too-many-statements,too-many-locals,too-many-lines,too-many-function-args,too-many-arguments
+
+import numba
+
+from PyMPDATA.impl.enumerations import (
+    INNER,
+    INVALID_INDEX,
+    MID3D,
+    ONE_FOR_STAGGERED_GRID,
+    OUTER,
+    RNG_START,
+    RNG_STOP,
+    SIGN_LEFT,
+    SIGN_RIGHT,
+)
+from PyMPDATA.impl.meta import META_HALO_VALID
+from PyMPDATA.impl.traversals_common import make_common
+
+
+def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_first):
+    common = make_common(jit_flags, spanner, chunker)
+    halos = ((halo - 1, halo, halo), (halo, halo - 1, halo), (halo, halo, halo - 1))
+    # pylint:disable=duplicate-code
+    kwargs = {
+        &#34;jit_flags&#34;: jit_flags,
+        &#34;halo&#34;: halo,
+        &#34;n_dims&#34;: n_dims,
+        &#34;halos&#34;: halos,
+        &#34;left_first&#34;: left_first,
+    }
+
+    outer_outer = __make_outer_outer(**kwargs)
+    outer_mid3d = __make_outer_mid3d(**kwargs)
+    outer_inner = __make_outer_inner(**kwargs)
+    mid3d_outer = __make_mid3d_outer(**kwargs)
+    mid3d_mid3d = __make_mid3d_mid3d(**kwargs)
+    mid3d_inner = __make_mid3d_inner(**kwargs)
+    inner_outer = __make_inner_outer(**kwargs)
+    inner_inner = __make_inner_inner(**kwargs)
+    inner_mid3d = __make_inner_mid3d(**kwargs)
+
+    @numba.njit(**jit_flags)
+    # pylint: disable=too-many-arguments
+    def boundary_cond_vector(thread_id, meta, components, halo_fillers, buffer):
+        if meta[META_HALO_VALID]:
+            return
+        span, rng_outer, last_thread, first_thread = common(meta, thread_id)
+
+        outer_outer(
+            span, components, halo_fillers[OUTER], first_thread, last_thread, buffer
+        )
+        outer_mid3d(
+            span, components, halo_fillers[MID3D], rng_outer, last_thread, buffer
+        )
+        outer_inner(
+            span, components, halo_fillers[INNER], rng_outer, last_thread, buffer
+        )
+
+        mid3d_outer(
+            span, components, halo_fillers[OUTER], first_thread, last_thread, buffer
+        )
+        mid3d_mid3d(
+            span, components, halo_fillers[MID3D], rng_outer, last_thread, buffer
+        )
+        mid3d_inner(
+            span, components, halo_fillers[INNER], rng_outer, last_thread, buffer
+        )
+
+        inner_outer(
+            span, components, halo_fillers[OUTER], first_thread, last_thread, buffer
+        )
+        inner_mid3d(
+            span, components, halo_fillers[MID3D], rng_outer, last_thread, buffer
+        )
+        inner_inner(
+            span, components, halo_fillers[INNER], last_thread, rng_outer, buffer
+        )
+
+    return boundary_cond_vector
+
+
+def __make_outer_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def outer_outer_left(first_thread, _last_thread, span, components, fun, buffer):
+        if first_thread:
+            i_rng = range(
+                halos[OUTER][OUTER] - 1, -1, -1
+            )  # note: non-reverse order assumed in Extrapolated
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims &gt; 2 else (INVALID_INDEX,)
+            k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
+            fun(
+                buffer,
+                i_rng,
+                j_rng,
+                k_rng,
+                components,
+                OUTER,
+                span[OUTER] + 1,
+                SIGN_LEFT,
+            )
+
+    @numba.njit(**jit_flags)
+    def outer_outer_right(_first_thread, last_thread, span, components, fun, buffer):
+        if last_thread:
+            i_rng = range(
+                span[OUTER] + ONE_FOR_STAGGERED_GRID + halos[OUTER][OUTER],
+                span[OUTER] + ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER],
+            )  # note: non-reverse order assumed in Extrapolated
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims &gt; 2 else (INVALID_INDEX,)
+            k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
+            fun(
+                buffer,
+                i_rng,
+                j_rng,
+                k_rng,
+                components,
+                OUTER,
+                span[OUTER] + 1,
+                SIGN_RIGHT,
+            )
+
+    if left_first:
+        outer_outer_first = outer_outer_left
+        outer_outer_last = outer_outer_right
+    else:
+        outer_outer_first = outer_outer_right
+        outer_outer_last = outer_outer_left
+
+    @numba.njit(**jit_flags)
+    def outer_outer(span, components, fun, first_thread, last_thread, buffer):
+        if n_dims &gt; 1:
+            outer_outer_first(first_thread, last_thread, span, components, fun, buffer)
+            outer_outer_last(first_thread, last_thread, span, components, fun, buffer)
+
+    return outer_outer
+
+
+def __make_outer_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def outer_mid3d_left_jk(span, components, dim, fun, i, buffer):
+        j_rng = range(0, halos[OUTER][MID3D])
+        k_rng = range(0, span[INNER] + 2 * halo)
+        fun(buffer, i, j_rng, k_rng, components, dim, span[MID3D], SIGN_LEFT)
+
+    @numba.njit(**jit_flags)
+    def outer_mid3d_right_jk(span, components, dim, fun, i, buffer):
+        j_rng = range(
+            span[MID3D] + halos[OUTER][MID3D], span[MID3D] + 2 * halos[OUTER][MID3D]
+        )
+        k_rng = range(0, span[INNER] + 2 * halo)
+
+        fun(buffer, i, j_rng, k_rng, components, dim, span[MID3D], SIGN_RIGHT)
+
+    if left_first:
+        outer_mid3d_first_jk = outer_mid3d_left_jk
+        outer_mid3d_last_jk = outer_mid3d_right_jk
+    else:
+        outer_mid3d_first_jk = outer_mid3d_right_jk
+        outer_mid3d_last_jk = outer_mid3d_left_jk
+
+    @numba.njit(**jit_flags)
+    def outer_mid3d(span, components, fun, rng_outer, last_thread, buffer):
+        if n_dims &gt; 2:
+            i_rng = range(
+                rng_outer[RNG_START],
+                rng_outer[RNG_STOP]
+                + (
+                    (ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER])
+                    if last_thread
+                    else 0
+                ),
+            )
+            outer_mid3d_first_jk(span, components, OUTER, fun, i_rng, buffer)
+            outer_mid3d_last_jk(span, components, OUTER, fun, i_rng, buffer)
+
+    return outer_mid3d
+
+
+def __make_outer_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def outer_inner_left_k(span, components, dim, fun, i, j, buffer):
+        k_rng = range(0, halos[OUTER][INNER])
+        fun(buffer, i, j, k_rng, components, dim, span[INNER], SIGN_LEFT)
+
+    @numba.njit(**jit_flags)
+    def outer_inner_right_k(span, components, dim, fun, i, j, buffer):
+        k_rng = range(
+            span[INNER] + halos[OUTER][INNER],
+            span[INNER] + 2 * halos[OUTER][INNER],
+        )
+        fun(buffer, i, j, k_rng, components, dim, span[INNER], SIGN_RIGHT)
+
+    if left_first:
+        outer_inner_first_k = outer_inner_left_k
+        outer_inner_last_k = outer_inner_right_k
+    else:
+        outer_inner_first_k = outer_inner_right_k
+        outer_inner_last_k = outer_inner_left_k
+
+    @numba.njit(**jit_flags)
+    def outer_inner(span, components, fun, rng_outer, last_thread, buffer):
+        if n_dims &gt; 1:
+            i_rng = range(
+                rng_outer[RNG_START],
+                rng_outer[RNG_STOP]
+                + (
+                    (ONE_FOR_STAGGERED_GRID + 2 * halos[OUTER][OUTER])
+                    if last_thread
+                    else 0
+                ),
+            )
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims &gt; 2 else (INVALID_INDEX,)
+            outer_inner_first_k(span, components, OUTER, fun, i_rng, j_rng, buffer)
+            outer_inner_last_k(span, components, OUTER, fun, i_rng, j_rng, buffer)
+
+    return outer_inner
+
+
+def __make_mid3d_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def mid3d_outer_left(
+        first_thread, _last_thread, span, components, dim, fun, buffer
+    ):
+        if first_thread:
+            i_rng = range(0, halos[MID3D][OUTER])
+            j_rng = range(
+                0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
+            )
+            k_rng = range(0, span[INNER] + 2 * halo)
+
+            fun(buffer, i_rng, j_rng, k_rng, components, dim, span[OUTER], SIGN_LEFT)
+
+    @numba.njit(**jit_flags)
+    def mid3d_outer_right(
+        _first_thread, last_thread, span, components, dim, fun, buffer
+    ):
+        if last_thread:
+            i_rng = range(
+                span[OUTER] + halos[MID3D][OUTER], span[OUTER] + 2 * halos[MID3D][OUTER]
+            )
+            j_rng = range(
+                0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
+            )
+            k_rng = range(0, span[INNER] + 2 * halo)
+
+            fun(buffer, i_rng, j_rng, k_rng, components, dim, span[OUTER], SIGN_RIGHT)
+
+    if left_first:
+        mid3d_outer_first = mid3d_outer_left
+        mid3d_outer_last = mid3d_outer_right
+    else:
+        mid3d_outer_first = mid3d_outer_right
+        mid3d_outer_last = mid3d_outer_left
+
+    @numba.njit(**jit_flags)
+    def mid3d_outer(span, components, fun, first_thread, last_thread, buffer):
+        if n_dims &gt; 2:
+            mid3d_outer_first(
+                first_thread, last_thread, span, components, MID3D, fun, buffer
+            )
+            mid3d_outer_last(
+                first_thread, last_thread, span, components, MID3D, fun, buffer
+            )
+
+    return mid3d_outer
+
+
+def __make_mid3d_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def mid3d_mid3d_left_jk(span, components, dim, fun, i, buffer):
+        j_rng = range(0, halos[MID3D][MID3D])
+        k_rng = range(0, span[INNER] + 2 * halo)
+
+        fun(
+            buffer,
+            i,
+            j_rng,
+            k_rng,
+            components,
+            dim,
+            span[MID3D] + ONE_FOR_STAGGERED_GRID,
+            SIGN_LEFT,
+        )
+
+    @numba.njit(**jit_flags)
+    def mid3d_mid3d_right_jk(span, components, dim, fun, i, buffer):
+        j_rng = range(
+            span[MID3D] + 1 + halos[MID3D][MID3D],
+            span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D],
+        )
+        k_rng = range(0, span[INNER] + 2 * halo)
+
+        fun(
+            buffer,
+            i,
+            j_rng,
+            k_rng,
+            components,
+            dim,
+            span[MID3D] + ONE_FOR_STAGGERED_GRID,
+            SIGN_RIGHT,
+        )
+
+    if left_first:
+        mid3d_mid3d_first_jk = mid3d_mid3d_left_jk
+        mid3d_mid3d_last_jk = mid3d_mid3d_right_jk
+    else:
+        mid3d_mid3d_first_jk = mid3d_mid3d_right_jk
+        mid3d_mid3d_last_jk = mid3d_mid3d_left_jk
+
+    @numba.njit(**jit_flags)
+    def mid3d_mid3d(span, components, fun, rng_outer, last_thread, buffer):
+        if n_dims &gt; 2:
+            i_rng = range(
+                rng_outer[RNG_START],
+                rng_outer[RNG_STOP] + (2 * halos[MID3D][OUTER] if last_thread else 0),
+            )
+            mid3d_mid3d_first_jk(span, components, MID3D, fun, i_rng, buffer)
+            mid3d_mid3d_last_jk(span, components, MID3D, fun, i_rng, buffer)
+
+    return mid3d_mid3d
+
+
+def __make_mid3d_inner(*, jit_flags, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def mid3d_inner_left_k(span, components, dim, fun, i, j, buffer):
+        k_rng = range(0, halos[MID3D][INNER])
+
+        fun(buffer, i, j, k_rng, components, dim, span[INNER], SIGN_LEFT)
+
+    @numba.njit(**jit_flags)
+    def mid3d_inner_right_k(span, components, dim, fun, i, j, buffer):
+        k_rng = range(
+            span[INNER] + halos[MID3D][INNER],
+            span[INNER] + 2 * halos[MID3D][INNER],
+        )
+        fun(buffer, i, j, k_rng, components, dim, span[INNER], SIGN_RIGHT)
+
+    if left_first:
+        mid3d_inner_first_k = mid3d_inner_left_k
+        mid3d_inner_last_k = mid3d_inner_right_k
+    else:
+        mid3d_inner_first_k = mid3d_inner_right_k
+        mid3d_inner_last_k = mid3d_inner_left_k
+
+    @numba.njit(**jit_flags)
+    def mid3d_inner(span, components, fun, rng_outer, last_thread, buffer):
+        if n_dims &gt; 2:
+            i_rng = range(
+                rng_outer[RNG_START],
+                rng_outer[RNG_STOP] + (2 * halos[MID3D][OUTER] if last_thread else 0),
+            )
+            j_rng = range(
+                0, span[MID3D] + ONE_FOR_STAGGERED_GRID + 2 * halos[MID3D][MID3D]
+            )
+            mid3d_inner_first_k(span, components, MID3D, fun, i_rng, j_rng, buffer)
+            mid3d_inner_last_k(span, components, MID3D, fun, i_rng, j_rng, buffer)
+
+    return mid3d_inner
+
+
+def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def inner_outer_left(
+        first_thread, _last_thread, span, components, dim, fun, buffer
+    ):
+        if first_thread:
+            i_rng = range(0, halos[INNER][OUTER])
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims &gt; 2 else (INVALID_INDEX,)
+            k_rng = range(
+                0,
+                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
+            )
+
+            fun(buffer, i_rng, j_rng, k_rng, components, dim, span[OUTER], SIGN_LEFT)
+
+    @numba.njit(**jit_flags)
+    def inner_outer_right(
+        _first_thread, last_thread, span, components, dim, fun, buffer
+    ):
+        if last_thread:
+            i_rng = range(
+                span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]
+            )
+            j_rng = range(0, span[MID3D] + 2 * halo) if n_dims &gt; 2 else (INVALID_INDEX,)
+            k_rng = range(
+                0,
+                span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
+            )
+            fun(buffer, i_rng, j_rng, k_rng, components, dim, span[OUTER], SIGN_RIGHT)
+
+    if left_first:
+        inner_outer_first = inner_outer_left
+        inner_outer_last = inner_outer_right
+    else:
+        inner_outer_first = inner_outer_right
+        inner_outer_last = inner_outer_left
+
+    @numba.njit(**jit_flags)
+    def inner_outer(span, components, fun, first_thread, last_thread, buffer):
+        if n_dims &gt; 1:
+            inner_outer_first(
+                first_thread, last_thread, span, components, INNER, fun, buffer
+            )
+            inner_outer_last(
+                first_thread, last_thread, span, components, INNER, fun, buffer
+            )
+
+    return inner_outer
+
+
+def __make_inner_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def inner_inner_left_k(span, components, dim, fun, i, j, buffer):
+        k_rng = range(halos[INNER][INNER] - 1, -1, -1)
+        fun(
+            buffer,
+            i,
+            j,
+            k_rng,
+            components,
+            dim,
+            span[INNER] + ONE_FOR_STAGGERED_GRID,
+            SIGN_LEFT,
+        )
+
+    @numba.njit(**jit_flags)
+    def inner_inner_right_k(span, components, dim, fun, i, j, buffer):
+        k_rng = range(
+            span[INNER] + 1 + halos[INNER][INNER],
+            span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER],
+        )
+        fun(
+            buffer,
+            i,
+            j,
+            k_rng,
+            components,
+            dim,
+            span[INNER] + ONE_FOR_STAGGERED_GRID,
+            SIGN_RIGHT,
+        )
+
+    if left_first:
+        inner_inner_first_k = inner_inner_left_k
+        inner_inner_last_k = inner_inner_right_k
+    else:
+        inner_inner_first_k = inner_inner_right_k
+        inner_inner_last_k = inner_inner_left_k
+
+    @numba.njit(**jit_flags)
+    def inner_inner(span, components, fun, last_thread, rng_outer, buffer):
+        i_rng = (
+            range(
+                rng_outer[RNG_START],
+                rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0),
+            )
+            if n_dims &gt; 1
+            else (INVALID_INDEX,)
+        )
+        j_rng = range(0, span[MID3D] + 2 * halo) if n_dims &gt; 2 else (INVALID_INDEX,)
+
+        inner_inner_first_k(span, components, INNER, fun, i_rng, j_rng, buffer)
+        inner_inner_last_k(span, components, INNER, fun, i_rng, j_rng, buffer)
+
+    return inner_inner
+
+
+def __make_inner_mid3d(*, jit_flags, n_dims, halos, left_first, **_kwargs):
+    @numba.njit(**jit_flags)
+    def inner_mid3d_left_jk(span, components, dim, fun, i, buffer):
+        j_rng = range(0, halos[INNER][MID3D])
+        k_rng = range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER])
+        fun(buffer, i, j_rng, k_rng, components, dim, span[MID3D], SIGN_LEFT)
+
+    @numba.njit(**jit_flags)
+    def inner_mid3d_right_jk(span, components, dim, fun, i, buffer):
+        j_rng = range(
+            span[MID3D] + halos[INNER][MID3D], span[MID3D] + 2 * halos[INNER][MID3D]
+        )
+        k_rng = range(0, span[INNER] + ONE_FOR_STAGGERED_GRID + 2 * halos[INNER][INNER])
+        fun(buffer, i, j_rng, k_rng, components, dim, span[MID3D], SIGN_RIGHT)
+
+    if left_first:
+        inner_mid3d_first_jk = inner_mid3d_left_jk
+        inner_mid3d_last_jk = inner_mid3d_right_jk
+    else:
+        inner_mid3d_first_jk = inner_mid3d_right_jk
+        inner_mid3d_last_jk = inner_mid3d_left_jk
+
+    @numba.njit(**jit_flags)
+    def inner_mid3d(span, components, fun, rng_outer, last_thread, buffer):
+        if n_dims &gt; 2:
+            i_rng = range(
+                rng_outer[RNG_START],
+                rng_outer[RNG_STOP] + (2 * halos[INNER][OUTER] if last_thread else 0),
+            )
+            inner_mid3d_first_jk(span, components, INNER, fun, i_rng, buffer)
+            inner_mid3d_last_jk(span, components, INNER, fun, i_rng, buffer)
+
+    return inner_mid3d</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="PyMPDATA.impl" href="index.html">PyMPDATA.impl</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
