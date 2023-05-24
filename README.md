@@ -117,7 +117,7 @@ A [pdoc-generated](https://pdoc3.github.io/pdoc) documentation of PyMPDATA publi
 
 #### Options class
 
-The [``Options``](https://open-atmos.github.io/PyMPDATA/options.html) class
+The [``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class
 groups both algorithm variant options as well as some implementation-related
 flags that need to be set at the first place. All are set at the time
 of instantiation using the following keyword arguments of the constructor 
@@ -138,7 +138,7 @@ For a discussion of the above options, see e.g., [Smolarkiewicz & Margolin 1998]
 (the last with examples using PyMPDATA).
 
 In most use cases of PyMPDATA, the first thing to do is to instantiate the 
-[``Options``](https://open-atmos.github.io/PyMPDATA/options.html) class 
+[``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class 
 with arguments suiting the problem at hand, e.g.:
 <details>
 <summary>Julia code (click to expand)</summary>
@@ -173,8 +173,8 @@ options = Options(n_iters=2)
 In PyMPDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus the
 first scalar field value is at $\[\Delta x/2, \Delta y/2\]$.
-The [``ScalarField``](https://open-atmos.github.io/PyMPDATA/scalar_field.html)
-and [``VectorField``](https://open-atmos.github.io/PyMPDATA/vector_field.html) classes implement the
+The [``ScalarField``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/scalar_field.html)
+and [``VectorField``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/vector_field.html) classes implement the
 [Arakawa-C staggered grid](https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid) logic
 in which:
 - scalar fields are discretised onto cell centres (one value per cell),
@@ -224,8 +224,8 @@ pyplot.savefig('readme_grid.png')
 ![plot](https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_grid.png)
 
 The ``__init__`` methods of
-[``ScalarField``](https://open-atmos.github.io/PyMPDATA/scalar_field.html)
-and [``VectorField``](https://open-atmos.github.io/PyMPDATA/vector_field.html)
+[``ScalarField``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/scalar_field.html)
+and [``VectorField``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/vector_field.html)
 have the following signatures:
 - [``ScalarField(data: np.ndarray, halo: int, boundary_conditions)``](https://github.com/open-atmos/PyMPDATA/blob/main/PyMPDATA/scalar_field.py)
 - [``VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)``](https://github.com/open-atmos/PyMPDATA/blob/main/PyMPDATA/vector_field.py)
@@ -338,19 +338,19 @@ Note that the shapes of arrays representing components
 of the velocity field are different than the shape of
 the scalar field array due to employment of the staggered grid.
 
-Besides the exemplified [``Periodic``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/periodic.html) class representing 
+Besides the exemplified [``Periodic``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/periodic.html) class representing 
 periodic boundary conditions, PyMPDATA supports 
-[``Extrapolated``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/extrapolated.html), 
-[``Constant``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/constant.html) and
-[``Polar``](https://open-atmos.github.io/PyMPDATA/boundary_conditions/polar.html) 
+[``Extrapolated``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/extrapolated.html), 
+[``Constant``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/constant.html) and
+[``Polar``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/polar.html) 
 boundary conditions.
 
 #### Stepper
 
 The logic of the MPDATA iterative solver is represented
-in PyMPDATA by the [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) class.
+in PyMPDATA by the [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html) class.
 
-When instantiating the [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html), the user has a choice 
+When instantiating the [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html), the user has a choice 
 of either supplying just the  number of dimensions or specialising the stepper for a given grid:
 <details>
 <summary>Julia code (click to expand)</summary>
@@ -415,14 +415,14 @@ If number of dimensions is supplied only, the integration
 might take longer, yet same instance of the
 stepper can be used for different grids.  
 
-Since creating an instance of the [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) class
+Since creating an instance of the [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html) class
 involves time-consuming compilation of the algorithm code,
 the class is equipped with a cache logic - subsequent
 calls with same arguments return references to previously
-instantiated objects. Instances of [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) contain no
+instantiated objects. Instances of [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html) contain no
 mutable data and are (thread-)safe to be reused.
 
-The init method of [``Stepper``](https://open-atmos.github.io/PyMPDATA/stepper.html) has an optional
+The init method of [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html) has an optional
 ``non_unit_g_factor`` argument which is a Boolean flag 
 enabling handling of the G factor term which can be used to 
 represent coordinate transformations and/or variable fluid density. 
@@ -439,13 +439,13 @@ thread pool (``NUMBA_NUM_THREADS`` env var or ``numba.config.NUMBA_NUM_THREADS``
 
 #### Solver
 
-Instances of the [``Solver``](https://open-atmos.github.io/PyMPDATA/solver.html) class are used to control
+Instances of the [``Solver``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html) class are used to control
 the integration and access solution data. During instantiation, 
 additional memory required by the solver is 
 allocated according to the options provided. 
 
-The only method of the [``Solver``](https://open-atmos.github.io/PyMPDATA/solver.html) class besides the
-init is [``advance(n_steps, mu_coeff, ...)``](https://open-atmos.github.io/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
+The only method of the [``Solver``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html) class besides the
+init is [``advance(n_steps, mu_coeff, ...)``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
 which advances the solution by ``n_steps`` timesteps, optionally
 taking into account a given diffusion coefficient ``mu_coeff``.
 
