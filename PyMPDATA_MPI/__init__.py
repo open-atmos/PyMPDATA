@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 """
-    TODO
+PyMPDATA + numba-mpi coupler sandbox
 """
 
 from pkg_resources import DistributionNotFound, VersionConflict, get_distribution

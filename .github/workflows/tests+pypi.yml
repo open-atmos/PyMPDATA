@@ -98,7 +98,7 @@ jobs:
 
       fail-fast: false
     runs-on: ${{ matrix.platform }}
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
@@ -131,7 +131,7 @@ jobs:
             export CI_PLOTS_PATH=plots/$arbitrarily_selected_artefact_set
             mkdir -p $CI_PLOTS_PATH
           fi
-          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We;
+          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We tests/unit_tests;
       - uses: actions/upload-artifact@v2
         with:
           name: plots
@@ -167,9 +167,21 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
+  devops_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
+      - run: pip install -r tests/devops_tests/requirements.txt
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pytest --durations=10 -v -s -We -p no:unraisableexception tests/devops_tests
+
   tip-release-uploads:
     runs-on: ubuntu-latest
-    needs: [tests]
+    needs: [tests, devops_tests]
     steps:
       - uses: actions/download-artifact@v2
         with:

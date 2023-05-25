@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyMPDATA-MPI"
-description = "TODO"
+description = "PyMPDATA + numba-mpi coupler sandbox"
 readme = "README.md"
 requires-python = ">=3.10"
-keywords = ["TODO", "TODO"]
+keywords = ["MPI", "MPDATA", "Numba", "PyMPDATA"]
 license = {text = "GPL-3.0"}
 classifiers = [
         "Intended Audience :: Science/Research",
@@ -20,14 +20,14 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    # TODO: these should be handled within PyMPDATA?
+    # TODO #71: these should be handled within PyMPDATA?
     "numba<0.57.0",
     "numpy<1.24.0",
     "numba_mpi>=0.30",
     "PyMPDATA==1.0.11",
     "mpi4py",
     "h5py",
-    "pytest-mpi"  # TODO: move it to optional dependencies (extras_require?)
+    "pytest-mpi"  # TODO #71: move it to optional dependencies (extras_require?)
 ]
 dynamic = ["version"]
 
