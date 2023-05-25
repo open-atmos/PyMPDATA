@@ -151,10 +151,6 @@ jobs:
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
         
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pytest --durations=10 -p no:unraisableexception -We tests/devops_tests
       - run: |
           pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
           pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
@@ -202,13 +198,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pytest --durations=10 -p no:unraisableexception -We PyMPDATA-examples
 
+  devops:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
+      - run: pip install -r tests/devops_tests/requirements.txt
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pytest --durations=10 -v -s -We -p no:unraisableexception tests/devops_tests
+
   dist:
     strategy:
       matrix:
         package-dir: [".", "PyMPDATA-examples"]
       fail-fast: false
     runs-on: ubuntu-latest
-    needs: [tests, examples]
+    needs: [tests, examples, devops]
     permissions:
       id-token: write
     steps:
