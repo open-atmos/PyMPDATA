@@ -1,5 +1,5 @@
 [submodule "PyMPDATA-examples"]
-	path = PyMPDATA-examples
+	path = examples
 	url = git@github.com:open-atmos/PyMPDATA-examples.git
 	shallow = true
 [submodule "tests/devops_tests"]
