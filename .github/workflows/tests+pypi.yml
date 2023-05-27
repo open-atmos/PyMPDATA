@@ -202,6 +202,7 @@ jobs:
           submodules: recursive
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
       - run: pip install -r tests/devops_tests/requirements.txt
+      - run: pip install -e . ./examples
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pytest --durations=10 -v -s -We -p no:unraisableexception tests/devops_tests
