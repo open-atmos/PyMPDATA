@@ -72,12 +72,12 @@ jobs:
         pip install pylint nbqa pdoc3 # (pdoc3 for checking the .github/workflows/pdoc_index_workaround.py)
         pip install -e .[tests] ./examples[tests]
     - run: |
-        pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py')
+        pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
     - run: |
         # TODO #299
         cd examples
         pylint --disable=fixme --max-module-lines=200 \
-               --disable=too-many-locals,too-many-branches,duplicate-code,invalid-name,missing-function-docstring,missing-module-docstring,too-many-arguments,missing-class-docstring,too-many-instance-attributes $(git ls-files '*.py')
+               --disable=too-many-locals,too-many-branches,duplicate-code,invalid-name,missing-function-docstring,missing-module-docstring,too-many-arguments,missing-class-docstring,too-many-instance-attributes $(git ls-files '*.py' | grep ^examples)
         cd ..
     - run: |
         # TODO #299
