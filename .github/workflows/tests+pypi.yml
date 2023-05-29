@@ -79,7 +79,7 @@ jobs:
                --disable=too-many-locals,too-many-branches,duplicate-code,invalid-name,missing-function-docstring,missing-module-docstring,too-many-arguments,missing-class-docstring,too-many-instance-attributes $(git ls-files '*.py' | grep ^examples)
     - run: |
         # TODO #299
-        nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,ungrouped-imports \
+        nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,wrong-import-order,ungrouped-imports \
                     --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
   pdoc:
     strategy:
