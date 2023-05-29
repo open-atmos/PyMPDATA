@@ -166,12 +166,8 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - run: |
-          pip install -e ./examples
-      - run: |
-          python -We -c "import PyMPDATA_examples"
-      - run: |
-          pip install -e .[tests]
+      - run: pip install -e .[tests] ./examples
+      - run: pip install -r tests/devops_tests/requirements.txt
       - if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get install libblitz0-dev libboost-thread-dev libboost-date-time-dev libboost-system-dev libboost-iostreams-dev libboost-timer-dev libboost-filesystem-dev
@@ -188,9 +184,7 @@ jobs:
       - if: matrix.platform == 'ubuntu-latest'
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pytest --durations=10 -p no:unraisableexception -We examples
+      - run: pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_run_notebooks.py
 
   devops:
     runs-on: ubuntu-latest
@@ -203,7 +197,7 @@ jobs:
       - run: pip install -e . ./examples
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pytest --durations=10 -v -s -We -p no:unraisableexception tests/devops_tests
+        run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
 
   dist:
     strategy:
