@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-function-docstring,invalid-name
 import numpy as np
 import pint
 import pytest
@@ -48,8 +49,8 @@ def test_size_distribution(grid, coord, plot=False):
     integratedpdf, _ = integrate.quad(pdf_t, x[0].magnitude, x[-1].magnitude)
     print(totalpdf, integratedpdf)
     np.testing.assert_array_almost_equal(
-        totalpdf.magnitude, integratedpdf
-    )  # pylint: disable=no-member
+        totalpdf.magnitude, integratedpdf  # pylint: disable=no-member
+    )
 
 
 def test_quad_vs_midpoint():
