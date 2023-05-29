@@ -1,8 +1,10 @@
 import numpy as np
 from joblib import Parallel, delayed, parallel_backend
-from PyMPDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
+from PyMPDATA_examples.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import (
+    error_L2_norm,
+)
 from PyMPDATA_examples.Arabas_and_Farhat_2020.setup2_american_put import Settings
-from PyMPDATA_examples.Arabas_and_Farhat_2020.analysis_figures_2_and_3 import error_L2_norm
+from PyMPDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
 
 
 def compute_row(simulations):
@@ -17,7 +19,11 @@ def compute_row(simulations):
         f = simulation.run(n_iters=2)
         row.append(
             error_L2_norm(
-                simulation.solvers, simulation.settings, simulation.S, simulation.nt, n_iters=2
+                simulation.solvers,
+                simulation.settings,
+                simulation.S,
+                simulation.nt,
+                n_iters=2,
             )
         )
         np.testing.assert_almost_equal(simulation.S[simulation.ix_match], S0)
@@ -28,13 +34,15 @@ def compute_row(simulations):
 
 
 def table_1_data():
-    with parallel_backend('threading', n_jobs=-2):
+    with parallel_backend("threading", n_jobs=-2):
         result = Parallel(verbose=10)(
-            delayed(compute_row)(tuple(
-                Simulation(Settings(T=T, C_opt=C_opt, S0=S0))
-                for C_opt in (.02, .01, .005)
-            ))
-            for T in (.25, .5, 3)
+            delayed(compute_row)(
+                tuple(
+                    Simulation(Settings(T=T, C_opt=C_opt, S0=S0))
+                    for C_opt in (0.02, 0.01, 0.005)
+                )
+            )
+            for T in (0.25, 0.5, 3)
             for S0 in (80, 90, 100, 110, 120)
         )
         return result

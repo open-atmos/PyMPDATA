@@ -1,6 +1,6 @@
 import numpy as np
-from pystrict import strict
 import PyMPDATA_examples.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS73
+from pystrict import strict
 
 
 @strict
@@ -22,10 +22,11 @@ class Settings:
         self.C_opt = C_opt
 
     def payoff(self, S: np.ndarray):
-        return np.exp(-self.r * self.T) * (np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S))
+        return np.exp(-self.r * self.T) * (
+            np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
+        )
 
     def analytical_solution(self, S: np.ndarray):
-        return (
-                BS73.p_euro(S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma) -
-                BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)
-        )
+        return BS73.p_euro(
+            S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma
+        ) - BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)

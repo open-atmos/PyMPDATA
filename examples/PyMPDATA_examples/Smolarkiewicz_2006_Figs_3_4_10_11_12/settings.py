@@ -22,13 +22,10 @@ class Settings:
     @staticmethod
     def cdf_cosine(x):
         x_mid = -150
-        f = 2/12
+        f = 2 / 12
         amplitude = 2
 
-        pdf = np.where(
-            np.abs(x-x_mid) < 10,
-            amplitude * np.cos(f*(x-x_mid)),
-            0)
+        pdf = np.where(np.abs(x - x_mid) < 10, amplitude * np.cos(f * (x - x_mid)), 0)
         return np.cumsum(pdf)
 
     @staticmethod
@@ -37,8 +34,5 @@ class Settings:
         amplitude = 2
         offset = 2
 
-        pdf = offset + np.where(
-            np.abs(x-x_mid) <= 10,
-            amplitude,
-            0)
+        pdf = offset + np.where(np.abs(x - x_mid) <= 10, amplitude, 0)
         return np.cumsum(pdf)

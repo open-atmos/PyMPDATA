@@ -1,22 +1,33 @@
 from typing import Optional
-from pystrict import strict
-from scipy.interpolate import interp1d
-from scipy.integrate import solve_ivp
-from scipy.misc import derivative
+
 import numpy as np
 from PyMPDATA_examples.Olesik_et_al_2022.settings import ksi_1 as default_ksi_1
+from pystrict import strict
+from scipy.integrate import solve_ivp
+from scipy.interpolate import interp1d
+from scipy.misc import derivative
+
 from . import formulae
-from .formulae import si, const
 from .arakawa_c import arakawa_c
+from .formulae import const, si
 
 
 @strict
 class Settings:
-    def __init__(self, dt: float, dz: float, rhod_w_const: float,
-                 t_max: float = 15 * si.minutes, nr: int = 1,
-                 r_min: float = np.nan, r_max: float = np.nan, p0: Optional[float] = None,
-                 ksi_1: float = default_ksi_1.to_base_units().magnitude,
-                 z_max: float = 3000 * si.metres, apprx_drhod_dz: bool = True):
+    def __init__(
+        self,
+        dt: float,
+        dz: float,
+        rhod_w_const: float,
+        t_max: float = 15 * si.minutes,
+        nr: int = 1,
+        r_min: float = np.nan,
+        r_max: float = np.nan,
+        p0: Optional[float] = None,
+        ksi_1: float = default_ksi_1.to_base_units().magnitude,
+        z_max: float = 3000 * si.metres,
+        apprx_drhod_dz: bool = True,
+    ):
         self.dt = dt
         self.dz = dz
 
@@ -26,7 +37,7 @@ class Settings:
         self.z_max = z_max
         self.t_max = t_max
 
-        self.qv = interp1d((0, 740, 3260), (.015, .0138, .0024))
+        self.qv = interp1d((0, 740, 3260), (0.015, 0.0138, 0.0024))
         self._th = interp1d((0, 740, 3260), (297.9, 297.9, 312.66))
 
         # note: not in the paper,
@@ -51,26 +62,28 @@ class Settings:
             fun=drhod_dz,
             t_span=(0, self.z_max),
             y0=np.asarray((self.rhod0,)),
-            t_eval=z_points
+            t_eval=z_points,
         )
         assert rhod_solution.success
 
         self.rhod = interp1d(z_points, rhod_solution.y[0])
 
         self.t_1 = 600 * si.s
-        self.rhod_w = lambda t: rhod_w_const * np.sin(np.pi * t / self.t_1) if t < self.t_1 else 0
+        self.rhod_w = (
+            lambda t: rhod_w_const * np.sin(np.pi * t / self.t_1) if t < self.t_1 else 0
+        )
 
         self.r_min = r_min
         self.r_max = r_max
         self.bin_boundaries, self.dr = np.linspace(
-            self.r_min,
-            self.r_max,
-            self.nr + 1, retstep=True
+            self.r_min, self.r_max, self.nr + 1, retstep=True
         )
 
         self.dr_power = {}
         for k in (1, 2, 3, 4):
-            self.dr_power[k] = self.bin_boundaries[1:] ** k - self.bin_boundaries[:-1] ** k
+            self.dr_power[k] = (
+                self.bin_boundaries[1:] ** k - self.bin_boundaries[:-1] ** k
+            )
             self.dr_power[k] = self.dr_power[k].reshape(1, -1).T
 
         self.z_vec = self.dz * arakawa_c.z_vector_coord((self.nz,))

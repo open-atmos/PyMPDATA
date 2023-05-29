@@ -1,5 +1,5 @@
-from pystrict import strict
 import numpy as np
+from pystrict import strict
 
 
 @strict
@@ -25,20 +25,23 @@ class Settings:
 
     @property
     def advector(self):
-        """ constant angular velocity rotational field """
+        """constant angular velocity rotational field"""
 
         data = [None, None, None]
-        for index, letter in enumerate(('x', 'y', 'z')):
+        for index, letter in enumerate(("x", "y", "z")):
             i, j, k = np.indices((g + (gi == index) for gi, g in enumerate(self.grid)))
-            if letter == 'x':
-                data[index] = (-((j+.5) * self.dy - self.yc) + ((k+.5) * self.dz - self.zc))\
-                              / self.dx
-            elif letter == 'y':
-                data[index] = (+((i+.5) * self.dx - self.xc) - ((k+.5) * self.dz - self.zc))\
-                              / self.dy
-            elif letter == 'z':
-                data[index] = (-((i+.5) * self.dx - self.xc) + ((j+.5) * self.dy - self.yc))\
-                              / self.dz
+            if letter == "x":
+                data[index] = (
+                    -((j + 0.5) * self.dy - self.yc) + ((k + 0.5) * self.dz - self.zc)
+                ) / self.dx
+            elif letter == "y":
+                data[index] = (
+                    +((i + 0.5) * self.dx - self.xc) - ((k + 0.5) * self.dz - self.zc)
+                ) / self.dy
+            elif letter == "z":
+                data[index] = (
+                    -((i + 0.5) * self.dx - self.xc) + ((j + 0.5) * self.dy - self.yc)
+                ) / self.dz
             data[index] *= self.omega / np.sqrt(3) * self.dt
         return data
 
@@ -46,8 +49,8 @@ class Settings:
     def advectee(self):
         i, j, k = np.indices(self.grid)
         dist = (
-            ((i+.5) * self.dx - self.x0) ** 2 +
-            ((j+.5) * self.dy - self.y0) ** 2 +
-            ((k+.5) * self.dz - self.z0) ** 2
+            ((i + 0.5) * self.dx - self.x0) ** 2
+            + ((j + 0.5) * self.dy - self.y0) ** 2
+            + ((k + 0.5) * self.dz - self.z0) ** 2
         )
         return np.where(dist - pow(self.r, 2) <= 0, self.h, 0)

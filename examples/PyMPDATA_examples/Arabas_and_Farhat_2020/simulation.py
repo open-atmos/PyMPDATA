@@ -1,38 +1,40 @@
-import numpy as np
 import numba
-from PyMPDATA.boundary_conditions import Extrapolated
-from PyMPDATA import Options, Solver, Stepper, ScalarField, VectorField
+import numpy as np
 from PyMPDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
+
+from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
+from PyMPDATA.boundary_conditions import Extrapolated
 
 
 class Simulation:
     @staticmethod
-    def _factory(*,
-                 options: Options,
-                 advectee: np.ndarray,
-                 advector: float,
-                 boundary_conditions
-                 ):
-        stepper = Stepper(options=options, n_dims=len(advectee.shape), non_unit_g_factor=False)
+    def _factory(
+        *, options: Options, advectee: np.ndarray, advector: float, boundary_conditions
+    ):
+        stepper = Stepper(
+            options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
+        )
         return Solver(
             stepper=stepper,
             advectee=ScalarField(
-              advectee.astype(dtype=options.dtype),
-              halo=options.n_halo,
-              boundary_conditions=boundary_conditions
+                advectee.astype(dtype=options.dtype),
+                halo=options.n_halo,
+                boundary_conditions=boundary_conditions,
             ),
             advector=VectorField(
-              (np.full(advectee.shape[0] + 1, advector, dtype=options.dtype),),
-              halo=options.n_halo,
-              boundary_conditions=boundary_conditions
-)
+                (np.full(advectee.shape[0] + 1, advector, dtype=options.dtype),),
+                halo=options.n_halo,
+                boundary_conditions=boundary_conditions,
+            ),
         )
 
     def __init__(self, settings):
         self.settings = settings
 
         sigma2 = pow(settings.sigma, 2)
-        dx_opt = abs(settings.C_opt / (.5 * sigma2 - settings.r) * settings.l2_opt * sigma2)
+        dx_opt = abs(
+            settings.C_opt / (0.5 * sigma2 - settings.r) * settings.l2_opt * sigma2
+        )
         dt_opt = pow(dx_opt, 2) / sigma2 / settings.l2_opt
 
         # adjusting dt so that nt is integer
@@ -46,7 +48,7 @@ class Simulation:
         dx = np.sqrt(settings.l2_opt * self.dt) * settings.sigma
 
         # calculating actual u number and lambda
-        self.C = - (.5 * sigma2 - settings.r) * (-self.dt) / dx
+        self.C = -(0.5 * sigma2 - settings.r) * (-self.dt) / dx
         self.l2 = dx * dx / sigma2 / self.dt
 
         # adjusting nx and setting S_beg, S_end
@@ -61,7 +63,7 @@ class Simulation:
         S_end = settings.S_match
         while S_end < settings.S_max:
             self.nx += 1
-            S_end = np.exp(np.log(S_beg) + (self.nx-1) * dx)
+            S_end = np.exp(np.log(S_beg) + (self.nx - 1) * dx)
 
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
@@ -72,13 +74,13 @@ class Simulation:
             advectee=settings.payoff(self.S),
             advector=self.C,
             options=Options(n_iters=1, non_zero_mu_coeff=True),
-            boundary_conditions=(Extrapolated(),)
+            boundary_conditions=(Extrapolated(),),
         )
         self.solvers[2] = self._factory(
             advectee=settings.payoff(self.S),
             advector=self.C,
             options=Options(**OPTIONS),
-            boundary_conditions=(Extrapolated(),)
+            boundary_conditions=(Extrapolated(),),
         )
 
     def run(self, n_iters: int):

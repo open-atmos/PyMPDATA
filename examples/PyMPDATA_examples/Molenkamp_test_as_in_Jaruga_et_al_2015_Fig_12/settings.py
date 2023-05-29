@@ -1,22 +1,21 @@
-import numpy as np
 import numba
+import numpy as np
 from pystrict import strict
-
 
 grid = (100, 100)
 
-dt = .1
+dt = 0.1
 dx = 1
 dy = 1
-omega = .1
-h = 4.
+omega = 0.1
+h = 4.0
 h0 = 1
 
-r = 15. * dx
+r = 15.0 * dx
 x0 = 50 * dx
 y0 = 75 * dy
-xc = .5 * grid[0] * dx
-yc = .5 * grid[1] * dy
+xc = 0.5 * grid[0] * dx
+yc = 0.5 * grid[1] * dy
 
 
 @strict
@@ -51,18 +50,18 @@ class Settings:
     @staticmethod
     @numba.njit()
     def pdf(x, y):
-        tmp = (x-x0)**2 + (y-y0)**2
+        tmp = (x - x0) ** 2 + (y - y0) ** 2
         return h0 + np.where(
             # if
             tmp - r**2 <= 0,
             # then
-            h - np.sqrt(tmp / (r/h)**2),
+            h - np.sqrt(tmp / (r / h) ** 2),
             # else
-            0.
+            0.0,
         )
 
     @staticmethod
     def stream_function(xX, yY):
         x = xX * grid[0] * dx
         y = yY * grid[1] * dy
-        return 1 / 2 * omega * ((x - xc)**2 + (y - yc)**2)
+        return 1 / 2 * omega * ((x - xc) ** 2 + (y - yc) ** 2)

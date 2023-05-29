@@ -1,4 +1,5 @@
 from collections import namedtuple
+
 import numpy as np
 from scipy import constants
 
@@ -8,32 +9,58 @@ def convert_to(value, unit):
 
 
 si = namedtuple(
-    'si',
-    ('kg', 'm', 's', 'metres', 'second', 'um', 'hPa', 'micrometre',
-     'minutes', 'km', 'dimensionless', 'kelvin', 'mg')
+    "si",
+    (
+        "kg",
+        "m",
+        "s",
+        "metres",
+        "second",
+        "um",
+        "hPa",
+        "micrometre",
+        "minutes",
+        "km",
+        "dimensionless",
+        "kelvin",
+        "mg",
+    ),
 )(
-    kg=1.,
-    m=1.,
-    s=1.,
-    metres=1.,
-    second=1.,
+    kg=1.0,
+    m=1.0,
+    s=1.0,
+    metres=1.0,
+    second=1.0,
     um=1e-6,
-    hPa=100.,
+    hPa=100.0,
     micrometre=1e-6,
-    minutes=60.,
-    km=1000.,
-    dimensionless=1.,
-    kelvin=1.,
-    mg=1e-6
+    minutes=60.0,
+    km=1000.0,
+    dimensionless=1.0,
+    kelvin=1.0,
+    mg=1e-6,
 )
 
 _Mv = 0.018015
 _Md = 0.028970
 
 const = namedtuple(
-    'const',
-    ('eps', 'g', 'p1000', 'Rd', 'Rv', 'c_pd', 'c_pv', 'lv',
-     'rho_l', 'T0', 'ARM_C1', 'ARM_C2', 'ARM_C3')
+    "const",
+    (
+        "eps",
+        "g",
+        "p1000",
+        "Rd",
+        "Rv",
+        "c_pd",
+        "c_pv",
+        "lv",
+        "rho_l",
+        "T0",
+        "ARM_C1",
+        "ARM_C2",
+        "ARM_C3",
+    ),
 )(
     eps=_Mv / _Md,
     g=constants.g,
@@ -52,22 +79,25 @@ const = namedtuple(
 
 
 def rho_d(p, qv, theta_std):
-    return p * (1 - 1 / (1 + const.eps / qv)) / (
-                np.power(p / const.p1000, const.Rd / const.c_pd) * const.Rd * theta_std)
+    return (
+        p
+        * (1 - 1 / (1 + const.eps / qv))
+        / (np.power(p / const.p1000, const.Rd / const.c_pd) * const.Rd * theta_std)
+    )
 
 
 def drho_dz(g, p, T, qv, lv, dql_dz=0):
     Rq = const.Rv / (1 / qv + 1) + const.Rd / (1 + qv)
     cp = const.c_pv / (1 / qv + 1) + const.c_pd / (1 + qv)
     rho = p / Rq / T
-    return (g / T * rho * (Rq / cp - 1) - p * lv / cp / T ** 2 * dql_dz) / Rq
+    return (g / T * rho * (Rq / cp - 1) - p * lv / cp / T**2 * dql_dz) / Rq
 
 
 # A14 in libcloudph++ 1.0 paper
 def temperature(rhod, thd):
     return thd * np.power(
         rhod * thd / const.p1000 * const.Rd,
-        const.Rd / const.c_pd / (1 - const.Rd / const.c_pd)
+        const.Rd / const.c_pd / (1 - const.Rd / const.c_pd),
     )
 
 

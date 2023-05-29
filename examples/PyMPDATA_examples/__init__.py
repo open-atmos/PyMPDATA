@@ -1,4 +1,5 @@
-from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
+from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+
 try:
     __version__ = get_distribution(__name__).version
 except (DistributionNotFound, VersionConflict):

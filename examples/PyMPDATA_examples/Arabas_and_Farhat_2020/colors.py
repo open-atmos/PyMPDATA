@@ -1,1 +1,1 @@
-colors=('purple', 'teal', 'turquoise')
+colors = ("purple", "teal", "turquoise")
