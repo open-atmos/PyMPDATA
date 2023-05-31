@@ -27,7 +27,8 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import numpy as np
-from PyMPDATA import ScalarField, VectorField, Solver, Stepper
+
+from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
 
 
@@ -38,18 +39,18 @@ class Simulation:
         advector = VectorField(
             data=tuple(comp.astype(options.dtype) for comp in settings.advector),
             halo=options.n_halo,
-            boundary_conditions=bcs
+            boundary_conditions=bcs,
         )
 
         advectee = ScalarField(
             data=np.asarray(settings.advectee, dtype=options.dtype),
             halo=options.n_halo,
-            boundary_conditions=bcs
+            boundary_conditions=bcs,
         )
 
-        args = {&#39;grid&#39;: settings.grid} if static else {&#39;n_dims&#39;: len(settings.grid)}
+        args = {&#34;grid&#34;: settings.grid} if static else {&#34;n_dims&#34;: len(settings.grid)}
         if n_threads is not None:
-            args[&#39;n_threads&#39;] = n_threads
+            args[&#34;n_threads&#34;] = n_threads
         stepper = Stepper(options=options, **args)
         self.solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 
@@ -87,18 +88,18 @@ class Simulation:
         advector = VectorField(
             data=tuple(comp.astype(options.dtype) for comp in settings.advector),
             halo=options.n_halo,
-            boundary_conditions=bcs
+            boundary_conditions=bcs,
         )
 
         advectee = ScalarField(
             data=np.asarray(settings.advectee, dtype=options.dtype),
             halo=options.n_halo,
-            boundary_conditions=bcs
+            boundary_conditions=bcs,
         )
 
-        args = {&#39;grid&#39;: settings.grid} if static else {&#39;n_dims&#39;: len(settings.grid)}
+        args = {&#34;grid&#34;: settings.grid} if static else {&#34;n_dims&#34;: len(settings.grid)}
         if n_threads is not None:
-            args[&#39;n_threads&#39;] = n_threads
+            args[&#34;n_threads&#34;] = n_threads
         stepper = Stepper(options=options, **args)
         self.solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
 

@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from collections import namedtuple
+
 import numpy as np
 from scipy import constants
 
@@ -36,32 +37,58 @@ def convert_to(value, unit):
 
 
 si = namedtuple(
-    &#39;si&#39;,
-    (&#39;kg&#39;, &#39;m&#39;, &#39;s&#39;, &#39;metres&#39;, &#39;second&#39;, &#39;um&#39;, &#39;hPa&#39;, &#39;micrometre&#39;,
-     &#39;minutes&#39;, &#39;km&#39;, &#39;dimensionless&#39;, &#39;kelvin&#39;, &#39;mg&#39;)
+    &#34;si&#34;,
+    (
+        &#34;kg&#34;,
+        &#34;m&#34;,
+        &#34;s&#34;,
+        &#34;metres&#34;,
+        &#34;second&#34;,
+        &#34;um&#34;,
+        &#34;hPa&#34;,
+        &#34;micrometre&#34;,
+        &#34;minutes&#34;,
+        &#34;km&#34;,
+        &#34;dimensionless&#34;,
+        &#34;kelvin&#34;,
+        &#34;mg&#34;,
+    ),
 )(
-    kg=1.,
-    m=1.,
-    s=1.,
-    metres=1.,
-    second=1.,
+    kg=1.0,
+    m=1.0,
+    s=1.0,
+    metres=1.0,
+    second=1.0,
     um=1e-6,
-    hPa=100.,
+    hPa=100.0,
     micrometre=1e-6,
-    minutes=60.,
-    km=1000.,
-    dimensionless=1.,
-    kelvin=1.,
-    mg=1e-6
+    minutes=60.0,
+    km=1000.0,
+    dimensionless=1.0,
+    kelvin=1.0,
+    mg=1e-6,
 )
 
 _Mv = 0.018015
 _Md = 0.028970
 
 const = namedtuple(
-    &#39;const&#39;,
-    (&#39;eps&#39;, &#39;g&#39;, &#39;p1000&#39;, &#39;Rd&#39;, &#39;Rv&#39;, &#39;c_pd&#39;, &#39;c_pv&#39;, &#39;lv&#39;,
-     &#39;rho_l&#39;, &#39;T0&#39;, &#39;ARM_C1&#39;, &#39;ARM_C2&#39;, &#39;ARM_C3&#39;)
+    &#34;const&#34;,
+    (
+        &#34;eps&#34;,
+        &#34;g&#34;,
+        &#34;p1000&#34;,
+        &#34;Rd&#34;,
+        &#34;Rv&#34;,
+        &#34;c_pd&#34;,
+        &#34;c_pv&#34;,
+        &#34;lv&#34;,
+        &#34;rho_l&#34;,
+        &#34;T0&#34;,
+        &#34;ARM_C1&#34;,
+        &#34;ARM_C2&#34;,
+        &#34;ARM_C3&#34;,
+    ),
 )(
     eps=_Mv / _Md,
     g=constants.g,
@@ -80,22 +107,25 @@ const = namedtuple(
 
 
 def rho_d(p, qv, theta_std):
-    return p * (1 - 1 / (1 + const.eps / qv)) / (
-                np.power(p / const.p1000, const.Rd / const.c_pd) * const.Rd * theta_std)
+    return (
+        p
+        * (1 - 1 / (1 + const.eps / qv))
+        / (np.power(p / const.p1000, const.Rd / const.c_pd) * const.Rd * theta_std)
+    )
 
 
 def drho_dz(g, p, T, qv, lv, dql_dz=0):
     Rq = const.Rv / (1 / qv + 1) + const.Rd / (1 + qv)
     cp = const.c_pv / (1 / qv + 1) + const.c_pd / (1 + qv)
     rho = p / Rq / T
-    return (g / T * rho * (Rq / cp - 1) - p * lv / cp / T ** 2 * dql_dz) / Rq
+    return (g / T * rho * (Rq / cp - 1) - p * lv / cp / T**2 * dql_dz) / Rq
 
 
 # A14 in libcloudph++ 1.0 paper
 def temperature(rhod, thd):
     return thd * np.power(
         rhod * thd / const.p1000 * const.Rd,
-        const.Rd / const.c_pd / (1 - const.Rd / const.c_pd)
+        const.Rd / const.c_pd / (1 - const.Rd / const.c_pd),
     )
 
 
@@ -149,7 +179,7 @@ def pv(p, qv):
     Rq = const.Rv / (1 / qv + 1) + const.Rd / (1 + qv)
     cp = const.c_pv / (1 / qv + 1) + const.c_pd / (1 + qv)
     rho = p / Rq / T
-    return (g / T * rho * (Rq / cp - 1) - p * lv / cp / T ** 2 * dql_dz) / Rq</code></pre>
+    return (g / T * rho * (Rq / cp - 1) - p * lv / cp / T**2 * dql_dz) / Rq</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Shipway_and_Hill_2012.formulae.pressure"><code class="name flex">
@@ -201,8 +231,11 @@ def pv(p, qv):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rho_d(p, qv, theta_std):
-    return p * (1 - 1 / (1 + const.eps / qv)) / (
-                np.power(p / const.p1000, const.Rd / const.c_pd) * const.Rd * theta_std)</code></pre>
+    return (
+        p
+        * (1 - 1 / (1 + const.eps / qv))
+        / (np.power(p / const.p1000, const.Rd / const.c_pd) * const.Rd * theta_std)
+    )</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Shipway_and_Hill_2012.formulae.temperature"><code class="name flex">
@@ -217,7 +250,7 @@ def pv(p, qv):
 <pre><code class="python">def temperature(rhod, thd):
     return thd * np.power(
         rhod * thd / const.p1000 * const.Rd,
-        const.Rd / const.c_pd / (1 - const.Rd / const.c_pd)
+        const.Rd / const.c_pd / (1 - const.Rd / const.c_pd),
     )</code></pre>
 </details>
 </dd>

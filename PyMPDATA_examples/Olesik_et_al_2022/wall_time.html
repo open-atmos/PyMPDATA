@@ -27,14 +27,18 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import pathlib
+
 import numpy as np
-from PyMPDATA import Options
-from PyMPDATA_examples.Olesik_et_al_2022.settings import (
-    Settings, default_nr, default_GC_max, default_opt_set
-)
 from PyMPDATA_examples.Olesik_et_al_2022.coordinates import x_id, x_log_of_pn
+from PyMPDATA_examples.Olesik_et_al_2022.settings import (
+    Settings,
+    default_GC_max,
+    default_nr,
+    default_opt_set,
+)
 from PyMPDATA_examples.Olesik_et_al_2022.simulation import Simulation
 
+from PyMPDATA import Options
 
 grid_layout_set = (x_log_of_pn(r0=1, base=2),)
 opt_set = default_opt_set.values()
@@ -51,12 +55,12 @@ def test_wall_time(n_runs=3, mrats=(10,), generate=False, print_tab=True, rtol=R
             minimum_values = []
             while i &lt; n_runs:
                 result = make_data(settings, grid, opts)
-                wall_times = result[&#39;wall_time&#39;]
+                wall_times = result[&#34;wall_time&#34;]
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
                 i += 1
             selected_value = np.min(minimum_values)
-            if opts == {&#39;n_iters&#39;: 1}:
+            if opts == {&#34;n_iters&#34;: 1}:
                 norm = selected_value
             table_data[&#34;opts&#34;].append(str(opts) + &#34;(&#34; + grid.__class__.__name__ + &#34;)&#34;)
             table_data[&#34;values&#34;].append(round(selected_value / norm, 1))
@@ -67,20 +71,26 @@ def test_wall_time(n_runs=3, mrats=(10,), generate=False, print_tab=True, rtol=R
 def make_data(settings, grid, opts):
     options = Options(**opts)
     simulation = Simulation(
-        settings=settings, grid_layout=grid, psi_coord=x_id(),
-        opts=options, GC_max=default_GC_max)
+        settings=settings,
+        grid_layout=grid,
+        psi_coord=x_id(),
+        opts=options,
+        GC_max=default_GC_max,
+    )
     result = {&#34;wall_time&#34;: []}
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
         wall_time_per_timestep = simulation.step(steps)
         last_step += steps
-        result[&#39;wall_time&#39;].append(wall_time_per_timestep)
+        result[&#34;wall_time&#34;].append(wall_time_per_timestep)
     return result
 
 
 def make_textable(data, generate=False, print_tab=False):
-    latex_data = r&#34;\hline&#34; + &#34; Variant  &amp; Elapsed Real Time (wrt upwind) &#34; + r&#34;\\ \hline&#34; + &#34;\n&#34;
+    latex_data = (
+        r&#34;\hline&#34; + &#34; Variant  &amp; Elapsed Real Time (wrt upwind) &#34; + r&#34;\\ \hline&#34; + &#34;\n&#34;
+    )
     for opt, value in zip(data[&#34;opts&#34;], data[&#34;values&#34;]):
         latex_data += r&#34;\hline&#34; + f&#34; {opt} &amp; {value} &#34; + r&#34;\\ \hline&#34; + &#34;\n&#34;
     latex_start = r&#34;\begin{table}[]&#34; + &#34;\n&#34; + r&#34;\begin{tabular}{| l | l |}&#34; + &#34;\n&#34;
@@ -91,26 +101,30 @@ def make_textable(data, generate=False, print_tab=False):
     with open(
         pathlib.Path(__file__).parent.joinpath(&#34;wall_time_textable.txt&#34;),
         &#34;w+&#34; if generate else &#34;r&#34;,
-        encoding=&#39;utf-8&#39;
+        encoding=&#34;utf-8&#34;,
     ) as f:
         if generate:
             f.write(latex_table)
 
 
 def compare_refdata(data, rtol, generate=False):
-    delimiter = &#39;;&#39;
+    delimiter = &#34;;&#34;
     path = pathlib.Path(__file__).parent.joinpath(&#34;wall_time_refdata.txt&#34;)
     if generate:
-        table = np.char.array(
-            np.concatenate([data[&#39;opts&#39;], data[&#39;values&#39;]])
-        ).reshape(2, len(data[&#39;values&#39;])).T
+        table = (
+            np.char.array(np.concatenate([data[&#34;opts&#34;], data[&#34;values&#34;]]))
+            .reshape(2, len(data[&#34;values&#34;]))
+            .T
+        )
         np.savetxt(path, table, delimiter=delimiter, fmt=&#34;%s&#34;)
     else:
         table = np.loadtxt(path, delimiter=delimiter, dtype=str)
         np.testing.assert_allclose(
-            actual=data[&#39;values&#39;],
-            desired=np.array(table[:,1].astype(float)), rtol=rtol)
-        np.testing.assert_array_equal(data[&#39;opts&#39;], table[:,0])</code></pre>
+            actual=data[&#34;values&#34;],
+            desired=np.array(table[:, 1].astype(float)),
+            rtol=rtol,
+        )
+        np.testing.assert_array_equal(data[&#34;opts&#34;], table[:, 0])</code></pre>
 </details>
 </section>
 <section>
@@ -130,19 +144,23 @@ def compare_refdata(data, rtol, generate=False):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def compare_refdata(data, rtol, generate=False):
-    delimiter = &#39;;&#39;
+    delimiter = &#34;;&#34;
     path = pathlib.Path(__file__).parent.joinpath(&#34;wall_time_refdata.txt&#34;)
     if generate:
-        table = np.char.array(
-            np.concatenate([data[&#39;opts&#39;], data[&#39;values&#39;]])
-        ).reshape(2, len(data[&#39;values&#39;])).T
+        table = (
+            np.char.array(np.concatenate([data[&#34;opts&#34;], data[&#34;values&#34;]]))
+            .reshape(2, len(data[&#34;values&#34;]))
+            .T
+        )
         np.savetxt(path, table, delimiter=delimiter, fmt=&#34;%s&#34;)
     else:
         table = np.loadtxt(path, delimiter=delimiter, dtype=str)
         np.testing.assert_allclose(
-            actual=data[&#39;values&#39;],
-            desired=np.array(table[:,1].astype(float)), rtol=rtol)
-        np.testing.assert_array_equal(data[&#39;opts&#39;], table[:,0])</code></pre>
+            actual=data[&#34;values&#34;],
+            desired=np.array(table[:, 1].astype(float)),
+            rtol=rtol,
+        )
+        np.testing.assert_array_equal(data[&#34;opts&#34;], table[:, 0])</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.wall_time.make_data"><code class="name flex">
@@ -157,15 +175,19 @@ def compare_refdata(data, rtol, generate=False):
 <pre><code class="python">def make_data(settings, grid, opts):
     options = Options(**opts)
     simulation = Simulation(
-        settings=settings, grid_layout=grid, psi_coord=x_id(),
-        opts=options, GC_max=default_GC_max)
+        settings=settings,
+        grid_layout=grid,
+        psi_coord=x_id(),
+        opts=options,
+        GC_max=default_GC_max,
+    )
     result = {&#34;wall_time&#34;: []}
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
         wall_time_per_timestep = simulation.step(steps)
         last_step += steps
-        result[&#39;wall_time&#39;].append(wall_time_per_timestep)
+        result[&#34;wall_time&#34;].append(wall_time_per_timestep)
     return result</code></pre>
 </details>
 </dd>
@@ -179,7 +201,9 @@ def compare_refdata(data, rtol, generate=False):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_textable(data, generate=False, print_tab=False):
-    latex_data = r&#34;\hline&#34; + &#34; Variant  &amp; Elapsed Real Time (wrt upwind) &#34; + r&#34;\\ \hline&#34; + &#34;\n&#34;
+    latex_data = (
+        r&#34;\hline&#34; + &#34; Variant  &amp; Elapsed Real Time (wrt upwind) &#34; + r&#34;\\ \hline&#34; + &#34;\n&#34;
+    )
     for opt, value in zip(data[&#34;opts&#34;], data[&#34;values&#34;]):
         latex_data += r&#34;\hline&#34; + f&#34; {opt} &amp; {value} &#34; + r&#34;\\ \hline&#34; + &#34;\n&#34;
     latex_start = r&#34;\begin{table}[]&#34; + &#34;\n&#34; + r&#34;\begin{tabular}{| l | l |}&#34; + &#34;\n&#34;
@@ -190,7 +214,7 @@ def compare_refdata(data, rtol, generate=False):
     with open(
         pathlib.Path(__file__).parent.joinpath(&#34;wall_time_textable.txt&#34;),
         &#34;w+&#34; if generate else &#34;r&#34;,
-        encoding=&#39;utf-8&#39;
+        encoding=&#34;utf-8&#34;,
     ) as f:
         if generate:
             f.write(latex_table)</code></pre>
@@ -214,12 +238,12 @@ def compare_refdata(data, rtol, generate=False):
             minimum_values = []
             while i &lt; n_runs:
                 result = make_data(settings, grid, opts)
-                wall_times = result[&#39;wall_time&#39;]
+                wall_times = result[&#34;wall_time&#34;]
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
                 i += 1
             selected_value = np.min(minimum_values)
-            if opts == {&#39;n_iters&#39;: 1}:
+            if opts == {&#34;n_iters&#34;: 1}:
                 norm = selected_value
             table_data[&#34;opts&#34;].append(str(opts) + &#34;(&#34; + grid.__class__.__name__ + &#34;)&#34;)
             table_data[&#34;values&#34;].append(round(selected_value / norm, 1))

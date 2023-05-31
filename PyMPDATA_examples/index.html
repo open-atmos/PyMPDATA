@@ -26,7 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from pkg_resources import get_distribution, DistributionNotFound, VersionConflict
+<pre><code class="python">from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+
 try:
     __version__ = get_distribution(__name__).version
 except (DistributionNotFound, VersionConflict):

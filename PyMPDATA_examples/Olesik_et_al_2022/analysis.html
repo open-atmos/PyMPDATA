@@ -28,48 +28,57 @@
 </summary>
 <pre><code class="python">from collections import namedtuple
 from copy import deepcopy
+
 import numpy as np
-from joblib import Parallel, parallel_backend, delayed
-from PyMPDATA import Options
-from PyMPDATA_examples.Olesik_et_al_2022.simulation import Simulation
-from PyMPDATA_examples.Olesik_et_al_2022.equilibrium_drop_growth import PdfEvolver
-from PyMPDATA_examples.utils.error_norms import L2
-from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
+from joblib import Parallel, delayed, parallel_backend
 from PyMPDATA_examples.Olesik_et_al_2022.coordinates import x_id, x_log_of_pn, x_p2
-from PyMPDATA_examples.Olesik_et_al_2022.settings import Settings, default_mixing_ratios_g_kg
+from PyMPDATA_examples.Olesik_et_al_2022.equilibrium_drop_growth import PdfEvolver
+from PyMPDATA_examples.Olesik_et_al_2022.settings import (
+    Settings,
+    default_mixing_ratios_g_kg,
+)
+from PyMPDATA_examples.Olesik_et_al_2022.simulation import Simulation
+from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
+from PyMPDATA_examples.utils.error_norms import L2
+
+from PyMPDATA import Options
 
 
 def analysis(settings, grid_layout, psi_coord, options_dict, GC_max):
     options_str = str(options_dict)
     options = Options(**options_dict)
     simulation = Simulation(settings, grid_layout, psi_coord, options, GC_max)
-    result = {&#34;n&#34;: [], &#34;n_analytical&#34;: [], &#34;error_norm_L2&#34;: [], &#34;wall_time&#34;:[]}
+    result = {&#34;n&#34;: [], &#34;n_analytical&#34;: [], &#34;error_norm_L2&#34;: [], &#34;wall_time&#34;: []}
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
         wall_time = simulation.step(steps) if steps &gt; 0 else 0
         last_step += steps
-        result[&#39;n&#39;].append(simulation.n_of_r.copy())
-        result[&#39;wall_time&#39;].append(wall_time)
-    result[&#39;r&#39;] = simulation.r.copy()
-    result[&#39;rh&#39;] = simulation.rh.copy()
-    result[&#39;dx&#39;] = simulation.dx
+        result[&#34;n&#34;].append(simulation.n_of_r.copy())
+        result[&#34;wall_time&#34;].append(wall_time)
+    result[&#34;r&#34;] = simulation.r.copy()
+    result[&#34;rh&#34;] = simulation.rh.copy()
+    result[&#34;dx&#34;] = simulation.dx
     return Result(
         grid_layout_str=grid_layout.__class__.__name__,
         option_str=options_str,
         result=result,
         out_steps=simulation.out_steps,
-        dt=simulation.dt
+        dt=simulation.dt,
     )
 
 
-def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
-                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
-                        opt_set=({&#39;n_iters&#39;: 1},),
-                        mixing_ratios_g_kg=default_mixing_ratios_g_kg
-                        ):
+def compute_figure_data(
+    *,
+    nr,
+    GC_max,
+    psi_coord=x_id(),
+    grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
+    opt_set=({&#34;n_iters&#34;: 1},),
+    mixing_ratios_g_kg=default_mixing_ratios_g_kg
+):
     settings = Settings(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
-    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+    with parallel_backend(&#34;threading&#34;, n_jobs=-2):
         results = Parallel(verbose=10)(
             delayed(analysis)(settings, grid_layout, psi_coord, options, GC_max)
             for grid_layout in grid_layouts
@@ -82,7 +91,6 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
         if case.grid_layout_str not in cases:
             cases[case.grid_layout_str] = case
 
-
     output = {}
     for coord, case in cases.items():
         output[coord] = {&#34;numerical&#34;: {}, &#34;wall_time&#34;: {}}
@@ -91,26 +99,33 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
                 opts = result.option_str
                 data = result.result
                 rh = data.pop(&#34;rh&#34;)
-                r = data.pop(&#39;r&#39;)
-                dx = data.pop(&#39;dx&#39;)
+                r = data.pop(&#34;r&#34;)
+                dx = data.pop(&#34;dx&#34;)
 
-                if &#39;grid&#39; not in output[coord]:
+                if &#34;grid&#34; not in output[coord]:
                     output[coord][&#34;grid&#34;] = {
-                        &#39;rh&#39;: rh, &#39;r&#39;: r, &#39;dx&#39;: dx, &#39;dt&#39;: case.dt, &#39;out_steps&#39;: case.out_steps
+                        &#34;rh&#34;: rh,
+                        &#34;r&#34;: r,
+                        &#34;dx&#34;: dx,
+                        &#34;dt&#34;: case.dt,
+                        &#34;out_steps&#34;: case.out_steps,
                     }
-                output[coord][&#34;numerical&#34;][opts] = data[&#39;n&#39;]
+                output[coord][&#34;numerical&#34;][opts] = data[&#34;n&#34;]
 
     for coord, case in cases.items():
         analytical = []
         for t in [case.dt * nt for nt in case.out_steps]:
             pdf_t = PdfEvolver(settings.pdf, settings.drdt, t)
-            rh = output[coord][&#34;grid&#34;][&#39;rh&#39;]
-            analytical.append(discretised_analytical_solution(
-                rh.magnitude,
-                lambda r, pdf_t=pdf_t, rh=rh: pdf_t(r * rh.units).magnitude,
-                midpoint_value=True,
-                r=output[coord][&#34;grid&#34;][&#39;r&#39;].magnitude
-            ) * pdf_t(rh[0]).units)
+            rh = output[coord][&#34;grid&#34;][&#34;rh&#34;]
+            analytical.append(
+                discretised_analytical_solution(
+                    rh.magnitude,
+                    lambda r, pdf_t=pdf_t, rh=rh: pdf_t(r * rh.units).magnitude,
+                    midpoint_value=True,
+                    r=output[coord][&#34;grid&#34;][&#34;r&#34;].magnitude,
+                )
+                * pdf_t(rh[0]).units
+            )
         output[coord][&#34;analytical&#34;] = analytical
 
     for coord, case in cases.items():
@@ -119,9 +134,7 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
         for opts in output[coord][&#34;numerical&#34;]:
             numerical = output[coord][&#34;numerical&#34;][opts]
             error_L2[opts] = L2(
-                numerical[-1].magnitude,
-                analytical[-1].magnitude,
-                case.out_steps[-1]
+                numerical[-1].magnitude, analytical[-1].magnitude, case.out_steps[-1]
             )
         output[coord][&#34;error_L2&#34;] = error_L2
 
@@ -134,15 +147,15 @@ def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
     return output, settings
 
 
-class Result(namedtuple(&#34;Result&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;, &#39;option_str&#39;, &#39;result&#39;))):
+class Result(
+    namedtuple(&#34;Result&#34;, (&#34;dt&#34;, &#34;out_steps&#34;, &#34;grid_layout_str&#34;, &#34;option_str&#34;, &#34;result&#34;))
+):
     __slots__ = ()
 
 
 def Case(result: Result):
-    return namedtuple(&#34;Case&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;))(
-        dt=result.dt,
-        out_steps=result.out_steps,
-        grid_layout_str=result.grid_layout_str
+    return namedtuple(&#34;Case&#34;, (&#34;dt&#34;, &#34;out_steps&#34;, &#34;grid_layout_str&#34;))(
+        dt=result.dt, out_steps=result.out_steps, grid_layout_str=result.grid_layout_str
     )
 
 
@@ -151,18 +164,15 @@ def rel_disp(r, psi, psi_coord):
     mom1 = 0
     mom2 = 0
     for i, psi_i in enumerate(psi):
-        dp_i = (
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
-        )
-        A_i = (
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 1) -
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
-        )
-        B_i = (
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 2) -
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
-        )
+        dp_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 0
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        A_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 1
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
+        B_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 2
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
         bin_mom0 = psi_i * dp_i
         bin_mom1 = psi_i * A_i
         bin_mom2 = psi_i * B_i
@@ -170,8 +180,8 @@ def rel_disp(r, psi, psi_coord):
         mom1 += bin_mom1
         mom2 += bin_mom2
     mu = mom1 / mom0
-    std = np.sqrt(mom2/mom0 - mu**2)
-    d = std/mu
+    std = np.sqrt(mom2 / mom0 - mu**2)
+    d = std / mu
     return d
 
 
@@ -179,11 +189,12 @@ def third_moment(r, psi, psi_coord, normalised=True):
     mom0 = 0
     mom3 = 0
     for i, psi_i in enumerate(psi):
-        dp_i = (psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
-                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0))
-        integral_i = (
-                psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 3) -
-                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3))
+        dp_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 0
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        integral_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 3
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3)
         bin_mom0 = psi_i * dp_i
         bin_mom3 = psi_i * integral_i
         mom0 += bin_mom0
@@ -210,10 +221,8 @@ def third_moment(r, psi, psi_coord, normalised=True):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def Case(result: Result):
-    return namedtuple(&#34;Case&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;))(
-        dt=result.dt,
-        out_steps=result.out_steps,
-        grid_layout_str=result.grid_layout_str
+    return namedtuple(&#34;Case&#34;, (&#34;dt&#34;, &#34;out_steps&#34;, &#34;grid_layout_str&#34;))(
+        dt=result.dt, out_steps=result.out_steps, grid_layout_str=result.grid_layout_str
     )</code></pre>
 </details>
 </dd>
@@ -230,23 +239,23 @@ def third_moment(r, psi, psi_coord, normalised=True):
     options_str = str(options_dict)
     options = Options(**options_dict)
     simulation = Simulation(settings, grid_layout, psi_coord, options, GC_max)
-    result = {&#34;n&#34;: [], &#34;n_analytical&#34;: [], &#34;error_norm_L2&#34;: [], &#34;wall_time&#34;:[]}
+    result = {&#34;n&#34;: [], &#34;n_analytical&#34;: [], &#34;error_norm_L2&#34;: [], &#34;wall_time&#34;: []}
     last_step = 0
     for n_steps in simulation.out_steps:
         steps = n_steps - last_step
         wall_time = simulation.step(steps) if steps &gt; 0 else 0
         last_step += steps
-        result[&#39;n&#39;].append(simulation.n_of_r.copy())
-        result[&#39;wall_time&#39;].append(wall_time)
-    result[&#39;r&#39;] = simulation.r.copy()
-    result[&#39;rh&#39;] = simulation.rh.copy()
-    result[&#39;dx&#39;] = simulation.dx
+        result[&#34;n&#34;].append(simulation.n_of_r.copy())
+        result[&#34;wall_time&#34;].append(wall_time)
+    result[&#34;r&#34;] = simulation.r.copy()
+    result[&#34;rh&#34;] = simulation.rh.copy()
+    result[&#34;dx&#34;] = simulation.dx
     return Result(
         grid_layout_str=grid_layout.__class__.__name__,
         option_str=options_str,
         result=result,
         out_steps=simulation.out_steps,
-        dt=simulation.dt
+        dt=simulation.dt,
     )</code></pre>
 </details>
 </dd>
@@ -263,13 +272,17 @@ def third_moment(r, psi, psi_coord, normalised=True):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def compute_figure_data(*, nr, GC_max, psi_coord=x_id(),
-                        grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
-                        opt_set=({&#39;n_iters&#39;: 1},),
-                        mixing_ratios_g_kg=default_mixing_ratios_g_kg
-                        ):
+<pre><code class="python">def compute_figure_data(
+    *,
+    nr,
+    GC_max,
+    psi_coord=x_id(),
+    grid_layouts=(x_id(), x_p2(), x_log_of_pn(r0=1, n=1)),
+    opt_set=({&#34;n_iters&#34;: 1},),
+    mixing_ratios_g_kg=default_mixing_ratios_g_kg
+):
     settings = Settings(nr=nr, mixing_ratios_g_kg=mixing_ratios_g_kg)
-    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+    with parallel_backend(&#34;threading&#34;, n_jobs=-2):
         results = Parallel(verbose=10)(
             delayed(analysis)(settings, grid_layout, psi_coord, options, GC_max)
             for grid_layout in grid_layouts
@@ -282,7 +295,6 @@ def third_moment(r, psi, psi_coord, normalised=True):
         if case.grid_layout_str not in cases:
             cases[case.grid_layout_str] = case
 
-
     output = {}
     for coord, case in cases.items():
         output[coord] = {&#34;numerical&#34;: {}, &#34;wall_time&#34;: {}}
@@ -291,26 +303,33 @@ def third_moment(r, psi, psi_coord, normalised=True):
                 opts = result.option_str
                 data = result.result
                 rh = data.pop(&#34;rh&#34;)
-                r = data.pop(&#39;r&#39;)
-                dx = data.pop(&#39;dx&#39;)
+                r = data.pop(&#34;r&#34;)
+                dx = data.pop(&#34;dx&#34;)
 
-                if &#39;grid&#39; not in output[coord]:
+                if &#34;grid&#34; not in output[coord]:
                     output[coord][&#34;grid&#34;] = {
-                        &#39;rh&#39;: rh, &#39;r&#39;: r, &#39;dx&#39;: dx, &#39;dt&#39;: case.dt, &#39;out_steps&#39;: case.out_steps
+                        &#34;rh&#34;: rh,
+                        &#34;r&#34;: r,
+                        &#34;dx&#34;: dx,
+                        &#34;dt&#34;: case.dt,
+                        &#34;out_steps&#34;: case.out_steps,
                     }
-                output[coord][&#34;numerical&#34;][opts] = data[&#39;n&#39;]
+                output[coord][&#34;numerical&#34;][opts] = data[&#34;n&#34;]
 
     for coord, case in cases.items():
         analytical = []
         for t in [case.dt * nt for nt in case.out_steps]:
             pdf_t = PdfEvolver(settings.pdf, settings.drdt, t)
-            rh = output[coord][&#34;grid&#34;][&#39;rh&#39;]
-            analytical.append(discretised_analytical_solution(
-                rh.magnitude,
-                lambda r, pdf_t=pdf_t, rh=rh: pdf_t(r * rh.units).magnitude,
-                midpoint_value=True,
-                r=output[coord][&#34;grid&#34;][&#39;r&#39;].magnitude
-            ) * pdf_t(rh[0]).units)
+            rh = output[coord][&#34;grid&#34;][&#34;rh&#34;]
+            analytical.append(
+                discretised_analytical_solution(
+                    rh.magnitude,
+                    lambda r, pdf_t=pdf_t, rh=rh: pdf_t(r * rh.units).magnitude,
+                    midpoint_value=True,
+                    r=output[coord][&#34;grid&#34;][&#34;r&#34;].magnitude,
+                )
+                * pdf_t(rh[0]).units
+            )
         output[coord][&#34;analytical&#34;] = analytical
 
     for coord, case in cases.items():
@@ -319,9 +338,7 @@ def third_moment(r, psi, psi_coord, normalised=True):
         for opts in output[coord][&#34;numerical&#34;]:
             numerical = output[coord][&#34;numerical&#34;][opts]
             error_L2[opts] = L2(
-                numerical[-1].magnitude,
-                analytical[-1].magnitude,
-                case.out_steps[-1]
+                numerical[-1].magnitude, analytical[-1].magnitude, case.out_steps[-1]
             )
         output[coord][&#34;error_L2&#34;] = error_L2
 
@@ -348,18 +365,15 @@ def third_moment(r, psi, psi_coord, normalised=True):
     mom1 = 0
     mom2 = 0
     for i, psi_i in enumerate(psi):
-        dp_i = (
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
-        )
-        A_i = (
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 1) -
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
-        )
-        B_i = (
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 2) -
-            psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
-        )
+        dp_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 0
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        A_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 1
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 1)
+        B_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 2
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 2)
         bin_mom0 = psi_i * dp_i
         bin_mom1 = psi_i * A_i
         bin_mom2 = psi_i * B_i
@@ -367,8 +381,8 @@ def third_moment(r, psi, psi_coord, normalised=True):
         mom1 += bin_mom1
         mom2 += bin_mom2
     mu = mom1 / mom0
-    std = np.sqrt(mom2/mom0 - mu**2)
-    d = std/mu
+    std = np.sqrt(mom2 / mom0 - mu**2)
+    d = std / mu
     return d</code></pre>
 </details>
 </dd>
@@ -385,11 +399,12 @@ def third_moment(r, psi, psi_coord, normalised=True):
     mom0 = 0
     mom3 = 0
     for i, psi_i in enumerate(psi):
-        dp_i = (psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 0) -
-                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0))
-        integral_i = (
-                psi_coord.moment_of_r_integral(psi_coord.x(r[i+1]), 3) -
-                psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3))
+        dp_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 0
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 0)
+        integral_i = psi_coord.moment_of_r_integral(
+            psi_coord.x(r[i + 1]), 3
+        ) - psi_coord.moment_of_r_integral(psi_coord.x(r[i]), 3)
         bin_mom0 = psi_i * dp_i
         bin_mom3 = psi_i * integral_i
         mom0 += bin_mom0
@@ -414,7 +429,9 @@ def third_moment(r, psi, psi_coord, normalised=True):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Result(namedtuple(&#34;Result&#34;, (&#39;dt&#39;, &#39;out_steps&#39;, &#39;grid_layout_str&#39;, &#39;option_str&#39;, &#39;result&#39;))):
+<pre><code class="python">class Result(
+    namedtuple(&#34;Result&#34;, (&#34;dt&#34;, &#34;out_steps&#34;, &#34;grid_layout_str&#34;, &#34;option_str&#34;, &#34;result&#34;))
+):
     __slots__ = ()</code></pre>
 </details>
 <h3>Ancestors</h3>

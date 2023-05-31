@@ -27,8 +27,8 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import numpy as np
-from pystrict import strict
 import PyMPDATA_examples.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS73
+from pystrict import strict
 
 
 @strict
@@ -50,13 +50,14 @@ class Settings:
         self.C_opt = C_opt
 
     def payoff(self, S: np.ndarray):
-        return np.exp(-self.r * self.T) * (np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S))
+        return np.exp(-self.r * self.T) * (
+            np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
+        )
 
     def analytical_solution(self, S: np.ndarray):
-        return (
-                BS73.p_euro(S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma) -
-                BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)
-        )</code></pre>
+        return BS73.p_euro(
+            S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma
+        ) - BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)</code></pre>
 </details>
 </section>
 <section>
@@ -97,13 +98,14 @@ class Settings:
         self.C_opt = C_opt
 
     def payoff(self, S: np.ndarray):
-        return np.exp(-self.r * self.T) * (np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S))
+        return np.exp(-self.r * self.T) * (
+            np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
+        )
 
     def analytical_solution(self, S: np.ndarray):
-        return (
-                BS73.p_euro(S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma) -
-                BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)
-        )</code></pre>
+        return BS73.p_euro(
+            S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma
+        ) - BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -160,10 +162,9 @@ class Settings:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def analytical_solution(self, S: np.ndarray):
-    return (
-            BS73.p_euro(S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma) -
-            BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)
-    )</code></pre>
+    return BS73.p_euro(
+        S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma
+    ) - BS73.p_euro(S, K=self.K1, T=self.T, r=self.r, b=self.r, sgma=self.sigma)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Arabas_and_Farhat_2020.setup1_european_corridor.Settings.payoff"><code class="name flex">
@@ -176,7 +177,9 @@ class Settings:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def payoff(self, S: np.ndarray):
-    return np.exp(-self.r * self.T) * (np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S))</code></pre>
+    return np.exp(-self.r * self.T) * (
+        np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
+    )</code></pre>
 </details>
 </dd>
 </dl>

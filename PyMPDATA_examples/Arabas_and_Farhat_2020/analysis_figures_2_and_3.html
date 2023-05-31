@@ -28,32 +28,40 @@
 </summary>
 <pre><code class="python">import numpy as np
 from joblib import Parallel, delayed, parallel_backend
-from PyMPDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
 from PyMPDATA_examples.Arabas_and_Farhat_2020.setup1_european_corridor import Settings
+from PyMPDATA_examples.Arabas_and_Farhat_2020.simulation import Simulation
 from PyMPDATA_examples.utils.error_norms import L2
-
 
 
 def compute(simulation):
     output = []
     for n_iters in (1, 2):
         simulation.run(n_iters)
-        output.append({
-            &#34;n_iters&#34;: n_iters,
-            &#34;log2_C&#34;: np.log2(simulation.C),
-            &#34;log2_C_opt&#34;: np.log2(simulation.settings.C_opt),
-            &#34;log2_l2&#34;: np.log2(simulation.l2),
-            &#34;log2_l2_opt&#34;: np.log2(simulation.settings.l2_opt),
-            &#34;err2&#34;: error_L2_norm(
-                simulation.solvers, simulation.settings, simulation.S, simulation.nt, n_iters)
-        })
+        output.append(
+            {
+                &#34;n_iters&#34;: n_iters,
+                &#34;log2_C&#34;: np.log2(simulation.C),
+                &#34;log2_C_opt&#34;: np.log2(simulation.settings.C_opt),
+                &#34;log2_l2&#34;: np.log2(simulation.l2),
+                &#34;log2_l2_opt&#34;: np.log2(simulation.settings.l2_opt),
+                &#34;err2&#34;: error_L2_norm(
+                    simulation.solvers,
+                    simulation.settings,
+                    simulation.S,
+                    simulation.nt,
+                    n_iters,
+                ),
+            }
+        )
     return output
 
 
 def convergence_in_space(num=8):
-    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+    with parallel_backend(&#34;threading&#34;, n_jobs=-2):
         data = Parallel(verbose=10)(
-            delayed(compute)(Simulation(Settings(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt)))
+            delayed(compute)(
+                Simulation(Settings(l2_opt=2**log2_l2_opt, C_opt=2**log2_C_opt))
+            )
             for log2_C_opt in np.linspace(-9.5, -6, num=num)
             for log2_l2_opt in range(1, 4)
         )
@@ -61,7 +69,7 @@ def convergence_in_space(num=8):
         for pair in data:
             for datum in pair:
                 label = f&#34; $\\lambda^2\\approx2^{{{datum[&#39;log2_l2_opt&#39;]}}}$&#34;
-                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#34;n_iters&#34;]-1]
+                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#34;n_iters&#34;] - 1]
                 if key not in result:
                     result[key] = ([], [])
                 result[key][0].append(datum[&#34;log2_C&#34;])
@@ -70,21 +78,23 @@ def convergence_in_space(num=8):
 
 
 def convergence_in_time(num=13):
-    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+    with parallel_backend(&#34;threading&#34;, n_jobs=-2):
         data = Parallel(verbose=10)(
-            delayed(compute)(Simulation(Settings(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt)))
-            for log2_C_opt in np.log2((.01, .005, .0025))
+            delayed(compute)(
+                Simulation(Settings(l2_opt=2**log2_l2_opt, C_opt=2**log2_C_opt))
+            )
+            for log2_C_opt in np.log2((0.01, 0.005, 0.0025))
             for log2_l2_opt in np.linspace(1.1, 3.5, num=num)
         )
         result = {}
         for pair in data:
             for datum in pair:
                 label = f&#34; $C\\approx{2**(datum[&#39;log2_C_opt&#39;]):.4f}$&#34;
-                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#39;n_iters&#39;]-1]
+                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#34;n_iters&#34;] - 1]
                 if key not in result:
                     result[key] = ([], [])
-                result[key][0].append(datum[&#39;log2_l2&#39;])
-                result[key][1].append(datum[&#39;err2&#39;])
+                result[key][0].append(datum[&#34;log2_l2&#34;])
+                result[key][1].append(datum[&#34;err2&#34;])
         return result
 
 
@@ -114,15 +124,22 @@ def error_L2_norm(solvers, settings, S, nt, n_iters: int):
     output = []
     for n_iters in (1, 2):
         simulation.run(n_iters)
-        output.append({
-            &#34;n_iters&#34;: n_iters,
-            &#34;log2_C&#34;: np.log2(simulation.C),
-            &#34;log2_C_opt&#34;: np.log2(simulation.settings.C_opt),
-            &#34;log2_l2&#34;: np.log2(simulation.l2),
-            &#34;log2_l2_opt&#34;: np.log2(simulation.settings.l2_opt),
-            &#34;err2&#34;: error_L2_norm(
-                simulation.solvers, simulation.settings, simulation.S, simulation.nt, n_iters)
-        })
+        output.append(
+            {
+                &#34;n_iters&#34;: n_iters,
+                &#34;log2_C&#34;: np.log2(simulation.C),
+                &#34;log2_C_opt&#34;: np.log2(simulation.settings.C_opt),
+                &#34;log2_l2&#34;: np.log2(simulation.l2),
+                &#34;log2_l2_opt&#34;: np.log2(simulation.settings.l2_opt),
+                &#34;err2&#34;: error_L2_norm(
+                    simulation.solvers,
+                    simulation.settings,
+                    simulation.S,
+                    simulation.nt,
+                    n_iters,
+                ),
+            }
+        )
     return output</code></pre>
 </details>
 </dd>
@@ -136,9 +153,11 @@ def error_L2_norm(solvers, settings, S, nt, n_iters: int):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def convergence_in_space(num=8):
-    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+    with parallel_backend(&#34;threading&#34;, n_jobs=-2):
         data = Parallel(verbose=10)(
-            delayed(compute)(Simulation(Settings(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt)))
+            delayed(compute)(
+                Simulation(Settings(l2_opt=2**log2_l2_opt, C_opt=2**log2_C_opt))
+            )
             for log2_C_opt in np.linspace(-9.5, -6, num=num)
             for log2_l2_opt in range(1, 4)
         )
@@ -146,7 +165,7 @@ def error_L2_norm(solvers, settings, S, nt, n_iters: int):
         for pair in data:
             for datum in pair:
                 label = f&#34; $\\lambda^2\\approx2^{{{datum[&#39;log2_l2_opt&#39;]}}}$&#34;
-                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#34;n_iters&#34;]-1]
+                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#34;n_iters&#34;] - 1]
                 if key not in result:
                     result[key] = ([], [])
                 result[key][0].append(datum[&#34;log2_C&#34;])
@@ -164,21 +183,23 @@ def error_L2_norm(solvers, settings, S, nt, n_iters: int):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def convergence_in_time(num=13):
-    with parallel_backend(&#39;threading&#39;, n_jobs=-2):
+    with parallel_backend(&#34;threading&#34;, n_jobs=-2):
         data = Parallel(verbose=10)(
-            delayed(compute)(Simulation(Settings(l2_opt=2 ** log2_l2_opt, C_opt=2 ** log2_C_opt)))
-            for log2_C_opt in np.log2((.01, .005, .0025))
+            delayed(compute)(
+                Simulation(Settings(l2_opt=2**log2_l2_opt, C_opt=2**log2_C_opt))
+            )
+            for log2_C_opt in np.log2((0.01, 0.005, 0.0025))
             for log2_l2_opt in np.linspace(1.1, 3.5, num=num)
         )
         result = {}
         for pair in data:
             for datum in pair:
                 label = f&#34; $C\\approx{2**(datum[&#39;log2_C_opt&#39;]):.4f}$&#34;
-                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#39;n_iters&#39;]-1]
+                key = (&#34;upwind&#34; + label, &#34;MPDATA&#34; + label)[datum[&#34;n_iters&#34;] - 1]
                 if key not in result:
                     result[key] = ([], [])
-                result[key][0].append(datum[&#39;log2_l2&#39;])
-                result[key][1].append(datum[&#39;err2&#39;])
+                result[key][0].append(datum[&#34;log2_l2&#34;])
+                result[key][1].append(datum[&#34;err2&#34;])
         return result</code></pre>
 </details>
 </dd>

@@ -26,54 +26,67 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy as np
-from matplotlib import pyplot, pylab
-import matplotlib
+<pre><code class="python">import matplotlib
+import numpy as np
+from matplotlib import pylab, pyplot
+
 from .formulae import convert_to, si
 
 
-def plot(var, mult, label, output,
-         rng=None, threshold=None, cmap=&#39;copper&#39;, rasterized=False, figsize=None):
-    lines = {3: &#39;:&#39;, 6: &#39;--&#39;, 9: &#39;-&#39;, 12: &#39;-.&#39;}
-    colors = {3: &#39;crimson&#39;, 6: &#39;orange&#39;, 9: &#39;navy&#39;, 12: &#39;green&#39;}
+def plot(
+    var,
+    mult,
+    label,
+    output,
+    rng=None,
+    threshold=None,
+    cmap=&#34;copper&#34;,
+    rasterized=False,
+    figsize=None,
+):
+    lines = {3: &#34;:&#34;, 6: &#34;--&#34;, 9: &#34;-&#34;, 12: &#34;-.&#34;}
+    colors = {3: &#34;crimson&#34;, 6: &#34;orange&#34;, 9: &#34;navy&#34;, 12: &#34;green&#34;}
     fctr = 50  # rebin by fctr in time dimension (https://gist.github.com/zonca/1348792)
 
-    dt = (output[&#39;t&#39;][1] - output[&#39;t&#39;][0]) * fctr
-    dz = output[&#39;z&#39;][1] - output[&#39;z&#39;][0]
-    tgrid = np.concatenate(((output[&#39;t&#39;][0] - dt / 2,), output[&#39;t&#39;][0::fctr] + dt / 2))
-    zgrid = np.concatenate(((output[&#39;z&#39;][0] - dz / 2,), output[&#39;z&#39;] + dz / 2))
+    dt = (output[&#34;t&#34;][1] - output[&#34;t&#34;][0]) * fctr
+    dz = output[&#34;z&#34;][1] - output[&#34;z&#34;][0]
+    tgrid = np.concatenate(((output[&#34;t&#34;][0] - dt / 2,), output[&#34;t&#34;][0::fctr] + dt / 2))
+    zgrid = np.concatenate(((output[&#34;z&#34;][0] - dz / 2,), output[&#34;z&#34;] + dz / 2))
     convert_to(zgrid, si.km)
 
     fig = pyplot.figure(constrained_layout=True, figsize=figsize)
     gs = fig.add_gridspec(25, 5)
     ax1 = fig.add_subplot(gs[:-1, 0:3])
 
-    data = output[var]*mult
+    data = output[var] * mult
     lngth = data.shape[1] - 1
-    assert (lngth//fctr)*fctr == lngth
+    assert (lngth // fctr) * fctr == lngth
 
-    tmp = np.empty((data.shape[0], (data.shape[1]-1)//fctr+1))
+    tmp = np.empty((data.shape[0], (data.shape[1] - 1) // fctr + 1))
     tmp[:, 0] = data[:, 0]
     M, N = data[:, 1:].shape
-    m, n = M, N//fctr
-    tmp[:, 1:] = data[:, 1:].reshape((m, M//m, n, N//n)).mean(3).mean(1)
+    m, n = M, N // fctr
+    tmp[:, 1:] = data[:, 1:].reshape((m, M // m, n, N // n)).mean(3).mean(1)
     data = tmp
 
     if threshold is not None:
         data[data &lt; threshold] = np.nan
-    mesh = ax1.pcolormesh(tgrid / si.minutes, zgrid,
-                          data,
-                          cmap=cmap, rasterized=rasterized,
-                          vmin=None if rng is None else rng[0],
-                          vmax=None if rng is None else rng[1]
-                          )
+    mesh = ax1.pcolormesh(
+        tgrid / si.minutes,
+        zgrid,
+        data,
+        cmap=cmap,
+        rasterized=rasterized,
+        vmin=None if rng is None else rng[0],
+        vmax=None if rng is None else rng[1],
+    )
 
-    ax1.set_xlabel(&#39;time [min]&#39;)
+    ax1.set_xlabel(&#34;time [min]&#34;)
     ax1.set_xticks(list(lines.keys()))
-    ax1.set_ylabel(&#39;z [km]&#39;)
+    ax1.set_ylabel(&#34;z [km]&#34;)
     ax1.grid()
 
-    cbar = fig.colorbar(mesh, fraction=.05, location=&#39;top&#39;)
+    cbar = fig.colorbar(mesh, fraction=0.05, location=&#34;top&#34;)
     cbar.set_label(label)
 
     ax2 = fig.add_subplot(gs[:-1, 3:], sharey=ax1)
@@ -83,16 +96,16 @@ def plot(var, mult, label, output,
         ax2.set_xlim(rng)
 
     last_t = -1
-    for i, t in enumerate(output[&#39;t&#39;]):
-        x, z = output[var][:, i]*mult, output[&#39;z&#39;].copy()
+    for i, t in enumerate(output[&#34;t&#34;]):
+        x, z = output[var][:, i] * mult, output[&#34;z&#34;].copy()
         convert_to(z, si.km)
-        params = {&#39;color&#39;: &#39;black&#39;}
+        params = {&#34;color&#34;: &#34;black&#34;}
         for line_t, line_s in lines.items():
             if last_t &lt; line_t * si.minutes &lt;= t:
-                params[&#39;ls&#39;] = line_s
-                params[&#39;color&#39;] = colors[line_t]
-                ax2.step(x, z-(dz/si.km)/2, where=&#39;pre&#39;, **params)
-                ax1.axvline(t/si.minutes, **params)
+                params[&#34;ls&#34;] = line_s
+                params[&#34;color&#34;] = colors[line_t]
+                ax2.step(x, z - (dz / si.km) / 2, where=&#34;pre&#34;, **params)
+                ax1.axvline(t / si.minutes, **params)
         last_t = t
 
 
@@ -101,21 +114,27 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
     if max_psi &gt; max_height:
         raise ValueError(f&#34;max(psi)={max_psi} &gt; {max_height}&#34;)
     pylab.figure(figsize=(10, 5))
-    ax = pylab.subplot(projection=&#39;3d&#39;)
+    ax = pylab.subplot(projection=&#34;3d&#34;)
     ax.view_init(75, 85)
 
-    cmap = matplotlib.cm.get_cmap(&#39;gray_r&#39;)
+    cmap = matplotlib.cm.get_cmap(&#34;gray_r&#34;)
     min_height = 0
 
     dz = np.rot90(psi, 2).flatten()
     rgba = [cmap((k - min_height) / (1 + max_height)) for k in dz]
-    dz[dz &lt; .05 * max_height] = np.nan
-    factor = .9
+    dz[dz &lt; 0.05 * max_height] = np.nan
+    factor = 0.9
     ax.bar3d(
-        *[arr.flatten() for arr in np.meshgrid(
-            (settings.bin_boundaries[-2::-1] + settings.dr * (1 - factor) / 2) / si.um,
-            (np.arange(settings.nz - 1, -1, -1) + (1 - factor) / 2) * settings.dz / si.km
-        )],
+        *[
+            arr.flatten()
+            for arr in np.meshgrid(
+                (settings.bin_boundaries[-2::-1] + settings.dr * (1 - factor) / 2)
+                / si.um,
+                (np.arange(settings.nz - 1, -1, -1) + (1 - factor) / 2)
+                * settings.dz
+                / si.km,
+            )
+        ],
         z=0,
         dx=factor * settings.dr / si.um,
         dy=factor * settings.dz / si.km,
@@ -123,7 +142,7 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
         shade=True,
         color=rgba,
         lightsource=matplotlib.colors.LightSource(azdeg=-64, altdeg=15),
-        zsort=&#39;max&#39;
+        zsort=&#34;max&#34;,
     )
     ax.set_title(f&#34;MPDATA iterations: {options.n_iters}&#34;)
     ax.set_xlabel(&#34;droplet radius [μm]&#34;)
@@ -153,48 +172,60 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def plot(var, mult, label, output,
-         rng=None, threshold=None, cmap=&#39;copper&#39;, rasterized=False, figsize=None):
-    lines = {3: &#39;:&#39;, 6: &#39;--&#39;, 9: &#39;-&#39;, 12: &#39;-.&#39;}
-    colors = {3: &#39;crimson&#39;, 6: &#39;orange&#39;, 9: &#39;navy&#39;, 12: &#39;green&#39;}
+<pre><code class="python">def plot(
+    var,
+    mult,
+    label,
+    output,
+    rng=None,
+    threshold=None,
+    cmap=&#34;copper&#34;,
+    rasterized=False,
+    figsize=None,
+):
+    lines = {3: &#34;:&#34;, 6: &#34;--&#34;, 9: &#34;-&#34;, 12: &#34;-.&#34;}
+    colors = {3: &#34;crimson&#34;, 6: &#34;orange&#34;, 9: &#34;navy&#34;, 12: &#34;green&#34;}
     fctr = 50  # rebin by fctr in time dimension (https://gist.github.com/zonca/1348792)
 
-    dt = (output[&#39;t&#39;][1] - output[&#39;t&#39;][0]) * fctr
-    dz = output[&#39;z&#39;][1] - output[&#39;z&#39;][0]
-    tgrid = np.concatenate(((output[&#39;t&#39;][0] - dt / 2,), output[&#39;t&#39;][0::fctr] + dt / 2))
-    zgrid = np.concatenate(((output[&#39;z&#39;][0] - dz / 2,), output[&#39;z&#39;] + dz / 2))
+    dt = (output[&#34;t&#34;][1] - output[&#34;t&#34;][0]) * fctr
+    dz = output[&#34;z&#34;][1] - output[&#34;z&#34;][0]
+    tgrid = np.concatenate(((output[&#34;t&#34;][0] - dt / 2,), output[&#34;t&#34;][0::fctr] + dt / 2))
+    zgrid = np.concatenate(((output[&#34;z&#34;][0] - dz / 2,), output[&#34;z&#34;] + dz / 2))
     convert_to(zgrid, si.km)
 
     fig = pyplot.figure(constrained_layout=True, figsize=figsize)
     gs = fig.add_gridspec(25, 5)
     ax1 = fig.add_subplot(gs[:-1, 0:3])
 
-    data = output[var]*mult
+    data = output[var] * mult
     lngth = data.shape[1] - 1
-    assert (lngth//fctr)*fctr == lngth
+    assert (lngth // fctr) * fctr == lngth
 
-    tmp = np.empty((data.shape[0], (data.shape[1]-1)//fctr+1))
+    tmp = np.empty((data.shape[0], (data.shape[1] - 1) // fctr + 1))
     tmp[:, 0] = data[:, 0]
     M, N = data[:, 1:].shape
-    m, n = M, N//fctr
-    tmp[:, 1:] = data[:, 1:].reshape((m, M//m, n, N//n)).mean(3).mean(1)
+    m, n = M, N // fctr
+    tmp[:, 1:] = data[:, 1:].reshape((m, M // m, n, N // n)).mean(3).mean(1)
     data = tmp
 
     if threshold is not None:
         data[data &lt; threshold] = np.nan
-    mesh = ax1.pcolormesh(tgrid / si.minutes, zgrid,
-                          data,
-                          cmap=cmap, rasterized=rasterized,
-                          vmin=None if rng is None else rng[0],
-                          vmax=None if rng is None else rng[1]
-                          )
+    mesh = ax1.pcolormesh(
+        tgrid / si.minutes,
+        zgrid,
+        data,
+        cmap=cmap,
+        rasterized=rasterized,
+        vmin=None if rng is None else rng[0],
+        vmax=None if rng is None else rng[1],
+    )
 
-    ax1.set_xlabel(&#39;time [min]&#39;)
+    ax1.set_xlabel(&#34;time [min]&#34;)
     ax1.set_xticks(list(lines.keys()))
-    ax1.set_ylabel(&#39;z [km]&#39;)
+    ax1.set_ylabel(&#34;z [km]&#34;)
     ax1.grid()
 
-    cbar = fig.colorbar(mesh, fraction=.05, location=&#39;top&#39;)
+    cbar = fig.colorbar(mesh, fraction=0.05, location=&#34;top&#34;)
     cbar.set_label(label)
 
     ax2 = fig.add_subplot(gs[:-1, 3:], sharey=ax1)
@@ -204,16 +235,16 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
         ax2.set_xlim(rng)
 
     last_t = -1
-    for i, t in enumerate(output[&#39;t&#39;]):
-        x, z = output[var][:, i]*mult, output[&#39;z&#39;].copy()
+    for i, t in enumerate(output[&#34;t&#34;]):
+        x, z = output[var][:, i] * mult, output[&#34;z&#34;].copy()
         convert_to(z, si.km)
-        params = {&#39;color&#39;: &#39;black&#39;}
+        params = {&#34;color&#34;: &#34;black&#34;}
         for line_t, line_s in lines.items():
             if last_t &lt; line_t * si.minutes &lt;= t:
-                params[&#39;ls&#39;] = line_s
-                params[&#39;color&#39;] = colors[line_t]
-                ax2.step(x, z-(dz/si.km)/2, where=&#39;pre&#39;, **params)
-                ax1.axvline(t/si.minutes, **params)
+                params[&#34;ls&#34;] = line_s
+                params[&#34;color&#34;] = colors[line_t]
+                ax2.step(x, z - (dz / si.km) / 2, where=&#34;pre&#34;, **params)
+                ax1.axvline(t / si.minutes, **params)
         last_t = t</code></pre>
 </details>
 </dd>
@@ -231,21 +262,27 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
     if max_psi &gt; max_height:
         raise ValueError(f&#34;max(psi)={max_psi} &gt; {max_height}&#34;)
     pylab.figure(figsize=(10, 5))
-    ax = pylab.subplot(projection=&#39;3d&#39;)
+    ax = pylab.subplot(projection=&#34;3d&#34;)
     ax.view_init(75, 85)
 
-    cmap = matplotlib.cm.get_cmap(&#39;gray_r&#39;)
+    cmap = matplotlib.cm.get_cmap(&#34;gray_r&#34;)
     min_height = 0
 
     dz = np.rot90(psi, 2).flatten()
     rgba = [cmap((k - min_height) / (1 + max_height)) for k in dz]
-    dz[dz &lt; .05 * max_height] = np.nan
-    factor = .9
+    dz[dz &lt; 0.05 * max_height] = np.nan
+    factor = 0.9
     ax.bar3d(
-        *[arr.flatten() for arr in np.meshgrid(
-            (settings.bin_boundaries[-2::-1] + settings.dr * (1 - factor) / 2) / si.um,
-            (np.arange(settings.nz - 1, -1, -1) + (1 - factor) / 2) * settings.dz / si.km
-        )],
+        *[
+            arr.flatten()
+            for arr in np.meshgrid(
+                (settings.bin_boundaries[-2::-1] + settings.dr * (1 - factor) / 2)
+                / si.um,
+                (np.arange(settings.nz - 1, -1, -1) + (1 - factor) / 2)
+                * settings.dz
+                / si.km,
+            )
+        ],
         z=0,
         dx=factor * settings.dr / si.um,
         dy=factor * settings.dz / si.km,
@@ -253,7 +290,7 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
         shade=True,
         color=rgba,
         lightsource=matplotlib.colors.LightSource(azdeg=-64, altdeg=15),
-        zsort=&#39;max&#39;
+        zsort=&#34;max&#34;,
     )
     ax.set_title(f&#34;MPDATA iterations: {options.n_iters}&#34;)
     ax.set_xlabel(&#34;droplet radius [μm]&#34;)

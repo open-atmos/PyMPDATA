@@ -26,93 +26,111 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from matplotlib import pylab
-import numpy as np
+<pre><code class="python">import numpy as np
+from matplotlib import pylab
 from PyMPDATA_examples.Jarecka_et_al_2015 import formulae
 
 
 def plot_output(times, output, settings, return_data=True):
     lambdas_analytic = formulae.d2_el_lamb_lamb_t_evol(
-        times=[0] + list(times),
-        lamb_x0=settings.lx0,
-        lamb_y0=settings.ly0
+        times=[0] + list(times), lamb_x0=settings.lx0, lamb_y0=settings.ly0
     )[1:]
 
     data = {}
-    cuts = (&#39;x&#39;, &#39;y&#39;)
+    cuts = (&#34;x&#34;, &#34;y&#34;)
     _, axs = pylab.subplots(
-        nrows=len(times),
-        ncols=len(cuts),
-        figsize=(9, 9),
-        constrained_layout=True
+        nrows=len(times), ncols=len(cuts), figsize=(9, 9), constrained_layout=True
     )
-    momenta = {&#39;x&#39;: &#39;uh&#39;, &#39;y&#39;: &#39;vh&#39;}
+    momenta = {&#34;x&#34;: &#34;uh&#34;, &#34;y&#34;: &#34;vh&#34;}
     for i_cut, cut in enumerate(cuts):
-        if cut == &#39;x&#39;:
+        if cut == &#34;x&#34;:
             n = settings.nx
             idx = (slice(None, None), slice(n // 2, n // 2 + 1))
-            coord = settings.dx * (np.linspace(-n // 2, n // 2, n) + .5)
+            coord = settings.dx * (np.linspace(-n // 2, n // 2, n) + 0.5)
             x = coord
             y = 0
         else:
             n = settings.ny
             idx = (slice(n // 2, n // 2 + 1), slice(None, None))
-            coord = settings.dy * (np.linspace(-n // 2, n // 2, n) + .5)
+            coord = settings.dy * (np.linspace(-n // 2, n // 2, n) + 0.5)
             x = 0
             y = coord
         for i_t, t in enumerate(times):
             key = f&#34;cut={cut} t={t}&#34;
-            data[key] = {&#39;coord&#39;: coord, &#39;x&#39;:x, &#39;y&#39;:y}
+            data[key] = {&#34;coord&#34;: coord, &#34;x&#34;: x, &#34;y&#34;: y}
             datum = data[key]
-            datum[&#39;h_analytic&#39;] = formulae.amplitude(x, y, *lambdas_analytic[i_t, (0, 2)])
-            where = &#39;mid&#39;
+            datum[&#34;h_analytic&#34;] = formulae.amplitude(
+                x, y, *lambdas_analytic[i_t, (0, 2)]
+            )
+            where = &#34;mid&#34;
             axs[i_t, i_cut].set_xlim(-8.5, 8.5)
             axs[i_t, i_cut].set_xticks((-5, 0, 5))
-            axs[i_t, i_cut].step(datum[&#39;coord&#39;], output[0][&#39;h&#39;][idx].squeeze(),
-                                 color=&#39;black&#39;, label=&#39;h @ t=0&#39;, where=where)
-            axs[i_t, i_cut].step(datum[&#39;coord&#39;], output[t][&#39;h&#39;][idx].squeeze(),
-                                 color=&#39;red&#39;, label=&#39;MPDATA: h&#39;, where=where)
-            axs[i_t, i_cut].plot(datum[&#39;coord&#39;], datum[&#39;h_analytic&#39;],
-                                 color=&#39;blue&#39;, linestyle=&#39;:&#39;, label=&#39;analytic: h&#39;)
+            axs[i_t, i_cut].step(
+                datum[&#34;coord&#34;],
+                output[0][&#34;h&#34;][idx].squeeze(),
+                color=&#34;black&#34;,
+                label=&#34;h @ t=0&#34;,
+                where=where,
+            )
+            axs[i_t, i_cut].step(
+                datum[&#34;coord&#34;],
+                output[t][&#34;h&#34;][idx].squeeze(),
+                color=&#34;red&#34;,
+                label=&#34;MPDATA: h&#34;,
+                where=where,
+            )
+            axs[i_t, i_cut].plot(
+                datum[&#34;coord&#34;],
+                datum[&#34;h_analytic&#34;],
+                color=&#34;blue&#34;,
+                linestyle=&#34;:&#34;,
+                label=&#34;analytic: h&#34;,
+            )
             twin = axs[i_t, i_cut].twinx()
-            datum[&#39;h_numeric&#39;] = output[t][&#39;h&#39;][idx].squeeze()
-            mask = datum[&#39;h_numeric&#39;] &gt; settings.eps
-            datum[&#39;q_h_numeric&#39;] = np.where(mask, np.nan, 0)
-            np.divide(output[t][momenta[cut]][idx].squeeze(), datum[&#39;h_numeric&#39;],
-                      where=mask, out=datum[&#39;q_h_numeric&#39;])
+            datum[&#34;h_numeric&#34;] = output[t][&#34;h&#34;][idx].squeeze()
+            mask = datum[&#34;h_numeric&#34;] &gt; settings.eps
+            datum[&#34;q_h_numeric&#34;] = np.where(mask, np.nan, 0)
+            np.divide(
+                output[t][momenta[cut]][idx].squeeze(),
+                datum[&#34;h_numeric&#34;],
+                where=mask,
+                out=datum[&#34;q_h_numeric&#34;],
+            )
             twin.step(
-                datum[&#39;coord&#39;],
-                datum[&#39;q_h_numeric&#39;],
-                color=&#39;red&#39;,
-                linestyle=&#39;--&#39;,
-                label=&#39;MPDATA: q/h&#39;,
-                where=where
+                datum[&#34;coord&#34;],
+                datum[&#34;q_h_numeric&#34;],
+                color=&#34;red&#34;,
+                linestyle=&#34;--&#34;,
+                label=&#34;MPDATA: q/h&#34;,
+                where=where,
             )
-            datum[&#39;q_h_analytic&#39;] = np.where(
-                datum[&#39;h_analytic&#39;] &gt; settings.eps,
-                datum[&#39;coord&#39;] / lambdas_analytic[i_t, 0 + 2 * i_cut] \
-                    * lambdas_analytic[i_t, 1 + 2 * i_cut],
-                0)
+            datum[&#34;q_h_analytic&#34;] = np.where(
+                datum[&#34;h_analytic&#34;] &gt; settings.eps,
+                datum[&#34;coord&#34;]
+                / lambdas_analytic[i_t, 0 + 2 * i_cut]
+                * lambdas_analytic[i_t, 1 + 2 * i_cut],
+                0,
+            )
             twin.plot(
-                datum[&#39;coord&#39;],
-                datum[&#39;q_h_analytic&#39;],
-                linestyle=&#39;-.&#39;,
-                label=&#39;analytic: q/h&#39;,
-                color=&#39;blue&#39;
+                datum[&#34;coord&#34;],
+                datum[&#34;q_h_analytic&#34;],
+                linestyle=&#34;-.&#34;,
+                label=&#34;analytic: q/h&#34;,
+                color=&#34;blue&#34;,
             )
-            twin.set_ylabel(&#39;u&#39; if cut == &#39;x&#39; else &#39;v&#39;)
+            twin.set_ylabel(&#34;u&#34; if cut == &#34;x&#34; else &#34;v&#34;)
             twin.set_ylim(-1.2, 1.2)
             twin.set_yticks((-1, 0, 1))
             axs[i_t, i_cut].set_xlabel(cut)
-            axs[i_t, i_cut].set_ylim(-.6, .6)
-            axs[i_t, i_cut].set_yticks((-.5, 0, .5))
-            axs[i_t, i_cut].set_ylabel(&#39;h&#39;)
+            axs[i_t, i_cut].set_ylim(-0.6, 0.6)
+            axs[i_t, i_cut].set_yticks((-0.5, 0, 0.5))
+            axs[i_t, i_cut].set_ylabel(&#34;h&#34;)
             axs[i_t, i_cut].set_title(f&#34;t={t}&#34;, y=1.0, pad=-14, x=0.075)
             axs[i_t, i_cut].grid()
 
-    legend_props = {&#39;frameon&#39;: False, &#39;fontsize&#39;: &#39;small&#39;}
-    axs[-1, -1].legend(loc=&#39;lower right&#39;, **legend_props)
-    twin.legend(loc=&#39;lower center&#39;, **legend_props)
+    legend_props = {&#34;frameon&#34;: False, &#34;fontsize&#34;: &#34;small&#34;}
+    axs[-1, -1].legend(loc=&#34;lower right&#34;, **legend_props)
+    twin.legend(loc=&#34;lower center&#34;, **legend_props)
     if return_data:
         return data
     return None</code></pre>
@@ -136,86 +154,104 @@ def plot_output(times, output, settings, return_data=True):
 </summary>
 <pre><code class="python">def plot_output(times, output, settings, return_data=True):
     lambdas_analytic = formulae.d2_el_lamb_lamb_t_evol(
-        times=[0] + list(times),
-        lamb_x0=settings.lx0,
-        lamb_y0=settings.ly0
+        times=[0] + list(times), lamb_x0=settings.lx0, lamb_y0=settings.ly0
     )[1:]
 
     data = {}
-    cuts = (&#39;x&#39;, &#39;y&#39;)
+    cuts = (&#34;x&#34;, &#34;y&#34;)
     _, axs = pylab.subplots(
-        nrows=len(times),
-        ncols=len(cuts),
-        figsize=(9, 9),
-        constrained_layout=True
+        nrows=len(times), ncols=len(cuts), figsize=(9, 9), constrained_layout=True
     )
-    momenta = {&#39;x&#39;: &#39;uh&#39;, &#39;y&#39;: &#39;vh&#39;}
+    momenta = {&#34;x&#34;: &#34;uh&#34;, &#34;y&#34;: &#34;vh&#34;}
     for i_cut, cut in enumerate(cuts):
-        if cut == &#39;x&#39;:
+        if cut == &#34;x&#34;:
             n = settings.nx
             idx = (slice(None, None), slice(n // 2, n // 2 + 1))
-            coord = settings.dx * (np.linspace(-n // 2, n // 2, n) + .5)
+            coord = settings.dx * (np.linspace(-n // 2, n // 2, n) + 0.5)
             x = coord
             y = 0
         else:
             n = settings.ny
             idx = (slice(n // 2, n // 2 + 1), slice(None, None))
-            coord = settings.dy * (np.linspace(-n // 2, n // 2, n) + .5)
+            coord = settings.dy * (np.linspace(-n // 2, n // 2, n) + 0.5)
             x = 0
             y = coord
         for i_t, t in enumerate(times):
             key = f&#34;cut={cut} t={t}&#34;
-            data[key] = {&#39;coord&#39;: coord, &#39;x&#39;:x, &#39;y&#39;:y}
+            data[key] = {&#34;coord&#34;: coord, &#34;x&#34;: x, &#34;y&#34;: y}
             datum = data[key]
-            datum[&#39;h_analytic&#39;] = formulae.amplitude(x, y, *lambdas_analytic[i_t, (0, 2)])
-            where = &#39;mid&#39;
+            datum[&#34;h_analytic&#34;] = formulae.amplitude(
+                x, y, *lambdas_analytic[i_t, (0, 2)]
+            )
+            where = &#34;mid&#34;
             axs[i_t, i_cut].set_xlim(-8.5, 8.5)
             axs[i_t, i_cut].set_xticks((-5, 0, 5))
-            axs[i_t, i_cut].step(datum[&#39;coord&#39;], output[0][&#39;h&#39;][idx].squeeze(),
-                                 color=&#39;black&#39;, label=&#39;h @ t=0&#39;, where=where)
-            axs[i_t, i_cut].step(datum[&#39;coord&#39;], output[t][&#39;h&#39;][idx].squeeze(),
-                                 color=&#39;red&#39;, label=&#39;MPDATA: h&#39;, where=where)
-            axs[i_t, i_cut].plot(datum[&#39;coord&#39;], datum[&#39;h_analytic&#39;],
-                                 color=&#39;blue&#39;, linestyle=&#39;:&#39;, label=&#39;analytic: h&#39;)
+            axs[i_t, i_cut].step(
+                datum[&#34;coord&#34;],
+                output[0][&#34;h&#34;][idx].squeeze(),
+                color=&#34;black&#34;,
+                label=&#34;h @ t=0&#34;,
+                where=where,
+            )
+            axs[i_t, i_cut].step(
+                datum[&#34;coord&#34;],
+                output[t][&#34;h&#34;][idx].squeeze(),
+                color=&#34;red&#34;,
+                label=&#34;MPDATA: h&#34;,
+                where=where,
+            )
+            axs[i_t, i_cut].plot(
+                datum[&#34;coord&#34;],
+                datum[&#34;h_analytic&#34;],
+                color=&#34;blue&#34;,
+                linestyle=&#34;:&#34;,
+                label=&#34;analytic: h&#34;,
+            )
             twin = axs[i_t, i_cut].twinx()
-            datum[&#39;h_numeric&#39;] = output[t][&#39;h&#39;][idx].squeeze()
-            mask = datum[&#39;h_numeric&#39;] &gt; settings.eps
-            datum[&#39;q_h_numeric&#39;] = np.where(mask, np.nan, 0)
-            np.divide(output[t][momenta[cut]][idx].squeeze(), datum[&#39;h_numeric&#39;],
-                      where=mask, out=datum[&#39;q_h_numeric&#39;])
+            datum[&#34;h_numeric&#34;] = output[t][&#34;h&#34;][idx].squeeze()
+            mask = datum[&#34;h_numeric&#34;] &gt; settings.eps
+            datum[&#34;q_h_numeric&#34;] = np.where(mask, np.nan, 0)
+            np.divide(
+                output[t][momenta[cut]][idx].squeeze(),
+                datum[&#34;h_numeric&#34;],
+                where=mask,
+                out=datum[&#34;q_h_numeric&#34;],
+            )
             twin.step(
-                datum[&#39;coord&#39;],
-                datum[&#39;q_h_numeric&#39;],
-                color=&#39;red&#39;,
-                linestyle=&#39;--&#39;,
-                label=&#39;MPDATA: q/h&#39;,
-                where=where
+                datum[&#34;coord&#34;],
+                datum[&#34;q_h_numeric&#34;],
+                color=&#34;red&#34;,
+                linestyle=&#34;--&#34;,
+                label=&#34;MPDATA: q/h&#34;,
+                where=where,
             )
-            datum[&#39;q_h_analytic&#39;] = np.where(
-                datum[&#39;h_analytic&#39;] &gt; settings.eps,
-                datum[&#39;coord&#39;] / lambdas_analytic[i_t, 0 + 2 * i_cut] \
-                    * lambdas_analytic[i_t, 1 + 2 * i_cut],
-                0)
+            datum[&#34;q_h_analytic&#34;] = np.where(
+                datum[&#34;h_analytic&#34;] &gt; settings.eps,
+                datum[&#34;coord&#34;]
+                / lambdas_analytic[i_t, 0 + 2 * i_cut]
+                * lambdas_analytic[i_t, 1 + 2 * i_cut],
+                0,
+            )
             twin.plot(
-                datum[&#39;coord&#39;],
-                datum[&#39;q_h_analytic&#39;],
-                linestyle=&#39;-.&#39;,
-                label=&#39;analytic: q/h&#39;,
-                color=&#39;blue&#39;
+                datum[&#34;coord&#34;],
+                datum[&#34;q_h_analytic&#34;],
+                linestyle=&#34;-.&#34;,
+                label=&#34;analytic: q/h&#34;,
+                color=&#34;blue&#34;,
             )
-            twin.set_ylabel(&#39;u&#39; if cut == &#39;x&#39; else &#39;v&#39;)
+            twin.set_ylabel(&#34;u&#34; if cut == &#34;x&#34; else &#34;v&#34;)
             twin.set_ylim(-1.2, 1.2)
             twin.set_yticks((-1, 0, 1))
             axs[i_t, i_cut].set_xlabel(cut)
-            axs[i_t, i_cut].set_ylim(-.6, .6)
-            axs[i_t, i_cut].set_yticks((-.5, 0, .5))
-            axs[i_t, i_cut].set_ylabel(&#39;h&#39;)
+            axs[i_t, i_cut].set_ylim(-0.6, 0.6)
+            axs[i_t, i_cut].set_yticks((-0.5, 0, 0.5))
+            axs[i_t, i_cut].set_ylabel(&#34;h&#34;)
             axs[i_t, i_cut].set_title(f&#34;t={t}&#34;, y=1.0, pad=-14, x=0.075)
             axs[i_t, i_cut].grid()
 
-    legend_props = {&#39;frameon&#39;: False, &#39;fontsize&#39;: &#39;small&#39;}
-    axs[-1, -1].legend(loc=&#39;lower right&#39;, **legend_props)
-    twin.legend(loc=&#39;lower center&#39;, **legend_props)
+    legend_props = {&#34;frameon&#34;: False, &#34;fontsize&#34;: &#34;small&#34;}
+    axs[-1, -1].legend(loc=&#34;lower right&#34;, **legend_props)
+    twin.legend(loc=&#34;lower center&#34;, **legend_props)
     if return_data:
         return data
     return None</code></pre>

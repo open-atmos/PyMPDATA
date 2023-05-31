@@ -27,23 +27,27 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from joblib import Parallel, delayed
-from PyMPDATA import Options
-from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation import Simulation
-from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings import Settings
+from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.settings import (
+    Settings,
+)
+from PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.simulation import (
+    Simulation,
+)
 
+from PyMPDATA import Options
 
 options = {
-    &#39;upwind&#39;: Options(n_iters=1),
-    &#39;2+fct&#39;: Options(n_iters=2, nonoscillatory=True),
-    &#39;3+fct+tot&#39;: Options(n_iters=3, nonoscillatory=True, third_order_terms=True),
-    &#39;2+fct+iga&#39;: Options(n_iters=2, nonoscillatory=True, infinite_gauge=True)
+    &#34;upwind&#34;: Options(n_iters=1),
+    &#34;2+fct&#34;: Options(n_iters=2, nonoscillatory=True),
+    &#34;3+fct+tot&#34;: Options(n_iters=3, nonoscillatory=True, third_order_terms=True),
+    &#34;2+fct+iga&#34;: Options(n_iters=2, nonoscillatory=True, infinite_gauge=True),
 }
 
 
 def compute_panel(panel):
     settings = Settings(n_rotations=6)
     simulation = Simulation(settings, options[panel])
-    if panel == &#39;upwind&#39;:
+    if panel == &#34;upwind&#34;:
         return simulation.state
     simulation.run()
     return simulation.state
@@ -52,7 +56,7 @@ def compute_panel(panel):
 def fig_12_data():
     data = Parallel(n_jobs=-2)(
         delayed(compute_panel)(panel)
-        for panel in [&#39;upwind&#39;, &#39;2+fct&#39;, &#39;3+fct+tot&#39;, &#39;2+fct+iga&#39;]
+        for panel in [&#34;upwind&#34;, &#34;2+fct&#34;, &#34;3+fct+tot&#34;, &#34;2+fct+iga&#34;]
     )
     return data</code></pre>
 </details>
@@ -76,7 +80,7 @@ def fig_12_data():
 <pre><code class="python">def compute_panel(panel):
     settings = Settings(n_rotations=6)
     simulation = Simulation(settings, options[panel])
-    if panel == &#39;upwind&#39;:
+    if panel == &#34;upwind&#34;:
         return simulation.state
     simulation.run()
     return simulation.state</code></pre>
@@ -94,7 +98,7 @@ def fig_12_data():
 <pre><code class="python">def fig_12_data():
     data = Parallel(n_jobs=-2)(
         delayed(compute_panel)(panel)
-        for panel in [&#39;upwind&#39;, &#39;2+fct&#39;, &#39;3+fct+tot&#39;, &#39;2+fct+iga&#39;]
+        for panel in [&#34;upwind&#34;, &#34;2+fct&#34;, &#34;3+fct+tot&#34;, &#34;2+fct+iga&#34;]
     )
     return data</code></pre>
 </details>

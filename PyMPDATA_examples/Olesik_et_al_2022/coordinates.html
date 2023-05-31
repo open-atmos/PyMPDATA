@@ -58,11 +58,11 @@ class x_p2:
 
     @staticmethod
     def dx_dr(r):
-        return 2*r
+        return 2 * r
 
     @staticmethod
     def moment_of_r_integral(x, k):
-        return 2 / (k + 2) * x**((k+2)/2)
+        return 2 / (k + 2) * x ** ((k + 2) / 2)
 
 
 class x_p3:
@@ -72,15 +72,15 @@ class x_p3:
 
     @staticmethod
     def r(x):
-        return np.power(x, 1/3)
+        return np.power(x, 1 / 3)
 
     @staticmethod
     def dx_dr(r):
-        return 3*r**2
+        return 3 * r**2
 
     @staticmethod
     def moment_of_r_integral(x, k):
-        return 3 / (k + 3) * x**((k+3)/3)
+        return 3 / (k + 3) * x ** ((k + 3) / 3)
 
 
 class x_log_of_pn:
@@ -93,13 +93,18 @@ class x_log_of_pn:
         return np.log(r**self.n / self.r0**self.n) / np.log(self.base)
 
     def r(self, x):
-        return self.r0 * self.base**(x/self.n)
+        return self.r0 * self.base ** (x / self.n)
 
     def dx_dr(self, r):
         return self.n / r / np.log(self.base)
 
     def moment_of_r_integral(self, x, k):
-        return self.r0**k * self.n / (k * np.log(self.base)) * self.base**(k / self.n * x)</code></pre>
+        return (
+            self.r0**k
+            * self.n
+            / (k * np.log(self.base))
+            * self.base ** (k / self.n * x)
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -217,13 +222,18 @@ def x(r):
         return np.log(r**self.n / self.r0**self.n) / np.log(self.base)
 
     def r(self, x):
-        return self.r0 * self.base**(x/self.n)
+        return self.r0 * self.base ** (x / self.n)
 
     def dx_dr(self, r):
         return self.n / r / np.log(self.base)
 
     def moment_of_r_integral(self, x, k):
-        return self.r0**k * self.n / (k * np.log(self.base)) * self.base**(k / self.n * x)</code></pre>
+        return (
+            self.r0**k
+            * self.n
+            / (k * np.log(self.base))
+            * self.base ** (k / self.n * x)
+        )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -250,7 +260,12 @@ def x(r):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def moment_of_r_integral(self, x, k):
-    return self.r0**k * self.n / (k * np.log(self.base)) * self.base**(k / self.n * x)</code></pre>
+    return (
+        self.r0**k
+        * self.n
+        / (k * np.log(self.base))
+        * self.base ** (k / self.n * x)
+    )</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_log_of_pn.r"><code class="name flex">
@@ -263,7 +278,7 @@ def x(r):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def r(self, x):
-    return self.r0 * self.base**(x/self.n)</code></pre>
+    return self.r0 * self.base ** (x / self.n)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_log_of_pn.x"><code class="name flex">
@@ -301,11 +316,11 @@ def x(r):
 
     @staticmethod
     def dx_dr(r):
-        return 2*r
+        return 2 * r
 
     @staticmethod
     def moment_of_r_integral(x, k):
-        return 2 / (k + 2) * x**((k+2)/2)</code></pre>
+        return 2 / (k + 2) * x ** ((k + 2) / 2)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -320,7 +335,7 @@ def x(r):
 </summary>
 <pre><code class="python">@staticmethod
 def dx_dr(r):
-    return 2*r</code></pre>
+    return 2 * r</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_p2.moment_of_r_integral"><code class="name flex">
@@ -334,7 +349,7 @@ def dx_dr(r):
 </summary>
 <pre><code class="python">@staticmethod
 def moment_of_r_integral(x, k):
-    return 2 / (k + 2) * x**((k+2)/2)</code></pre>
+    return 2 / (k + 2) * x ** ((k + 2) / 2)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_p2.r"><code class="name flex">
@@ -383,15 +398,15 @@ def x(r):
 
     @staticmethod
     def r(x):
-        return np.power(x, 1/3)
+        return np.power(x, 1 / 3)
 
     @staticmethod
     def dx_dr(r):
-        return 3*r**2
+        return 3 * r**2
 
     @staticmethod
     def moment_of_r_integral(x, k):
-        return 3 / (k + 3) * x**((k+3)/3)</code></pre>
+        return 3 / (k + 3) * x ** ((k + 3) / 3)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -406,7 +421,7 @@ def x(r):
 </summary>
 <pre><code class="python">@staticmethod
 def dx_dr(r):
-    return 3*r**2</code></pre>
+    return 3 * r**2</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_p3.moment_of_r_integral"><code class="name flex">
@@ -420,7 +435,7 @@ def dx_dr(r):
 </summary>
 <pre><code class="python">@staticmethod
 def moment_of_r_integral(x, k):
-    return 3 / (k + 3) * x**((k+3)/3)</code></pre>
+    return 3 / (k + 3) * x ** ((k + 3) / 3)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_p3.r"><code class="name flex">
@@ -434,7 +449,7 @@ def moment_of_r_integral(x, k):
 </summary>
 <pre><code class="python">@staticmethod
 def r(x):
-    return np.power(x, 1/3)</code></pre>
+    return np.power(x, 1 / 3)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.coordinates.x_p3.x"><code class="name flex">

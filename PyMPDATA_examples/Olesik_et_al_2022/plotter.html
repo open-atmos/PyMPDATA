@@ -26,9 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from matplotlib import pyplot
+<pre><code class="python">import matplotlib
 import numpy as np
-import matplotlib
+from matplotlib import pyplot
 
 
 def to_n_n(y, _, __):
@@ -36,11 +36,11 @@ def to_n_n(y, _, __):
 
 
 def to_n_s(y, r1, r2):
-    return y * (r2 ** 2 + r1 ** 2 + r1 * r2) * 4 / 3 * np.pi
+    return y * (r2**2 + r1**2 + r1 * r2) * 4 / 3 * np.pi
 
 
 def to_n_v(y, r1, r2):
-    return y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi
+    return y * (r2 + r1) * (r2**2 + r1**2) / 4 * 4 / 3 * np.pi
 
 
 def from_n_n(n_n, _):
@@ -48,77 +48,82 @@ def from_n_n(n_n, _):
 
 
 class Plotter:
-    def __init__(self, settings, plots=(&#39;n&#39;, &#39;m&#39;)):
+    def __init__(self, settings, plots=(&#34;n&#34;, &#34;m&#34;)):
         self.settings = settings
         self.plots = plots
         self.cdfarg, self.dcdfarg = np.linspace(
-            settings.r_min.magnitude,
-            settings.r_max.magnitude,
-            512, retstep=True
+            settings.r_min.magnitude, settings.r_max.magnitude, 512, retstep=True
         )
         self.cdfarg *= settings.r_min.units
         self.dcdfarg *= settings.r_max.units
 
-        matplotlib.rcParams.update({&#39;font.size&#39;: 16})
+        matplotlib.rcParams.update({&#34;font.size&#34;: 16})
         if len(plots) == 1:
-            self.figsize = (10,6)
+            self.figsize = (10, 6)
         else:
-            self.figsize = (10,11)
+            self.figsize = (10, 11)
         self.fig, self.axs = pyplot.subplots(len(plots), 1, figsize=self.figsize)
         if len(plots) == 1:
             self.axs = (self.axs,)
         self.fig.tight_layout(pad=5.0)
         self.style_dict = {}
-        self.style_palette = [&#39;-&#39;, &#39;-&#39;, &#39;-&#39;, &#39;-&#39;, &#39;-.&#39;]
+        self.style_palette = [&#34;-&#34;, &#34;-&#34;, &#34;-&#34;, &#34;-&#34;, &#34;-.&#34;]
 
         self.settings.si.setup_matplotlib()
 
-        if &#39;n&#39; in plots:
-            self.axs[plots.index(&#39;n&#39;)].yaxis.set_units(
-                1 / self.settings.si.micrometre / self.settings.si.centimetre ** 3)
-        if &#39;m&#39; in plots:
-            self.axs[plots.index(&#39;m&#39;)].yaxis.set_units(
-                1 / self.settings.si.micrometre)
+        if &#34;n&#34; in plots:
+            self.axs[plots.index(&#34;n&#34;)].yaxis.set_units(
+                1 / self.settings.si.micrometre / self.settings.si.centimetre**3
+            )
+        if &#34;m&#34; in plots:
+            self.axs[plots.index(&#34;m&#34;)].yaxis.set_units(1 / self.settings.si.micrometre)
 
         for i in range(len(plots)):
             self.axs[i].xaxis.set_units(self.settings.si.micrometre)
             self.axs[i].grid()
-            self.axs[i].set_xlabel(&#39;particle radius [$μm$]&#39;)
+            self.axs[i].set_xlabel(&#34;particle radius [$μm$]&#34;)
 
-        if &#39;m&#39; in plots:
-            self.axs[plots.index(&#39;m&#39;)].set_ylabel(&#39;(dM/dr)/M [$μm^{-1}$]&#39;)
-        if &#39;n&#39; in plots:
-            self.axs[plots.index(&#39;n&#39;)].set_ylabel(&#39;dN/dr [$cm^{-3} μm^{-1}$]&#39;)
+        if &#34;m&#34; in plots:
+            self.axs[plots.index(&#34;m&#34;)].set_ylabel(&#34;(dM/dr)/M [$μm^{-1}$]&#34;)
+        if &#34;n&#34; in plots:
+            self.axs[plots.index(&#34;n&#34;)].set_ylabel(&#34;dN/dr [$cm^{-3} μm^{-1}$]&#34;)
 
-    def pdf_curve(self, pdf, mnorm, color=&#39;black&#39;):
+    def pdf_curve(self, pdf, mnorm, color=&#34;black&#34;):
         x = self.cdfarg
         y = pdf(x)
 
         # normalised mass distribution
-        if &#39;m&#39; in self.plots:
-            y_mass = y * x ** 3 * 4 / 3 * np.pi * self.settings.rho_w / self.settings.rho_a / mnorm
-            self.axs[self.plots.index(&#39;m&#39;)].plot(x, y_mass, color=color, linestyle=&#39;:&#39;)
+        if &#34;m&#34; in self.plots:
+            y_mass = (
+                y
+                * x**3
+                * 4
+                / 3
+                * np.pi
+                * self.settings.rho_w
+                / self.settings.rho_a
+                / mnorm
+            )
+            self.axs[self.plots.index(&#34;m&#34;)].plot(x, y_mass, color=color, linestyle=&#34;:&#34;)
 
         # number distribution
-        if &#39;n&#39; in self.plots:
-            self.axs[self.plots.index(&#39;n&#39;)].plot(x, y, color=color, linestyle=&#39;:&#39;)
+        if &#34;n&#34; in self.plots:
+            self.axs[self.plots.index(&#34;n&#34;)].plot(x, y, color=color, linestyle=&#34;:&#34;)
 
     def _plot(self, index, x, y, fill, lbl, color, linewidth):
         if fill:
             self.axs[self.plots.index(index)].fill_between(
-                x,
-                y,
-                step=&#39;mid&#39;, label=lbl, color=&#39;gainsboro&#39;, alpha = 1)
+                x, y, step=&#34;mid&#34;, label=lbl, color=&#34;gainsboro&#34;, alpha=1
+            )
         else:
             self.axs[self.plots.index(index)].step(
-                x,
-                y,
-                where=&#39;mid&#39;, label=lbl, color=color, linewidth=linewidth
+                x, y, where=&#34;mid&#34;, label=lbl, color=color, linewidth=linewidth
             )
         self.xlim(index)
 
-    def pdf_histogram(self, x, y,
-                      bin_boundaries, label, mnorm, color=&#39;black&#39;, linewidth = 1, fill=True):
+    def pdf_histogram(
+        self, x, y, bin_boundaries, label, mnorm, color=&#34;black&#34;, linewidth=1, fill=True
+    ):
         r1 = bin_boundaries[:-1]
         r2 = bin_boundaries[1:]
 
@@ -126,23 +131,34 @@ class Plotter:
         if label not in self.style_dict:
             self.style_dict[label] = self.style_palette[len(self.style_dict)]
         else:
-            lbl = &#39;&#39;
+            lbl = &#34;&#34;
 
         # number distribution
-        if &#39;n&#39; in self.plots:
-            self._plot(&#39;n&#39;, x, to_n_n(y, r1, r2),
-                       fill=fill, lbl=lbl, color=color, linewidth=linewidth)
+        if &#34;n&#34; in self.plots:
+            self._plot(
+                &#34;n&#34;,
+                x,
+                to_n_n(y, r1, r2),
+                fill=fill,
+                lbl=lbl,
+                color=color,
+                linewidth=linewidth,
+            )
 
         # normalised mass distribution
-        if &#39;m&#39; in self.plots:
-            self._plot(&#39;m&#39;, x,
-                       to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm,
-                       fill=fill, color=color, linewidth=linewidth, lbl=lbl)
+        if &#34;m&#34; in self.plots:
+            self._plot(
+                &#34;m&#34;,
+                x,
+                to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm,
+                fill=fill,
+                color=color,
+                linewidth=linewidth,
+                lbl=lbl,
+            )
 
     def xlim(self, plot):
-        self.axs[self.plots.index(plot)].set_xlim(
-            (0, self.settings.r_max.magnitude)
-        )</code></pre>
+        self.axs[self.plots.index(plot)].set_xlim((0, self.settings.r_max.magnitude))</code></pre>
 </details>
 </section>
 <section>
@@ -188,7 +204,7 @@ class Plotter:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_n_s(y, r1, r2):
-    return y * (r2 ** 2 + r1 ** 2 + r1 * r2) * 4 / 3 * np.pi</code></pre>
+    return y * (r2**2 + r1**2 + r1 * r2) * 4 / 3 * np.pi</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.plotter.to_n_v"><code class="name flex">
@@ -201,7 +217,7 @@ class Plotter:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_n_v(y, r1, r2):
-    return y * (r2 + r1) * (r2 ** 2 + r1 ** 2) / 4 * 4 / 3 * np.pi</code></pre>
+    return y * (r2 + r1) * (r2**2 + r1**2) / 4 * 4 / 3 * np.pi</code></pre>
 </details>
 </dd>
 </dl>
@@ -220,77 +236,82 @@ class Plotter:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Plotter:
-    def __init__(self, settings, plots=(&#39;n&#39;, &#39;m&#39;)):
+    def __init__(self, settings, plots=(&#34;n&#34;, &#34;m&#34;)):
         self.settings = settings
         self.plots = plots
         self.cdfarg, self.dcdfarg = np.linspace(
-            settings.r_min.magnitude,
-            settings.r_max.magnitude,
-            512, retstep=True
+            settings.r_min.magnitude, settings.r_max.magnitude, 512, retstep=True
         )
         self.cdfarg *= settings.r_min.units
         self.dcdfarg *= settings.r_max.units
 
-        matplotlib.rcParams.update({&#39;font.size&#39;: 16})
+        matplotlib.rcParams.update({&#34;font.size&#34;: 16})
         if len(plots) == 1:
-            self.figsize = (10,6)
+            self.figsize = (10, 6)
         else:
-            self.figsize = (10,11)
+            self.figsize = (10, 11)
         self.fig, self.axs = pyplot.subplots(len(plots), 1, figsize=self.figsize)
         if len(plots) == 1:
             self.axs = (self.axs,)
         self.fig.tight_layout(pad=5.0)
         self.style_dict = {}
-        self.style_palette = [&#39;-&#39;, &#39;-&#39;, &#39;-&#39;, &#39;-&#39;, &#39;-.&#39;]
+        self.style_palette = [&#34;-&#34;, &#34;-&#34;, &#34;-&#34;, &#34;-&#34;, &#34;-.&#34;]
 
         self.settings.si.setup_matplotlib()
 
-        if &#39;n&#39; in plots:
-            self.axs[plots.index(&#39;n&#39;)].yaxis.set_units(
-                1 / self.settings.si.micrometre / self.settings.si.centimetre ** 3)
-        if &#39;m&#39; in plots:
-            self.axs[plots.index(&#39;m&#39;)].yaxis.set_units(
-                1 / self.settings.si.micrometre)
+        if &#34;n&#34; in plots:
+            self.axs[plots.index(&#34;n&#34;)].yaxis.set_units(
+                1 / self.settings.si.micrometre / self.settings.si.centimetre**3
+            )
+        if &#34;m&#34; in plots:
+            self.axs[plots.index(&#34;m&#34;)].yaxis.set_units(1 / self.settings.si.micrometre)
 
         for i in range(len(plots)):
             self.axs[i].xaxis.set_units(self.settings.si.micrometre)
             self.axs[i].grid()
-            self.axs[i].set_xlabel(&#39;particle radius [$μm$]&#39;)
+            self.axs[i].set_xlabel(&#34;particle radius [$μm$]&#34;)
 
-        if &#39;m&#39; in plots:
-            self.axs[plots.index(&#39;m&#39;)].set_ylabel(&#39;(dM/dr)/M [$μm^{-1}$]&#39;)
-        if &#39;n&#39; in plots:
-            self.axs[plots.index(&#39;n&#39;)].set_ylabel(&#39;dN/dr [$cm^{-3} μm^{-1}$]&#39;)
+        if &#34;m&#34; in plots:
+            self.axs[plots.index(&#34;m&#34;)].set_ylabel(&#34;(dM/dr)/M [$μm^{-1}$]&#34;)
+        if &#34;n&#34; in plots:
+            self.axs[plots.index(&#34;n&#34;)].set_ylabel(&#34;dN/dr [$cm^{-3} μm^{-1}$]&#34;)
 
-    def pdf_curve(self, pdf, mnorm, color=&#39;black&#39;):
+    def pdf_curve(self, pdf, mnorm, color=&#34;black&#34;):
         x = self.cdfarg
         y = pdf(x)
 
         # normalised mass distribution
-        if &#39;m&#39; in self.plots:
-            y_mass = y * x ** 3 * 4 / 3 * np.pi * self.settings.rho_w / self.settings.rho_a / mnorm
-            self.axs[self.plots.index(&#39;m&#39;)].plot(x, y_mass, color=color, linestyle=&#39;:&#39;)
+        if &#34;m&#34; in self.plots:
+            y_mass = (
+                y
+                * x**3
+                * 4
+                / 3
+                * np.pi
+                * self.settings.rho_w
+                / self.settings.rho_a
+                / mnorm
+            )
+            self.axs[self.plots.index(&#34;m&#34;)].plot(x, y_mass, color=color, linestyle=&#34;:&#34;)
 
         # number distribution
-        if &#39;n&#39; in self.plots:
-            self.axs[self.plots.index(&#39;n&#39;)].plot(x, y, color=color, linestyle=&#39;:&#39;)
+        if &#34;n&#34; in self.plots:
+            self.axs[self.plots.index(&#34;n&#34;)].plot(x, y, color=color, linestyle=&#34;:&#34;)
 
     def _plot(self, index, x, y, fill, lbl, color, linewidth):
         if fill:
             self.axs[self.plots.index(index)].fill_between(
-                x,
-                y,
-                step=&#39;mid&#39;, label=lbl, color=&#39;gainsboro&#39;, alpha = 1)
+                x, y, step=&#34;mid&#34;, label=lbl, color=&#34;gainsboro&#34;, alpha=1
+            )
         else:
             self.axs[self.plots.index(index)].step(
-                x,
-                y,
-                where=&#39;mid&#39;, label=lbl, color=color, linewidth=linewidth
+                x, y, where=&#34;mid&#34;, label=lbl, color=color, linewidth=linewidth
             )
         self.xlim(index)
 
-    def pdf_histogram(self, x, y,
-                      bin_boundaries, label, mnorm, color=&#39;black&#39;, linewidth = 1, fill=True):
+    def pdf_histogram(
+        self, x, y, bin_boundaries, label, mnorm, color=&#34;black&#34;, linewidth=1, fill=True
+    ):
         r1 = bin_boundaries[:-1]
         r2 = bin_boundaries[1:]
 
@@ -298,23 +319,34 @@ class Plotter:
         if label not in self.style_dict:
             self.style_dict[label] = self.style_palette[len(self.style_dict)]
         else:
-            lbl = &#39;&#39;
+            lbl = &#34;&#34;
 
         # number distribution
-        if &#39;n&#39; in self.plots:
-            self._plot(&#39;n&#39;, x, to_n_n(y, r1, r2),
-                       fill=fill, lbl=lbl, color=color, linewidth=linewidth)
+        if &#34;n&#34; in self.plots:
+            self._plot(
+                &#34;n&#34;,
+                x,
+                to_n_n(y, r1, r2),
+                fill=fill,
+                lbl=lbl,
+                color=color,
+                linewidth=linewidth,
+            )
 
         # normalised mass distribution
-        if &#39;m&#39; in self.plots:
-            self._plot(&#39;m&#39;, x,
-                       to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm,
-                       fill=fill, color=color, linewidth=linewidth, lbl=lbl)
+        if &#34;m&#34; in self.plots:
+            self._plot(
+                &#34;m&#34;,
+                x,
+                to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm,
+                fill=fill,
+                color=color,
+                linewidth=linewidth,
+                lbl=lbl,
+            )
 
     def xlim(self, plot):
-        self.axs[self.plots.index(plot)].set_xlim(
-            (0, self.settings.r_max.magnitude)
-        )</code></pre>
+        self.axs[self.plots.index(plot)].set_xlim((0, self.settings.r_max.magnitude))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -327,18 +359,27 @@ class Plotter:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def pdf_curve(self, pdf, mnorm, color=&#39;black&#39;):
+<pre><code class="python">def pdf_curve(self, pdf, mnorm, color=&#34;black&#34;):
     x = self.cdfarg
     y = pdf(x)
 
     # normalised mass distribution
-    if &#39;m&#39; in self.plots:
-        y_mass = y * x ** 3 * 4 / 3 * np.pi * self.settings.rho_w / self.settings.rho_a / mnorm
-        self.axs[self.plots.index(&#39;m&#39;)].plot(x, y_mass, color=color, linestyle=&#39;:&#39;)
+    if &#34;m&#34; in self.plots:
+        y_mass = (
+            y
+            * x**3
+            * 4
+            / 3
+            * np.pi
+            * self.settings.rho_w
+            / self.settings.rho_a
+            / mnorm
+        )
+        self.axs[self.plots.index(&#34;m&#34;)].plot(x, y_mass, color=color, linestyle=&#34;:&#34;)
 
     # number distribution
-    if &#39;n&#39; in self.plots:
-        self.axs[self.plots.index(&#39;n&#39;)].plot(x, y, color=color, linestyle=&#39;:&#39;)</code></pre>
+    if &#34;n&#34; in self.plots:
+        self.axs[self.plots.index(&#34;n&#34;)].plot(x, y, color=color, linestyle=&#34;:&#34;)</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.plotter.Plotter.pdf_histogram"><code class="name flex">
@@ -350,8 +391,9 @@ class Plotter:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def pdf_histogram(self, x, y,
-                  bin_boundaries, label, mnorm, color=&#39;black&#39;, linewidth = 1, fill=True):
+<pre><code class="python">def pdf_histogram(
+    self, x, y, bin_boundaries, label, mnorm, color=&#34;black&#34;, linewidth=1, fill=True
+):
     r1 = bin_boundaries[:-1]
     r2 = bin_boundaries[1:]
 
@@ -359,18 +401,31 @@ class Plotter:
     if label not in self.style_dict:
         self.style_dict[label] = self.style_palette[len(self.style_dict)]
     else:
-        lbl = &#39;&#39;
+        lbl = &#34;&#34;
 
     # number distribution
-    if &#39;n&#39; in self.plots:
-        self._plot(&#39;n&#39;, x, to_n_n(y, r1, r2),
-                   fill=fill, lbl=lbl, color=color, linewidth=linewidth)
+    if &#34;n&#34; in self.plots:
+        self._plot(
+            &#34;n&#34;,
+            x,
+            to_n_n(y, r1, r2),
+            fill=fill,
+            lbl=lbl,
+            color=color,
+            linewidth=linewidth,
+        )
 
     # normalised mass distribution
-    if &#39;m&#39; in self.plots:
-        self._plot(&#39;m&#39;, x,
-                   to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm,
-                   fill=fill, color=color, linewidth=linewidth, lbl=lbl)</code></pre>
+    if &#34;m&#34; in self.plots:
+        self._plot(
+            &#34;m&#34;,
+            x,
+            to_n_v(y, r1, r2) * self.settings.rho_w / self.settings.rho_a / mnorm,
+            fill=fill,
+            color=color,
+            linewidth=linewidth,
+            lbl=lbl,
+        )</code></pre>
 </details>
 </dd>
 <dt id="PyMPDATA_examples.Olesik_et_al_2022.plotter.Plotter.xlim"><code class="name flex">
@@ -383,9 +438,7 @@ class Plotter:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def xlim(self, plot):
-    self.axs[self.plots.index(plot)].set_xlim(
-        (0, self.settings.r_max.magnitude)
-    )</code></pre>
+    self.axs[self.plots.index(plot)].set_xlim((0, self.settings.r_max.magnitude))</code></pre>
 </details>
 </dd>
 </dl>
