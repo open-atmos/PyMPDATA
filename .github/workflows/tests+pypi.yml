@@ -223,8 +223,9 @@ jobs:
           unset CI
           cd ${{ matrix.package-dir }}
           python -m build 2>&1 | tee build.log
-          exit `fgrep -i warning build.log | wc -l`
+          exit `fgrep -v "warning: no previously-included files matching" buid.log | fgrep -i warning | wc -l`
           twine check --strict dist/*
+          exit `tar tzf dist/*.tar.gz | fgrep ".ipynb" | wc -l`
           cd ..
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
