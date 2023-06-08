@@ -18,13 +18,21 @@
 [![PyPI version](https://badge.fury.io/py/PyMPDATA-MPI.svg)](https://pypi.org/project/PyMPDATA-MPI)
 [![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://open-atmos.github.io/PyMPDATA-MPI/)
 
-[PyMPDATA](https://github.com/open-atmos/PyMPDATA) +
-[numba-mpi](https://github.com/numba-mpi/numba-mpi) coupler sandbox (with a long-term goal of developing a pure-Python LES system)
+PyMPDATA-MPI constitutes a [PyMPDATA](https://github.com/open-atmos/PyMPDATA) +
+[numba-mpi](https://github.com/numba-mpi/numba-mpi) coupler enabling numerical solutions
+of transport equations with the MPDATA numerical scheme in a
+hybrid parallelisation model with both multi-threading and MPI distributed memory communication.
+PyMPDATA-MPI adapts to API of PyMPDATA offering domain decomposition logic.
 
-In principle, PyMPDATA-MPI adapts to API of PyMPDATA to solve the following equation in an environment with multiple nodes:
-$$\partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0$$
+## Hello world example
 
-It is done with the help of MPI(Message Passing Interface). Every worker is responsible for computing its part of the decomposed domain.
+In a minimal setup, PyMPDATA-MPI can be used to solve the following transport equation: 
+$$ \partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0 $$
+in an environment with multiple nodes.
+In two dimensions (x,y), MPI (Message Passing Interface) is used 
+  for handling data transfers and synchronisation in the outer dimension,
+  while multi-threading (using, e.g., OpenMP via Numba) is used in the inner dimension.
+Every worker is responsible for computing its part of the decomposed domain as depicted below:
 
 ### 1 worker
 <p align="middle">
@@ -34,7 +42,7 @@ It is done with the help of MPI(Message Passing Interface). Every worker is resp
 ### 2 workers
 <p align="middle">
   <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_2_c_field_.-0.5.-0.25.-anim.gif" width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.-0.5.-0.25.-anim.gif"  width="49%" /> 
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.-0.5.-0.25.-anim.gif" width="49%" /> 
 </p>
 
 ### 3 workers
@@ -52,12 +60,56 @@ It is done with the help of MPI(Message Passing Interface). Every worker is resp
   <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_3_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
 </p>
 
+## Package architecture
+
+```mermaid
+    flowchart BT
+
+    H5PY ---> HDF{{HDF5}}
+    subgraph pythonic-dependencies [Python]
+      TESTS --> H[pytest-mpi]
+      subgraph PyMPDATA-MPI ["PyMPDATA-MPI"]
+        TESTS["PyMPDATA-MPI[tests]"] --> CASES(simulation scenarios)
+        A1["PyMPDATA[examples]"] --> CASES
+        CASES --> D[PyMPDATA-MPI]
+      end
+      A1 ---> C[py-modelrunner]
+      CASES ---> H5PY[h5py]
+      D --> E[numba-mpi]
+      H --> X[pytest]
+      E --> N
+      F --> N[Numba]
+      D --> F[PyMPDATA]
+    end
+    H ---> MPI
+    C ---> PBS{{PBS}}
+    N --> OMPI{{OpenMP}}
+    N --> L{{LLVM}}
+    E ---> MPI{{MPI}}
+    HDF --> MPI
+    PBS --> MPI
+
+style D fill:#7ae7ff,stroke-width:2px,color:#2B2B2B
+
+click H "https://pypi.org/p/pytest-mpi"
+click X "https://pypi.org/p/pytest"
+click F "https://pypi.org/p/PyMPDATA"
+click N "https://pypi.org/p/numba"
+click C "https://pypi.org/p/py-modelrunner"
+click H5PY "https://pypi.org/p/h5py"
+click E "https://pypi.org/p/numba-mpi"
+click A1 "https://pypi.org/p/PyMPDATA-MPI"
+click D "https://pypi.org/p/PyMPDATA-MPI"
+click TESTS "https://pypi.org/p/PyMPDATA-MPI"
+```
+Rectangular boxes indicate pip-installable Python packages (click to go to pypi.org package site).
+
 ## Credits:
 
 Development of PyMPDATA-MPI has been supported by the [Poland's National Science Centre](https://www.ncn.gov.pl/?language=en)  
 (grant no. 2020/39/D/ST10/01220).
 
-copyright: [Jagiellonian University](https://en.uj.edu.pl/en)    
+copyright: [Jagiellonian University](https://en.uj.edu.pl/en) & [AGH University of Krakow](https://agh.edu.pl/en)   
 licence: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
 
 ## Design goals
