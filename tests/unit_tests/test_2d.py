@@ -101,7 +101,7 @@ def test_2d(
     options_str = (
         str(options_kwargs)
         .replace(", ", "_")
-        .replace(": ", "=")
+        .replace(": ", ".")
         .replace("'", "")
         .replace("{", "")
         .replace("}", "")
@@ -122,7 +122,13 @@ def test_2d(
         truncated_size = min(mpi_max_size, mpi.size())
         rank = mpi.rank()
 
-        courant_str = str(courant_field).replace(" ", "")
+        courant_str = (
+            str(courant_field)
+            .replace(" ", "")
+            .replace(",", ".")
+            .replace("(", ".")
+            .replace(")", ".")
+        )
 
         plot_path = None
         if plot:

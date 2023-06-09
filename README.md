@@ -27,7 +27,7 @@ PyMPDATA-MPI adapts to API of PyMPDATA offering domain decomposition logic.
 ## Hello world example
 
 In a minimal setup, PyMPDATA-MPI can be used to solve the following transport equation: 
-$$ \partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0 $$
+$$\partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0$$
 in an environment with multiple nodes.
 In two dimensions (x,y), MPI (Message Passing Interface) is used 
   for handling data transfers and synchronisation in the outer dimension,
