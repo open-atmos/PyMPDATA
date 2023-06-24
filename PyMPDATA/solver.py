@@ -20,6 +20,7 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
         pass
 
     def call(self, psi, step):  # pylint: disable-next=unused-argument
+        """think of it as a `__call__` method (which Numba does not allow)"""
         pass
 
 
@@ -31,6 +32,7 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
         pass
 
     def call(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
+        """think of it as a `__call__` method (which Numba does not allow)"""
         pass
 
 
