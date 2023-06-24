@@ -50,8 +50,8 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def __call__(self, psi, step):  # pylint: disable-next=unused-argument
-        pass
+    def call(self, psi, step):  # pylint: disable-next=unused-argument
+        &#34;&#34;&#34;think of it as a `__call__` method (which Numba does not allow)&#34;&#34;&#34;
 
 
 @numba.experimental.jitclass([])
@@ -61,10 +61,8 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def __call__(
-        self, flux, g_factor, step, iteration
-    ):  # pylint: disable=unused-argument
-        pass
+    def call(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
+        &#34;&#34;&#34;think of it as a `__call__` method (which Numba does not allow)&#34;&#34;&#34;
 
 
 class Solver:
@@ -146,7 +144,7 @@ class Solver:
     ):
         &#34;&#34;&#34;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
         coefficients (one value per dimension) as well as `post_iter` and `post_step`
-        callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+        callbacks expected to be `numba.jitclass`es with a `call` method, for
         signature see `PostStepNull` and `PostIterNull`;
         returns CPU time per timestep (units as returned by `clock.clock()`)&#34;&#34;&#34;
         if mu_coeff is not None:
@@ -271,7 +269,7 @@ a scala g_factor field</p></div>
     ):
         &#34;&#34;&#34;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
         coefficients (one value per dimension) as well as `post_iter` and `post_step`
-        callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+        callbacks expected to be `numba.jitclass`es with a `call` method, for
         signature see `PostStepNull` and `PostIterNull`;
         returns CPU time per timestep (units as returned by `clock.clock()`)&#34;&#34;&#34;
         if mu_coeff is not None:
@@ -351,7 +349,7 @@ def g_factor(self) -&gt; ScalarField:
 <dd>
 <div class="desc"><p>advances solution by <code>n_steps</code> steps, optionally accepts: a tuple of diffusion
 coefficients (one value per dimension) as well as <code>post_iter</code> and <code>post_step</code>
-callbacks expected to be <code>numba.jitclass</code>es with a <code>__call__</code> method, for
+callbacks expected to be <code>numba.jitclass</code>es with a <code>call</code> method, for
 signature see <code>PostStepNull</code> and <code>PostIterNull</code>;
 returns CPU time per timestep (units as returned by <code>clock.clock()</code>)</p></div>
 <details class="source">
@@ -367,7 +365,7 @@ returns CPU time per timestep (units as returned by <code>clock.clock()</code>)<
 ):
     &#34;&#34;&#34;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
     coefficients (one value per dimension) as well as `post_iter` and `post_step`
-    callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+    callbacks expected to be `numba.jitclass`es with a `call` method, for
     signature see `PostStepNull` and `PostIterNull`;
     returns CPU time per timestep (units as returned by `clock.clock()`)&#34;&#34;&#34;
     if mu_coeff is not None:

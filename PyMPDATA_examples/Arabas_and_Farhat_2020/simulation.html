@@ -126,7 +126,7 @@ class Simulation:
                 def __init__(self):
                     pass
 
-                def __call__(self, psi, step):
+                def call(self, psi, step):
                     t = T - (step + 1) * dt
                     psi += np.maximum(psi, f_T / np.exp(r * t)) - psi
 
@@ -251,7 +251,7 @@ class Simulation:
                 def __init__(self):
                     pass
 
-                def __call__(self, psi, step):
+                def call(self, psi, step):
                     t = T - (step + 1) * dt
                     psi += np.maximum(psi, f_T / np.exp(r * t)) - psi
 
@@ -290,7 +290,7 @@ class Simulation:
             def __init__(self):
                 pass
 
-            def __call__(self, psi, step):
+            def call(self, psi, step):
                 t = T - (step + 1) * dt
                 psi += np.maximum(psi, f_T / np.exp(r * t)) - psi
 
