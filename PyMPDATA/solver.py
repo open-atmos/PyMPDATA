@@ -19,7 +19,7 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def __call__(self, psi, step):  # pylint: disable-next=unused-argument
+    def call(self, psi, step):  # pylint: disable-next=unused-argument
         pass
 
 
@@ -30,9 +30,7 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def __call__(
-        self, flux, g_factor, step, iteration
-    ):  # pylint: disable=unused-argument
+    def call(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
         pass
 
 
@@ -115,7 +113,7 @@ class Solver:
     ):
         """advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
         coefficients (one value per dimension) as well as `post_iter` and `post_step`
-        callbacks expected to be `numba.jitclass`es with a `__call__` method, for
+        callbacks expected to be `numba.jitclass`es with a `call` method, for
         signature see `PostStepNull` and `PostIterNull`;
         returns CPU time per timestep (units as returned by `clock.clock()`)"""
         if mu_coeff is not None:

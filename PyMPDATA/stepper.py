@@ -211,10 +211,10 @@ def make_step_impl(
                         nonoscillatory_correction(null_impl, advector_nonos, beta)
                         flux_subsequent(null_impl, flux, advectee, advector_nonos)
                 upwind(null_impl, advectee, flux, g_factor)
-                post_iter.__call__(flux.field, g_factor.field, step, iteration)
+                post_iter.call(flux.field, g_factor.field, step, iteration)
             if non_zero_mu_coeff:
                 advector = advector_orig
-            post_step.__call__(advectee.field[ARG_DATA], step)
+            post_step.call(advectee.field[ARG_DATA], step)
         return (clock() - time) / n_steps if n_steps > 0 else np.nan
 
     return step, traversals
