@@ -30,7 +30,7 @@ setup(
         "tests": [
             "PyMPDATA-examples",
             "matplotlib" + (">=3.2.2" if CI else ""),
-            "scipy" + ("==1.7.3" if CI else ""),
+            "scipy" + ("==1.11.1" if CI else ""),
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
             "ghapi",
