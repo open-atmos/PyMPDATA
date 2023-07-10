@@ -23,14 +23,14 @@ setup(
     setup_requires=["setuptools_scm"],
     install_requires=[
         "numba" + ("==0.56.4" if CI else ""),
-        "numpy" + ("==1.21.6" if CI else ""),
+        "numpy" + ("==1.23.5" if CI else ""),
         "pystrict",
     ],
     extras_require={
         "tests": [
             "PyMPDATA-examples",
             "matplotlib" + (">=3.2.2" if CI else ""),
-            "scipy" + ("==1.7.3" if CI else ""),
+            "scipy" + ("==1.9.1" if CI else ""),
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
             "ghapi",
