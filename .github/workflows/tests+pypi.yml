@@ -184,7 +184,7 @@ jobs:
       - if: matrix.platform == 'ubuntu-latest'
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
-      - run: pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_run_notebooks.py
+      - run: pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
   devops:
     runs-on: ubuntu-latest
