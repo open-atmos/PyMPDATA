@@ -61,9 +61,10 @@ The Numba's deviation from Python semantics rendering [closure variables
   code base enabling the just-in-time compilation to benefit from 
   information on domain extents, algorithm variant used and problem
   characteristics (e.g., coordinate transformation used, or lack thereof).
-A separate project called [``numba-mpi``](https://pypi.org/project/numba-mpi) 
-  has been developed with the intention to 
-  set the stage for future MPI distributed memory parallelism in PyMPDATA.
+
+A separate project called [``PyMPDATA-MPI``](https://github.com/open-atmos/PyMPDATA-MPI) 
+  depicts how [``numba-mpi``](https://pypi.org/project/numba-mpi) can be used
+  to enable distributed memory parallelism in PyMPDATA.
 
 The [``PyMPDATA-examples``](https://pypi.org/project/PyMPDATA-examples/) 
   package covers a set of examples presented in the form of Jupyer notebooks
