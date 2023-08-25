@@ -24,7 +24,7 @@ def test_formulae_upwind():
         halo=halo,
         jit_flags=options.jit_flags,
         n_threads=1,
-        left_first=True,
+        left_first=(True,),
         buffer_size=0,
     )
     upwind = make_upwind(

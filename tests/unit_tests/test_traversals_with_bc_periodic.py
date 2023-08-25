@@ -77,14 +77,16 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("side", (LEFT, RIGHT))
     @pytest.mark.parametrize("dim", DIMENSIONS)
     # pylint: disable-next=redefined-outer-name,too-many-arguments
-    def test_scalar(data, halo, side, n_threads, dim, left_first=True):
+    def test_scalar(data, halo, side, n_threads, dim):
         n_dims = len(data.shape)
+        left_first = tuple([True] * n_dims)
+
         if n_dims == 1 and dim != INNER:
-            return
+            pytest.mark.skip()
         if n_dims == 2 and dim == MID3D:
-            return
+            pytest.mark.skip()
         if n_dims == 1 and n_threads > 1:
-            return
+            pytest.mark.skip()
 
         # arrange
         field = ScalarField(data, halo, tuple(Periodic() for _ in range(n_dims)))
@@ -141,14 +143,16 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize("comp", DIMENSIONS)
     @pytest.mark.parametrize("dim_offset", (0, 1, 2))
     # pylint: disable=redefined-outer-name,too-many-arguments,too-many-branches
-    def test_vector(data, halo, side, n_threads, comp, dim_offset, left_first=True):
+    def test_vector(data, halo, side, n_threads, comp, dim_offset):
         n_dims = len(data)
+        left_first = tuple([True] * n_dims)
+
         if n_dims == 1 and n_threads > 1:
-            return
+            pytest.mark.skip()
         if n_dims == 1 and (comp != INNER or dim_offset != 0):
-            return
+            pytest.mark.skip()
         if n_dims == 2 and (comp == MID3D or dim_offset == 2):
-            return
+            pytest.mark.skip()
 
         # arrange
         field = VectorField(data, halo, tuple(Periodic() for _ in range(n_dims)))

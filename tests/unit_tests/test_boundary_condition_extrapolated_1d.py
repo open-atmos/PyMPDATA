@@ -25,7 +25,7 @@ class TestBoundaryConditionExtrapolated:
             np.array([1, 2, 3, 4], dtype=complex),
         ),
     )
-    def test_1d_scalar(data, halo, n_threads=1, left_first=True):
+    def test_1d_scalar(data, halo, n_threads=1, left_first=(True,)):
         # arrange
         boundary_conditions = (Extrapolated(),)
         field = ScalarField(data, halo, boundary_conditions)
@@ -70,7 +70,7 @@ class TestBoundaryConditionExtrapolated:
     @staticmethod
     @pytest.mark.parametrize("data", (np.array([0, 2, 3, 0], dtype=float),))
     @pytest.mark.parametrize("halo", (2, 3, 4))
-    def test_1d_vector(data, halo, n_threads=1, left_first=True):
+    def test_1d_vector(data, halo, n_threads=1, left_first=(True,)):
         # arrange
         boundary_condition = (Extrapolated(),)
         field = VectorField((data,), halo, boundary_condition)

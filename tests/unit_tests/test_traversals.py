@@ -107,11 +107,10 @@ class TestTraversals:
         halo: int,
         grid: tuple,
         loop: bool,
-        left_first: bool = True,
     ):
         if len(grid) == 1 and n_threads > 1:
             return
-        cmn = make_commons(grid, halo, n_threads, left_first)
+        cmn = make_commons(grid, halo, n_threads, tuple([True]*len(grid)))
 
         # arrange
         sut = cmn.traversals.apply_scalar(loop=loop)
@@ -172,10 +171,10 @@ class TestTraversals:
     @pytest.mark.parametrize("halo", (1, 2, 3))
     @pytest.mark.parametrize("grid", ((3, 4, 5), (5, 6), (11,)))
     # pylint: disable-next=too-many-locals,redefined-outer-name
-    def test_apply_vector(n_threads, halo: int, grid: tuple, left_first: bool = True):
+    def test_apply_vector(n_threads, halo: int, grid: tuple):
         if len(grid) == 1 and n_threads > 1:
             return
-        cmn = make_commons(grid, halo, n_threads, left_first)
+        cmn = make_commons(grid, halo, n_threads, tuple([True] * len(grid)))
 
         # arrange
         sut = cmn.traversals.apply_vector()

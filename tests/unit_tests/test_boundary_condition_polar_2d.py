@@ -18,7 +18,7 @@ class TestPolarBoundaryCondition:
     @staticmethod
     @pytest.mark.parametrize("halo", (1,))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
-    def test_scalar_2d(halo, n_threads, left_first=True):
+    def test_scalar_2d(halo, n_threads, left_first=(True, True)):
         # arrange
         data = np.array([[1, 6], [2, 7], [3, 8], [4, 9]], dtype=float)
         boundary_condition = (
@@ -58,7 +58,7 @@ class TestPolarBoundaryCondition:
     @staticmethod
     @pytest.mark.parametrize("halo", (1,))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
-    def test_vector_2d(halo, n_threads, left_first=True):
+    def test_vector_2d(halo, n_threads, left_first=(True, True)):
         # arrange
         grid = (4, 2)
         data = (
