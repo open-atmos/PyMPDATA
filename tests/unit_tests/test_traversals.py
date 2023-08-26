@@ -110,7 +110,7 @@ class TestTraversals:
     ):
         if len(grid) == 1 and n_threads > 1:
             return
-        cmn = make_commons(grid, halo, n_threads, tuple([True]*len(grid)))
+        cmn = make_commons(grid, halo, n_threads, tuple([True] * MAX_DIM_NUM))
 
         # arrange
         sut = cmn.traversals.apply_scalar(loop=loop)
@@ -174,7 +174,7 @@ class TestTraversals:
     def test_apply_vector(n_threads, halo: int, grid: tuple):
         if len(grid) == 1 and n_threads > 1:
             return
-        cmn = make_commons(grid, halo, n_threads, tuple([True] * len(grid)))
+        cmn = make_commons(grid, halo, n_threads, tuple([True] * MAX_DIM_NUM))
 
         # arrange
         sut = cmn.traversals.apply_vector()

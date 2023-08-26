@@ -16,7 +16,9 @@ from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA.impl.traversals_common import make_common
 
 
-def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner, left_first: tuple):
+def _make_fill_halos_scalar(
+    *, jit_flags, halo, n_dims, chunker, spanner, left_first: tuple
+):
     common = make_common(jit_flags, spanner, chunker)
     kwargs = {
         "jit_flags": jit_flags,

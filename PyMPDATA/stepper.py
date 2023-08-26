@@ -8,7 +8,7 @@ import numpy as np
 from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from .impl.clock import clock
-from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA
+from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NUM
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_axpy import make_axpy
 from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
@@ -48,7 +48,7 @@ class Stepper:
         if n_threads is None:
             n_threads = numba.get_num_threads()
         if left_first is None:
-            left_first = tuple([True] * n_dims)
+            left_first = tuple([True] * MAX_DIM_NUM)
 
         self.__options = options
         self.__n_threads = 1 if n_dims == 1 else n_threads

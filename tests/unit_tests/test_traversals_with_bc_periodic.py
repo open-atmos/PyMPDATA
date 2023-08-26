@@ -8,7 +8,7 @@ from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
-from PyMPDATA.impl.meta import INNER, MID3D, OUTER
+from PyMPDATA.impl.enumerations import INNER, MAX_DIM_NUM, MID3D, OUTER
 from PyMPDATA.impl.traversals import Traversals
 from tests.unit_tests.fixtures.n_threads import n_threads
 
@@ -79,7 +79,7 @@ class TestPeriodicBoundaryCondition:
     # pylint: disable-next=redefined-outer-name,too-many-arguments
     def test_scalar(data, halo, side, n_threads, dim):
         n_dims = len(data.shape)
-        left_first = tuple([True] * n_dims)
+        left_first = tuple([True] * MAX_DIM_NUM)
 
         if n_dims == 1 and dim != INNER:
             pytest.mark.skip()
@@ -145,7 +145,7 @@ class TestPeriodicBoundaryCondition:
     # pylint: disable=redefined-outer-name,too-many-arguments,too-many-branches
     def test_vector(data, halo, side, n_threads, comp, dim_offset):
         n_dims = len(data)
-        left_first = tuple([True] * n_dims)
+        left_first = tuple([True] * MAX_DIM_NUM)
 
         if n_dims == 1 and n_threads > 1:
             pytest.mark.skip()
