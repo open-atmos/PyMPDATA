@@ -8,7 +8,7 @@ from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic, Polar
-from PyMPDATA.impl.enumerations import INNER, OUTER
+from PyMPDATA.impl.enumerations import INNER, MAX_DIM_NUM, OUTER
 from PyMPDATA.impl.traversals import Traversals
 
 JIT_FLAGS = Options().jit_flags
@@ -18,7 +18,7 @@ class TestPolarBoundaryCondition:
     @staticmethod
     @pytest.mark.parametrize("halo", (1,))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
-    def test_scalar_2d(halo, n_threads, left_first=True):
+    def test_scalar_2d(halo, n_threads):
         # arrange
         data = np.array([[1, 6], [2, 7], [3, 8], [4, 9]], dtype=float)
         boundary_condition = (
@@ -32,7 +32,7 @@ class TestPolarBoundaryCondition:
             halo=halo,
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
-            left_first=left_first,
+            left_first=tuple([True] * MAX_DIM_NUM),
             buffer_size=0,
         )
         field.assemble(traversals)
@@ -58,7 +58,7 @@ class TestPolarBoundaryCondition:
     @staticmethod
     @pytest.mark.parametrize("halo", (1,))
     @pytest.mark.parametrize("n_threads", (1, 2, 3))
-    def test_vector_2d(halo, n_threads, left_first=True):
+    def test_vector_2d(halo, n_threads):
         # arrange
         grid = (4, 2)
         data = (
@@ -93,7 +93,7 @@ class TestPolarBoundaryCondition:
             halo=halo,
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
-            left_first=left_first,
+            left_first=tuple([True] * MAX_DIM_NUM),
             buffer_size=0,
         )
         field.assemble(traversals)

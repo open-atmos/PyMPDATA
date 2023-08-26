@@ -8,7 +8,7 @@ import numpy as np
 from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from .impl.clock import clock
-from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA
+from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NUM
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_axpy import make_axpy
 from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
@@ -32,7 +32,7 @@ class Stepper:
         non_unit_g_factor: bool = False,
         grid: (tuple, None) = None,
         n_threads: (int, None) = None,
-        left_first: bool = True,
+        left_first: (tuple, None) = None,
         buffer_size: int = 0
     ):
         if n_dims is not None and grid is not None:
@@ -47,6 +47,8 @@ class Stepper:
             raise NotImplementedError()
         if n_threads is None:
             n_threads = numba.get_num_threads()
+        if left_first is None:
+            left_first = tuple([True] * MAX_DIM_NUM)
 
         self.__options = options
         self.__n_threads = 1 if n_dims == 1 else n_threads
@@ -108,7 +110,7 @@ class Stepper:
 @lru_cache()
 # pylint: disable=too-many-locals,too-many-statements,too-many-arguments
 def make_step_impl(
-    options, non_unit_g_factor, grid, n_threads, left_first, buffer_size
+    options, non_unit_g_factor, grid, n_threads, left_first: tuple, buffer_size
 ):
     """returns (and caches) an njit-ted stepping function and a traversals pair"""
     traversals = Traversals(

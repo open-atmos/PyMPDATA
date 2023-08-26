@@ -6,7 +6,7 @@ from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
-from PyMPDATA.impl.enumerations import IMPL_BC, IMPL_META_AND_DATA
+from PyMPDATA.impl.enumerations import IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NUM
 from PyMPDATA.impl.formulae_upwind import make_upwind
 from PyMPDATA.impl.meta import _Impl
 from PyMPDATA.impl.traversals import Traversals
@@ -24,7 +24,7 @@ def test_formulae_upwind():
         halo=halo,
         jit_flags=options.jit_flags,
         n_threads=1,
-        left_first=True,
+        left_first=tuple([True] * MAX_DIM_NUM),
         buffer_size=0,
     )
     upwind = make_upwind(

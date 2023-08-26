@@ -8,6 +8,7 @@ from scipy import interpolate
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Extrapolated
+from PyMPDATA.impl.enumerations import MAX_DIM_NUM
 from PyMPDATA.impl.traversals import Traversals
 
 JIT_FLAGS = Options().jit_flags
@@ -25,7 +26,7 @@ class TestBoundaryConditionExtrapolated:
             np.array([1, 2, 3, 4], dtype=complex),
         ),
     )
-    def test_1d_scalar(data, halo, n_threads=1, left_first=True):
+    def test_1d_scalar(data, halo, n_threads=1):
         # arrange
         boundary_conditions = (Extrapolated(),)
         field = ScalarField(data, halo, boundary_conditions)
@@ -35,7 +36,7 @@ class TestBoundaryConditionExtrapolated:
             halo=halo,
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
-            left_first=left_first,
+            left_first=tuple([True] * MAX_DIM_NUM),
             buffer_size=0,
         )
         field.assemble(traversals)
@@ -70,7 +71,7 @@ class TestBoundaryConditionExtrapolated:
     @staticmethod
     @pytest.mark.parametrize("data", (np.array([0, 2, 3, 0], dtype=float),))
     @pytest.mark.parametrize("halo", (2, 3, 4))
-    def test_1d_vector(data, halo, n_threads=1, left_first=True):
+    def test_1d_vector(data, halo, n_threads=1):
         # arrange
         boundary_condition = (Extrapolated(),)
         field = VectorField((data,), halo, boundary_condition)
@@ -80,7 +81,7 @@ class TestBoundaryConditionExtrapolated:
             halo=halo,
             jit_flags=JIT_FLAGS,
             n_threads=n_threads,
-            left_first=left_first,
+            left_first=tuple([True] * MAX_DIM_NUM),
             buffer_size=0,
         )
         field.assemble(traversals)

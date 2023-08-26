@@ -16,17 +16,18 @@ from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA.impl.traversals_common import make_common
 
 
-def _make_fill_halos_scalar(*, jit_flags, halo, n_dims, chunker, spanner, left_first):
+def _make_fill_halos_scalar(
+    *, jit_flags, halo, n_dims, chunker, spanner, left_first: tuple
+):
     common = make_common(jit_flags, spanner, chunker)
     kwargs = {
         "jit_flags": jit_flags,
         "halo": halo,
         "n_dims": n_dims,
-        "left_first": left_first,
     }
-    mid3d = __make_mid3d(**kwargs)
-    outer = __make_outer(**kwargs)
-    inner = __make_inner(**kwargs)
+    mid3d = __make_mid3d(**kwargs, left_first=left_first[MID3D])
+    outer = __make_outer(**kwargs, left_first=left_first[OUTER])
+    inner = __make_inner(**kwargs, left_first=left_first[INNER])
 
     @numba.njit(**jit_flags)
     # pylint: disable=too-many-arguments,too-many-branches

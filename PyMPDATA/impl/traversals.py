@@ -18,7 +18,9 @@ from .traversals_vector import _make_apply_vector
 class Traversals:
     """groups njit-ted traversals for a given grid, halo, jit_flags and threading settings"""
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
+    def __init__(
+        self, *, grid, halo, jit_flags, n_threads, left_first: tuple, buffer_size
+    ):
         assert not (n_threads > 1 and len(grid) == 1)
         tmp = (
             grid[OUTER] if len(grid) > 1 else 0,
