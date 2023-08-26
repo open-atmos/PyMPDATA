@@ -47,7 +47,9 @@ from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA.impl.traversals_common import make_common
 
 
-def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_first):
+def _make_fill_halos_vector(
+    *, jit_flags, halo, n_dims, chunker, spanner, left_first: tuple
+):
     common = make_common(jit_flags, spanner, chunker)
     halos = ((halo - 1, halo, halo), (halo, halo - 1, halo), (halo, halo, halo - 1))
     # pylint:disable=duplicate-code
@@ -56,18 +58,17 @@ def _make_fill_halos_vector(*, jit_flags, halo, n_dims, chunker, spanner, left_f
         &#34;halo&#34;: halo,
         &#34;n_dims&#34;: n_dims,
         &#34;halos&#34;: halos,
-        &#34;left_first&#34;: left_first,
     }
 
-    outer_outer = __make_outer_outer(**kwargs)
-    outer_mid3d = __make_outer_mid3d(**kwargs)
-    outer_inner = __make_outer_inner(**kwargs)
-    mid3d_outer = __make_mid3d_outer(**kwargs)
-    mid3d_mid3d = __make_mid3d_mid3d(**kwargs)
-    mid3d_inner = __make_mid3d_inner(**kwargs)
-    inner_outer = __make_inner_outer(**kwargs)
-    inner_inner = __make_inner_inner(**kwargs)
-    inner_mid3d = __make_inner_mid3d(**kwargs)
+    outer_outer = __make_outer_outer(**kwargs, left_first=left_first[OUTER])
+    outer_mid3d = __make_outer_mid3d(**kwargs, left_first=left_first[MID3D])
+    outer_inner = __make_outer_inner(**kwargs, left_first=left_first[INNER])
+    mid3d_outer = __make_mid3d_outer(**kwargs, left_first=left_first[OUTER])
+    mid3d_mid3d = __make_mid3d_mid3d(**kwargs, left_first=left_first[MID3D])
+    mid3d_inner = __make_mid3d_inner(**kwargs, left_first=left_first[INNER])
+    inner_outer = __make_inner_outer(**kwargs, left_first=left_first[OUTER])
+    inner_mid3d = __make_inner_mid3d(**kwargs, left_first=left_first[MID3D])
+    inner_inner = __make_inner_inner(**kwargs, left_first=left_first[INNER])
 
     @numba.njit(**jit_flags)
     # pylint: disable=too-many-arguments

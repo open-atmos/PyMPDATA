@@ -47,7 +47,9 @@ from .traversals_vector import _make_apply_vector
 class Traversals:
     &#34;&#34;&#34;groups njit-ted traversals for a given grid, halo, jit_flags and threading settings&#34;&#34;&#34;
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
+    def __init__(
+        self, *, grid, halo, jit_flags, n_threads, left_first: tuple, buffer_size
+    ):
         assert not (n_threads &gt; 1 and len(grid) == 1)
         tmp = (
             grid[OUTER] if len(grid) &gt; 1 else 0,
@@ -141,7 +143,7 @@ class Traversals:
 <dl>
 <dt id="PyMPDATA.impl.traversals.Traversals"><code class="flex name class">
 <span>class <span class="ident">Traversals</span></span>
-<span>(</span><span>*, grid, halo, jit_flags, n_threads, left_first, buffer_size)</span>
+<span>(</span><span>*, grid, halo, jit_flags, n_threads, left_first: tuple, buffer_size)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>groups njit-ted traversals for a given grid, halo, jit_flags and threading settings</p></div>
@@ -152,7 +154,9 @@ class Traversals:
 <pre><code class="python">class Traversals:
     &#34;&#34;&#34;groups njit-ted traversals for a given grid, halo, jit_flags and threading settings&#34;&#34;&#34;
 
-    def __init__(self, *, grid, halo, jit_flags, n_threads, left_first, buffer_size):
+    def __init__(
+        self, *, grid, halo, jit_flags, n_threads, left_first: tuple, buffer_size
+    ):
         assert not (n_threads &gt; 1 and len(grid) == 1)
         tmp = (
             grid[OUTER] if len(grid) &gt; 1 else 0,
