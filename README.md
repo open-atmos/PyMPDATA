@@ -24,40 +24,68 @@ of transport equations with the MPDATA numerical scheme in a
 hybrid parallelisation model with both multi-threading and MPI distributed memory communication.
 PyMPDATA-MPI adapts to API of PyMPDATA offering domain decomposition logic.
 
-## Hello world example
+## Hello world examples
 
 In a minimal setup, PyMPDATA-MPI can be used to solve the following transport equation: 
 $$\partial_t (G \psi) + \nabla \cdot (Gu \psi)= 0$$
 in an environment with multiple nodes.
-In two dimensions (x,y), MPI (Message Passing Interface) is used 
-  for handling data transfers and synchronisation in the outer dimension,
-  while multi-threading (using, e.g., OpenMP via Numba) is used in the inner dimension.
-Every worker is responsible for computing its part of the decomposed domain as depicted below:
+Every node (process) is responsible for computing its part of the decomposed domain.
+
+### Spherical scenario (2D)
+
+In spherical geometry, the $$G$$ factor represents the Jacobian of coordinate transformation.
+In this example (based on a test case from [Williamson & Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117<0102:TDSLTW>2.0.CO;2)),
+  domain decomposition is done cutting the sphere along meridians.
+The inner dimension uses the [`MPIPolar`](https://open-atmos.github.io/PyMPDATA-MPI/mpi_polar.html) 
+  boundary condition class, while the outer dimension uses
+  [`MPIPeriodic`](https://open-atmos.github.io/PyMPDATA-MPI/mpi_periodic.html).
+Note that the spherical animations below depict simulations without MPDATA corrective iterations,
+  i.e. only plain first-order upwind scheme is used (FIX ME).
 
 ### 1 worker
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_1_c_field_.-0.5.-0.25.-anim.gif" width="49%" /> 
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_.0.5.0.25.-SphericalScenario-anim.gif" width="49%" /> 
 </p>
 
 ### 2 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_2_c_field_.-0.5.-0.25.-anim.gif" width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.-0.5.-0.25.-anim.gif" width="49%" /> 
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_2_c_field_.0.5.0.25.-SphericalScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_1_size_2_c_field_.0.5.0.25.-SphericalScenario-anim.gif" width="49%" /> 
+</p>
+
+### Cartesian scenario (2D)
+
+In the carthesian example below (based on a test case from [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)),
+  a constant advector field $$u$$ is used (and $$G=1$$).
+MPI (Message Passing Interface) is used 
+  for handling data transfers and synchronisation in the outer dimension,
+  while multi-threading (using, e.g., OpenMP via Numba) is used in the inner dimension.
+In this example, two corrective MPDATA iterations are employed.
+
+### 1 worker
+<p align="middle">
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_1_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="49%" /> 
+</p>
+
+### 2 workers
+<p align="middle">
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_2_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="49%" /> 
 </p>
 
 ### 3 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_3_c_field_.-0.5.-0.25.-anim.gif" width="32%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_3_c_field_.-0.5.-0.25.-anim.gif" width="32%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_3_c_field_.-0.5.-0.25.-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_3_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_3_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_3_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="32%" />
 </p>
 
 ### 4 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_3_size_4_c_field_.-0.5.-0.25.-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_3_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
 </p>
 
 ## Package architecture
@@ -82,12 +110,12 @@ Every worker is responsible for computing its part of the decomposed domain as d
       D --> F[PyMPDATA]
     end
     H ---> MPI
-    C ---> PBS{{PBS}}
+    C ---> slurm{{slurm}}
     N --> OMPI{{OpenMP}}
     N --> L{{LLVM}}
     E ---> MPI{{MPI}}
     HDF --> MPI
-    PBS --> MPI
+    slurm --> MPI
 
 style D fill:#7ae7ff,stroke-width:2px,color:#2B2B2B
 
@@ -103,7 +131,6 @@ click D "https://pypi.org/p/PyMPDATA-MPI"
 click TESTS "https://pypi.org/p/PyMPDATA-MPI"
 ```
 Rectangular boxes indicate pip-installable Python packages (click to go to pypi.org package site).
-
 ## Credits:
 
 Development of PyMPDATA-MPI has been supported by the [Poland's National Science Centre](https://www.ncn.gov.pl/?language=en)  

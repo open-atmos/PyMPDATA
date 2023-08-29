@@ -2,8 +2,9 @@
 
 import numpy as np
 from PyMPDATA.impl.domain_decomposition import make_subdomain
+from PyMPDATA.impl.enumerations import OUTER
 
-MPI_DIM = 0
+MPI_DIM = OUTER
 
 subdomain = make_subdomain(jit_flags={})
 

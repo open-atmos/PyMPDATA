@@ -68,7 +68,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
+          pip install -e .[tests]
           pip install pylint pytest matplotlib
       - name: Analysing the code with pylint
         run: |
@@ -118,9 +118,8 @@ jobs:
       - if: startsWith(matrix.platform, 'macos-')
         run: brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
       - run: HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py "git+https://github.com/h5py/h5py@81f6c01#egg=h5py"
-      - run: pip install -e .
+      - run: pip install -e .[tests]
       - run: python -We -c "import PyMPDATA_MPI"
-      - run: pip install pytest pytest-timeout pytest-mpi matplotlib
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
       - name: "mpiexec pytest"
@@ -131,7 +130,7 @@ jobs:
             export CI_PLOTS_PATH=plots/$arbitrarily_selected_artefact_set
             mkdir -p $CI_PLOTS_PATH
           fi
-          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We tests/unit_tests;
+          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We tests/local;
       - uses: actions/upload-artifact@v2
         with:
           name: plots
@@ -189,13 +188,17 @@ jobs:
           path: plots
       - run: |
           sudo apt install -y librsvg2-bin
-          for path in plots/${{ env.arbitrarily_selected_artefact_set }}/*; do
-              for file in $path/*.svg; do
-                  rsvg-convert $file -o tmp.png
-                  convert tmp.png -flatten -trim +repage -bordercolor white -border 10 $file.png
+          for scenario in ./plots/${{ env.arbitrarily_selected_artefact_set }}/*; do
+              for test_plots in $scenario/*; do
+                  if [ ! $(find "$test_plots" -maxdepth 0 -empty | wc -l) -eq 1 ]; then
+                      for file in $test_plots/*.svg; do
+                          rsvg-convert $file -o tmp.png
+                          convert tmp.png -flatten -trim +repage -bordercolor white -border 10 $file.png
+                      done;
+                      rm tmp.png
+                      convert $test_plots/*.png plots/`basename $test_plots`-`basename $scenario`-anim.gif 
+                  fi
               done;
-              rm tmp.png
-              convert $path/*.png plots/`basename $path`-anim.gif 
           done;
 
       - uses: actions/upload-artifact@v2

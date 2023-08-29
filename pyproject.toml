@@ -1,3 +1,6 @@
+[tool.setuptools]
+py-modules = []
+
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
@@ -24,10 +27,18 @@ dependencies = [
     "numba<0.57.0",
     "numpy<1.25.0",
     "numba_mpi>=0.30",
-    "PyMPDATA==1.0.13",
+    "PyMPDATA==1.0.14",
     "mpi4py",
     "h5py",
-    "pytest-mpi"  # TODO #71: move it to optional dependencies (extras_require?)
 ]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "pytest-mpi",
+    "pytest-timeout",
+    "matplotlib",
+]
+
 
