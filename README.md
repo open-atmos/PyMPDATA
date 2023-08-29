@@ -33,7 +33,7 @@ Every node (process) is responsible for computing its part of the decomposed dom
 
 ### Spherical scenario (2D)
 
-In spherical geometry, the $$G$$ factor represents the Jacobian of coordinate transformation.
+In spherical geometry, the $G$ factor represents the Jacobian of coordinate transformation.
 In this example (based on a test case from [Williamson & Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117<0102:TDSLTW>2.0.CO;2)),
   domain decomposition is done cutting the sphere along meridians.
 The inner dimension uses the [`MPIPolar`](https://open-atmos.github.io/PyMPDATA-MPI/mpi_polar.html) 
@@ -56,7 +56,7 @@ Note that the spherical animations below depict simulations without MPDATA corre
 ### Cartesian scenario (2D)
 
 In the carthesian example below (based on a test case from [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)),
-  a constant advector field $$u$$ is used (and $$G=1$$).
+  a constant advector field $u$ is used (and $G=1$).
 MPI (Message Passing Interface) is used 
   for handling data transfers and synchronisation in the outer dimension,
   while multi-threading (using, e.g., OpenMP via Numba) is used in the inner dimension.
