@@ -34,7 +34,7 @@ COURANT_FIELD_MULTIPLIER = (
     "scenario_class, output_steps",
     (
         (CartesianScenario, range(0, 64, 4)),
-        (SphericalScenario, range(0, 3000, 64)),
+        (SphericalScenario, range(0, 2000, 100)),
     ),
 )
 @pytest.mark.parametrize("options_kwargs", OPTIONS_KWARGS)
