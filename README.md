@@ -49,8 +49,8 @@ Note that the spherical animations below depict simulations without MPDATA corre
 
 ### 2 workers
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_2_c_field_.0.5.0.25.-SphericalScenario-anim.gif" width="49%" />
   <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_1_size_2_c_field_.0.5.0.25.-SphericalScenario-anim.gif" width="49%" /> 
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_2_c_field_.0.5.0.25.-SphericalScenario-anim.gif" width="49%" />
 </p>
 
 ### Cartesian scenario (2D)
