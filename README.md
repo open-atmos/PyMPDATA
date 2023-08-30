@@ -98,7 +98,7 @@ In this example, two corrective MPDATA iterations are employed.
       TESTS --> H[pytest-mpi]
       subgraph PyMPDATA-MPI ["PyMPDATA-MPI"]
         TESTS["PyMPDATA-MPI[tests]"] --> CASES(simulation scenarios)
-        A1["PyMPDATA[examples]"] --> CASES
+        A1["PyMPDATA-MPI[examples]"] --> CASES
         CASES --> D[PyMPDATA-MPI]
       end
       A1 ---> C[py-modelrunner]
