@@ -55,7 +55,7 @@ Note that the spherical animations below depict simulations without MPDATA corre
 
 ### Cartesian scenario (2D)
 
-In the carthesian example below (based on a test case from [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)),
+In the cartesian example below (based on a test case from [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)),
   a constant advector field $u$ is used (and $G=1$).
 MPI (Message Passing Interface) is used 
   for handling data transfers and synchronisation in the outer dimension,
