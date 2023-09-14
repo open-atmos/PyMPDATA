@@ -1,3 +1,7 @@
+"""
+PyMPDATA_examples package includes common Python modules used in PyMPDATA smoke tests
+and in example notebooks (but the package wheels do not include the notebooks)
+"""
 from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
 
 try:
