@@ -8,7 +8,7 @@ PyMPDATA uses staggered grid with the following node placement for
 ![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)
 """
 # pylint: disable=invalid-name
-from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+from importlib.metadata import PackageNotFoundError, version
 
 from .options import Options
 from .scalar_field import ScalarField
@@ -17,7 +17,7 @@ from .stepper import Stepper
 from .vector_field import VectorField
 
 try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, VersionConflict):
+    __version__ = version(__name__)
+except PackageNotFoundError:
     # package is not installed
     pass
