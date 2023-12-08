@@ -85,7 +85,7 @@ class SphericalScenario(_Scenario):
     [Williamson & Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117<0102:TDSLTW>2.0.CO;2)
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self, *, mpdata_options, n_threads, grid, rank, size, courant_field_multiplier
     ):
         # pylint: disable=too-many-locals,invalid-name

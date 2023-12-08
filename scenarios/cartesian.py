@@ -14,7 +14,7 @@ class CartesianScenario(_Scenario):
     [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         *,
         mpdata_options,
