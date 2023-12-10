@@ -16,7 +16,7 @@ class TestClock:
 
     @staticmethod
     def test_clock_numba_jit():
-        @numba.jit(**jit_flags)
+        @numba.jit(**{**jit_flags, "nopython": False})
         def test():
             clock()
 
