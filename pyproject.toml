@@ -25,7 +25,7 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    # TODO #71: these should be handled within PyMPDATA?
+    # TODO #94
     "numba<0.57.0",
     "numpy<1.25.0",
     "numba_mpi>=0.30",
