@@ -4,8 +4,10 @@ defaults:
   run:
     shell: bash
 
+# arbitrarily selected runs
 env:
-  arbitrarily_selected_artefact_set: '3.10/ubuntu-latest/0/openmpi'
+  animation_run: '3.10/ubuntu-latest/0/openmpi'
+  codecov_run: '3.10/ubuntu-latest/1/openmpi'
 
 on:
   push:
@@ -126,15 +128,26 @@ jobs:
         env:
           NUMBA_DISABLE_JIT: ${{ matrix.disable-jit }} 
         run: |
-          if [ "$arbitrarily_selected_artefact_set" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
-            export CI_PLOTS_PATH=plots/$arbitrarily_selected_artefact_set
+          if [ "$animation_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+            export CI_PLOTS_PATH=plots/$animation_run
             mkdir -p $CI_PLOTS_PATH
           fi
-          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest --timeout=600 --timeout_method=thread -s -vv -We tests/local;
+          if [ "${{ matrix.mpi-np }}" == "1" ] && [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+            echo "CODECOV_RUN=1" >> $GITHUB_ENV
+            export COV_ARGS="--cov=./ --cov-report=xml"
+            pip install pytest-cov
+          fi
+          mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests/local;
       - uses: actions/upload-artifact@v2
         with:
           name: plots
           path: plots
+      - if: env.CODECOV_RUN == '1'
+        uses: codecov/codecov-action@v3
+        with: 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
 
   package:
     runs-on: ubuntu-latest
@@ -202,7 +215,7 @@ jobs:
           path: plots
       - run: |
           sudo apt install -y librsvg2-bin
-          for scenario in ./plots/${{ env.arbitrarily_selected_artefact_set }}/*; do
+          for scenario in ./plots/${{ env.animation_run }}/*; do
               for test_plots in $scenario/*; do
                   if [ ! $(find "$test_plots" -maxdepth 0 -empty | wc -l) -eq 1 ]; then
                       for file in $test_plots/*.svg; do
