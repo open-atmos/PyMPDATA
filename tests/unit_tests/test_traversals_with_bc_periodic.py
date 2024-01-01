@@ -68,8 +68,8 @@ class TestPeriodicBoundaryCondition:
     @pytest.mark.parametrize(
         "data",
         (
-            np.array([1., 2, 3]),
-            np.array([[1., 2, 3], [4, 5, 6], [7, 8, 9]]),
+            np.array([1.0, 2, 3]),
+            np.array([[1.0, 2, 3], [4, 5, 6], [7, 8, 9]]),
             np.arange(3 * 4 * 5, dtype=float).reshape((3, 4, 5)),
         ),
     )
@@ -125,8 +125,13 @@ class TestPeriodicBoundaryCondition:
         (
             (np.array([1, 2, 3], dtype=float),),
             (
-                np.array([[41, 42, 33], [51, 52, 53], [61, 62, 63], [71, 72, 73]], dtype=float),
-                np.array([[11, 12, 13, 14], [21, 22, 23, 24], [31, 32, 33, 34]], dtype=float),
+                np.array(
+                    [[41, 42, 33], [51, 52, 53], [61, 62, 63], [71, 72, 73]],
+                    dtype=float,
+                ),
+                np.array(
+                    [[11, 12, 13, 14], [21, 22, 23, 24], [31, 32, 33, 34]], dtype=float
+                ),
             ),
             (
                 np.arange(4 * 4 * 5, dtype=float).reshape((3 + 1, 4, 5)),
