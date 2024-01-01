@@ -29,7 +29,7 @@ setup(
         "pystrict",
         "matplotlib" + "<3.6.0" if CI else "",
         "ipywidgets" + "<8.0.3" if CI else "",
-        "scipy" + ("==1.9.1" if CI else ""),
+        "scipy" + ("==1.11.4" if CI else ""),
         "pint",
         "joblib",
         "sympy",
