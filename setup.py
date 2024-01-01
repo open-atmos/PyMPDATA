@@ -2,6 +2,7 @@
 the magick behind ``pip install ...``
 """
 import os
+import platform
 
 from setuptools import find_packages, setup
 
@@ -22,7 +23,7 @@ setup(
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "numba" + ("==0.58.1" if CI else ""),
+        "numba" + ("==0.58.1" if CI and platform.architecture()[0] != "32bit" else ""),
         "numpy" + ("==1.24.4" if CI else ""),
         "pystrict",
     ],
