@@ -14,8 +14,8 @@ from PyMPDATA.impl.traversals import Traversals
 
 def test_formulae_upwind():
     # Arrange
-    psi_data = np.array((0., 1, 0))
-    flux_data = np.array((0., 0, 1, 0))
+    psi_data = np.array((0.0, 1, 0))
+    flux_data = np.array((0.0, 0, 1, 0))
 
     options = Options()
     halo = options.n_halo
