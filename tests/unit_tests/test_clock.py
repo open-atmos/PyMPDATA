@@ -34,15 +34,16 @@ class TestClock:
     def test_clock_value():
         # Arrange
         factor = 3
-        base = 0.01
+        base = 0.1
+
         start = clock()
         time.sleep(base)
-        sec_one = clock() - start
+        sec_base = clock() - start
 
         # Act
         start = clock()
         time.sleep(base * factor)
-        sec_two = clock() - start
+        sec_factor = clock() - start
 
         # Assert
-        assert abs(sec_two / sec_one - factor) < 0.1
+        assert abs(sec_factor / sec_base - factor) < 0.1
