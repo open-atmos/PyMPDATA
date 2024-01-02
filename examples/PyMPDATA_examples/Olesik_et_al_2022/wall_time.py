@@ -33,9 +33,9 @@ def test_wall_time(n_runs=3, mrats=(10,), generate=False, print_tab=True, rtol=R
                 i += 1
             selected_value = np.min(minimum_values)
             if opts == {"n_iters": 1}:
-                norm = np.float64(selected_value)
+                norm = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
-            table_data["values"].append(round(selected_value / norm, 1))
+            table_data["values"].append(np.nan if norm == 0 else round(selected_value / norm, 1))
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
     compare_refdata(data=table_data, rtol=rtol, generate=generate)
 
