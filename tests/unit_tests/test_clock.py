@@ -33,13 +33,16 @@ class TestClock:
     @staticmethod
     def test_clock_value():
         # Arrange
-        sec_expected = 2
+        factor = 3
+        base = 0.01
         start = clock()
+        time.sleep(base)
+        sec_one = clock() - start
 
         # Act
-        time.sleep(sec_expected)
-        stop = clock()
+        start = clock()
+        time.sleep(base * factor)
+        sec_two = clock() - start
 
         # Assert
-        sec_actual = (stop - start) / 1000
-        assert (sec_actual - sec_expected) / sec_expected < 0.1
+        assert abs(sec_two / sec_one - factor) < 0.1
