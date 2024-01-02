@@ -35,7 +35,9 @@ def test_wall_time(n_runs=3, mrats=(10,), generate=False, print_tab=True, rtol=R
             if opts == {"n_iters": 1}:
                 norm = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
-            table_data["values"].append(np.nan if norm == 0 else round(selected_value / norm, 1))
+            table_data["values"].append(
+                np.nan if norm == 0 else round(selected_value / norm, 1)
+            )
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
     compare_refdata(data=table_data, rtol=rtol, generate=generate)
 
