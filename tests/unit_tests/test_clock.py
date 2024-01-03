@@ -33,8 +33,8 @@ class TestClock:
     @staticmethod
     def test_clock_value():
         # Arrange
-        factor = 3
-        base = 0.1
+        factor = 4
+        base = 0.5
 
         sec_base = None
         warmup = 1
