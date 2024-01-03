@@ -36,9 +36,12 @@ class TestClock:
         factor = 3
         base = 0.1
 
-        start = clock()
-        time.sleep(base)
-        sec_base = clock() - start
+        sec_base = None
+        warmup = 1
+        for _ in range(warmup + 1):
+            start = clock()
+            time.sleep(base)
+            sec_base = clock() - start
 
         # Act
         start = clock()
