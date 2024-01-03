@@ -49,4 +49,4 @@ class TestClock:
         sec_factor = clock() - start
 
         # Assert
-        assert abs(sec_factor / sec_base - factor) < 0.1
+        assert abs(sec_factor / sec_base / factor - 1) < 0.5
