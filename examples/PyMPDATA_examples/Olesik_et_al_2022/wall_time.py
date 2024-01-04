@@ -27,15 +27,14 @@ def test_wall_time(n_runs=3, mrats=(20,), generate=False, print_tab=True, rtol=R
             minimum_values = []
             while i < n_runs:
                 result = make_data(settings, grid, opts)
-                print("\t", i, opts, result["wall_time"])
                 wall_times = result["wall_time"]
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
                 i += 1
             selected_value = np.min(minimum_values)
             if opts == {"n_iters": 1}:
-                norm = selected_value
-                print(norm)
+                at_least_one_to_avoid_nans = 1
+                norm = max(at_least_one_to_avoid_nans, selected_value)
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
             table_data["values"].append(
                 np.nan if norm == 0 else round(selected_value / norm, 1)
