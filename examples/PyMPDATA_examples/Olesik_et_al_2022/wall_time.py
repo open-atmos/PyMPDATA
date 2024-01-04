@@ -27,7 +27,7 @@ def test_wall_time(n_runs=3, mrats=(20,), generate=False, print_tab=True, rtol=R
             minimum_values = []
             while i < n_runs:
                 result = make_data(settings, grid, opts)
-                print("\t", i, opts, result['wall_time'])
+                print("\t", i, opts, result["wall_time"])
                 wall_times = result["wall_time"]
                 minimal = np.nanmin(wall_times)
                 minimum_values.append(minimal)
