@@ -147,7 +147,7 @@ jobs:
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
         
       - env:
-          NUMBA_OPT: 1
+          NUMBA_OPT: 0
         run: |
           pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
           pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
