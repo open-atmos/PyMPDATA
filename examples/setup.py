@@ -27,7 +27,7 @@ setup(
         "PyMPDATA",
         "open-atmos-jupyter-utils",
         "pystrict",
-        "matplotlib" + "<3.6.0" if CI else "",
+        "matplotlib",
         "ipywidgets" + "<8.0.3" if CI else "",
         "scipy" + ("==1.10.1" if CI else ""),
         "pint",
