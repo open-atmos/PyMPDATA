@@ -115,12 +115,12 @@ jobs:
           prop_path: 'creators'
 
   tests:
-    timeout-minutes: 100
+    timeout-minutes: 120
     needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.8", "3.10"]
+        python-version: ["3.8", "3.11"]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -142,9 +142,15 @@ jobs:
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
         
-      - run: |
+      - env:
+          NUMBA_OPT: 1
+        run: |
           pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
           pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
+
+      - env:
+          NUMBA_OPT: 3
+        run: |
           pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   examples:
@@ -152,7 +158,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.8", "3.10"]
+        python-version: ["3.8", "3.11"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -181,7 +187,9 @@ jobs:
       - if: matrix.platform == 'ubuntu-latest'
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
-      - run: pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
+      - env:
+          NUMBA_OPT: 1
+        run: pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
   devops:
     runs-on: ubuntu-latest

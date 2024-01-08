@@ -2,6 +2,7 @@
 the magick behind ``pip install ...``
 """
 import os
+import platform
 
 from setuptools import find_packages, setup
 
@@ -14,6 +15,7 @@ def get_long_description():
 
 
 CI = "CI" in os.environ
+_32bit = platform.architecture()[0] == "32bit"
 
 setup(
     name="PyMPDATA",
@@ -22,15 +24,15 @@ setup(
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "numba" + ("==0.56.4" if CI else ""),
-        "numpy" + ("==1.23.5" if CI else ""),
+        "numba" + ("==0.58.1" if CI and not _32bit else ""),
+        "numpy" + ("==1.24.4" if CI else ""),
         "pystrict",
     ],
     extras_require={
         "tests": [
             "PyMPDATA-examples",
             "matplotlib" + (">=3.2.2" if CI else ""),
-            "scipy" + ("==1.9.1" if CI else ""),
+            "scipy" + ("==1.10.1" if CI and not _32bit else ""),
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
             "ghapi",

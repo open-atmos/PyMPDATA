@@ -16,7 +16,7 @@ class TestClock:
 
     @staticmethod
     def test_clock_numba_jit():
-        @numba.jit(**jit_flags)
+        @numba.jit(**{**jit_flags, "forceobj": True})
         def test():
             clock()
 
@@ -33,13 +33,20 @@ class TestClock:
     @staticmethod
     def test_clock_value():
         # Arrange
-        sec_expected = 2
-        start = clock()
+        factor = 4
+        base = 0.5
+
+        sec_base = None
+        warmup = 1
+        for _ in range(warmup + 1):
+            start = clock()
+            time.sleep(base)
+            sec_base = clock() - start
 
         # Act
-        time.sleep(sec_expected)
-        stop = clock()
+        start = clock()
+        time.sleep(base * factor)
+        sec_factor = clock() - start
 
         # Assert
-        sec_actual = (stop - start) / 1000
-        assert (sec_actual - sec_expected) / sec_expected < 0.1
+        assert abs(sec_factor / sec_base / factor - 1) < 0.5

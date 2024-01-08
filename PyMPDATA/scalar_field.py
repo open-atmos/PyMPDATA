@@ -6,7 +6,7 @@ import inspect
 import numpy as np
 
 from PyMPDATA.boundary_conditions import Constant
-from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, INVALID_NULL_VALUE
+from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE
 from PyMPDATA.impl.field import Field
 
 
@@ -55,7 +55,7 @@ class ScalarField(Field):
         see `Field._make_null` other properties of the returned field"""
         return Field._make_null(
             ScalarField(
-                np.empty([INVALID_NULL_VALUE] * n_dims),
+                np.empty(shape=[0] * n_dims),
                 halo=0,
                 boundary_conditions=tuple([Constant(np.nan)] * n_dims),
             ),

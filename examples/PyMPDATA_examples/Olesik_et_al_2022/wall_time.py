@@ -18,7 +18,7 @@ opt_set = default_opt_set.values()
 RTOL = 1.5
 
 
-def test_wall_time(n_runs=3, mrats=(10,), generate=False, print_tab=True, rtol=RTOL):
+def test_wall_time(n_runs=3, mrats=(20,), generate=False, print_tab=True, rtol=RTOL):
     settings = Settings(nr=default_nr * 10, mixing_ratios_g_kg=np.array(mrats))
     table_data = {"opts": [], "values": []}
     for grid in grid_layout_set:
@@ -27,15 +27,17 @@ def test_wall_time(n_runs=3, mrats=(10,), generate=False, print_tab=True, rtol=R
             minimum_values = []
             while i < n_runs:
                 result = make_data(settings, grid, opts)
-                wall_times = result["wall_time"]
-                minimal = np.nanmin(wall_times)
+                wall_times = np.asarray(result["wall_time"])
+                minimal = np.nanmin(wall_times[wall_times > 0])
                 minimum_values.append(minimal)
                 i += 1
             selected_value = np.min(minimum_values)
             if opts == {"n_iters": 1}:
                 norm = selected_value
             table_data["opts"].append(str(opts) + "(" + grid.__class__.__name__ + ")")
-            table_data["values"].append(round(selected_value / norm, 1))
+            table_data["values"].append(
+                np.nan if norm == 0 else round(selected_value / norm, 1)
+            )
     make_textable(data=table_data, generate=generate, print_tab=print_tab)
     compare_refdata(data=table_data, rtol=rtol, generate=generate)
 
