@@ -178,6 +178,60 @@ class Solver:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="PyMPDATA.solver.PostIterNull"><code class="flex name class">
+<span>class <span class="ident">PostIterNull</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>do-nothing version of the post-iter hook</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@numba.experimental.jitclass([])
+class PostIterNull:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34;do-nothing version of the post-iter hook&#34;&#34;&#34;
+
+    def __init__(self):
+        pass
+
+    def call(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
+        &#34;&#34;&#34;think of it as a `__call__` method (which Numba does not allow)&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="PyMPDATA.solver.PostIterNull.class_type"><code class="name">var <span class="ident">class_type</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="PyMPDATA.solver.PostStepNull"><code class="flex name class">
+<span>class <span class="ident">PostStepNull</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>do-nothing version of the post-step hook</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@numba.experimental.jitclass([])
+class PostStepNull:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34;do-nothing version of the post-step hook&#34;&#34;&#34;
+
+    def __init__(self):
+        pass
+
+    def call(self, psi, step):  # pylint: disable-next=unused-argument
+        &#34;&#34;&#34;think of it as a `__call__` method (which Numba does not allow)&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="PyMPDATA.solver.PostStepNull.class_type"><code class="name">var <span class="ident">class_type</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="PyMPDATA.solver.Solver"><code class="flex name class">
 <span>class <span class="ident">Solver</span></span>
 <span>(</span><span>stepper: <a title="PyMPDATA.stepper.Stepper" href="stepper.html#PyMPDATA.stepper.Stepper">Stepper</a>, advectee: <a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a>, advector: <a title="PyMPDATA.vector_field.VectorField" href="vector_field.html#PyMPDATA.vector_field.VectorField">VectorField</a>, g_factor: [<class '<a title="PyMPDATA.scalar_field.ScalarField" href="scalar_field.html#PyMPDATA.scalar_field.ScalarField">ScalarField</a>'>, None] = None)</span>
@@ -350,7 +404,7 @@ def g_factor(self) -&gt; ScalarField:
 <div class="desc"><p>advances solution by <code>n_steps</code> steps, optionally accepts: a tuple of diffusion
 coefficients (one value per dimension) as well as <code>post_iter</code> and <code>post_step</code>
 callbacks expected to be <code>numba.jitclass</code>es with a <code>call</code> method, for
-signature see <code>PostStepNull</code> and <code>PostIterNull</code>;
+signature see <code><a title="PyMPDATA.solver.PostStepNull" href="#PyMPDATA.solver.PostStepNull">PostStepNull</a></code> and <code><a title="PyMPDATA.solver.PostIterNull" href="#PyMPDATA.solver.PostIterNull">PostIterNull</a></code>;
 returns CPU time per timestep (units as returned by <code>clock.clock()</code>)</p></div>
 <details class="source">
 <summary>
@@ -408,6 +462,18 @@ returns CPU time per timestep (units as returned by <code>clock.clock()</code>)<
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="PyMPDATA.solver.PostIterNull" href="#PyMPDATA.solver.PostIterNull">PostIterNull</a></code></h4>
+<ul class="">
+<li><code><a title="PyMPDATA.solver.PostIterNull.class_type" href="#PyMPDATA.solver.PostIterNull.class_type">class_type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="PyMPDATA.solver.PostStepNull" href="#PyMPDATA.solver.PostStepNull">PostStepNull</a></code></h4>
+<ul class="">
+<li><code><a title="PyMPDATA.solver.PostStepNull.class_type" href="#PyMPDATA.solver.PostStepNull.class_type">class_type</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="PyMPDATA.solver.Solver" href="#PyMPDATA.solver.Solver">Solver</a></code></h4>
 <ul class="">

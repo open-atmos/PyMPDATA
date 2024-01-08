@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>PyMPDATA.impl.clock API documentation</title>
-<meta name="description" content="CPU-time returning clock() function which works from within njit-ted code" />
+<meta name="description" content="CPU-time returning clock() function which works from within njit-ted code,
+no time unit guaranteed, returned value only for relative time measurements" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,28 +23,19 @@
 <h1 class="title">Module <code>PyMPDATA.impl.clock</code></h1>
 </header>
 <section id="section-intro">
-<p>CPU-time returning clock() function which works from within njit-ted code</p>
+<p>CPU-time returning clock() function which works from within njit-ted code,
+no time unit guaranteed, returned value only for relative time measurements</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34; CPU-time returning clock() function which works from within njit-ted code &#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34; CPU-time returning clock() function which works from within njit-ted code,
+    no time unit guaranteed, returned value only for relative time measurements &#34;&#34;&#34;
 import ctypes
-import platform
 
-if platform.system() == &#34;Windows&#34;:
-    from ctypes.util import find_msvcrt
-
-    __LIB = find_msvcrt()
-    if __LIB is None:
-        __LIB = &#34;msvcrt.dll&#34;
-else:
-    from ctypes.util import find_library
-
-    __LIB = find_library(&#34;c&#34;)
-
-clock = ctypes.CDLL(__LIB).clock
-clock.argtypes = []</code></pre>
+clock = ctypes.pythonapi._PyTime_GetSystemClock  # pylint:disable=protected-access
+clock.argtypes = []
+clock.restype = ctypes.c_int64</code></pre>
 </details>
 </section>
 <section>
