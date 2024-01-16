@@ -38,15 +38,7 @@ setup(
             "ghapi",
             "pytest",
             "pytest-benchmark",
-            # this is a PyMPDATA-examples dependency, as of time of writing
-            # the pip package depends on deprecated distutils, which cause
-            # a warning on Python 3.10, to be removed after joblib release
-            "joblib"
-            + (
-                " @ git+https://github.com/joblib/joblib@3d80506#egg=joblib"
-                if CI
-                else ""
-            ),
+            "joblib" + ("==1.3.2" if CI else ""),
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
