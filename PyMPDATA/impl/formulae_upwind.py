@@ -1,4 +1,5 @@
 """ upwind/donor-cell formula logic including G-factor handling """
+
 import numba
 
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
@@ -10,9 +11,11 @@ def make_upwind(options, non_unit_g_factor, traversals):
     idx = traversals.indexers[traversals.n_dims]
 
     formulae_upwind = tuple(
-        __make_upwind(options.jit_flags, idx.atv[i], idx.ats[i], non_unit_g_factor)
-        if idx.ats[i] is not None
-        else None
+        (
+            __make_upwind(options.jit_flags, idx.atv[i], idx.ats[i], non_unit_g_factor)
+            if idx.ats[i] is not None
+            else None
+        )
         for i in range(MAX_DIM_NUM)
     )
 

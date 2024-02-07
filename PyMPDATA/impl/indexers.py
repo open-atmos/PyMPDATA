@@ -1,4 +1,5 @@
 """ array indexing logic for 1D, 2D and 3D staggered grids """
+
 # pylint: disable=missing-function-docstring
 
 from collections import namedtuple

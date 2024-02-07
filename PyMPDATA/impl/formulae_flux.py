@@ -1,4 +1,5 @@
 """ staggered-grid flux logic including infinite-gauge logic handling """
+
 import numba
 import numpy as np
 
@@ -11,15 +12,17 @@ def make_flux_first_pass(options, traversals):
     apply_vector = traversals.apply_vector()
 
     formulae_flux_first_pass = tuple(
-        __make_flux(
-            options.jit_flags,
-            idx.atv[i],
-            idx.ats[i],
-            first_pass=True,
-            infinite_gauge=False,
+        (
+            __make_flux(
+                options.jit_flags,
+                idx.atv[i],
+                idx.ats[i],
+                first_pass=True,
+                infinite_gauge=False,
+            )
+            if idx.ats[i] is not None
+            else None
         )
-        if idx.ats[i] is not None
-        else None
         for i in range(MAX_DIM_NUM)
     )
 
@@ -47,15 +50,17 @@ def make_flux_subsequent(options, traversals):
     apply_vector = traversals.apply_vector()
 
     formulae_flux_subsequent = tuple(
-        __make_flux(
-            options.jit_flags,
-            idx.atv[i],
-            idx.ats[i],
-            first_pass=False,
-            infinite_gauge=options.infinite_gauge,
+        (
+            __make_flux(
+                options.jit_flags,
+                idx.atv[i],
+                idx.ats[i],
+                first_pass=False,
+                infinite_gauge=options.infinite_gauge,
+            )
+            if idx.ats[i] is not None
+            else None
         )
-        if idx.ats[i] is not None
-        else None
         for i in range(MAX_DIM_NUM)
     )
 

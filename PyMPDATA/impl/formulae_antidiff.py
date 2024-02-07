@@ -1,5 +1,6 @@
 """ antidiffusive velocity formulae incl. divergent-flow,
     third-order-terms, DPDC and partially also infinite-gauge logic """
+
 import numba
 import numpy as np
 
@@ -12,16 +13,18 @@ def make_antidiff(non_unit_g_factor, options, traversals, last_pass=False):
     apply_vector = traversals.apply_vector()
 
     formulae_antidiff = tuple(
-        __make_antidiff(
-            atv=idx.atv[i],
-            ats=idx.ats[i],
-            non_unit_g_factor=non_unit_g_factor,
-            options=options,
-            n_dims=traversals.n_dims,
-            last_pass=last_pass,
+        (
+            __make_antidiff(
+                atv=idx.atv[i],
+                ats=idx.ats[i],
+                non_unit_g_factor=non_unit_g_factor,
+                options=options,
+                n_dims=traversals.n_dims,
+                last_pass=last_pass,
+            )
+            if idx.ats[i] is not None
+            else None
         )
-        if idx.ats[i] is not None
-        else None
         for i in range(MAX_DIM_NUM)
     )
 

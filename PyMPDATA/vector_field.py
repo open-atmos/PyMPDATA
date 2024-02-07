@@ -1,6 +1,7 @@
 """
 vector field abstractions for the staggered grid
 """
+
 import inspect
 
 import numpy as np

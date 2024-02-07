@@ -1,4 +1,5 @@
 """ polar boundary condition for use in with spherical coordinates """
+
 from functools import lru_cache
 
 import numba

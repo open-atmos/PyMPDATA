@@ -1,4 +1,5 @@
 """ vector field traversals (incl. multi-threading) """
+
 import numba
 
 from .enumerations import (

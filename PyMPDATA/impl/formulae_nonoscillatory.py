@@ -288,9 +288,11 @@ def make_correction(options, traversals):
         apply_vector = traversals.apply_vector()
 
         formulae = tuple(
-            __make_correction(options.jit_flags, idx.ats[i], idx.atv[i])
-            if idx.ats[i] is not None
-            else None
+            (
+                __make_correction(options.jit_flags, idx.ats[i], idx.atv[i])
+                if idx.ats[i] is not None
+                else None
+            )
             for i in range(MAX_DIM_NUM)
         )
 

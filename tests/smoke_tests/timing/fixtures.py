@@ -1,4 +1,5 @@
 """ pytest fixtures for timing tests """
+
 import numba
 import pytest
 
