@@ -1,4 +1,5 @@
 """ test for asserting equivalence of results from single node environment and multi-node one """
+
 import os
 import shutil
 from pathlib import Path
@@ -154,11 +155,10 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments
         path_idx = mpi.rank() + 1
         mode = "r"
         if mpi.rank() != 0:
-            with Storage.non_mpi_contex(
-                paths[1], mode
-            ) as storage_expected, Storage.non_mpi_contex(
-                paths[path_idx], mode
-            ) as storage_actual:
+            with (
+                Storage.non_mpi_contex(paths[1], mode) as storage_expected,
+                Storage.non_mpi_contex(paths[path_idx], mode) as storage_actual,
+            ):
                 np.testing.assert_array_equal(
                     storage_expected[dataset_name][:, :, -1],
                     storage_actual[dataset_name][:, :, -1],

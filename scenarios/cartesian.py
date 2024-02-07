@@ -1,4 +1,5 @@
 """ 2D constant-advector carthesian example """
+
 import numpy as np
 from matplotlib import pyplot
 from PyMPDATA import ScalarField, Stepper, VectorField

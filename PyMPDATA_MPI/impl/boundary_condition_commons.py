@@ -1,4 +1,5 @@
 """ boundary_condition common functions """
+
 from functools import lru_cache
 
 import numba

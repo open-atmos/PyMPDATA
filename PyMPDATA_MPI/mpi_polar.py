@@ -1,4 +1,5 @@
 """ polar boundary condition logic """
+
 from functools import lru_cache
 
 import numba
