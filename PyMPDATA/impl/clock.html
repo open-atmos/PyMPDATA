@@ -31,6 +31,7 @@ no time unit guaranteed, returned value only for relative time measurements</p>
 </summary>
 <pre><code class="python">&#34;&#34;&#34; CPU-time returning clock() function which works from within njit-ted code,
     no time unit guaranteed, returned value only for relative time measurements &#34;&#34;&#34;
+
 import ctypes
 
 clock = ctypes.pythonapi._PyTime_GetSystemClock  # pylint:disable=protected-access

@@ -33,6 +33,7 @@ as well as self-initialised temporary storage</p>
 class grouping user-supplied stepper, fields and post-step/post-iter hooks,
 as well as self-initialised temporary storage
 &#34;&#34;&#34;
+
 from typing import Union
 
 import numba
@@ -102,15 +103,21 @@ class Solver:
             &#34;g_factor&#34;: g_factor or null_scalar_field(),
             &#34;vectmp_a&#34;: vector_field(),
             &#34;vectmp_b&#34;: vector_field(),
-            &#34;vectmp_c&#34;: vector_field()
-            if stepper.options.non_zero_mu_coeff
-            else null_vector_field(),
-            &#34;nonosc_xtrm&#34;: scalar_field(dtype=complex)
-            if stepper.options.nonoscillatory
-            else null_scalar_field(),
-            &#34;nonosc_beta&#34;: scalar_field(dtype=complex)
-            if stepper.options.nonoscillatory
-            else null_scalar_field(),
+            &#34;vectmp_c&#34;: (
+                vector_field()
+                if stepper.options.non_zero_mu_coeff
+                else null_vector_field()
+            ),
+            &#34;nonosc_xtrm&#34;: (
+                scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory
+                else null_scalar_field()
+            ),
+            &#34;nonosc_beta&#34;: (
+                scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory
+                else null_scalar_field()
+            ),
         }
         for field in self.__fields.values():
             field.assemble(stepper.traversals)
@@ -281,15 +288,21 @@ a scala g_factor field</p></div>
             &#34;g_factor&#34;: g_factor or null_scalar_field(),
             &#34;vectmp_a&#34;: vector_field(),
             &#34;vectmp_b&#34;: vector_field(),
-            &#34;vectmp_c&#34;: vector_field()
-            if stepper.options.non_zero_mu_coeff
-            else null_vector_field(),
-            &#34;nonosc_xtrm&#34;: scalar_field(dtype=complex)
-            if stepper.options.nonoscillatory
-            else null_scalar_field(),
-            &#34;nonosc_beta&#34;: scalar_field(dtype=complex)
-            if stepper.options.nonoscillatory
-            else null_scalar_field(),
+            &#34;vectmp_c&#34;: (
+                vector_field()
+                if stepper.options.non_zero_mu_coeff
+                else null_vector_field()
+            ),
+            &#34;nonosc_xtrm&#34;: (
+                scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory
+                else null_scalar_field()
+            ),
+            &#34;nonosc_beta&#34;: (
+                scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory
+                else null_scalar_field()
+            ),
         }
         for field in self.__fields.values():
             field.assemble(stepper.traversals)
