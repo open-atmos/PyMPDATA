@@ -1,4 +1,5 @@
 """ scalar field traversals (incl. multi-threading) """
+
 import numba
 
 from .enumerations import INNER, INVALID_INDEX, MID3D, RNG_START, RNG_STOP

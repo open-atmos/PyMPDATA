@@ -1,4 +1,5 @@
 """ basic a*x+y operation logic for use in Fickian term handling """
+
 import numba
 
 from .enumerations import INNER, MID3D, OUTER

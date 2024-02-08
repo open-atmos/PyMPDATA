@@ -1,4 +1,5 @@
 """ logic for handling the Fickian term by modifying physical velocity """
+
 import numba
 
 from ..impl.enumerations import MAX_DIM_NUM
@@ -19,11 +20,13 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
         apply_vector = traversals.apply_vector()
 
         formulae_laplacian = tuple(
-            __make_laplacian(
-                options.jit_flags, idx.ats[i], options.epsilon, non_unit_g_factor
+            (
+                __make_laplacian(
+                    options.jit_flags, idx.ats[i], options.epsilon, non_unit_g_factor
+                )
+                if idx.ats[i] is not None
+                else None
             )
-            if idx.ats[i] is not None
-            else None
             for i in range(MAX_DIM_NUM)
         )
 

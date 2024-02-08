@@ -1,6 +1,7 @@
 """
 the magick behind ``pip install ...``
 """
+
 import os
 import platform
 

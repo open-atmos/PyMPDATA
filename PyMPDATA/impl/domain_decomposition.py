@@ -1,4 +1,5 @@
 """ logic defining domain decomposition scheme for multi-threading """
+
 import math
 
 import numba

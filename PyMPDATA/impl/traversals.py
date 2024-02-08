@@ -1,4 +1,5 @@
 """ staggered-grid traversals orchestration """
+
 from collections import namedtuple
 from pathlib import Path
 

@@ -1,5 +1,6 @@
 """ common logic for `PyMPDATA.scalar_field.ScalarField` and
  `PyMPDATA.vector_field.VectorField` classes """
+
 import abc
 from collections import namedtuple
 

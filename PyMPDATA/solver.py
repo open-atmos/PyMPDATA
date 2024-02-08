@@ -2,6 +2,7 @@
 class grouping user-supplied stepper, fields and post-step/post-iter hooks,
 as well as self-initialised temporary storage
 """
+
 from typing import Union
 
 import numba
@@ -71,15 +72,21 @@ class Solver:
             "g_factor": g_factor or null_scalar_field(),
             "vectmp_a": vector_field(),
             "vectmp_b": vector_field(),
-            "vectmp_c": vector_field()
-            if stepper.options.non_zero_mu_coeff
-            else null_vector_field(),
-            "nonosc_xtrm": scalar_field(dtype=complex)
-            if stepper.options.nonoscillatory
-            else null_scalar_field(),
-            "nonosc_beta": scalar_field(dtype=complex)
-            if stepper.options.nonoscillatory
-            else null_scalar_field(),
+            "vectmp_c": (
+                vector_field()
+                if stepper.options.non_zero_mu_coeff
+                else null_vector_field()
+            ),
+            "nonosc_xtrm": (
+                scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory
+                else null_scalar_field()
+            ),
+            "nonosc_beta": (
+                scalar_field(dtype=complex)
+                if stepper.options.nonoscillatory
+                else null_scalar_field()
+            ),
         }
         for field in self.__fields.values():
             field.assemble(stepper.traversals)
