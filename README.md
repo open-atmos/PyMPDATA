@@ -167,5 +167,6 @@ licence: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
 - https://github.com/pencil-code/pencil-code
 - https://github.com/AtmosFOAM/AtmosFOAM
 - https://github.com/scale-met/scale
-#### Python/Cython/C 
+#### Python (incl. Cython) 
 - https://github.com/CliMA/pycles
+- https://github.com/pnnl/pinacles
