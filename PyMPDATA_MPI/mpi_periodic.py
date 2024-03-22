@@ -16,13 +16,13 @@ class MPIPeriodic(MPIBoundaryCondition):
     `PyMPDATA.scalar_field.ScalarField` and
     `PyMPDATA.vector_field.VectorField` __init__ methods"""
 
-    def __init__(self, size):
+    def __init__(self, size, mpi_dim):
         # passing size insead of using mpi.size() because lack of support for non-default
         # MPI communicators. https://github.com/numba-mpi/numba-mpi/issues/64
         assert SIGN_RIGHT == -1
         assert SIGN_LEFT == +1
 
-        super().__init__(size=size, base=Periodic)
+        super().__init__(size=size, base=Periodic, mpi_dim=mpi_dim)
 
     # pylint: disable=too-many-arguments
     def make_vector(self, indexers, halo, dtype, jit_flags, dimension_index):
@@ -38,6 +38,7 @@ class MPIPeriodic(MPIBoundaryCondition):
             dimension_index,
             dtype,
             self.make_get_peer(jit_flags, self.worker_pool_size),
+            self.mpi_dim,
         )
 
     @staticmethod

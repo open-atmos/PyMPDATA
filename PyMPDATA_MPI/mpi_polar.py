@@ -7,7 +7,6 @@ import numba_mpi as mpi
 from PyMPDATA.boundary_conditions import Polar
 from PyMPDATA.impl.enumerations import INNER, OUTER
 
-from PyMPDATA_MPI.domain_decomposition import MPI_DIM
 from PyMPDATA_MPI.impl import MPIBoundaryCondition
 
 
@@ -16,8 +15,8 @@ class MPIPolar(MPIBoundaryCondition):
     `PyMPDATA.scalar_field.ScalarField` and
     `PyMPDATA.vector_field.VectorField` __init__ methods"""
 
-    def __init__(self, mpi_grid, grid):
-        self.worker_pool_size = grid[MPI_DIM] // mpi_grid[MPI_DIM]
+    def __init__(self, mpi_grid, grid, mpi_dim):
+        self.worker_pool_size = grid[mpi_dim] // mpi_grid[mpi_dim]
         self.__mpi_size_one = self.worker_pool_size == 1
 
         if not self.__mpi_size_one:
@@ -31,6 +30,7 @@ class MPIPolar(MPIBoundaryCondition):
                 if self.__mpi_size_one
                 else None
             ),
+            mpi_dim=mpi_dim,
         )
 
     @staticmethod

@@ -87,7 +87,15 @@ class SphericalScenario(_Scenario):
     """
 
     def __init__(  # pylint: disable=too-many-arguments
-        self, *, mpdata_options, n_threads, grid, rank, size, courant_field_multiplier
+        self,
+        *,
+        mpi_dim,
+        mpdata_options,
+        n_threads,
+        grid,
+        rank,
+        size,
+        courant_field_multiplier,
     ):
         # pylint: disable=too-many-locals,invalid-name
         self.settings = WilliamsonAndRasch89Settings(
@@ -96,7 +104,7 @@ class SphericalScenario(_Scenario):
             output_steps=range(0, 5120 // 3, 100),  # original: 5120
         )
 
-        xi, _ = mpi_indices(grid, rank, size)
+        xi, _ = mpi_indices(grid=grid, rank=rank, size=size, mpi_dim=mpi_dim)
         mpi_nlon, mpi_nlat = xi.shape
 
         assert size == 1 or mpi_nlon < self.settings.nlon
@@ -105,8 +113,8 @@ class SphericalScenario(_Scenario):
         assert x0 == xi[0, 0]
 
         boundary_conditions = (
-            MPIPeriodic(size=size),
-            MPIPolar(mpi_grid=(mpi_nlon, mpi_nlat), grid=grid),
+            MPIPeriodic(size=size, mpi_dim=mpi_dim),
+            MPIPolar(mpi_grid=(mpi_nlon, mpi_nlat), grid=grid, mpi_dim=mpi_dim),
         )
 
         advector_x = courant_field_multiplier[0] * np.array(
@@ -179,7 +187,11 @@ class SphericalScenario(_Scenario):
             * 2,  # for complex dtype
         )
         super().__init__(
-            stepper=stepper, advectee=advectee, advector=advector, g_factor=g_factor
+            mpi_dim=mpi_dim,
+            stepper=stepper,
+            advectee=advectee,
+            advector=advector,
+            g_factor=g_factor,
         )
 
     def quick_look(self, state):

@@ -58,8 +58,10 @@ Note that the spherical animations below depict simulations without MPDATA corre
 In the cartesian example below (based on a test case from [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379)),
   a constant advector field $u$ is used (and $G=1$).
 MPI (Message Passing Interface) is used 
-  for handling data transfers and synchronisation in the outer dimension,
-  while multi-threading (using, e.g., OpenMP via Numba) is used in the inner dimension.
+  for handling data transfers and synchronisation with the domain decomposition
+  across MPI workers done in either inner or in the outer dimension (user setting).
+Multi-threading (using, e.g., OpenMP via Numba) is used for shared-memory parallelisation 
+  within subdomains with further subdomain split across the inner dimension (PyMPDATA logic).
 In this example, two corrective MPDATA iterations are employed.
 
 ### 1 worker
@@ -78,14 +80,6 @@ In this example, two corrective MPDATA iterations are employed.
   <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_3_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="32%" />
   <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_3_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="32%" />
   <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_3_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="32%" />
-</p>
-
-### 4 workers
-<p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_1_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_2_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_3_size_4_c_field_.0.5.0.25.-CartesianScenario-anim.gif" width="24%" />
 </p>
 
 ## Package architecture
@@ -143,7 +137,7 @@ licence: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
 
 - MPI support for PyMPDATA implemented externally (i.e., not incurring any overhead or additional dependencies for PyMPDATA users)
 - MPI calls within Numba njitted code (hence not using `mpi4py`, but leveraging `numba-mpi`)
-- hybrid threading (internal in PyMPDATA, in the inner dimension) + MPI (outer dimension) parallelisation
+- hybrid domain decomposition parallelisation: threading (internal in PyMPDATA, in the inner dimension) + MPI (either inner or outer dimension)
 - portability across major OSes (currently Linux & macOS; no Windows support due [challenges in getting HDF5/MPI-IO to work there](https://docs.h5py.org/en/stable/build.html#source-installation-on-windows))
 - full test coverage including CI builds asserting on same results with multi-node vs. single-node computations
 - Continuous Integration with different OSes and different MPI implementation

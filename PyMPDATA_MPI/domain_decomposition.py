@@ -1,16 +1,17 @@
-# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring,invalid-name
+""" MPI-aware domain decomposition utilities """
 
 import numpy as np
 from PyMPDATA.impl.domain_decomposition import make_subdomain
-from PyMPDATA.impl.enumerations import OUTER
-
-MPI_DIM = OUTER
 
 subdomain = make_subdomain(jit_flags={})
 
 
-def mpi_indices(grid, rank, size):
-    start, stop = subdomain(grid[MPI_DIM], rank, size)
-    xi, yi = np.indices((stop - start, grid[MPI_DIM - 1]), dtype=float)
-    xi += start
-    return xi, yi
+def mpi_indices(*, grid, rank, size, mpi_dim):
+    """returns a mapping from rank-local indices to domain-wide indices,
+    (subdomain-aware equivalent of np.indices)"""
+    start, stop = subdomain(grid[mpi_dim], rank, size)
+    indices_arg = list(grid)
+    indices_arg[mpi_dim] = stop - start
+    xyi = np.indices(tuple(indices_arg), dtype=float)
+    xyi[mpi_dim] += start
+    return xyi
