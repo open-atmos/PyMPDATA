@@ -27,7 +27,7 @@ OPTIONS_KWARGS = (
 
 COURANT_FIELD_MULTIPLIER = ((0.5, 0.25), (-0.5, 0.25), (0.5, -0.25), (-0.5, -0.25))
 
-CARTESIAN_OUTPUT_STEPS = range(0, 2, 1)
+CARTESIAN_OUTPUT_STEPS = range(0, 24, 2)
 
 SPHERICAL_OUTPUT_STEPS = range(0, 2000, 100)
 
@@ -127,7 +127,8 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
                 Path(os.environ["CI_PLOTS_PATH"])
                 / Path(scenario_class.__name__)
                 / Path(
-                    f"{options_str}_rank_{mpi.rank()}_size_{truncated_size}_c_field_{courant_str}"
+                    f"{options_str}_rank_{mpi.rank()}_size_{truncated_size}"
+                    f"_c_field_{courant_str}_mpi_dim_{mpi_dim}"
                 )
             )
             shutil.rmtree(plot_path, ignore_errors=True)
@@ -161,9 +162,15 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
                 if plot:
                     tmp = np.empty_like(dataset[:, :, -1])
                     for i, _ in enumerate(output_steps):
+                        ranges = [slice(None)] * len(grid)
+                        ranges[mpi_dim] = mpi_range
+
                         tmp[:] = np.nan
-                        tmp[:, mpi_range] = dataset[:, mpi_range, i]
+                        tmp[tuple(ranges)] = dataset[
+                            tuple([*ranges, slice(i, i + 1)])
+                        ].squeeze()
                         simulation.quick_look(tmp)
+
                         filename = f"step={i:04d}.svg"
                         pyplot.savefig(plot_path / filename)
                         print("Saving figure")
