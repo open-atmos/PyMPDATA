@@ -141,8 +141,11 @@ click TESTS "https://pypi.org/p/PyMPDATA-MPI"
 Rectangular boxes indicate pip-installable Python packages (click to go to pypi.org package site).
 ## Credits:
 
-Development of PyMPDATA-MPI has been supported by the [Poland's National Science Centre](https://www.ncn.gov.pl/?language=en)  
+Development of PyMPDATA-MPI has been supported by the [Poland's National Science Centre](https://www.ncn.gov.pl/?language=en) 
 (grant no. 2020/39/D/ST10/01220).
+
+We acknowledge Poland’s high-performance computing infrastructure [PLGrid](https://plgrid.pl/) (HPC Centers: [ACK Cyfronet AGH](https://www.cyfronet.pl/en/)) 
+for providing computer facilities and support within computational grant no. PLG/2023/016369
 
 copyright: [Jagiellonian University](https://en.uj.edu.pl/en) & [AGH University of Krakow](https://agh.edu.pl/en)   
 licence: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
