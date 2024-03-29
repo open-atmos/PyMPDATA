@@ -194,7 +194,7 @@ class SphericalScenario(_Scenario):
             g_factor=g_factor,
         )
 
-    def quick_look(self, state):
+    def quick_look(self, state, _):
         """plots the passed advectee field in spherical geometry"""
         # pylint: disable=invalid-name
         theta = np.linspace(0, 1, self.settings.nlat + 1, endpoint=True) * np.pi

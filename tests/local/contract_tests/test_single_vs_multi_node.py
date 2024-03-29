@@ -82,7 +82,7 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
     if n_threads > 1 and numba.config.DISABLE_JIT:  # pylint: disable=no-member
         pytest.skip("threading requires Numba JIT to be enabled")
 
-    plot = True and (
+    plot = (
         "CI_PLOTS_PATH" in os.environ
         and courant_field_multiplier == COURANT_FIELD_MULTIPLIER[0]
         and (
@@ -127,8 +127,12 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
                 Path(os.environ["CI_PLOTS_PATH"])
                 / Path(scenario_class.__name__)
                 / Path(
-                    f"{options_str}_rank_{mpi.rank()}_size_{truncated_size}"
-                    f"_c_field_{courant_str}_mpi_dim_{mpi_dim}"
+                    f"{options_str}"
+                    f"_rank_{mpi.rank()}"
+                    f"_size_{truncated_size}"
+                    f"_c_field_{courant_str}"
+                    f"_mpi_dim_{mpi_dim}"
+                    f"_n_threads={n_threads}"
                 )
             )
             shutil.rmtree(plot_path, ignore_errors=True)
@@ -169,11 +173,11 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
                         tmp[tuple(ranges)] = dataset[
                             tuple([*ranges, slice(i, i + 1)])
                         ].squeeze()
-                        simulation.quick_look(tmp)
+                        simulation.quick_look(tmp, n_threads)
 
                         filename = f"step={i:04d}.svg"
                         pyplot.savefig(plot_path / filename)
-                        print("Saving figure")
+                        print(f"Saving figure {plot_path=} {filename=}")
                         pyplot.close()
 
     # assert
