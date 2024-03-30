@@ -132,7 +132,7 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
                     f"_size_{truncated_size}"
                     f"_c_field_{courant_str}"
                     f"_mpi_dim_{mpi_dim}"
-                    f"_n_threads={n_threads}"
+                    f"_n_threads_{n_threads}"
                 )
             )
             shutil.rmtree(plot_path, ignore_errors=True)
