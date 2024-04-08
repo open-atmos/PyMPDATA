@@ -4,7 +4,7 @@ py-modules = []
 [tool.setuptools_scm]
 
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ['setuptools==69.1.0', 'setuptools-scm==7.1.0']
 build-backend = "setuptools.build_meta"
 
 [project]

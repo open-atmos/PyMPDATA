@@ -85,8 +85,72 @@ jobs:
         run: |
           pylint --unsafe-load-any-extension=y --disable=fixme $(git ls-files '*.py')
 
+  tests_setup:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+        mpi: [ 'mpich', 'openmpi', 'intelmpi']
+        python-version: ["3.10"]
+        exclude:
+          # as of time of writing, mpi4py/setup-mpi does not support it
+          - platform: macos-latest
+            mpi: intelmpi
+
+          # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
+          - platform: ubuntu-latest
+            mpi: intelmpi
+
+          # https://github.com/Homebrew/homebrew-core/issues/26974
+          - platform: macos-latest
+            mpi: mpich
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v1
+          with:
+            python-version: ${{ matrix.python-version }}
+        - run: |
+            echo pip_user_site=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))") >> $GITHUB_ENV
+            echo toml_ci_md5=$(cat pyproject.toml .github/workflows/tests+pypi.yml \
+            | python -c "import hashlib;print(hashlib.md5(open('/dev/stdin','rb').read()).hexdigest())") >> $GITHUB_ENV
+        - id: cache
+          uses: actions/cache@v4
+          with:
+            path: ${{ env.pip_user_site }}
+            key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
+
+        - if: steps.cache.outputs.cache-hit != 'true'
+          uses: mpi4py/setup-mpi@v1
+          with:
+            mpi: ${{ matrix.mpi }}
+        - if: steps.cache.outputs.cache-hit != 'true' && matrix.mpi == 'mpich'
+          run: echo _ch="ch" >> $GITHUB_ENV
+        - if: steps.cache.outputs.cache-hit != 'true' &&  startsWith(matrix.platform, 'ubuntu-')
+          run: |
+            sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
+            lscpu
+        - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
+          run: |
+            echo HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/mpich >> $GITHUB_ENV
+            echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
+        - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'macos-')
+          run: | 
+            brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+            sysctl -a | grep cpu | grep hw
+        - if: steps.cache.outputs.cache-hit != 'true'
+          run: |
+            HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.10.0
+            pip install -e .[tests]
+        - run: pip show numpy
+        - id: cache-save
+          uses: actions/cache/save@v4
+          with:
+            path: ${{ env.pip_user_site }}
+            key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
+
   tests:
-    needs: [zenodo_json, pylint, pdoc, precommit]
+    needs: [zenodo_json, pylint, pdoc, precommit, tests_setup]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest]
@@ -108,6 +172,7 @@ jobs:
             mpi: mpich
 
       fail-fast: false
+
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 60
     steps:
@@ -115,25 +180,24 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
+      - run: |
+          echo pip_user_site=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))") >> $GITHUB_ENV
+          echo toml_ci_md5=$(cat pyproject.toml .github/workflows/tests+pypi.yml \
+          | python -c "import hashlib;print(hashlib.md5(open('/dev/stdin','rb').read()).hexdigest())") >> $GITHUB_ENV
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
+      - id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.pip_user_site }}
+          key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
       - if: matrix.mpi == 'mpich'
         run: echo _ch="ch" >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'ubuntu-')
-        run: |
-          sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
-          lscpu
-      - if: startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
-        run: |
-          echo HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/mpich >> $GITHUB_ENV
-          echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
+        run: sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
       - if: startsWith(matrix.platform, 'macos-')
-        run: | 
-          brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
-          sysctl -a | grep cpu | grep hw
-      - run: HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.10.0
-      - run: pip install -e .[tests]
+        run: brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
       - run: python -We -c "import PyMPDATA_MPI"
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
@@ -150,13 +214,13 @@ jobs:
             export COV_ARGS="--cov=./ --cov-report=xml"
             pip install pytest-cov
           fi
-          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} pytest $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests/local;
+          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests/local;
       - uses: actions/upload-artifact@v2
         with:
           name: plots
           path: plots
       - if: env.CODECOV_RUN == '1'
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with: 
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
