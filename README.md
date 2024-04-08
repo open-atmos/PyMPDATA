@@ -142,7 +142,10 @@ click D "https://pypi.org/p/PyMPDATA-MPI"
 click TESTS "https://pypi.org/p/PyMPDATA-MPI"
 ```
 Rectangular boxes indicate pip-installable Python packages (click to go to pypi.org package site).
-## Credits:
+
+## Credits & acknowledgments:
+
+PyMPDATA-MPI started as an [MSc project of Kacper Derlatka](https://www.ap.uj.edu.pl/diplomas/166883) ([@Delcior](https://github.com/Delcior)) mentored by [@slayoo](https://github.com/slayoo).
 
 Development of PyMPDATA-MPI has been supported by the [Poland's National Science Centre](https://www.ncn.gov.pl/?language=en) 
 (grant no. 2020/39/D/ST10/01220).
