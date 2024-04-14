@@ -25,7 +25,7 @@ setup(
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "numba" + ("==0.58.1" if CI and not _32bit else ""),
+        "numba" + ("==0.59.1" if CI and not _32bit else ""),
         "numpy" + ("==1.24.4" if CI else ""),
         "pystrict",
     ],
