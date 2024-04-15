@@ -138,12 +138,12 @@ jobs:
         run: |
           sudo ln -s `which python3` /usr/local/bin/python
           echo "PIP_INSTALL_ARGS=--break-system-packages" >> $GITHUB_ENV
+          type python
       - run: |
-          python -m pip install $PIP_INSTALL_ARGS -e .
-      - run: |
+          python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
           python -We -c "import PyMPDATA"
-      - run: |
           python -m pip install $PIP_INSTALL_ARGS -e .[tests] ./examples
+
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
