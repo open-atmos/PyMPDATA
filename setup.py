@@ -19,12 +19,6 @@ def get_long_description():
 CI = "CI" in os.environ
 _32bit = platform.architecture()[0] == "32bit"
 
-scipy_ci_req_by_py_ver = {
-    8: "1.10.1",
-    11: "1.10.1",
-    12: "1.13.1",
-}
-
 setup(
     name="PyMPDATA",
     description="Numba-accelerated Pythonic implementation of MPDATA "
@@ -44,6 +38,8 @@ setup(
             + (
                 {
                     8: "==1.10.1",
+                    9: "==1.10.1",
+                    10: "==1.10.1",
                     11: "==1.10.1",
                     12: "==1.13.0",
                 }[sys.version_info.minor]
