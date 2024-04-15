@@ -4,6 +4,7 @@ the magick behind ``pip install ...``
 
 import os
 import platform
+import sys
 
 from setuptools import find_packages, setup
 
@@ -17,6 +18,12 @@ def get_long_description():
 
 CI = "CI" in os.environ
 _32bit = platform.architecture()[0] == "32bit"
+
+scipy_ci_req_by_py_ver = {
+    8: "1.10.1",
+    11: "1.10.1",
+    12: "1.13.1",
+}
 
 setup(
     name="PyMPDATA",
@@ -33,7 +40,16 @@ setup(
         "tests": [
             "PyMPDATA-examples",
             "matplotlib" + (">=3.2.2" if CI else ""),
-            "scipy" + (">=1.10.1" if CI and not _32bit else ""),
+            "scipy"
+            + (
+                {
+                    8: "==1.10.1",
+                    11: "==1.10.1",
+                    12: "==1.13.0",
+                }[sys.version_info.minor]
+                if CI and not _32bit
+                else ""
+            ),
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
             "ghapi",
