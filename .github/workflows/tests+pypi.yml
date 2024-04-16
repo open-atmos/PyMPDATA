@@ -183,6 +183,8 @@ jobs:
         run: |
           sudo ln -s `which python3` /usr/local/bin/python
           echo "PIP_INSTALL_ARGS=--break-system-packages" >> $GITHUB_ENV
+          type python
+          python -m pip install setuptools
 
       - run: python -m pip install $PIP_INSTALL_ARGS -e .[tests] ./examples
       - run: python -m pip install $PIP_INSTALL_ARGS -r tests/devops_tests/requirements.txt
