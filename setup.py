@@ -24,7 +24,7 @@ setup(
     description="Numba-accelerated Pythonic implementation of MPDATA "
     "with examples in Python, Julia and Matlab",
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
-    setup_requires=["setuptools_scm"],
+    setup_requires=["setuptools", "setuptools_scm"],
     install_requires=[
         "numba"
         + (
