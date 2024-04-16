@@ -121,7 +121,18 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
-        python-version: ["3.8", "3.11"]
+        python-version: ["3.8", "3.11", "system"]
+        exclude:
+          - platform: ubuntu-latest
+            python-version: system
+          - platform: macos-12
+            python-version: system
+          - platform: windows-latest
+            python-version: system
+          - platform: macos-14
+            python-version: "3.8"
+          - platform: macos-14
+            python-version: "3.11"
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -167,6 +178,17 @@ jobs:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
         python-version: ["3.8", "3.11"]
+        exclude:
+          - platform: ubuntu-latest
+            python-version: system
+          - platform: macos-12
+            python-version: system
+          - platform: windows-latest
+            python-version: system
+          - platform: macos-14
+            python-version: "3.8"
+          - platform: macos-14
+            python-version: "3.11"
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
