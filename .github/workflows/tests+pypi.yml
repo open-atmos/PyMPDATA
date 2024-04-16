@@ -139,6 +139,7 @@ jobs:
           sudo ln -s `which python3` /usr/local/bin/python
           echo "PIP_INSTALL_ARGS=--break-system-packages" >> $GITHUB_ENV
           type python
+          python -m pip install setuptools
       - run: |
           python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
           python -We -c "import PyMPDATA"
