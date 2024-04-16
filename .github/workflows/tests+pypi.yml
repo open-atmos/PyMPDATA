@@ -48,6 +48,7 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
         verbose: true
 
@@ -120,7 +121,18 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
-        python-version: ["3.8", "3.11"]
+        python-version: ["3.8", "3.11", "system"]
+        exclude:
+          - platform: ubuntu-latest
+            python-version: system
+          - platform: macos-12
+            python-version: system
+          - platform: windows-latest
+            python-version: system
+          - platform: macos-14
+            python-version: "3.8"
+          - platform: macos-14
+            python-version: "3.11"
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -134,14 +146,17 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - if: matrix.platform == 'macos-14'
-        run: sudo ln -s `which python3` /usr/local/bin/python
-        
+        run: |
+          sudo ln -s `which python3` /usr/local/bin/python
+          echo "PIP_INSTALL_ARGS=--break-system-packages" >> $GITHUB_ENV
+
+          # Python 3.12 workaround  
+          python -m pip install --break-system-packages setuptools
       - run: |
-          python -m pip install -e .
-      - run: |
+          python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
           python -We -c "import PyMPDATA"
-      - run: |
-          python -m pip install -e .[tests] ./examples
+          python -m pip install $PIP_INSTALL_ARGS -e .[tests] ./examples
+
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
@@ -163,6 +178,17 @@ jobs:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
         python-version: ["3.8", "3.11"]
+        exclude:
+          - platform: ubuntu-latest
+            python-version: system
+          - platform: macos-12
+            python-version: system
+          - platform: windows-latest
+            python-version: system
+          - platform: macos-14
+            python-version: "3.8"
+          - platform: macos-14
+            python-version: "3.11"
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -177,10 +203,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - if: matrix.platform == 'macos-14'
-        run: sudo ln -s `which python3` /usr/local/bin/python
-        
-      - run: python -m pip install -e .[tests] ./examples
-      - run: python -m pip install -r tests/devops_tests/requirements.txt
+        run: |
+          sudo ln -s `which python3` /usr/local/bin/python
+          echo "PIP_INSTALL_ARGS=--break-system-packages" >> $GITHUB_ENV
+          
+          # Python 3.12 workaround
+          python -m pip install --break-system-packages setuptools
+
+      - run: python -m pip install $PIP_INSTALL_ARGS -e .[tests] ./examples
+      - run: python -m pip install $PIP_INSTALL_ARGS -r tests/devops_tests/requirements.txt
       - if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get install libblitz0-dev libboost-thread-dev libboost-date-time-dev libboost-system-dev libboost-iostreams-dev libboost-timer-dev libboost-filesystem-dev

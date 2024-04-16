@@ -30,7 +30,7 @@ setup(
         "pystrict",
         "matplotlib",
         "ipywidgets" + "<8.0.3" if CI else "",
-        "scipy" + ("==1.10.1" if CI else ""),
+        "scipy",
         "pint",
         "joblib",
         "sympy",

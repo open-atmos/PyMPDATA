@@ -4,6 +4,7 @@ the magick behind ``pip install ...``
 
 import os
 import platform
+import sys
 
 from setuptools import find_packages, setup
 
@@ -25,7 +26,18 @@ setup(
     use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "numba" + ("==0.58.1" if CI and not _32bit else ""),
+        "numba"
+        + (
+            {
+                8: "==0.58.1",
+                9: "==0.58.1",
+                10: "==0.58.1",
+                11: "==0.58.1",
+                12: "==0.59.1",
+            }[sys.version_info.minor]
+            if CI and not _32bit
+            else ""
+        ),
         "numpy" + ("==1.24.4" if CI else ""),
         "pystrict",
     ],
@@ -33,13 +45,24 @@ setup(
         "tests": [
             "PyMPDATA-examples",
             "matplotlib" + (">=3.2.2" if CI else ""),
-            "scipy" + ("==1.10.1" if CI and not _32bit else ""),
+            "scipy"
+            + (
+                {
+                    8: "==1.10.1",
+                    9: "==1.10.1",
+                    10: "==1.10.1",
+                    11: "==1.10.1",
+                    12: "==1.13.0",
+                }[sys.version_info.minor]
+                if CI and not _32bit
+                else ""
+            ),
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
             "ghapi",
             "pytest",
             "pytest-benchmark",
-            "joblib" + ("==1.3.2" if CI else ""),
+            "joblib" + ("==1.4.0" if CI else ""),
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
