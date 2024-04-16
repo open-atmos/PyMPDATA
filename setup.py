@@ -62,7 +62,7 @@ setup(
             "ghapi",
             "pytest",
             "pytest-benchmark",
-            "joblib" + ("==1.3.2" if CI else ""),
+            "joblib" + ("==1.4.0" if CI else ""),
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
