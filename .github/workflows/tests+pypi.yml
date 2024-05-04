@@ -88,12 +88,12 @@ jobs:
   tests_setup:
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest]
+        platform: [ubuntu-latest, macos-12]
         mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
         exclude:
           # as of time of writing, mpi4py/setup-mpi does not support it
-          - platform: macos-latest
+          - platform: macos-12
             mpi: intelmpi
 
           # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
@@ -101,7 +101,7 @@ jobs:
             mpi: intelmpi
 
           # https://github.com/Homebrew/homebrew-core/issues/26974
-          - platform: macos-latest
+          - platform: macos-12
             mpi: mpich
 
     runs-on: ${{ matrix.platform }}
@@ -154,14 +154,14 @@ jobs:
     needs: [zenodo_json, pylint, pdoc, precommit, tests_setup]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest]
+        platform: [ubuntu-latest, macos-12]
         mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
         disable-jit: [1, 0]
         mpi-np: [1, 2, 3]
         exclude:
           # as of time of writing, mpi4py/setup-mpi does not support it
-          - platform: macos-latest
+          - platform: macos-12
             mpi: intelmpi
 
           # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
@@ -169,7 +169,7 @@ jobs:
             mpi: intelmpi
 
           # https://github.com/Homebrew/homebrew-core/issues/26974
-          - platform: macos-latest
+          - platform: macos-12
             mpi: mpich
 
       fail-fast: false
@@ -215,7 +215,7 @@ jobs:
             export COV_ARGS="--cov=PyMPDATA-MPI --cov=examples --cov=scenarios --cov-report=xml"
             pip install pytest-cov
           fi
-          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests/local;
+          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests/local;
       - uses: actions/upload-artifact@v2
         with:
           name: plots
