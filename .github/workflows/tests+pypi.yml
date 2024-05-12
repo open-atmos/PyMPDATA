@@ -42,7 +42,7 @@ jobs:
         python-version: 3.9
     - name: Generate coverage report
       run: |
-        pip install -e .[tests] ./examples
+        pip install -e .[tests] -e ./examples
         pip install pytest-cov
         pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
     - name: Upload coverage to Codecov
@@ -68,7 +68,7 @@ jobs:
         python -m pip install --upgrade pip
         # TODO #411 https://github.com/pylint-dev/pylint/issues/9099
         pip install "pylint<3.0.0" nbqa pdoc3 # (pdoc3 for checking the .github/workflows/pdoc_index_workaround.py)
-        pip install -e .[tests] ./examples[tests]
+        pip install -e .[tests] -e ./examples[tests]
     - run: |
         pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
     - run: |
@@ -96,7 +96,7 @@ jobs:
           JUPYTER_PLATFORM_DIRS: 1
         run: |
           pip3 install pdoc3
-          pip install -e . ./examples
+          pip install -e . -e ./examples
           python -We -m pdoc --html PyMPDATA examples/PyMPDATA_examples
           python -We .github/workflows/pdoc_index_workaround.py
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
@@ -240,7 +240,7 @@ jobs:
           submodules: recursive
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
       - run: pip install -r tests/devops_tests/requirements.txt
-      - run: pip install -e . ./examples
+      - run: pip install -e . -e ./examples
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
