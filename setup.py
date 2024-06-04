@@ -44,7 +44,7 @@ setup(
     extras_require={
         "tests": [
             "PyMPDATA-examples",
-            "matplotlib" + (">=3.2.2" if CI else ""),
+            "matplotlib" + ("==3.2.2" if CI else ""),
             "scipy"
             + (
                 {
