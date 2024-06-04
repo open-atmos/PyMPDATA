@@ -202,6 +202,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - uses: julia-actions/setup-julia@v2
+
       - if: matrix.platform == 'macos-14'
         run: |
           sudo ln -s `which python3` /usr/local/bin/python
