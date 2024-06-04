@@ -117,7 +117,7 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
     ax = pylab.subplot(projection=&#34;3d&#34;)
     ax.view_init(75, 85)
 
-    cmap = matplotlib.cm.get_cmap(&#34;gray_r&#34;)
+    cmap = matplotlib.colormaps[&#34;gray_r&#34;]
     min_height = 0
 
     dz = np.rot90(psi, 2).flatten()
@@ -265,7 +265,7 @@ def plot_3d(psi, settings, options, r_min, r_max, max_height):
     ax = pylab.subplot(projection=&#34;3d&#34;)
     ax.view_init(75, 85)
 
-    cmap = matplotlib.cm.get_cmap(&#34;gray_r&#34;)
+    cmap = matplotlib.colormaps[&#34;gray_r&#34;]
     min_height = 0
 
     dz = np.rot90(psi, 2).flatten()
