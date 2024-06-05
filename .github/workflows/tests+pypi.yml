@@ -203,6 +203,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - uses: julia-actions/setup-julia@v2
+      - run: julia -e 'using Pkg; Pkg.add("Trixi.jl")'
 
       - if: matrix.platform == 'macos-14'
         run: |
