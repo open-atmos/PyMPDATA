@@ -182,7 +182,7 @@ in which:
 - vector field components are discretised onto cell walls.
 
 The schematic of the employed grid/domain layout in two dimensions is given below
-(with the Python code snippet generating the figure):
+(with the Python code snippet generating the figure as a part of CI workflow):
 <details>
 <summary>Python code (click to expand)</summary>
 
