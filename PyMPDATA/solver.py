@@ -39,7 +39,8 @@ class Solver:
     """Solution orchestrator requiring prior instantiation of: a `Stepper`,
     a scalar advectee field (that is acted upon by the advector),
     a vector advector field (that acts upon the advectee),
-    and optionally a scalar g_factor field (used in some cases of the advection equation)."""
+    and optionally a scalar g_factor field (used in some cases of the advection equation).
+    """
 
     def __init__(
         self,
