@@ -20,7 +20,8 @@ from PyMPDATA.scalar_field import ScalarField
 
 
 class VectorField(Field):
-    """n-component n-dimensional vector field including halo data, used to represent the advector field"""
+    """n-component n-dimensional vector field including halo data,
+    used to represent the advector field"""
 
     def __init__(self, data: tuple, halo: int, boundary_conditions: tuple):
         super().__init__(

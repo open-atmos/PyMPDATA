@@ -109,9 +109,11 @@ class Solver:
     @property
     def g_factor(self) -> ScalarField:
         """G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.
-        Can be used i.e. to transform the geometry of the advector and advectee into eg a spherical one,
+        Can be used i.e. to transform the geometry of the advector
+        and advectee into eg a spherical one,
         or to account for the grid spacing in the advection equation,
-        or to account for certain physical properties of the advection equation eg. the changing density of a fluid."""
+        or to account for certain physical properties of the advection equation
+        eg. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
     def advance(
