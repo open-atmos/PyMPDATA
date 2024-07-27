@@ -36,9 +36,10 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
 
 
 class Solver:
-    """solution orchestrator requireing prior instantiation of: a `Stepper`,
-    a scalar advectee field, a vector advector field and optionally
-    a scala g_factor field"""
+    """Solution orchestrator requiring prior instantiation of: a `Stepper`,
+    a scalar advectee field (that is acted upon by the advector),
+    a vector advector field (that acts upon the advectee),
+    and optionally a scalar g_factor field (used in some cases of the advection equation)."""
 
     def __init__(
         self,
@@ -107,8 +108,10 @@ class Solver:
 
     @property
     def g_factor(self) -> ScalarField:
-        """g_factor field (with halo), unmodified by advance(),
-        assumed to be constant-in-time"""
+        """G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.
+        Can be used i.e. to transform the geometry of the advector and advectee into eg a spherical one,
+        or to account for the grid spacing in the advection equation,
+        or to account for certain physical properties of the advection equation eg. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
     def advance(
