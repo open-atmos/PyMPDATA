@@ -113,7 +113,7 @@ class Solver:
         and advectee into eg a spherical one,
         or to account for the grid spacing in the advection equation,
         or to account for certain physical properties of the advection equation
-        eg. the changing density of a fluid."""
+        e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
     def advance(
