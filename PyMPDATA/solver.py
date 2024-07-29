@@ -37,9 +37,13 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
 
 class Solver:
     """Solution orchestrator requiring prior instantiation of: a `Stepper`,
-    a scalar advectee field (that is acted upon by the advector),
-    a vector advector field (that acts upon the advectee),
+    a scalar advectee field (that which is advected),
+    a vector advector field (that which advects),
     and optionally a scalar g_factor field (used in some cases of the advection equation).
+    Note: in some cases of advection, i.e. momentum advection,
+    the advectee can act upon the advector.
+    See [Dave Randall's AT604 notes]
+    (https://hogback.atmos.colostate.edu/group/dave/at604pdf/AT604_LaTeX_Book.pdf)
     """
 
     def __init__(
@@ -112,7 +116,6 @@ class Solver:
         """G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.
         Can be used i.e. to transform the geometry of the advector
         and advectee into eg a spherical one,
-        or to account for the grid spacing in the advection equation,
         or to account for certain physical properties of the advection equation
         e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]

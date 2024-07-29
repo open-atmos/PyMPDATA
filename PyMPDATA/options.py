@@ -73,9 +73,11 @@ class Options:
 
     @property
     def n_iters(self) -> int:
-        """Number of iterations in the MPDATA algorithm
-        (1: upwind, 2: upwind + one corrective iteration, ...).
-        Bigger values mean more accurate results, but also more computational cost.
+        """Number of corrective iterations in the MPDATA algorithm + 1
+        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).
+        Bigger values mean smaller error, but more computational cost.
+        It does not change the order of the method - to change the order,
+        use the 'third_order_terms' option.
         Note: not to confuse with n_steps in the Stepper."""
         return self._values["n_iters"]
 
@@ -146,7 +148,7 @@ class Options:
     @property
     def n_halo(self) -> int:
         """Halo extent for a given options set.
-        The halo extent is the number of 'ghost' cells that need to be added
+        The halo extent is the number of 'ghost layers' that need to be added
         to the outside of the domain to ensure that the solution is computed correctly.
         It is similar to padding in convolutional neural networks.
         The halo extent is determined by the options set."""
