@@ -114,9 +114,11 @@ class Solver:
     @property
     def g_factor(self) -> ScalarField:
         """G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.
-        Can be used i.e. to transform the geometry of the advector
-        and advectee into eg a spherical one,
-        or to account for certain physical properties of the advection equation
+        Can be used as a Jacobian for coordinate transformations,
+        e.g. into spherical coordinates.
+        For this type of usage, see
+        [Williamson & Rasch 1989 in PyMPDATA](https://github.com/open-atmos/PyMPDATA/blob/main/examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/demo_over_the_pole.ipynb).
+        Can also be used to account for certain physical properties of the advection equation
         e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
