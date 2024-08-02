@@ -97,6 +97,7 @@ jobs:
         run: |
           pip3 install pdoc
           pip install -e . -e ./examples
+          export PDOC_ALLOW_EXEC=1
           python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
         uses: JamesIves/github-pages-deploy-action@4.1.1
