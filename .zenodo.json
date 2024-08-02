@@ -3,7 +3,7 @@
   "description": "Numba-accelerated Pythonic implementation of MPDATA with examples in Python, Julia and Matlab",
   "creators": [
     {
-      "affiliation": "Jagiellonian University, Kraków, Poland",
+      "affiliation": "AGH University of Krakow, Kraków, Poland",
       "name": "Arabas, Sylwester",
       "orcid": "0000-0003-2361-0082"
     },
@@ -32,6 +32,10 @@
       "affiliation": "Jagiellonian University, Kraków, Poland",
       "name": "Olesik, Michael",
       "orcid": "0000-0002-6319-9358"
+    },
+    {
+      "affiliation": "AGH University of Krakow, Poland",
+      "name": "Magnuszewski, Paweł",
     },
     {
       "affiliation": "Jagiellonian University, Kraków, Poland",
