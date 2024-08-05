@@ -150,7 +150,8 @@ class Options:
         """Halo extent for a given options set.
         The halo extent is the number of 'ghost layers' that need to be added
         to the outside of the domain to ensure that the solution is computed correctly.
-        It is similar to padding in convolutional neural networks.
+        It is similar to
+        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).
         The halo extent is determined by the options set."""
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
