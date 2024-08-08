@@ -42,8 +42,7 @@ class Solver:
     and optionally a scalar g_factor field (used in some cases of the advection equation).
     Note: in some cases of advection, i.e. momentum advection,
     the advectee can act upon the advector.
-    See [Dave Randall's AT604 notes]
-    (https://hogback.atmos.colostate.edu/group/dave/at604pdf/AT604_LaTeX_Book.pdf)
+    See `PyMPDATA_examples.Jarecka_et_al_2015` for an example of this.
     """
 
     def __init__(
@@ -117,7 +116,7 @@ class Solver:
         Can be used as a Jacobian for coordinate transformations,
         e.g. into spherical coordinates.
         For this type of usage, see
-        Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14 in PyMPDATA-examples.
+        `PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14`.
         Can also be used to account for certain physical properties of the advection equation
         e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]
