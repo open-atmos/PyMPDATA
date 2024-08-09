@@ -91,7 +91,7 @@
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="k">class</span> <span class="nc">ScalarField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;n-dimensional scalar field including halo data&quot;&quot;&quot;</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc.&quot;&quot;&quot;</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">halo</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -157,7 +157,7 @@
     </div>
     <a class="headerlink" href="#ScalarField"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="ScalarField-15"><a href="#ScalarField-15"><span class="linenos">15</span></a><span class="k">class</span> <span class="nc">ScalarField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
-</span><span id="ScalarField-16"><a href="#ScalarField-16"><span class="linenos">16</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;n-dimensional scalar field including halo data&quot;&quot;&quot;</span>
+</span><span id="ScalarField-16"><a href="#ScalarField-16"><span class="linenos">16</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc.&quot;&quot;&quot;</span>
 </span><span id="ScalarField-17"><a href="#ScalarField-17"><span class="linenos">17</span></a>
 </span><span id="ScalarField-18"><a href="#ScalarField-18"><span class="linenos">18</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">halo</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
 </span><span id="ScalarField-19"><a href="#ScalarField-19"><span class="linenos">19</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -210,7 +210,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>n-dimensional scalar field including halo data</p>
+            <div class="docstring"><p>n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc.</p>
 </div>
 
 

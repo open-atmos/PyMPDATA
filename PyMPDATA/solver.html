@@ -137,113 +137,124 @@ as well as self-initialised temporary storage</p>
 </span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>
 </span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
 </span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="k">class</span> <span class="nc">Solver</span><span class="p">:</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;solution orchestrator requireing prior instantiation of: a `Stepper`,</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">    a scalar advectee field, a vector advector field and optionally</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">    a scala g_factor field&quot;&quot;&quot;</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>        <span class="n">stepper</span><span class="p">:</span> <span class="n">Stepper</span><span class="p">,</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>        <span class="n">advectee</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">,</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>        <span class="n">advector</span><span class="p">:</span> <span class="n">VectorField</span><span class="p">,</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="n">g_factor</span><span class="p">:</span> <span class="p">[</span><span class="n">ScalarField</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>    <span class="p">):</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>        <span class="k">def</span> <span class="nf">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advectee</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="k">def</span> <span class="nf">null_scalar_field</span><span class="p">():</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advectee</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>        <span class="k">def</span> <span class="nf">vector_field</span><span class="p">():</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advector</span><span class="p">)</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>        <span class="k">def</span> <span class="nf">null_vector_field</span><span class="p">():</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advector</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="n">advector</span><span class="p">,</span> <span class="n">advectee</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>            <span class="p">[</span><span class="n">g_factor</span><span class="p">]</span> <span class="k">if</span> <span class="n">g_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>        <span class="p">):</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">halo</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dtype</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span> <span class="o">==</span> <span class="n">advector</span><span class="o">.</span><span class="n">grid</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>            <span class="s2">&quot;advectee&quot;</span><span class="p">:</span> <span class="n">advectee</span><span class="p">,</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>            <span class="s2">&quot;advector&quot;</span><span class="p">:</span> <span class="n">advector</span><span class="p">,</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>            <span class="s2">&quot;g_factor&quot;</span><span class="p">:</span> <span class="n">g_factor</span> <span class="ow">or</span> <span class="n">null_scalar_field</span><span class="p">(),</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>            <span class="s2">&quot;vectmp_a&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>            <span class="s2">&quot;vectmp_b&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>            <span class="s2">&quot;vectmp_c&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>                <span class="n">vector_field</span><span class="p">()</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>                <span class="k">else</span> <span class="n">null_vector_field</span><span class="p">()</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>            <span class="p">),</span>
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>            <span class="s2">&quot;nonosc_xtrm&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Solution orchestrator requiring prior instantiation of: a `Stepper`,</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">    a scalar advectee field (that which is advected),</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">    a vector advector field (that which advects),</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">    and optionally a scalar g_factor field (used in some cases of the advection equation).</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">    Note: in some cases of advection, i.e. momentum advection,</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">    the advectee can act upon the advector.</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">    See `PyMPDATA_examples.Jarecka_et_al_2015` for an example of this.</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>        <span class="n">stepper</span><span class="p">:</span> <span class="n">Stepper</span><span class="p">,</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>        <span class="n">advectee</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">,</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>        <span class="n">advector</span><span class="p">:</span> <span class="n">VectorField</span><span class="p">,</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="n">g_factor</span><span class="p">:</span> <span class="p">[</span><span class="n">ScalarField</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>    <span class="p">):</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>        <span class="k">def</span> <span class="nf">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advectee</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>        <span class="k">def</span> <span class="nf">null_scalar_field</span><span class="p">():</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advectee</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>        <span class="k">def</span> <span class="nf">vector_field</span><span class="p">():</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advector</span><span class="p">)</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>        <span class="k">def</span> <span class="nf">null_vector_field</span><span class="p">():</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advector</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="n">advector</span><span class="p">,</span> <span class="n">advectee</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>            <span class="p">[</span><span class="n">g_factor</span><span class="p">]</span> <span class="k">if</span> <span class="n">g_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="p">):</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">halo</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dtype</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span> <span class="o">==</span> <span class="n">advector</span><span class="o">.</span><span class="n">grid</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>            <span class="s2">&quot;advectee&quot;</span><span class="p">:</span> <span class="n">advectee</span><span class="p">,</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>            <span class="s2">&quot;advector&quot;</span><span class="p">:</span> <span class="n">advector</span><span class="p">,</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>            <span class="s2">&quot;g_factor&quot;</span><span class="p">:</span> <span class="n">g_factor</span> <span class="ow">or</span> <span class="n">null_scalar_field</span><span class="p">(),</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>            <span class="s2">&quot;vectmp_a&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>            <span class="s2">&quot;vectmp_b&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>            <span class="s2">&quot;vectmp_c&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>                <span class="n">vector_field</span><span class="p">()</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>                <span class="k">else</span> <span class="n">null_vector_field</span><span class="p">()</span>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>            <span class="p">),</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>            <span class="s2">&quot;nonosc_beta&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>            <span class="s2">&quot;nonosc_xtrm&quot;</span><span class="p">:</span> <span class="p">(</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
 </span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
 </span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>            <span class="p">),</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="p">}</span>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>            <span class="n">field</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span> <span class="o">=</span> <span class="n">stepper</span>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>    <span class="nd">@property</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>    <span class="k">def</span> <span class="nf">advectee</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advectee scalar field (with halo), modified by advance(),</span>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">        may be modified from user code (e.g., source-term handling)&quot;&quot;&quot;</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advectee&quot;</span><span class="p">]</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="nd">@property</span>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="k">def</span> <span class="nf">advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorField</span><span class="p">:</span>
-</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advector vector field (with halo), unmodified by advance(),</span>
-</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">        may be modified from user code&quot;&quot;&quot;</span>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advector&quot;</span><span class="p">]</span>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>
-</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>    <span class="nd">@property</span>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>    <span class="k">def</span> <span class="nf">g_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;g_factor field (with halo), unmodified by advance(),</span>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="sd">        assumed to be constant-in-time&quot;&quot;&quot;</span>
-</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span>
-</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
-</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span>
-</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>        <span class="n">mu_coeff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>        <span class="n">post_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>        <span class="n">post_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>    <span class="p">):</span>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion</span>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="sd">        coefficients (one value per dimension) as well as `post_iter` and `post_step`</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="sd">        callbacks expected to be `numba.jitclass`es with a `call` method, for</span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="sd">        signature see `PostStepNull` and `PostIterNull`;</span>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="sd">        returns CPU time per timestep (units as returned by `clock.clock()`)&quot;&quot;&quot;</span>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>        <span class="k">if</span> <span class="n">mu_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>            <span class="n">mu_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>        <span class="k">if</span> <span class="p">(</span>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">META_IS_NULL</span><span class="p">]</span>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>        <span class="p">):</span>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>
-</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>        <span class="n">post_step</span> <span class="o">=</span> <span class="n">post_step</span> <span class="ow">or</span> <span class="n">PostStepNull</span><span class="p">()</span>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>        <span class="n">post_iter</span> <span class="o">=</span> <span class="n">post_iter</span> <span class="ow">or</span> <span class="n">PostIterNull</span><span class="p">()</span>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="p">(</span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>            <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>            <span class="n">mu_coeff</span><span class="o">=</span><span class="n">mu_coeff</span><span class="p">,</span>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>            <span class="n">post_step</span><span class="o">=</span><span class="n">post_step</span><span class="p">,</span>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>            <span class="n">post_iter</span><span class="o">=</span><span class="n">post_iter</span><span class="p">,</span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">,</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>        <span class="p">)</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>            <span class="s2">&quot;nonosc_beta&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>            <span class="p">),</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="p">}</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="n">field</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span> <span class="o">=</span> <span class="n">stepper</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="nd">@property</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="k">def</span> <span class="nf">advectee</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advectee scalar field (with halo), modified by advance(),</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">        may be modified from user code (e.g., source-term handling)&quot;&quot;&quot;</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advectee&quot;</span><span class="p">]</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>    <span class="nd">@property</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>    <span class="k">def</span> <span class="nf">advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorField</span><span class="p">:</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advector vector field (with halo), unmodified by advance(),</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="sd">        may be modified from user code&quot;&quot;&quot;</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advector&quot;</span><span class="p">]</span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>    <span class="nd">@property</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>    <span class="k">def</span> <span class="nf">g_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="sd">        Can be used as a Jacobian for coordinate transformations,</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">        e.g. into spherical coordinates.</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">        For this type of usage, see</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">        `PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14`.</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="sd">        Can also be used to account for spatial variability of fluid density, see</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="sd">        `PyMPDATA_examples.Shipway_and_Hill_2012`.</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="sd">        e.g. the changing density of a fluid.&quot;&quot;&quot;</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>        <span class="n">mu_coeff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>        <span class="n">post_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>        <span class="n">post_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>    <span class="p">):</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">        coefficients (one value per dimension) as well as `post_iter` and `post_step`</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="sd">        callbacks expected to be `numba.jitclass`es with a `call` method, for</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="sd">        signature see `PostStepNull` and `PostIterNull`;</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a><span class="sd">        returns CPU time per timestep (units as returned by `clock.clock()`)&quot;&quot;&quot;</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>        <span class="k">if</span> <span class="n">mu_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>            <span class="n">mu_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">META_IS_NULL</span><span class="p">]</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>        <span class="p">):</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>        <span class="n">post_step</span> <span class="o">=</span> <span class="n">post_step</span> <span class="ow">or</span> <span class="n">PostStepNull</span><span class="p">()</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>        <span class="n">post_iter</span> <span class="o">=</span> <span class="n">post_iter</span> <span class="ow">or</span> <span class="n">PostIterNull</span><span class="p">()</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="p">(</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>            <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>            <span class="n">mu_coeff</span><span class="o">=</span><span class="n">mu_coeff</span><span class="p">,</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>            <span class="n">post_step</span><span class="o">=</span><span class="n">post_step</span><span class="p">,</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>            <span class="n">post_iter</span><span class="o">=</span><span class="n">post_iter</span><span class="p">,</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">,</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
@@ -300,7 +311,7 @@ as well as self-initialised temporary storage</p>
                             <div id="PostStepNull.class_type" class="classattr">
                                 <div class="attr variable">
             <span class="name">class_type</span>        =
-<span class="default_value">jitclass.PostStepNull#7fc4f8337d90&lt;&gt;</span>
+<span class="default_value">jitclass.PostStepNull#7fea597a8d90&lt;&gt;</span>
 
         
     </div>
@@ -362,7 +373,7 @@ as well as self-initialised temporary storage</p>
                             <div id="PostIterNull.class_type" class="classattr">
                                 <div class="attr variable">
             <span class="name">class_type</span>        =
-<span class="default_value">jitclass.PostIterNull#7fc4f0e8ed90&lt;&gt;</span>
+<span class="default_value">jitclass.PostIterNull#7fea5236bc40&lt;&gt;</span>
 
         
     </div>
@@ -384,119 +395,134 @@ as well as self-initialised temporary storage</p>
     </div>
     <a class="headerlink" href="#Solver"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="Solver-39"><a href="#Solver-39"><span class="linenos"> 39</span></a><span class="k">class</span> <span class="nc">Solver</span><span class="p">:</span>
-</span><span id="Solver-40"><a href="#Solver-40"><span class="linenos"> 40</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;solution orchestrator requireing prior instantiation of: a `Stepper`,</span>
-</span><span id="Solver-41"><a href="#Solver-41"><span class="linenos"> 41</span></a><span class="sd">    a scalar advectee field, a vector advector field and optionally</span>
-</span><span id="Solver-42"><a href="#Solver-42"><span class="linenos"> 42</span></a><span class="sd">    a scala g_factor field&quot;&quot;&quot;</span>
-</span><span id="Solver-43"><a href="#Solver-43"><span class="linenos"> 43</span></a>
-</span><span id="Solver-44"><a href="#Solver-44"><span class="linenos"> 44</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-</span><span id="Solver-45"><a href="#Solver-45"><span class="linenos"> 45</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Solver-46"><a href="#Solver-46"><span class="linenos"> 46</span></a>        <span class="n">stepper</span><span class="p">:</span> <span class="n">Stepper</span><span class="p">,</span>
-</span><span id="Solver-47"><a href="#Solver-47"><span class="linenos"> 47</span></a>        <span class="n">advectee</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">,</span>
-</span><span id="Solver-48"><a href="#Solver-48"><span class="linenos"> 48</span></a>        <span class="n">advector</span><span class="p">:</span> <span class="n">VectorField</span><span class="p">,</span>
-</span><span id="Solver-49"><a href="#Solver-49"><span class="linenos"> 49</span></a>        <span class="n">g_factor</span><span class="p">:</span> <span class="p">[</span><span class="n">ScalarField</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver-50"><a href="#Solver-50"><span class="linenos"> 50</span></a>    <span class="p">):</span>
-</span><span id="Solver-51"><a href="#Solver-51"><span class="linenos"> 51</span></a>        <span class="k">def</span> <span class="nf">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="Solver-52"><a href="#Solver-52"><span class="linenos"> 52</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advectee</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-</span><span id="Solver-53"><a href="#Solver-53"><span class="linenos"> 53</span></a>
-</span><span id="Solver-54"><a href="#Solver-54"><span class="linenos"> 54</span></a>        <span class="k">def</span> <span class="nf">null_scalar_field</span><span class="p">():</span>
-</span><span id="Solver-55"><a href="#Solver-55"><span class="linenos"> 55</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advectee</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="Solver-56"><a href="#Solver-56"><span class="linenos"> 56</span></a>
-</span><span id="Solver-57"><a href="#Solver-57"><span class="linenos"> 57</span></a>        <span class="k">def</span> <span class="nf">vector_field</span><span class="p">():</span>
-</span><span id="Solver-58"><a href="#Solver-58"><span class="linenos"> 58</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advector</span><span class="p">)</span>
-</span><span id="Solver-59"><a href="#Solver-59"><span class="linenos"> 59</span></a>
-</span><span id="Solver-60"><a href="#Solver-60"><span class="linenos"> 60</span></a>        <span class="k">def</span> <span class="nf">null_vector_field</span><span class="p">():</span>
-</span><span id="Solver-61"><a href="#Solver-61"><span class="linenos"> 61</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advector</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="Solver-62"><a href="#Solver-62"><span class="linenos"> 62</span></a>
-</span><span id="Solver-63"><a href="#Solver-63"><span class="linenos"> 63</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="n">advector</span><span class="p">,</span> <span class="n">advectee</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
-</span><span id="Solver-64"><a href="#Solver-64"><span class="linenos"> 64</span></a>            <span class="p">[</span><span class="n">g_factor</span><span class="p">]</span> <span class="k">if</span> <span class="n">g_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-</span><span id="Solver-65"><a href="#Solver-65"><span class="linenos"> 65</span></a>        <span class="p">):</span>
-</span><span id="Solver-66"><a href="#Solver-66"><span class="linenos"> 66</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">halo</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
-</span><span id="Solver-67"><a href="#Solver-67"><span class="linenos"> 67</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dtype</span>
-</span><span id="Solver-68"><a href="#Solver-68"><span class="linenos"> 68</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span> <span class="o">==</span> <span class="n">advector</span><span class="o">.</span><span class="n">grid</span>
-</span><span id="Solver-69"><a href="#Solver-69"><span class="linenos"> 69</span></a>
-</span><span id="Solver-70"><a href="#Solver-70"><span class="linenos"> 70</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="Solver-71"><a href="#Solver-71"><span class="linenos"> 71</span></a>            <span class="s2">&quot;advectee&quot;</span><span class="p">:</span> <span class="n">advectee</span><span class="p">,</span>
-</span><span id="Solver-72"><a href="#Solver-72"><span class="linenos"> 72</span></a>            <span class="s2">&quot;advector&quot;</span><span class="p">:</span> <span class="n">advector</span><span class="p">,</span>
-</span><span id="Solver-73"><a href="#Solver-73"><span class="linenos"> 73</span></a>            <span class="s2">&quot;g_factor&quot;</span><span class="p">:</span> <span class="n">g_factor</span> <span class="ow">or</span> <span class="n">null_scalar_field</span><span class="p">(),</span>
-</span><span id="Solver-74"><a href="#Solver-74"><span class="linenos"> 74</span></a>            <span class="s2">&quot;vectmp_a&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
-</span><span id="Solver-75"><a href="#Solver-75"><span class="linenos"> 75</span></a>            <span class="s2">&quot;vectmp_b&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
-</span><span id="Solver-76"><a href="#Solver-76"><span class="linenos"> 76</span></a>            <span class="s2">&quot;vectmp_c&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="Solver-77"><a href="#Solver-77"><span class="linenos"> 77</span></a>                <span class="n">vector_field</span><span class="p">()</span>
-</span><span id="Solver-78"><a href="#Solver-78"><span class="linenos"> 78</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="Solver-79"><a href="#Solver-79"><span class="linenos"> 79</span></a>                <span class="k">else</span> <span class="n">null_vector_field</span><span class="p">()</span>
-</span><span id="Solver-80"><a href="#Solver-80"><span class="linenos"> 80</span></a>            <span class="p">),</span>
-</span><span id="Solver-81"><a href="#Solver-81"><span class="linenos"> 81</span></a>            <span class="s2">&quot;nonosc_xtrm&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="Solver-82"><a href="#Solver-82"><span class="linenos"> 82</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
-</span><span id="Solver-83"><a href="#Solver-83"><span class="linenos"> 83</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
-</span><span id="Solver-84"><a href="#Solver-84"><span class="linenos"> 84</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
+</span><span id="Solver-40"><a href="#Solver-40"><span class="linenos"> 40</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Solution orchestrator requiring prior instantiation of: a `Stepper`,</span>
+</span><span id="Solver-41"><a href="#Solver-41"><span class="linenos"> 41</span></a><span class="sd">    a scalar advectee field (that which is advected),</span>
+</span><span id="Solver-42"><a href="#Solver-42"><span class="linenos"> 42</span></a><span class="sd">    a vector advector field (that which advects),</span>
+</span><span id="Solver-43"><a href="#Solver-43"><span class="linenos"> 43</span></a><span class="sd">    and optionally a scalar g_factor field (used in some cases of the advection equation).</span>
+</span><span id="Solver-44"><a href="#Solver-44"><span class="linenos"> 44</span></a><span class="sd">    Note: in some cases of advection, i.e. momentum advection,</span>
+</span><span id="Solver-45"><a href="#Solver-45"><span class="linenos"> 45</span></a><span class="sd">    the advectee can act upon the advector.</span>
+</span><span id="Solver-46"><a href="#Solver-46"><span class="linenos"> 46</span></a><span class="sd">    See `PyMPDATA_examples.Jarecka_et_al_2015` for an example of this.</span>
+</span><span id="Solver-47"><a href="#Solver-47"><span class="linenos"> 47</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="Solver-48"><a href="#Solver-48"><span class="linenos"> 48</span></a>
+</span><span id="Solver-49"><a href="#Solver-49"><span class="linenos"> 49</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span><span id="Solver-50"><a href="#Solver-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="Solver-51"><a href="#Solver-51"><span class="linenos"> 51</span></a>        <span class="n">stepper</span><span class="p">:</span> <span class="n">Stepper</span><span class="p">,</span>
+</span><span id="Solver-52"><a href="#Solver-52"><span class="linenos"> 52</span></a>        <span class="n">advectee</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">,</span>
+</span><span id="Solver-53"><a href="#Solver-53"><span class="linenos"> 53</span></a>        <span class="n">advector</span><span class="p">:</span> <span class="n">VectorField</span><span class="p">,</span>
+</span><span id="Solver-54"><a href="#Solver-54"><span class="linenos"> 54</span></a>        <span class="n">g_factor</span><span class="p">:</span> <span class="p">[</span><span class="n">ScalarField</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver-55"><a href="#Solver-55"><span class="linenos"> 55</span></a>    <span class="p">):</span>
+</span><span id="Solver-56"><a href="#Solver-56"><span class="linenos"> 56</span></a>        <span class="k">def</span> <span class="nf">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="Solver-57"><a href="#Solver-57"><span class="linenos"> 57</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advectee</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+</span><span id="Solver-58"><a href="#Solver-58"><span class="linenos"> 58</span></a>
+</span><span id="Solver-59"><a href="#Solver-59"><span class="linenos"> 59</span></a>        <span class="k">def</span> <span class="nf">null_scalar_field</span><span class="p">():</span>
+</span><span id="Solver-60"><a href="#Solver-60"><span class="linenos"> 60</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advectee</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="Solver-61"><a href="#Solver-61"><span class="linenos"> 61</span></a>
+</span><span id="Solver-62"><a href="#Solver-62"><span class="linenos"> 62</span></a>        <span class="k">def</span> <span class="nf">vector_field</span><span class="p">():</span>
+</span><span id="Solver-63"><a href="#Solver-63"><span class="linenos"> 63</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advector</span><span class="p">)</span>
+</span><span id="Solver-64"><a href="#Solver-64"><span class="linenos"> 64</span></a>
+</span><span id="Solver-65"><a href="#Solver-65"><span class="linenos"> 65</span></a>        <span class="k">def</span> <span class="nf">null_vector_field</span><span class="p">():</span>
+</span><span id="Solver-66"><a href="#Solver-66"><span class="linenos"> 66</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advector</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="Solver-67"><a href="#Solver-67"><span class="linenos"> 67</span></a>
+</span><span id="Solver-68"><a href="#Solver-68"><span class="linenos"> 68</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="n">advector</span><span class="p">,</span> <span class="n">advectee</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+</span><span id="Solver-69"><a href="#Solver-69"><span class="linenos"> 69</span></a>            <span class="p">[</span><span class="n">g_factor</span><span class="p">]</span> <span class="k">if</span> <span class="n">g_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+</span><span id="Solver-70"><a href="#Solver-70"><span class="linenos"> 70</span></a>        <span class="p">):</span>
+</span><span id="Solver-71"><a href="#Solver-71"><span class="linenos"> 71</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">halo</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
+</span><span id="Solver-72"><a href="#Solver-72"><span class="linenos"> 72</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dtype</span>
+</span><span id="Solver-73"><a href="#Solver-73"><span class="linenos"> 73</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span> <span class="o">==</span> <span class="n">advector</span><span class="o">.</span><span class="n">grid</span>
+</span><span id="Solver-74"><a href="#Solver-74"><span class="linenos"> 74</span></a>
+</span><span id="Solver-75"><a href="#Solver-75"><span class="linenos"> 75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="Solver-76"><a href="#Solver-76"><span class="linenos"> 76</span></a>            <span class="s2">&quot;advectee&quot;</span><span class="p">:</span> <span class="n">advectee</span><span class="p">,</span>
+</span><span id="Solver-77"><a href="#Solver-77"><span class="linenos"> 77</span></a>            <span class="s2">&quot;advector&quot;</span><span class="p">:</span> <span class="n">advector</span><span class="p">,</span>
+</span><span id="Solver-78"><a href="#Solver-78"><span class="linenos"> 78</span></a>            <span class="s2">&quot;g_factor&quot;</span><span class="p">:</span> <span class="n">g_factor</span> <span class="ow">or</span> <span class="n">null_scalar_field</span><span class="p">(),</span>
+</span><span id="Solver-79"><a href="#Solver-79"><span class="linenos"> 79</span></a>            <span class="s2">&quot;vectmp_a&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
+</span><span id="Solver-80"><a href="#Solver-80"><span class="linenos"> 80</span></a>            <span class="s2">&quot;vectmp_b&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
+</span><span id="Solver-81"><a href="#Solver-81"><span class="linenos"> 81</span></a>            <span class="s2">&quot;vectmp_c&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="Solver-82"><a href="#Solver-82"><span class="linenos"> 82</span></a>                <span class="n">vector_field</span><span class="p">()</span>
+</span><span id="Solver-83"><a href="#Solver-83"><span class="linenos"> 83</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="Solver-84"><a href="#Solver-84"><span class="linenos"> 84</span></a>                <span class="k">else</span> <span class="n">null_vector_field</span><span class="p">()</span>
 </span><span id="Solver-85"><a href="#Solver-85"><span class="linenos"> 85</span></a>            <span class="p">),</span>
-</span><span id="Solver-86"><a href="#Solver-86"><span class="linenos"> 86</span></a>            <span class="s2">&quot;nonosc_beta&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="Solver-86"><a href="#Solver-86"><span class="linenos"> 86</span></a>            <span class="s2">&quot;nonosc_xtrm&quot;</span><span class="p">:</span> <span class="p">(</span>
 </span><span id="Solver-87"><a href="#Solver-87"><span class="linenos"> 87</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 </span><span id="Solver-88"><a href="#Solver-88"><span class="linenos"> 88</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
 </span><span id="Solver-89"><a href="#Solver-89"><span class="linenos"> 89</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
 </span><span id="Solver-90"><a href="#Solver-90"><span class="linenos"> 90</span></a>            <span class="p">),</span>
-</span><span id="Solver-91"><a href="#Solver-91"><span class="linenos"> 91</span></a>        <span class="p">}</span>
-</span><span id="Solver-92"><a href="#Solver-92"><span class="linenos"> 92</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-</span><span id="Solver-93"><a href="#Solver-93"><span class="linenos"> 93</span></a>            <span class="n">field</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="Solver-94"><a href="#Solver-94"><span class="linenos"> 94</span></a>
-</span><span id="Solver-95"><a href="#Solver-95"><span class="linenos"> 95</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span> <span class="o">=</span> <span class="n">stepper</span>
-</span><span id="Solver-96"><a href="#Solver-96"><span class="linenos"> 96</span></a>
-</span><span id="Solver-97"><a href="#Solver-97"><span class="linenos"> 97</span></a>    <span class="nd">@property</span>
-</span><span id="Solver-98"><a href="#Solver-98"><span class="linenos"> 98</span></a>    <span class="k">def</span> <span class="nf">advectee</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-</span><span id="Solver-99"><a href="#Solver-99"><span class="linenos"> 99</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advectee scalar field (with halo), modified by advance(),</span>
-</span><span id="Solver-100"><a href="#Solver-100"><span class="linenos">100</span></a><span class="sd">        may be modified from user code (e.g., source-term handling)&quot;&quot;&quot;</span>
-</span><span id="Solver-101"><a href="#Solver-101"><span class="linenos">101</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advectee&quot;</span><span class="p">]</span>
-</span><span id="Solver-102"><a href="#Solver-102"><span class="linenos">102</span></a>
-</span><span id="Solver-103"><a href="#Solver-103"><span class="linenos">103</span></a>    <span class="nd">@property</span>
-</span><span id="Solver-104"><a href="#Solver-104"><span class="linenos">104</span></a>    <span class="k">def</span> <span class="nf">advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorField</span><span class="p">:</span>
-</span><span id="Solver-105"><a href="#Solver-105"><span class="linenos">105</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advector vector field (with halo), unmodified by advance(),</span>
-</span><span id="Solver-106"><a href="#Solver-106"><span class="linenos">106</span></a><span class="sd">        may be modified from user code&quot;&quot;&quot;</span>
-</span><span id="Solver-107"><a href="#Solver-107"><span class="linenos">107</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advector&quot;</span><span class="p">]</span>
-</span><span id="Solver-108"><a href="#Solver-108"><span class="linenos">108</span></a>
-</span><span id="Solver-109"><a href="#Solver-109"><span class="linenos">109</span></a>    <span class="nd">@property</span>
-</span><span id="Solver-110"><a href="#Solver-110"><span class="linenos">110</span></a>    <span class="k">def</span> <span class="nf">g_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-</span><span id="Solver-111"><a href="#Solver-111"><span class="linenos">111</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;g_factor field (with halo), unmodified by advance(),</span>
-</span><span id="Solver-112"><a href="#Solver-112"><span class="linenos">112</span></a><span class="sd">        assumed to be constant-in-time&quot;&quot;&quot;</span>
-</span><span id="Solver-113"><a href="#Solver-113"><span class="linenos">113</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span>
-</span><span id="Solver-114"><a href="#Solver-114"><span class="linenos">114</span></a>
-</span><span id="Solver-115"><a href="#Solver-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span>
-</span><span id="Solver-116"><a href="#Solver-116"><span class="linenos">116</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Solver-117"><a href="#Solver-117"><span class="linenos">117</span></a>        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span id="Solver-118"><a href="#Solver-118"><span class="linenos">118</span></a>        <span class="n">mu_coeff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver-119"><a href="#Solver-119"><span class="linenos">119</span></a>        <span class="n">post_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver-120"><a href="#Solver-120"><span class="linenos">120</span></a>        <span class="n">post_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver-121"><a href="#Solver-121"><span class="linenos">121</span></a>    <span class="p">):</span>
-</span><span id="Solver-122"><a href="#Solver-122"><span class="linenos">122</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion</span>
-</span><span id="Solver-123"><a href="#Solver-123"><span class="linenos">123</span></a><span class="sd">        coefficients (one value per dimension) as well as `post_iter` and `post_step`</span>
-</span><span id="Solver-124"><a href="#Solver-124"><span class="linenos">124</span></a><span class="sd">        callbacks expected to be `numba.jitclass`es with a `call` method, for</span>
-</span><span id="Solver-125"><a href="#Solver-125"><span class="linenos">125</span></a><span class="sd">        signature see `PostStepNull` and `PostIterNull`;</span>
-</span><span id="Solver-126"><a href="#Solver-126"><span class="linenos">126</span></a><span class="sd">        returns CPU time per timestep (units as returned by `clock.clock()`)&quot;&quot;&quot;</span>
-</span><span id="Solver-127"><a href="#Solver-127"><span class="linenos">127</span></a>        <span class="k">if</span> <span class="n">mu_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Solver-128"><a href="#Solver-128"><span class="linenos">128</span></a>            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="Solver-129"><a href="#Solver-129"><span class="linenos">129</span></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="Solver-130"><a href="#Solver-130"><span class="linenos">130</span></a>            <span class="n">mu_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-</span><span id="Solver-131"><a href="#Solver-131"><span class="linenos">131</span></a>        <span class="k">if</span> <span class="p">(</span>
-</span><span id="Solver-132"><a href="#Solver-132"><span class="linenos">132</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="Solver-133"><a href="#Solver-133"><span class="linenos">133</span></a>            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">META_IS_NULL</span><span class="p">]</span>
-</span><span id="Solver-134"><a href="#Solver-134"><span class="linenos">134</span></a>        <span class="p">):</span>
-</span><span id="Solver-135"><a href="#Solver-135"><span class="linenos">135</span></a>            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
-</span><span id="Solver-136"><a href="#Solver-136"><span class="linenos">136</span></a>
-</span><span id="Solver-137"><a href="#Solver-137"><span class="linenos">137</span></a>        <span class="n">post_step</span> <span class="o">=</span> <span class="n">post_step</span> <span class="ow">or</span> <span class="n">PostStepNull</span><span class="p">()</span>
-</span><span id="Solver-138"><a href="#Solver-138"><span class="linenos">138</span></a>        <span class="n">post_iter</span> <span class="o">=</span> <span class="n">post_iter</span> <span class="ow">or</span> <span class="n">PostIterNull</span><span class="p">()</span>
-</span><span id="Solver-139"><a href="#Solver-139"><span class="linenos">139</span></a>
-</span><span id="Solver-140"><a href="#Solver-140"><span class="linenos">140</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="p">(</span>
-</span><span id="Solver-141"><a href="#Solver-141"><span class="linenos">141</span></a>            <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
-</span><span id="Solver-142"><a href="#Solver-142"><span class="linenos">142</span></a>            <span class="n">mu_coeff</span><span class="o">=</span><span class="n">mu_coeff</span><span class="p">,</span>
-</span><span id="Solver-143"><a href="#Solver-143"><span class="linenos">143</span></a>            <span class="n">post_step</span><span class="o">=</span><span class="n">post_step</span><span class="p">,</span>
-</span><span id="Solver-144"><a href="#Solver-144"><span class="linenos">144</span></a>            <span class="n">post_iter</span><span class="o">=</span><span class="n">post_iter</span><span class="p">,</span>
-</span><span id="Solver-145"><a href="#Solver-145"><span class="linenos">145</span></a>            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">,</span>
-</span><span id="Solver-146"><a href="#Solver-146"><span class="linenos">146</span></a>        <span class="p">)</span>
+</span><span id="Solver-91"><a href="#Solver-91"><span class="linenos"> 91</span></a>            <span class="s2">&quot;nonosc_beta&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="Solver-92"><a href="#Solver-92"><span class="linenos"> 92</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+</span><span id="Solver-93"><a href="#Solver-93"><span class="linenos"> 93</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
+</span><span id="Solver-94"><a href="#Solver-94"><span class="linenos"> 94</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
+</span><span id="Solver-95"><a href="#Solver-95"><span class="linenos"> 95</span></a>            <span class="p">),</span>
+</span><span id="Solver-96"><a href="#Solver-96"><span class="linenos"> 96</span></a>        <span class="p">}</span>
+</span><span id="Solver-97"><a href="#Solver-97"><span class="linenos"> 97</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+</span><span id="Solver-98"><a href="#Solver-98"><span class="linenos"> 98</span></a>            <span class="n">field</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="Solver-99"><a href="#Solver-99"><span class="linenos"> 99</span></a>
+</span><span id="Solver-100"><a href="#Solver-100"><span class="linenos">100</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span> <span class="o">=</span> <span class="n">stepper</span>
+</span><span id="Solver-101"><a href="#Solver-101"><span class="linenos">101</span></a>
+</span><span id="Solver-102"><a href="#Solver-102"><span class="linenos">102</span></a>    <span class="nd">@property</span>
+</span><span id="Solver-103"><a href="#Solver-103"><span class="linenos">103</span></a>    <span class="k">def</span> <span class="nf">advectee</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+</span><span id="Solver-104"><a href="#Solver-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advectee scalar field (with halo), modified by advance(),</span>
+</span><span id="Solver-105"><a href="#Solver-105"><span class="linenos">105</span></a><span class="sd">        may be modified from user code (e.g., source-term handling)&quot;&quot;&quot;</span>
+</span><span id="Solver-106"><a href="#Solver-106"><span class="linenos">106</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advectee&quot;</span><span class="p">]</span>
+</span><span id="Solver-107"><a href="#Solver-107"><span class="linenos">107</span></a>
+</span><span id="Solver-108"><a href="#Solver-108"><span class="linenos">108</span></a>    <span class="nd">@property</span>
+</span><span id="Solver-109"><a href="#Solver-109"><span class="linenos">109</span></a>    <span class="k">def</span> <span class="nf">advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorField</span><span class="p">:</span>
+</span><span id="Solver-110"><a href="#Solver-110"><span class="linenos">110</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advector vector field (with halo), unmodified by advance(),</span>
+</span><span id="Solver-111"><a href="#Solver-111"><span class="linenos">111</span></a><span class="sd">        may be modified from user code&quot;&quot;&quot;</span>
+</span><span id="Solver-112"><a href="#Solver-112"><span class="linenos">112</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advector&quot;</span><span class="p">]</span>
+</span><span id="Solver-113"><a href="#Solver-113"><span class="linenos">113</span></a>
+</span><span id="Solver-114"><a href="#Solver-114"><span class="linenos">114</span></a>    <span class="nd">@property</span>
+</span><span id="Solver-115"><a href="#Solver-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">g_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+</span><span id="Solver-116"><a href="#Solver-116"><span class="linenos">116</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.</span>
+</span><span id="Solver-117"><a href="#Solver-117"><span class="linenos">117</span></a><span class="sd">        Can be used as a Jacobian for coordinate transformations,</span>
+</span><span id="Solver-118"><a href="#Solver-118"><span class="linenos">118</span></a><span class="sd">        e.g. into spherical coordinates.</span>
+</span><span id="Solver-119"><a href="#Solver-119"><span class="linenos">119</span></a><span class="sd">        For this type of usage, see</span>
+</span><span id="Solver-120"><a href="#Solver-120"><span class="linenos">120</span></a><span class="sd">        `PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14`.</span>
+</span><span id="Solver-121"><a href="#Solver-121"><span class="linenos">121</span></a><span class="sd">        Can also be used to account for spatial variability of fluid density, see</span>
+</span><span id="Solver-122"><a href="#Solver-122"><span class="linenos">122</span></a><span class="sd">        `PyMPDATA_examples.Shipway_and_Hill_2012`.</span>
+</span><span id="Solver-123"><a href="#Solver-123"><span class="linenos">123</span></a><span class="sd">        e.g. the changing density of a fluid.&quot;&quot;&quot;</span>
+</span><span id="Solver-124"><a href="#Solver-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span>
+</span><span id="Solver-125"><a href="#Solver-125"><span class="linenos">125</span></a>
+</span><span id="Solver-126"><a href="#Solver-126"><span class="linenos">126</span></a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span>
+</span><span id="Solver-127"><a href="#Solver-127"><span class="linenos">127</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="Solver-128"><a href="#Solver-128"><span class="linenos">128</span></a>        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="Solver-129"><a href="#Solver-129"><span class="linenos">129</span></a>        <span class="n">mu_coeff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver-130"><a href="#Solver-130"><span class="linenos">130</span></a>        <span class="n">post_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver-131"><a href="#Solver-131"><span class="linenos">131</span></a>        <span class="n">post_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver-132"><a href="#Solver-132"><span class="linenos">132</span></a>    <span class="p">):</span>
+</span><span id="Solver-133"><a href="#Solver-133"><span class="linenos">133</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion</span>
+</span><span id="Solver-134"><a href="#Solver-134"><span class="linenos">134</span></a><span class="sd">        coefficients (one value per dimension) as well as `post_iter` and `post_step`</span>
+</span><span id="Solver-135"><a href="#Solver-135"><span class="linenos">135</span></a><span class="sd">        callbacks expected to be `numba.jitclass`es with a `call` method, for</span>
+</span><span id="Solver-136"><a href="#Solver-136"><span class="linenos">136</span></a><span class="sd">        signature see `PostStepNull` and `PostIterNull`;</span>
+</span><span id="Solver-137"><a href="#Solver-137"><span class="linenos">137</span></a><span class="sd">        returns CPU time per timestep (units as returned by `clock.clock()`)&quot;&quot;&quot;</span>
+</span><span id="Solver-138"><a href="#Solver-138"><span class="linenos">138</span></a>        <span class="k">if</span> <span class="n">mu_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Solver-139"><a href="#Solver-139"><span class="linenos">139</span></a>            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="Solver-140"><a href="#Solver-140"><span class="linenos">140</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="Solver-141"><a href="#Solver-141"><span class="linenos">141</span></a>            <span class="n">mu_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+</span><span id="Solver-142"><a href="#Solver-142"><span class="linenos">142</span></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="Solver-143"><a href="#Solver-143"><span class="linenos">143</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="Solver-144"><a href="#Solver-144"><span class="linenos">144</span></a>            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">META_IS_NULL</span><span class="p">]</span>
+</span><span id="Solver-145"><a href="#Solver-145"><span class="linenos">145</span></a>        <span class="p">):</span>
+</span><span id="Solver-146"><a href="#Solver-146"><span class="linenos">146</span></a>            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</span><span id="Solver-147"><a href="#Solver-147"><span class="linenos">147</span></a>
+</span><span id="Solver-148"><a href="#Solver-148"><span class="linenos">148</span></a>        <span class="n">post_step</span> <span class="o">=</span> <span class="n">post_step</span> <span class="ow">or</span> <span class="n">PostStepNull</span><span class="p">()</span>
+</span><span id="Solver-149"><a href="#Solver-149"><span class="linenos">149</span></a>        <span class="n">post_iter</span> <span class="o">=</span> <span class="n">post_iter</span> <span class="ow">or</span> <span class="n">PostIterNull</span><span class="p">()</span>
+</span><span id="Solver-150"><a href="#Solver-150"><span class="linenos">150</span></a>
+</span><span id="Solver-151"><a href="#Solver-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="p">(</span>
+</span><span id="Solver-152"><a href="#Solver-152"><span class="linenos">152</span></a>            <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+</span><span id="Solver-153"><a href="#Solver-153"><span class="linenos">153</span></a>            <span class="n">mu_coeff</span><span class="o">=</span><span class="n">mu_coeff</span><span class="p">,</span>
+</span><span id="Solver-154"><a href="#Solver-154"><span class="linenos">154</span></a>            <span class="n">post_step</span><span class="o">=</span><span class="n">post_step</span><span class="p">,</span>
+</span><span id="Solver-155"><a href="#Solver-155"><span class="linenos">155</span></a>            <span class="n">post_iter</span><span class="o">=</span><span class="n">post_iter</span><span class="p">,</span>
+</span><span id="Solver-156"><a href="#Solver-156"><span class="linenos">156</span></a>            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">,</span>
+</span><span id="Solver-157"><a href="#Solver-157"><span class="linenos">157</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>solution orchestrator requireing prior instantiation of: a <code>Stepper</code>,
-a scalar advectee field, a vector advector field and optionally
-a scala g_factor field</p>
+            <div class="docstring"><p>Solution orchestrator requiring prior instantiation of: a <code>Stepper</code>,
+a scalar advectee field (that which is advected),
+a vector advector field (that which advects),
+and optionally a scalar g_factor field (used in some cases of the advection equation).
+Note: in some cases of advection, i.e. momentum advection,
+the advectee can act upon the advector.
+See <code><a href="../PyMPDATA_examples/Jarecka_et_al_2015.html">PyMPDATA_examples.Jarecka_et_al_2015</a></code> for an example of this.</p>
 </div>
 
 
@@ -510,58 +536,58 @@ a scala g_factor field</p>
 
     </div>
     <a class="headerlink" href="#Solver.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.__init__-44"><a href="#Solver.__init__-44"><span class="linenos">44</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-</span><span id="Solver.__init__-45"><a href="#Solver.__init__-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Solver.__init__-46"><a href="#Solver.__init__-46"><span class="linenos">46</span></a>        <span class="n">stepper</span><span class="p">:</span> <span class="n">Stepper</span><span class="p">,</span>
-</span><span id="Solver.__init__-47"><a href="#Solver.__init__-47"><span class="linenos">47</span></a>        <span class="n">advectee</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">,</span>
-</span><span id="Solver.__init__-48"><a href="#Solver.__init__-48"><span class="linenos">48</span></a>        <span class="n">advector</span><span class="p">:</span> <span class="n">VectorField</span><span class="p">,</span>
-</span><span id="Solver.__init__-49"><a href="#Solver.__init__-49"><span class="linenos">49</span></a>        <span class="n">g_factor</span><span class="p">:</span> <span class="p">[</span><span class="n">ScalarField</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver.__init__-50"><a href="#Solver.__init__-50"><span class="linenos">50</span></a>    <span class="p">):</span>
-</span><span id="Solver.__init__-51"><a href="#Solver.__init__-51"><span class="linenos">51</span></a>        <span class="k">def</span> <span class="nf">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="Solver.__init__-52"><a href="#Solver.__init__-52"><span class="linenos">52</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advectee</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-</span><span id="Solver.__init__-53"><a href="#Solver.__init__-53"><span class="linenos">53</span></a>
-</span><span id="Solver.__init__-54"><a href="#Solver.__init__-54"><span class="linenos">54</span></a>        <span class="k">def</span> <span class="nf">null_scalar_field</span><span class="p">():</span>
-</span><span id="Solver.__init__-55"><a href="#Solver.__init__-55"><span class="linenos">55</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advectee</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="Solver.__init__-56"><a href="#Solver.__init__-56"><span class="linenos">56</span></a>
-</span><span id="Solver.__init__-57"><a href="#Solver.__init__-57"><span class="linenos">57</span></a>        <span class="k">def</span> <span class="nf">vector_field</span><span class="p">():</span>
-</span><span id="Solver.__init__-58"><a href="#Solver.__init__-58"><span class="linenos">58</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advector</span><span class="p">)</span>
-</span><span id="Solver.__init__-59"><a href="#Solver.__init__-59"><span class="linenos">59</span></a>
-</span><span id="Solver.__init__-60"><a href="#Solver.__init__-60"><span class="linenos">60</span></a>        <span class="k">def</span> <span class="nf">null_vector_field</span><span class="p">():</span>
-</span><span id="Solver.__init__-61"><a href="#Solver.__init__-61"><span class="linenos">61</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advector</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="Solver.__init__-62"><a href="#Solver.__init__-62"><span class="linenos">62</span></a>
-</span><span id="Solver.__init__-63"><a href="#Solver.__init__-63"><span class="linenos">63</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="n">advector</span><span class="p">,</span> <span class="n">advectee</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
-</span><span id="Solver.__init__-64"><a href="#Solver.__init__-64"><span class="linenos">64</span></a>            <span class="p">[</span><span class="n">g_factor</span><span class="p">]</span> <span class="k">if</span> <span class="n">g_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-</span><span id="Solver.__init__-65"><a href="#Solver.__init__-65"><span class="linenos">65</span></a>        <span class="p">):</span>
-</span><span id="Solver.__init__-66"><a href="#Solver.__init__-66"><span class="linenos">66</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">halo</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
-</span><span id="Solver.__init__-67"><a href="#Solver.__init__-67"><span class="linenos">67</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dtype</span>
-</span><span id="Solver.__init__-68"><a href="#Solver.__init__-68"><span class="linenos">68</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span> <span class="o">==</span> <span class="n">advector</span><span class="o">.</span><span class="n">grid</span>
-</span><span id="Solver.__init__-69"><a href="#Solver.__init__-69"><span class="linenos">69</span></a>
-</span><span id="Solver.__init__-70"><a href="#Solver.__init__-70"><span class="linenos">70</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="Solver.__init__-71"><a href="#Solver.__init__-71"><span class="linenos">71</span></a>            <span class="s2">&quot;advectee&quot;</span><span class="p">:</span> <span class="n">advectee</span><span class="p">,</span>
-</span><span id="Solver.__init__-72"><a href="#Solver.__init__-72"><span class="linenos">72</span></a>            <span class="s2">&quot;advector&quot;</span><span class="p">:</span> <span class="n">advector</span><span class="p">,</span>
-</span><span id="Solver.__init__-73"><a href="#Solver.__init__-73"><span class="linenos">73</span></a>            <span class="s2">&quot;g_factor&quot;</span><span class="p">:</span> <span class="n">g_factor</span> <span class="ow">or</span> <span class="n">null_scalar_field</span><span class="p">(),</span>
-</span><span id="Solver.__init__-74"><a href="#Solver.__init__-74"><span class="linenos">74</span></a>            <span class="s2">&quot;vectmp_a&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
-</span><span id="Solver.__init__-75"><a href="#Solver.__init__-75"><span class="linenos">75</span></a>            <span class="s2">&quot;vectmp_b&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
-</span><span id="Solver.__init__-76"><a href="#Solver.__init__-76"><span class="linenos">76</span></a>            <span class="s2">&quot;vectmp_c&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="Solver.__init__-77"><a href="#Solver.__init__-77"><span class="linenos">77</span></a>                <span class="n">vector_field</span><span class="p">()</span>
-</span><span id="Solver.__init__-78"><a href="#Solver.__init__-78"><span class="linenos">78</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="Solver.__init__-79"><a href="#Solver.__init__-79"><span class="linenos">79</span></a>                <span class="k">else</span> <span class="n">null_vector_field</span><span class="p">()</span>
-</span><span id="Solver.__init__-80"><a href="#Solver.__init__-80"><span class="linenos">80</span></a>            <span class="p">),</span>
-</span><span id="Solver.__init__-81"><a href="#Solver.__init__-81"><span class="linenos">81</span></a>            <span class="s2">&quot;nonosc_xtrm&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="Solver.__init__-82"><a href="#Solver.__init__-82"><span class="linenos">82</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
-</span><span id="Solver.__init__-83"><a href="#Solver.__init__-83"><span class="linenos">83</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
-</span><span id="Solver.__init__-84"><a href="#Solver.__init__-84"><span class="linenos">84</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
-</span><span id="Solver.__init__-85"><a href="#Solver.__init__-85"><span class="linenos">85</span></a>            <span class="p">),</span>
-</span><span id="Solver.__init__-86"><a href="#Solver.__init__-86"><span class="linenos">86</span></a>            <span class="s2">&quot;nonosc_beta&quot;</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="Solver.__init__-87"><a href="#Solver.__init__-87"><span class="linenos">87</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
-</span><span id="Solver.__init__-88"><a href="#Solver.__init__-88"><span class="linenos">88</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
-</span><span id="Solver.__init__-89"><a href="#Solver.__init__-89"><span class="linenos">89</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
-</span><span id="Solver.__init__-90"><a href="#Solver.__init__-90"><span class="linenos">90</span></a>            <span class="p">),</span>
-</span><span id="Solver.__init__-91"><a href="#Solver.__init__-91"><span class="linenos">91</span></a>        <span class="p">}</span>
-</span><span id="Solver.__init__-92"><a href="#Solver.__init__-92"><span class="linenos">92</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-</span><span id="Solver.__init__-93"><a href="#Solver.__init__-93"><span class="linenos">93</span></a>            <span class="n">field</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
-</span><span id="Solver.__init__-94"><a href="#Solver.__init__-94"><span class="linenos">94</span></a>
-</span><span id="Solver.__init__-95"><a href="#Solver.__init__-95"><span class="linenos">95</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span> <span class="o">=</span> <span class="n">stepper</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.__init__-49"><a href="#Solver.__init__-49"><span class="linenos"> 49</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span><span id="Solver.__init__-50"><a href="#Solver.__init__-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="Solver.__init__-51"><a href="#Solver.__init__-51"><span class="linenos"> 51</span></a>        <span class="n">stepper</span><span class="p">:</span> <span class="n">Stepper</span><span class="p">,</span>
+</span><span id="Solver.__init__-52"><a href="#Solver.__init__-52"><span class="linenos"> 52</span></a>        <span class="n">advectee</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">,</span>
+</span><span id="Solver.__init__-53"><a href="#Solver.__init__-53"><span class="linenos"> 53</span></a>        <span class="n">advector</span><span class="p">:</span> <span class="n">VectorField</span><span class="p">,</span>
+</span><span id="Solver.__init__-54"><a href="#Solver.__init__-54"><span class="linenos"> 54</span></a>        <span class="n">g_factor</span><span class="p">:</span> <span class="p">[</span><span class="n">ScalarField</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver.__init__-55"><a href="#Solver.__init__-55"><span class="linenos"> 55</span></a>    <span class="p">):</span>
+</span><span id="Solver.__init__-56"><a href="#Solver.__init__-56"><span class="linenos"> 56</span></a>        <span class="k">def</span> <span class="nf">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="Solver.__init__-57"><a href="#Solver.__init__-57"><span class="linenos"> 57</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advectee</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+</span><span id="Solver.__init__-58"><a href="#Solver.__init__-58"><span class="linenos"> 58</span></a>
+</span><span id="Solver.__init__-59"><a href="#Solver.__init__-59"><span class="linenos"> 59</span></a>        <span class="k">def</span> <span class="nf">null_scalar_field</span><span class="p">():</span>
+</span><span id="Solver.__init__-60"><a href="#Solver.__init__-60"><span class="linenos"> 60</span></a>            <span class="k">return</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advectee</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="Solver.__init__-61"><a href="#Solver.__init__-61"><span class="linenos"> 61</span></a>
+</span><span id="Solver.__init__-62"><a href="#Solver.__init__-62"><span class="linenos"> 62</span></a>        <span class="k">def</span> <span class="nf">vector_field</span><span class="p">():</span>
+</span><span id="Solver.__init__-63"><a href="#Solver.__init__-63"><span class="linenos"> 63</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">advector</span><span class="p">)</span>
+</span><span id="Solver.__init__-64"><a href="#Solver.__init__-64"><span class="linenos"> 64</span></a>
+</span><span id="Solver.__init__-65"><a href="#Solver.__init__-65"><span class="linenos"> 65</span></a>        <span class="k">def</span> <span class="nf">null_vector_field</span><span class="p">():</span>
+</span><span id="Solver.__init__-66"><a href="#Solver.__init__-66"><span class="linenos"> 66</span></a>            <span class="k">return</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">make_null</span><span class="p">(</span><span class="n">advector</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="Solver.__init__-67"><a href="#Solver.__init__-67"><span class="linenos"> 67</span></a>
+</span><span id="Solver.__init__-68"><a href="#Solver.__init__-68"><span class="linenos"> 68</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="n">advector</span><span class="p">,</span> <span class="n">advectee</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+</span><span id="Solver.__init__-69"><a href="#Solver.__init__-69"><span class="linenos"> 69</span></a>            <span class="p">[</span><span class="n">g_factor</span><span class="p">]</span> <span class="k">if</span> <span class="n">g_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+</span><span id="Solver.__init__-70"><a href="#Solver.__init__-70"><span class="linenos"> 70</span></a>        <span class="p">):</span>
+</span><span id="Solver.__init__-71"><a href="#Solver.__init__-71"><span class="linenos"> 71</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">halo</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
+</span><span id="Solver.__init__-72"><a href="#Solver.__init__-72"><span class="linenos"> 72</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dtype</span>
+</span><span id="Solver.__init__-73"><a href="#Solver.__init__-73"><span class="linenos"> 73</span></a>            <span class="k">assert</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span> <span class="o">==</span> <span class="n">advector</span><span class="o">.</span><span class="n">grid</span>
+</span><span id="Solver.__init__-74"><a href="#Solver.__init__-74"><span class="linenos"> 74</span></a>
+</span><span id="Solver.__init__-75"><a href="#Solver.__init__-75"><span class="linenos"> 75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="Solver.__init__-76"><a href="#Solver.__init__-76"><span class="linenos"> 76</span></a>            <span class="s2">&quot;advectee&quot;</span><span class="p">:</span> <span class="n">advectee</span><span class="p">,</span>
+</span><span id="Solver.__init__-77"><a href="#Solver.__init__-77"><span class="linenos"> 77</span></a>            <span class="s2">&quot;advector&quot;</span><span class="p">:</span> <span class="n">advector</span><span class="p">,</span>
+</span><span id="Solver.__init__-78"><a href="#Solver.__init__-78"><span class="linenos"> 78</span></a>            <span class="s2">&quot;g_factor&quot;</span><span class="p">:</span> <span class="n">g_factor</span> <span class="ow">or</span> <span class="n">null_scalar_field</span><span class="p">(),</span>
+</span><span id="Solver.__init__-79"><a href="#Solver.__init__-79"><span class="linenos"> 79</span></a>            <span class="s2">&quot;vectmp_a&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
+</span><span id="Solver.__init__-80"><a href="#Solver.__init__-80"><span class="linenos"> 80</span></a>            <span class="s2">&quot;vectmp_b&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">(),</span>
+</span><span id="Solver.__init__-81"><a href="#Solver.__init__-81"><span class="linenos"> 81</span></a>            <span class="s2">&quot;vectmp_c&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="Solver.__init__-82"><a href="#Solver.__init__-82"><span class="linenos"> 82</span></a>                <span class="n">vector_field</span><span class="p">()</span>
+</span><span id="Solver.__init__-83"><a href="#Solver.__init__-83"><span class="linenos"> 83</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="Solver.__init__-84"><a href="#Solver.__init__-84"><span class="linenos"> 84</span></a>                <span class="k">else</span> <span class="n">null_vector_field</span><span class="p">()</span>
+</span><span id="Solver.__init__-85"><a href="#Solver.__init__-85"><span class="linenos"> 85</span></a>            <span class="p">),</span>
+</span><span id="Solver.__init__-86"><a href="#Solver.__init__-86"><span class="linenos"> 86</span></a>            <span class="s2">&quot;nonosc_xtrm&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="Solver.__init__-87"><a href="#Solver.__init__-87"><span class="linenos"> 87</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+</span><span id="Solver.__init__-88"><a href="#Solver.__init__-88"><span class="linenos"> 88</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
+</span><span id="Solver.__init__-89"><a href="#Solver.__init__-89"><span class="linenos"> 89</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
+</span><span id="Solver.__init__-90"><a href="#Solver.__init__-90"><span class="linenos"> 90</span></a>            <span class="p">),</span>
+</span><span id="Solver.__init__-91"><a href="#Solver.__init__-91"><span class="linenos"> 91</span></a>            <span class="s2">&quot;nonosc_beta&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="Solver.__init__-92"><a href="#Solver.__init__-92"><span class="linenos"> 92</span></a>                <span class="n">scalar_field</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+</span><span id="Solver.__init__-93"><a href="#Solver.__init__-93"><span class="linenos"> 93</span></a>                <span class="k">if</span> <span class="n">stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span>
+</span><span id="Solver.__init__-94"><a href="#Solver.__init__-94"><span class="linenos"> 94</span></a>                <span class="k">else</span> <span class="n">null_scalar_field</span><span class="p">()</span>
+</span><span id="Solver.__init__-95"><a href="#Solver.__init__-95"><span class="linenos"> 95</span></a>            <span class="p">),</span>
+</span><span id="Solver.__init__-96"><a href="#Solver.__init__-96"><span class="linenos"> 96</span></a>        <span class="p">}</span>
+</span><span id="Solver.__init__-97"><a href="#Solver.__init__-97"><span class="linenos"> 97</span></a>        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+</span><span id="Solver.__init__-98"><a href="#Solver.__init__-98"><span class="linenos"> 98</span></a>            <span class="n">field</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">stepper</span><span class="o">.</span><span class="n">traversals</span><span class="p">)</span>
+</span><span id="Solver.__init__-99"><a href="#Solver.__init__-99"><span class="linenos"> 99</span></a>
+</span><span id="Solver.__init__-100"><a href="#Solver.__init__-100"><span class="linenos">100</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span> <span class="o">=</span> <span class="n">stepper</span>
 </span></pre></div>
 
 
@@ -577,11 +603,11 @@ a scala g_factor field</p>
 
     </div>
     <a class="headerlink" href="#Solver.advectee"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.advectee-97"><a href="#Solver.advectee-97"><span class="linenos"> 97</span></a>    <span class="nd">@property</span>
-</span><span id="Solver.advectee-98"><a href="#Solver.advectee-98"><span class="linenos"> 98</span></a>    <span class="k">def</span> <span class="nf">advectee</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-</span><span id="Solver.advectee-99"><a href="#Solver.advectee-99"><span class="linenos"> 99</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advectee scalar field (with halo), modified by advance(),</span>
-</span><span id="Solver.advectee-100"><a href="#Solver.advectee-100"><span class="linenos">100</span></a><span class="sd">        may be modified from user code (e.g., source-term handling)&quot;&quot;&quot;</span>
-</span><span id="Solver.advectee-101"><a href="#Solver.advectee-101"><span class="linenos">101</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advectee&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.advectee-102"><a href="#Solver.advectee-102"><span class="linenos">102</span></a>    <span class="nd">@property</span>
+</span><span id="Solver.advectee-103"><a href="#Solver.advectee-103"><span class="linenos">103</span></a>    <span class="k">def</span> <span class="nf">advectee</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+</span><span id="Solver.advectee-104"><a href="#Solver.advectee-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advectee scalar field (with halo), modified by advance(),</span>
+</span><span id="Solver.advectee-105"><a href="#Solver.advectee-105"><span class="linenos">105</span></a><span class="sd">        may be modified from user code (e.g., source-term handling)&quot;&quot;&quot;</span>
+</span><span id="Solver.advectee-106"><a href="#Solver.advectee-106"><span class="linenos">106</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advectee&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -600,11 +626,11 @@ may be modified from user code (e.g., source-term handling)</p>
 
     </div>
     <a class="headerlink" href="#Solver.advector"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.advector-103"><a href="#Solver.advector-103"><span class="linenos">103</span></a>    <span class="nd">@property</span>
-</span><span id="Solver.advector-104"><a href="#Solver.advector-104"><span class="linenos">104</span></a>    <span class="k">def</span> <span class="nf">advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorField</span><span class="p">:</span>
-</span><span id="Solver.advector-105"><a href="#Solver.advector-105"><span class="linenos">105</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advector vector field (with halo), unmodified by advance(),</span>
-</span><span id="Solver.advector-106"><a href="#Solver.advector-106"><span class="linenos">106</span></a><span class="sd">        may be modified from user code&quot;&quot;&quot;</span>
-</span><span id="Solver.advector-107"><a href="#Solver.advector-107"><span class="linenos">107</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advector&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.advector-108"><a href="#Solver.advector-108"><span class="linenos">108</span></a>    <span class="nd">@property</span>
+</span><span id="Solver.advector-109"><a href="#Solver.advector-109"><span class="linenos">109</span></a>    <span class="k">def</span> <span class="nf">advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorField</span><span class="p">:</span>
+</span><span id="Solver.advector-110"><a href="#Solver.advector-110"><span class="linenos">110</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advector vector field (with halo), unmodified by advance(),</span>
+</span><span id="Solver.advector-111"><a href="#Solver.advector-111"><span class="linenos">111</span></a><span class="sd">        may be modified from user code&quot;&quot;&quot;</span>
+</span><span id="Solver.advector-112"><a href="#Solver.advector-112"><span class="linenos">112</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;advector&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -623,16 +649,28 @@ may be modified from user code</p>
 
     </div>
     <a class="headerlink" href="#Solver.g_factor"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.g_factor-109"><a href="#Solver.g_factor-109"><span class="linenos">109</span></a>    <span class="nd">@property</span>
-</span><span id="Solver.g_factor-110"><a href="#Solver.g_factor-110"><span class="linenos">110</span></a>    <span class="k">def</span> <span class="nf">g_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-</span><span id="Solver.g_factor-111"><a href="#Solver.g_factor-111"><span class="linenos">111</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;g_factor field (with halo), unmodified by advance(),</span>
-</span><span id="Solver.g_factor-112"><a href="#Solver.g_factor-112"><span class="linenos">112</span></a><span class="sd">        assumed to be constant-in-time&quot;&quot;&quot;</span>
-</span><span id="Solver.g_factor-113"><a href="#Solver.g_factor-113"><span class="linenos">113</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.g_factor-114"><a href="#Solver.g_factor-114"><span class="linenos">114</span></a>    <span class="nd">@property</span>
+</span><span id="Solver.g_factor-115"><a href="#Solver.g_factor-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">g_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+</span><span id="Solver.g_factor-116"><a href="#Solver.g_factor-116"><span class="linenos">116</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.</span>
+</span><span id="Solver.g_factor-117"><a href="#Solver.g_factor-117"><span class="linenos">117</span></a><span class="sd">        Can be used as a Jacobian for coordinate transformations,</span>
+</span><span id="Solver.g_factor-118"><a href="#Solver.g_factor-118"><span class="linenos">118</span></a><span class="sd">        e.g. into spherical coordinates.</span>
+</span><span id="Solver.g_factor-119"><a href="#Solver.g_factor-119"><span class="linenos">119</span></a><span class="sd">        For this type of usage, see</span>
+</span><span id="Solver.g_factor-120"><a href="#Solver.g_factor-120"><span class="linenos">120</span></a><span class="sd">        `PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14`.</span>
+</span><span id="Solver.g_factor-121"><a href="#Solver.g_factor-121"><span class="linenos">121</span></a><span class="sd">        Can also be used to account for spatial variability of fluid density, see</span>
+</span><span id="Solver.g_factor-122"><a href="#Solver.g_factor-122"><span class="linenos">122</span></a><span class="sd">        `PyMPDATA_examples.Shipway_and_Hill_2012`.</span>
+</span><span id="Solver.g_factor-123"><a href="#Solver.g_factor-123"><span class="linenos">123</span></a><span class="sd">        e.g. the changing density of a fluid.&quot;&quot;&quot;</span>
+</span><span id="Solver.g_factor-124"><a href="#Solver.g_factor-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>g_factor field (with halo), unmodified by advance(),
-assumed to be constant-in-time</p>
+            <div class="docstring"><p>G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.
+Can be used as a Jacobian for coordinate transformations,
+e.g. into spherical coordinates.
+For this type of usage, see
+<code><a href="../PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14.html">PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14</a></code>.
+Can also be used to account for spatial variability of fluid density, see
+<code><a href="../PyMPDATA_examples/Shipway_and_Hill_2012.html">PyMPDATA_examples.Shipway_and_Hill_2012</a></code>.
+e.g. the changing density of a fluid.</p>
 </div>
 
 
@@ -648,38 +686,38 @@ assumed to be constant-in-time</p>
 
     </div>
     <a class="headerlink" href="#Solver.advance"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.advance-115"><a href="#Solver.advance-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span>
-</span><span id="Solver.advance-116"><a href="#Solver.advance-116"><span class="linenos">116</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Solver.advance-117"><a href="#Solver.advance-117"><span class="linenos">117</span></a>        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span id="Solver.advance-118"><a href="#Solver.advance-118"><span class="linenos">118</span></a>        <span class="n">mu_coeff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver.advance-119"><a href="#Solver.advance-119"><span class="linenos">119</span></a>        <span class="n">post_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver.advance-120"><a href="#Solver.advance-120"><span class="linenos">120</span></a>        <span class="n">post_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="Solver.advance-121"><a href="#Solver.advance-121"><span class="linenos">121</span></a>    <span class="p">):</span>
-</span><span id="Solver.advance-122"><a href="#Solver.advance-122"><span class="linenos">122</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion</span>
-</span><span id="Solver.advance-123"><a href="#Solver.advance-123"><span class="linenos">123</span></a><span class="sd">        coefficients (one value per dimension) as well as `post_iter` and `post_step`</span>
-</span><span id="Solver.advance-124"><a href="#Solver.advance-124"><span class="linenos">124</span></a><span class="sd">        callbacks expected to be `numba.jitclass`es with a `call` method, for</span>
-</span><span id="Solver.advance-125"><a href="#Solver.advance-125"><span class="linenos">125</span></a><span class="sd">        signature see `PostStepNull` and `PostIterNull`;</span>
-</span><span id="Solver.advance-126"><a href="#Solver.advance-126"><span class="linenos">126</span></a><span class="sd">        returns CPU time per timestep (units as returned by `clock.clock()`)&quot;&quot;&quot;</span>
-</span><span id="Solver.advance-127"><a href="#Solver.advance-127"><span class="linenos">127</span></a>        <span class="k">if</span> <span class="n">mu_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Solver.advance-128"><a href="#Solver.advance-128"><span class="linenos">128</span></a>            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="Solver.advance-129"><a href="#Solver.advance-129"><span class="linenos">129</span></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="Solver.advance-130"><a href="#Solver.advance-130"><span class="linenos">130</span></a>            <span class="n">mu_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-</span><span id="Solver.advance-131"><a href="#Solver.advance-131"><span class="linenos">131</span></a>        <span class="k">if</span> <span class="p">(</span>
-</span><span id="Solver.advance-132"><a href="#Solver.advance-132"><span class="linenos">132</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
-</span><span id="Solver.advance-133"><a href="#Solver.advance-133"><span class="linenos">133</span></a>            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">META_IS_NULL</span><span class="p">]</span>
-</span><span id="Solver.advance-134"><a href="#Solver.advance-134"><span class="linenos">134</span></a>        <span class="p">):</span>
-</span><span id="Solver.advance-135"><a href="#Solver.advance-135"><span class="linenos">135</span></a>            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
-</span><span id="Solver.advance-136"><a href="#Solver.advance-136"><span class="linenos">136</span></a>
-</span><span id="Solver.advance-137"><a href="#Solver.advance-137"><span class="linenos">137</span></a>        <span class="n">post_step</span> <span class="o">=</span> <span class="n">post_step</span> <span class="ow">or</span> <span class="n">PostStepNull</span><span class="p">()</span>
-</span><span id="Solver.advance-138"><a href="#Solver.advance-138"><span class="linenos">138</span></a>        <span class="n">post_iter</span> <span class="o">=</span> <span class="n">post_iter</span> <span class="ow">or</span> <span class="n">PostIterNull</span><span class="p">()</span>
-</span><span id="Solver.advance-139"><a href="#Solver.advance-139"><span class="linenos">139</span></a>
-</span><span id="Solver.advance-140"><a href="#Solver.advance-140"><span class="linenos">140</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="p">(</span>
-</span><span id="Solver.advance-141"><a href="#Solver.advance-141"><span class="linenos">141</span></a>            <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
-</span><span id="Solver.advance-142"><a href="#Solver.advance-142"><span class="linenos">142</span></a>            <span class="n">mu_coeff</span><span class="o">=</span><span class="n">mu_coeff</span><span class="p">,</span>
-</span><span id="Solver.advance-143"><a href="#Solver.advance-143"><span class="linenos">143</span></a>            <span class="n">post_step</span><span class="o">=</span><span class="n">post_step</span><span class="p">,</span>
-</span><span id="Solver.advance-144"><a href="#Solver.advance-144"><span class="linenos">144</span></a>            <span class="n">post_iter</span><span class="o">=</span><span class="n">post_iter</span><span class="p">,</span>
-</span><span id="Solver.advance-145"><a href="#Solver.advance-145"><span class="linenos">145</span></a>            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">,</span>
-</span><span id="Solver.advance-146"><a href="#Solver.advance-146"><span class="linenos">146</span></a>        <span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Solver.advance-126"><a href="#Solver.advance-126"><span class="linenos">126</span></a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span>
+</span><span id="Solver.advance-127"><a href="#Solver.advance-127"><span class="linenos">127</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="Solver.advance-128"><a href="#Solver.advance-128"><span class="linenos">128</span></a>        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="Solver.advance-129"><a href="#Solver.advance-129"><span class="linenos">129</span></a>        <span class="n">mu_coeff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver.advance-130"><a href="#Solver.advance-130"><span class="linenos">130</span></a>        <span class="n">post_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver.advance-131"><a href="#Solver.advance-131"><span class="linenos">131</span></a>        <span class="n">post_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="Solver.advance-132"><a href="#Solver.advance-132"><span class="linenos">132</span></a>    <span class="p">):</span>
+</span><span id="Solver.advance-133"><a href="#Solver.advance-133"><span class="linenos">133</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion</span>
+</span><span id="Solver.advance-134"><a href="#Solver.advance-134"><span class="linenos">134</span></a><span class="sd">        coefficients (one value per dimension) as well as `post_iter` and `post_step`</span>
+</span><span id="Solver.advance-135"><a href="#Solver.advance-135"><span class="linenos">135</span></a><span class="sd">        callbacks expected to be `numba.jitclass`es with a `call` method, for</span>
+</span><span id="Solver.advance-136"><a href="#Solver.advance-136"><span class="linenos">136</span></a><span class="sd">        signature see `PostStepNull` and `PostIterNull`;</span>
+</span><span id="Solver.advance-137"><a href="#Solver.advance-137"><span class="linenos">137</span></a><span class="sd">        returns CPU time per timestep (units as returned by `clock.clock()`)&quot;&quot;&quot;</span>
+</span><span id="Solver.advance-138"><a href="#Solver.advance-138"><span class="linenos">138</span></a>        <span class="k">if</span> <span class="n">mu_coeff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Solver.advance-139"><a href="#Solver.advance-139"><span class="linenos">139</span></a>            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="Solver.advance-140"><a href="#Solver.advance-140"><span class="linenos">140</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="Solver.advance-141"><a href="#Solver.advance-141"><span class="linenos">141</span></a>            <span class="n">mu_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+</span><span id="Solver.advance-142"><a href="#Solver.advance-142"><span class="linenos">142</span></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="Solver.advance-143"><a href="#Solver.advance-143"><span class="linenos">143</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span>
+</span><span id="Solver.advance-144"><a href="#Solver.advance-144"><span class="linenos">144</span></a>            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">[</span><span class="s2">&quot;g_factor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="n">META_IS_NULL</span><span class="p">]</span>
+</span><span id="Solver.advance-145"><a href="#Solver.advance-145"><span class="linenos">145</span></a>        <span class="p">):</span>
+</span><span id="Solver.advance-146"><a href="#Solver.advance-146"><span class="linenos">146</span></a>            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</span><span id="Solver.advance-147"><a href="#Solver.advance-147"><span class="linenos">147</span></a>
+</span><span id="Solver.advance-148"><a href="#Solver.advance-148"><span class="linenos">148</span></a>        <span class="n">post_step</span> <span class="o">=</span> <span class="n">post_step</span> <span class="ow">or</span> <span class="n">PostStepNull</span><span class="p">()</span>
+</span><span id="Solver.advance-149"><a href="#Solver.advance-149"><span class="linenos">149</span></a>        <span class="n">post_iter</span> <span class="o">=</span> <span class="n">post_iter</span> <span class="ow">or</span> <span class="n">PostIterNull</span><span class="p">()</span>
+</span><span id="Solver.advance-150"><a href="#Solver.advance-150"><span class="linenos">150</span></a>
+</span><span id="Solver.advance-151"><a href="#Solver.advance-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stepper</span><span class="p">(</span>
+</span><span id="Solver.advance-152"><a href="#Solver.advance-152"><span class="linenos">152</span></a>            <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+</span><span id="Solver.advance-153"><a href="#Solver.advance-153"><span class="linenos">153</span></a>            <span class="n">mu_coeff</span><span class="o">=</span><span class="n">mu_coeff</span><span class="p">,</span>
+</span><span id="Solver.advance-154"><a href="#Solver.advance-154"><span class="linenos">154</span></a>            <span class="n">post_step</span><span class="o">=</span><span class="n">post_step</span><span class="p">,</span>
+</span><span id="Solver.advance-155"><a href="#Solver.advance-155"><span class="linenos">155</span></a>            <span class="n">post_iter</span><span class="o">=</span><span class="n">post_iter</span><span class="p">,</span>
+</span><span id="Solver.advance-156"><a href="#Solver.advance-156"><span class="linenos">156</span></a>            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fields</span><span class="p">,</span>
+</span><span id="Solver.advance-157"><a href="#Solver.advance-157"><span class="linenos">157</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
