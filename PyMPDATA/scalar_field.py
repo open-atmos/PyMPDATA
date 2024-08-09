@@ -12,7 +12,7 @@ from PyMPDATA.impl.field import Field
 
 
 class ScalarField(Field):
-    """n-dimensional scalar field including halo data"""
+    """n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc."""
 
     def __init__(self, data: np.ndarray, halo: int, boundary_conditions: tuple):
         super().__init__(

@@ -36,9 +36,14 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
 
 
 class Solver:
-    """solution orchestrator requireing prior instantiation of: a `Stepper`,
-    a scalar advectee field, a vector advector field and optionally
-    a scala g_factor field"""
+    """Solution orchestrator requiring prior instantiation of: a `Stepper`,
+    a scalar advectee field (that which is advected),
+    a vector advector field (that which advects),
+    and optionally a scalar g_factor field (used in some cases of the advection equation).
+    Note: in some cases of advection, i.e. momentum advection,
+    the advectee can act upon the advector.
+    See `PyMPDATA_examples.Jarecka_et_al_2015` for an example of this.
+    """
 
     def __init__(
         self,
@@ -107,8 +112,14 @@ class Solver:
 
     @property
     def g_factor(self) -> ScalarField:
-        """g_factor field (with halo), unmodified by advance(),
-        assumed to be constant-in-time"""
+        """G_factor field (with halo), unmodified by advance(), assumed to be constant-in-time.
+        Can be used as a Jacobian for coordinate transformations,
+        e.g. into spherical coordinates.
+        For this type of usage, see
+        `PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14`.
+        Can also be used to account for spatial variability of fluid density, see
+        `PyMPDATA_examples.Shipway_and_Hill_2012`.
+        e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
     def advance(
