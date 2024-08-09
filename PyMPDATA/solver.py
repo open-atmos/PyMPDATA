@@ -117,7 +117,8 @@ class Solver:
         e.g. into spherical coordinates.
         For this type of usage, see
         `PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14`.
-        Can also be used to account for certain physical properties of the advection equation
+        Can also be used to account for spatial variability of fluid density, see
+        `PyMPDATA_examples.Shipway_and_Hill_2012`.
         e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
