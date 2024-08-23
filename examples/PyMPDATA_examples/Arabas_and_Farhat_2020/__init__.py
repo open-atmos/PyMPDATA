@@ -6,5 +6,5 @@ The paper is available at: [Arabas and Farhat 2020](https://doi.org/10.1016/j.ca
 Each notebook in this module corresponds to a figure of a table in the paper.
 I.e. the notebook `fig_1.ipynb` corresponds to Figure 1 in the paper.
 """
-from .simulation import Simulation
 
+from .simulation import Simulation
