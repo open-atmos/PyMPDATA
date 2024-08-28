@@ -38,7 +38,18 @@ setup(
             if CI and not _32bit
             else ""
         ),
-        "numpy" + ("==1.24.4" if CI else ""),
+        "numpy"
+        + (
+            {
+                8: "==1.24.4",
+                9: "==1.24.4",
+                10: "==1.24.4",
+                11: "==1.24.4",
+                12: "==1.26.4",
+            }[sys.version_info.minor]
+            if CI
+            else ""
+        ),
         "pystrict",
     ],
     extras_require={
