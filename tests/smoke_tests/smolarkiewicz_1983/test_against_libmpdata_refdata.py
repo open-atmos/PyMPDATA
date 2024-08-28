@@ -94,7 +94,7 @@ def test_against_libmpdata_refdata(options):
         steps_done += timesteps
         psi = simulation.solver.advectee.get()
         absdiff = np.abs(psi - SETTINGS.advectee)
-        volume = np.product(SETTINGS.grid)
+        volume = np.prod(SETTINGS.grid)
         time = steps_done * SETTINGS.dt
         actual[steps_done] = {
             "min(solution)": np.amin(psi),
