@@ -232,6 +232,13 @@ jobs:
           NUMBA_OPT: 1
         run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
+      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
+        uses: eine/tip@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            examples/PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/fig_4.svg
+
   devops:
     runs-on: ubuntu-latest
     steps:

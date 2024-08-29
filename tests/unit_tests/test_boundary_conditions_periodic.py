@@ -124,8 +124,8 @@ class Test2D:
         grid_1 = (self.size[OUTER], self.size[INNER] + 1)
         vct = VectorField(
             (
-                np.arange(np.product(grid_0), dtype=float).reshape(grid_0),
-                np.arange(np.product(grid_1), dtype=float).reshape(grid_1),
+                np.arange(np.prod(grid_0), dtype=float).reshape(grid_0),
+                np.arange(np.prod(grid_1), dtype=float).reshape(grid_1),
             ),
             options.n_halo,
             self.bcs,
