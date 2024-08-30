@@ -237,7 +237,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            /tmp/pytest-of-runner/pytest-0/test_run_notebooks_examples_Py15/fig_4.svg
+            /tmp/pytest-of-runner/pytest-*/test_run_notebooks_examples_*/fig_4.svg
 
   devops:
     runs-on: ubuntu-latest
