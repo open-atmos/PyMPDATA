@@ -101,9 +101,6 @@ jobs:
           python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t pdoc_templates
       
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
-        uses: lhotari/action-upterm@v1
-      
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           BRANCH: pdoc
@@ -235,6 +232,10 @@ jobs:
       - env:
           NUMBA_OPT: 1
         run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
+
+      
+      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
+        uses: lhotari/action-upterm@v1
 
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
         uses: eine/tip@master
