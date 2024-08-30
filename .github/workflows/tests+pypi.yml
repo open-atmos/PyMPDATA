@@ -99,6 +99,10 @@ jobs:
           pip install -e . -e ./examples
           export PDOC_ALLOW_EXEC=1
           python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t pdoc_templates
+      
+      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
+        uses: lhotari/action-upterm@v1
+      
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
@@ -291,4 +295,3 @@ jobs:
         uses: pypa/gh-action-pypi-publish@unstable/v1
         with:
           packages-dir: ${{ matrix.package-dir }}/dist
-
