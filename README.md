@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:50pt" alt="pympdata logo">
+# <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" width=100 height=113 alt="pympdata logo">
 
 # PyMPDATA
 
