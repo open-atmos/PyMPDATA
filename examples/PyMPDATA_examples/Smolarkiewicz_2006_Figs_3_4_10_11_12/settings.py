@@ -34,5 +34,5 @@ class Settings:
         amplitude = 2
         offset = 2
 
-        pdf = offset + np.where(np.abs(x - x_mid) <= 10, amplitude, 0)
+        pdf = offset + np.where(np.abs(x - x_mid) <= 12, amplitude, 0)
         return np.cumsum(pdf)

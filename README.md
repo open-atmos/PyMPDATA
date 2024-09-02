@@ -1,3 +1,5 @@
+# <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" width=100 height=113 alt="pympdata logo">
+
 # PyMPDATA
 
 [![Python 3](https://img.shields.io/static/v1?label=Python&logo=Python&color=3776AB&message=3)](https://www.python.org/)
@@ -19,7 +21,7 @@
 [![Coverage Status](https://codecov.io/gh/open-atmos/PyMPDATA/branch/main/graph/badge.svg)](https://app.codecov.io/gh/open-atmos/PyMPDATA)
 
 [![PyPI version](https://badge.fury.io/py/PyMPDATA.svg)](https://pypi.org/project/PyMPDATA)
-[![API docs](https://img.shields.io/badge/API_docs-pdoc3-blue.svg)](https://open-atmos.github.io/PyMPDATA/)
+[![API docs](https://shields.mitmproxy.org/badge/docs-pdoc.dev-brightgreen.svg)](https://open-atmos.github.io/PyMPDATA/index.html)
 
 PyMPDATA is a high-performance Numba-accelerated Pythonic implementation of the MPDATA 
   algorithm of Smolarkiewicz et al. used in geophysical fluid dynamics and beyond.
@@ -114,7 +116,7 @@ see, e.g. [Smolarkiewicz and Margolin 1998](https://doi.org/10.1006/jcph.1998.59
 The key classes constituting the PyMPDATA interface are summarised below with code
 snippets exemplifying usage of PyMPDATA from Python, Julia and Matlab.
 
-A [pdoc-generated](https://pdoc3.github.io/pdoc) documentation of PyMPDATA public API is maintained at: [https://open-atmos.github.io/PyMPDATA](https://open-atmos.github.io/PyMPDATA) 
+A [pdoc-generated](https://pdoc.dev/) documentation of PyMPDATA public API is maintained at: [https://open-atmos.github.io/PyMPDATA](  https://open-atmos.github.io/PyMPDATA/index.html) 
 
 #### Options class
 
@@ -182,7 +184,7 @@ in which:
 - vector field components are discretised onto cell walls.
 
 The schematic of the employed grid/domain layout in two dimensions is given below
-(with the Python code snippet generating the figure):
+(with the Python code snippet generating the figure as a part of CI workflow):
 <details>
 <summary>Python code (click to expand)</summary>
 
@@ -446,7 +448,7 @@ additional memory required by the solver is
 allocated according to the options provided. 
 
 The only method of the [``Solver``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html) class besides the
-init is [``advance(n_steps, mu_coeff, ...)``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html#PyMPDATA.solver.Solver.advance) 
+init is [``advance(n_steps, mu_coeff, ...)``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html#Solver.advance) 
 which advances the solution by ``n_steps`` timesteps, optionally
 taking into account a given diffusion coefficient ``mu_coeff``.
 

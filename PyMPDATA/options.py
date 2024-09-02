@@ -73,7 +73,13 @@ class Options:
 
     @property
     def n_iters(self) -> int:
-        """number of iterations (1: upwind, 2: upwind + one corrective iteration, ...)"""
+        """Number of corrective iterations in the MPDATA algorithm + 1
+        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).
+        Bigger values mean smaller error, but more computational cost.
+        It does not change the order of the method.
+        The order of the method depends on the variant of antidiffusive
+        velocity used, see for example `third_order_terms` option.
+        Note: not to confuse with n_steps in the Stepper."""
         return self._values["n_iters"]
 
     @property
@@ -86,7 +92,7 @@ class Options:
 
     @property
     def epsilon(self) -> float:
-        """value of constant used to prevent from divisins by zero
+        """value of constant used to prevent from divisions by zero
         in statements such as (a - b)/(a + b + eps)"""
         return self._values["epsilon"]
 
@@ -142,7 +148,13 @@ class Options:
 
     @property
     def n_halo(self) -> int:
-        """halo extent for a given options set"""
+        """Halo extent for a given options set.
+        The halo extent is the number of 'ghost layers' that need to be added
+        to the outside of the domain to ensure that the MPDATA stencil operations can be
+        applied to the edges of the domain.
+        It is similar to
+        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).
+        The halo extent is determined by the options set."""
         if self.divergent_flow or self.nonoscillatory or self.third_order_terms:
             return 2
         return 1

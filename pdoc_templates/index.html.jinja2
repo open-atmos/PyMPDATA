@@ -1,0 +1,26 @@
+{% extends "default/index.html.jinja2" %}
+
+{% block title %}PyMPDATA module list{% endblock %}
+
+{% block nav %}
+    <h2>Available Modules</h2>
+    <ul>
+        {% for submodule in all_modules if "." not in submodule %}
+            <li><a href="{{ submodule.replace(".","/") }}.html">{{ submodule }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <main class="pdoc">
+    <a href="https://open-atmos.github.io/PyMPDATA/index.html">
+        <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:50pt" alt="pympdata logo">
+    </a>
+    {% filter to_html %}
+# PyMPDATA documentation home page
+Work in progress...
+    {% endfilter %}
+
+    </main>
+    {% include "search.html.jinja2" %}
+{% endblock %}
