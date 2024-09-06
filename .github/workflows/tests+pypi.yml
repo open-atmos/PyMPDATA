@@ -236,6 +236,7 @@ jobs:
         run: |
           mkdir -p /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
+          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
         
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
         uses: eine/tip@master
