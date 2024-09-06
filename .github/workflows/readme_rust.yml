@@ -1,0 +1,26 @@
+name: readme_rust
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - run: pip install -e .
+      - run: pip install pytest-codeblocks pytest
+      - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.rs', 'w'); f.writelines(block.code for block in code if block.syntax=='Rust'); f.close()"
+      - run: cargo run readme.rs

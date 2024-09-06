@@ -144,6 +144,14 @@ In most use cases of PyMPDATA, the first thing to do is to instantiate the
 [``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class 
 with arguments suiting the problem at hand, e.g.:
 <details>
+<summary>Rust code</summary>
+```Rust
+fn main() {
+  writeln!("Hello world!");
+}
+```
+</details>
+<details>
 <summary>Julia code (click to expand)</summary>
 
 ```Julia
