@@ -24,4 +24,6 @@ jobs:
       - run: pip install -e .
       - run: pip install pytest-codeblocks pytest
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.rs', 'w'); f.writelines(block.code for block in code if block.syntax=='Rust'); f.close()"
-      - run: cargo run readme.rs
+      - run: |
+          cargo new readme
+          cargo run
