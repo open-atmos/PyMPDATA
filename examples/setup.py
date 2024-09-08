@@ -35,6 +35,7 @@ setup(
         "joblib",
         "h5py",
         "sympy",
+        "imageio",
         "meshio",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
