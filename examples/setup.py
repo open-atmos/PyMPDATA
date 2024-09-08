@@ -35,6 +35,7 @@ setup(
         "joblib",
         "h5py",
         "sympy",
+        "meshio",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     license="GPL-3.0",
