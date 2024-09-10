@@ -6,6 +6,9 @@ PyMPDATA uses staggered grid with the following node placement for
 `PyMPDATA.scalar_field.ScalarField` and
 `PyMPDATA.vector_field.VectorField` elements:
 ![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)
+
+.. include:: ../README.md
+
 """
 
 # pylint: disable=invalid-name
