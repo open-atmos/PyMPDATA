@@ -232,8 +232,7 @@ jobs:
           NUMBA_OPT: 1
         run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
-        run: |
+      - run: |
           mkdir -p /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
@@ -243,7 +242,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            /github/home/figures/*.svg
+            /github/home/figures/*
 
   devops:
     runs-on: ubuntu-latest
