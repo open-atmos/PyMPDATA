@@ -145,6 +145,7 @@ In most use cases of PyMPDATA, the first thing to do is to instantiate the
 with arguments suiting the problem at hand, e.g.:
 <details>
 <summary>Rust code</summary>
+
 ```Rust
 fn main() {
   writeln!("Hello world!");
