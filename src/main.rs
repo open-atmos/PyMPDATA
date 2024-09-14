@@ -1,7 +1,5 @@
 use pyo3::prelude::*;
 use pyo3::types::{IntoPyDict, PyDict, PyTuple};
-use std::io::*;
-use std::fs::*;
 
 fn main() -> PyResult<()> {
     Python::with_gil(|py| {
