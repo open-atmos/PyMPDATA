@@ -244,6 +244,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             /github/home/figures/*.svg
+            /github/home/figures/*.gif
 
   devops:
     runs-on: ubuntu-latest
