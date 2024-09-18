@@ -1,5 +1,4 @@
 # <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" width=100 height=113 alt="pympdata logo">
-
 # PyMPDATA
 
 [![Python 3](https://img.shields.io/static/v1?label=Python&logo=Python&color=3776AB&message=3)](https://www.python.org/)
@@ -154,6 +153,7 @@ Options = pyimport("PyMPDATA").Options
 options = Options(n_iters=2)
 ```
 </details>
+
 <details>
 <summary>Matlab code (click to expand)</summary>
 
@@ -162,6 +162,7 @@ Options = py.importlib.import_module('PyMPDATA').Options;
 options = Options(pyargs('n_iters', 2));
 ```
 </details>
+
 <details open>
 <summary>Python code (click to expand)</summary>
 
