@@ -20,7 +20,7 @@ jobs:
           GIT_SHA: $GITHUB_SHA
           JOURNAL: joss
       - name: Upload
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: paper
           path: paper/
