@@ -77,6 +77,7 @@ setup(
             "pytest",
             "pytest-benchmark",
             "joblib" + ("==1.4.0" if CI else ""),
+            "imageio",
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
