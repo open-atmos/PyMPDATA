@@ -3,28 +3,51 @@
 {% block title %}PyMPDATA module list{% endblock %}
 
 {% block nav %}
-    <h2>Available Modules</h2>
-    <ul>
-        {% for submodule in all_modules if "." not in submodule %}
-            <li><a href="{{ submodule.replace(".","/") }}.html">{{ submodule }}</a></li>
-        {% endfor %}
-    </ul>
 {% endblock %}
+
 
 {% block content %}
     <main class="pdoc">
-    <a href="https://open-atmos.github.io/PyMPDATA/index.html">
-        <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:50pt" alt="pympdata logo">
-    </a>
+    <center>
+      <a href="https://open-atmos.github.io/PyMPDATA/index.html">
+        <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:15em" alt="pympdata logo">
+      </a>
+    </center>
     <div>
         <h2>What is PyMPDATA?</h2>
         <p>
             PyMPDATA is a <b>Numba-accelerated</b> Pythonic implementation of the <b>MPDATA algorithm</b>
-            of Smolarkiewicz et al. used in geophysical fluid dynamics and beyond for
+            of <a href="https://doi.org/10.1016/0021-9991(84)90121-9">Smolarkiewicz et al.</a> used in geophysical fluid dynamics and beyond for
             <b>numerically solving generalised convection-diffusion PDEs</b> in 1D, 2D and 3D structured meshes
             with coordinate transformations.
         </p>
     </div>
+
+    <h2>PyMPDATA resources</h2>
+    <table style="width:100%">
+      <tr>
+        <th width="33%"><big><strong>PyMPDATA</strong></big></th>
+        <th width="33%"><big><strong>PyMPDATA-examples</strong></big></th>
+        <th width="33%"><big><strong>PyMPDATA-MPI</strong></big></th>
+      <tr>
+      <tr style="font-size="2em"">
+        <td>
+          <ul>
+            <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA.html">docs</a></li>
+            <li><a href="https://pypi.org/p/PyMPDATA">pypi</a></li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_examples.html">docs</a></li>
+            <li><a href="https://pypi.org/p/PyMPDATA-examples">pypi</a></li>
+          </ul>
+        </td>
+        <td>
+        </td>
+      <tr>
+    </table>
+
     <div>
         <h2>What is the difference between PyMPDATA and PyMPDATA-examples?</h2>
         <p>
@@ -77,23 +100,6 @@
             We encourage to use the <a href="https://github.com/open-atmos/PyMPDATA/discussions">GitHub Discussions</a>
             feature (rather than the issue tracker) for seeking support in understanding,
             using and extending PyMPDATA code.
-        </p>
-    </div>
-    <div>
-        <h2>Credits and License</h2>
-        <p>
-            Development of PyMPDATA was supported by the EU through a grant of the
-            <a href="http://fnp.org.pl">Foundation for Polish Science (POIR.04.04.00-00-5E1C/18)</a>.
-        </p>
-        <p>
-            licence: GPL v3
-        </p>
-        <p>
-            As of now, the copyright to the entire PyMPDATA codebase is with the Jagiellonian
-            University, and code contributions are assumed to imply transfer of copyright.
-            Should there be a need to make an exception, please indicate it when creating
-            a pull request or contributing code in any other way. In any case,
-            the license of the contributed code must be compatible with GPL v3.
         </p>
     </div>
 

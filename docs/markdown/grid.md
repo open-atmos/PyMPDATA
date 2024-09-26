@@ -1,4 +1,4 @@
-#### Arakawa-C grid layer and boundary conditions
+### Arakawa-C grid layer and boundary conditions
 
 In PyMPDATA, the solution domain is assumed to extend from the
 first cell's boundary to the last cell's boundary (thus the

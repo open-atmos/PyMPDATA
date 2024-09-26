@@ -1,4 +1,6 @@
-## Options class
+## Tutorial (in Python, Julia and Matlab)
+
+### Options class
 
 The [``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class
 groups both algorithm variant options as well as some implementation-related

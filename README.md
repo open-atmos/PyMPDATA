@@ -51,9 +51,8 @@ To install PyMPDATA, one may use: ``pip install PyMPDATA`` (or
 ``pip install git+https://github.com/open-atmos/PyMPDATA.git`` to get updates beyond the latest release).
 PyMPDATA depends on ``NumPy`` and ``Numba``.
 
-Running the tests shipped with the package requires additional packages listed in the 
-[test-time-requirements.txt](https://github.com/open-atmos/PyMPDATA/blob/main/test-time-requirements.txt) file
-(which include ``PyMPDATA-examples``, see below).
+Running the tests shipped with the package requires additional packages that are installed
+if pip is invoked with: ``pip install PyMPDATA[tests]``.
 
 ## Examples (Jupyter notebooks reproducing results from literature):
 
@@ -115,7 +114,8 @@ from the continuous integration setup which automates execution of tests
 with the newly added code. 
 
 As of now, the copyright to the entire PyMPDATA codebase is with the Jagiellonian
-University, and code contributions are assumed to imply transfer of copyright.
+University (2019-2023) and AGH University of Krakow (2023 onwards) - work places of the main maintainer.
+Code contributions are assumed to imply transfer of copyright.
 Should there be a need to make an exception, please indicate it when creating
 a pull request or contributing code in any other way. In any case, 
 the license of the contributed code must be compatible with GPL v3.
@@ -137,29 +137,9 @@ Please use the PyMPDATA issue-tracking and dicsussion infrastructure for `PyMPDA
 We look forward to your contributions and feedback.
 
 ## Credits:
-Development of PyMPDATA was supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18).
+Development of PyMPDATA was supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18) 
+and by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220)
 
-copyright: Jagiellonian University   
+copyright: Jagiellonian University (2019-2023) & AGH University of Krakow (2023 onwards)
 licence: GPL v3   
 
-## Other open-source MPDATA implementations:
-- mpdat_2d in babyEULAG (FORTRAN)
-  https://github.com/igfuw/bE_SDs/blob/master/babyEULAG.SDs.for#L741
-- mpdata-oop (C++, Fortran, Python)
-  https://github.com/igfuw/mpdata-oop
-- apc-llc/mpdata (C++)
-  https://github.com/apc-llc/mpdata
-- libmpdata++ (C++):
-  https://github.com/igfuw/libmpdataxx
-- AtmosFOAM:
-  https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
-
-## Other Python packages for solving hyperbolic transport equations
-
-- PyPDE: https://pypi.org/project/PyPDE/
-- FiPy: https://pypi.org/project/FiPy/
-- ader: https://pypi.org/project/ader/
-- centpy: https://pypi.org/project/centpy/
-- mattflow: https://pypi.org/project/mattflow/
-- FastFD: https://pypi.org/project/FastFD/
-- Pyclaw: https://www.clawpack.org/pyclaw/

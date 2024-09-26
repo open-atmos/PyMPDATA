@@ -1,4 +1,4 @@
-#### Stepper
+### Stepper
 
 The logic of the MPDATA iterative solver is represented
 in PyMPDATA by the [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html) class.

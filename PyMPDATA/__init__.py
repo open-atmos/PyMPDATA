@@ -7,7 +7,6 @@ PyMPDATA uses staggered grid with the following node placement for
 `PyMPDATA.vector_field.VectorField` elements:
 
 .. include:: ../docs/markdown/intro.md
-.. include:: ../docs/markdown/dependencies.md
 .. include:: ../docs/markdown/examples.md
 .. include:: ../docs/markdown/options.md
 .. include:: ../docs/markdown/grid.md
