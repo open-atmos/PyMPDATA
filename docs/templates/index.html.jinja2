@@ -8,12 +8,13 @@
 
 {% block content %}
     <main class="pdoc">
-    <center>
-      <a href="https://open-atmos.github.io/PyMPDATA/index.html">
-        <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:15em" alt="pympdata logo">
-      </a>
-    </center>
-    <div>
+        <div style="display: flex; align-items: center;">
+            <a href="https://open-atmos.github.io/PyMPDATA/index.html">
+                <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:6em" alt="pympdata logo">
+            </a>
+            <h1 style="padding-left: 0.5em; color: #13A4DE; font-weight: normal ">Documentation</h1>
+    </div>
+    <div style="padding-top: 2em">
         <h2>What is PyMPDATA?</h2>
         <p>
             PyMPDATA is a <b>Numba-accelerated</b> Pythonic implementation of the <b>MPDATA algorithm</b>
@@ -21,34 +22,11 @@
             <b>numerically solving generalised convection-diffusion PDEs</b> in 1D, 2D and 3D structured meshes
             with coordinate transformations.
         </p>
+        <p>
+            A separate project called <b>PyMPDATA-MPI</b> depicts how <b>numba-mpi</b> can be used to enable <b>distributed memory parallelism</b> in PyMPDATA.
+        </p>
     </div>
-
-    <h2>PyMPDATA resources</h2>
-    <table style="width:100%">
-      <tr>
-        <th width="33%"><big><strong>PyMPDATA</strong></big></th>
-        <th width="33%"><big><strong>PyMPDATA-examples</strong></big></th>
-        <th width="33%"><big><strong>PyMPDATA-MPI</strong></big></th>
-      <tr>
-      <tr style="font-size="2em"">
-        <td>
-          <ul>
-            <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA.html">docs</a></li>
-            <li><a href="https://pypi.org/p/PyMPDATA">pypi</a></li>
-          </ul>
-        </td>
-        <td>
-          <ul>
-            <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_examples.html">docs</a></li>
-            <li><a href="https://pypi.org/p/PyMPDATA-examples">pypi</a></li>
-          </ul>
-        </td>
-        <td>
-        </td>
-      <tr>
-    </table>
-
-    <div>
+    <div style="padding-top: 0.5em">
         <h2>What is the difference between PyMPDATA and PyMPDATA-examples?</h2>
         <p>
             PyMPDATA is a Python package that provides the MPDATA algorithm implementation.
@@ -60,17 +38,52 @@
             but the package wheels do not include the notebooks.
         </p>
         <p>They exist separately on PyPI, but their development and issue tracking is in the same GitHub repository.</p>
-        <h2>Dependencies</h2>
-        <p>
-            PyMPDATA depends only on NumPy and Numba.
-        </p>
-        <p>
-            PyMPDATA-examples requires additional packages listed in <code>install_requires</code> in
-            <a href="https://github.com/open-atmos/PyMPDATA/blob/main/examples/setup.py">setup.py</a>.
-            Amongst them is PyMPDATA.
-        </p>
     </div>
-    <div>
+    <div style="padding-top: 0.5em">
+        <h2><b style="font-weight: 600">Important links</b></h2>
+        <table style="width:100%">
+            <tr>
+                <th width="33%">PyMPDATA</th>
+                <th width="33%">PyMPDATA-examples</th>
+                <th width="33%">PyMPDATA-MPI</th>
+            <tr>
+            <tr>
+            <td>
+              <ul>
+                <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA.html">docs</a></li>
+                <li><a href="https://pypi.org/p/PyMPDATA">pypi</a></li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_examples.html">docs</a></li>
+                <li><a href="https://pypi.org/p/PyMPDATA-examples">pypi</a></li>
+              </ul>
+            </td>
+            <td>
+                <ul>
+                    <li><a href="https://open-atmos.github.io/PyMPDATA-MPI/PyMPDATA_MPI.html">docs</a></li>
+                    <li><a href="https://pypi.org/p/PyMPDATA-MPI/">pypi</a></li>
+                </ul>
+            </td>
+            </tr>
+            <tr>
+            <td colspan="2">
+                <ul>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA">repository</a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA/issues">issue tracker</a></li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI">repository</a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI/issues">issue tracker</a></li>
+                </ul>
+            </td>
+            </tr>
+        </table>
+        </div>
+    <div style="padding-top: 0.5em">
         <h2>Installation</h2>
         <p>
             PyMPDATA is available on PyPI and can be installed using pip:
@@ -85,7 +98,18 @@
         <pre><code>pip install PyMPDATA-examples</code></pre>
         <p>Note: this will also install PyMPDATA</p>
     </div>
-    <div>
+        <div style="padding-top: 0.5em">
+        <h2>Dependencies</h2>
+        <p>
+            PyMPDATA depends only on NumPy and Numba.
+        </p>
+        <p>
+            PyMPDATA-examples requires additional packages listed in <code>install_requires</code> in
+            <a href="https://github.com/open-atmos/PyMPDATA/blob/main/examples/setup.py">setup.py</a>.
+            Amongst them is PyMPDATA.
+        </p>
+    </div>
+    <div style="padding-top: 0.5em">
         <h2>Contributing, reporting issues and seeking support</h2>
         <p>
             Submitting new code to both packages is done through the same GitHub repository via
@@ -102,7 +126,6 @@
             using and extending PyMPDATA code.
         </p>
     </div>
-
     </main>
     {% include "search.html.jinja2" %}
 {% endblock %}
