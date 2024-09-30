@@ -28,6 +28,22 @@
             <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
                    pattern=".+" required>
 
+            <h2>Contents</h2>
+            <ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#tutorial-in-python-julia-and-matlab">Tutorial (in Python, Julia and Matlab)</a>
+  <ul>
+    <li><a href="#options-class">Options class</a></li>
+    <li><a href="#arakawa-c-grid-layer-and-boundary-conditions">Arakawa-C grid layer and boundary conditions</a></li>
+    <li><a href="#stepper">Stepper</a></li>
+    <li><a href="#solver">Solver</a></li>
+  </ul></li>
+  <li><a href="#debugging">Debugging</a></li>
+  <li><a href="#contributing-reporting-issues-seeking-support">Contributing, reporting issues, seeking support</a></li>
+  <li><a href="#other-open-source-mpdata-implementations">Other open-source MPDATA implementations:</a></li>
+  <li><a href="#other-python-packages-for-solving-hyperbolic-transport-equations">Other Python packages for solving hyperbolic transport equations</a></li>
+</ul>
+
 
             <h2>Submodules</h2>
             <ul>
@@ -54,13 +70,577 @@
                     <h1 class="modulename">
 PyMPDATA    </h1>
 
-                        <div class="docstring"><p>Numba-accelerated Pythonic implementation of Multidimensional Positive Definite
-Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab</p>
+                        <div class="docstring"><p><img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" width=100 height=113 alt="pympdata logo"></p>
 
-<p>PyMPDATA uses staggered grid with the following node placement for
-<code><a href="PyMPDATA/scalar_field.html#ScalarField">PyMPDATA.scalar_field.ScalarField</a></code> and
-<code><a href="PyMPDATA/vector_field.html#VectorField">PyMPDATA.vector_field.VectorField</a></code> elements:
-<img src="https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png" alt="" /></p>
+<h1 id="introduction">Introduction</h1>
+
+<p>PyMPDATA is a high-performance Numba-accelerated Pythonic implementation of the MPDATA
+  algorithm of <a href="https://doi.org/10.1016%2F0021-9991%2884%2990121-9">Smolarkiewicz et al.</a>
+  used in geophysical fluid dynamics and beyond.
+MPDATA numerically solves generalised transport equations -
+  partial differential equations used to model conservation/balance laws, scalar-transport problems,
+  convection-diffusion phenomena.
+As of the current version, PyMPDATA supports homogeneous transport
+  in 1D, 2D and 3D using structured meshes, optionally
+  generalised by employment of a Jacobian of coordinate transformation or a fluid density profile.
+PyMPDATA includes implementation of a set of MPDATA variants including
+  the non-oscillatory option, infinite-gauge, divergent-flow, double-pass donor cell (DPDC) and
+  third-order-terms options.
+It also features support for integration of Fickian-terms in advection-diffusion
+  problems using the pseudo-transport velocity approach.
+In 2D and 3D simulations, domain-decomposition is used for multi-threaded parallelism.</p>
+
+<p>PyMPDATA is engineered purely in Python targeting both performance and usability,
+    the latter encompassing research users', developers' and maintainers' perspectives.
+From researcher's perspective, PyMPDATA offers hassle-free installation on multitude
+  of platforms including Linux, OSX and Windows, and eliminates compilation stage
+  from the perspective of the user.
+From developers' and maintainers' perspective, PyMPDATA offers a suite of unit tests,
+  multi-platform continuous integration setup,
+  seamless integration with Python development aids including debuggers and profilers.</p>
+
+<p>PyMPDATA design features
+  a custom-built multi-dimensional Arakawa-C grid layer allowing
+  to concisely represent multi-dimensional stencil operations on both
+  scalar and vector fields.
+The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
+  using the Numba's <code>@jit(nopython=True)</code> functionality for high-performance array traversals.
+It enables one to code once for multiple dimensions, and automatically
+  handles (and hides from the user) any halo-filling logic related with boundary conditions.
+Numba <code>prange()</code> functionality is used for implementing multi-threading
+  (it offers analogous functionality to OpenMP parallel loop execution directives).
+The Numba's deviation from Python semantics rendering <a href="https://numba.pydata.org/numba-doc/dev/reference/pysemantics.html#global-and-closure-variables">closure variables
+  as compile-time constants</a>
+  is extensively exploited within <code><a href="">PyMPDATA</a></code>
+  code base enabling the just-in-time compilation to benefit from
+  information on domain extents, algorithm variant used and problem
+  characteristics (e.g., coordinate transformation used, or lack thereof).</p>
+
+<h1 id="tutorial-in-python-julia-and-matlab">Tutorial (in Python, Julia and Matlab)</h1>
+
+<h2 id="options-class">Options class</h2>
+
+<p>The <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html"><code>Options</code></a> class
+groups both algorithm variant options as well as some implementation-related
+flags that need to be set at the first place. All are set at the time
+of instantiation using the following keyword arguments of the constructor
+(all having default values indicated below):</p>
+
+<ul>
+<li><code>n_iters: int = 2</code>: number of iterations (2 means upwind + one corrective iteration)</li>
+<li><code>infinite_gauge: bool = False</code>: flag enabling the infinite-gauge option (does not maintain sign of the advected field, thus in practice implies switching flux corrected transport on)</li>
+<li><code>divergent_flow: bool = False</code>: flag enabling divergent-flow terms when calculating antidiffusive velocity</li>
+<li><code>nonoscillatory: bool = False</code>: flag enabling the non-oscillatory or monotone variant (a.k.a flux-corrected transport option, FCT)</li>
+<li><code>third_order_terms: bool = False</code>: flag enabling third-order terms</li>
+<li><code>epsilon: float = 1e-15</code>: value added to potentially zero-valued denominators</li>
+<li><code>non_zero_mu_coeff: bool = False</code>: flag indicating if code for handling the Fickian term is to be optimised out</li>
+<li><code>DPDC: bool = False</code>: flag enabling double-pass donor cell option (recursive pseudovelocities)</li>
+<li><code>dimensionally_split: bool = False</code>: flag disabling cross-dimensional terms in antidiffusive velocity</li>
+<li><code>dtype: np.floating = np.float64</code>: floating point precision</li>
+</ul>
+
+<p>For a discussion of the above options, see e.g., <a href="https://doi.org/10.1006/jcph.1998.5901">Smolarkiewicz &amp; Margolin 1998</a>,
+<a href="https://doi.org/10.5194/gmd-8-1005-2015">Jaruga, Arabas et al. 2015</a> and <a href="https://arxiv.org/abs/2011.14726">Olesik, Arabas et al. 2020</a>
+(the last with examples using PyMPDATA).</p>
+
+<p>In most use cases of PyMPDATA, the first thing to do is to instantiate the
+<a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html"><code>Options</code></a> class
+with arguments suiting the problem at hand, e.g.:</p>
+
+<p><details>
+<summary>Julia code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
+<span class="k">using</span><span class="w"> </span><span class="n">PyCall</span>
+<span class="n">Options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyimport</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Options</span>
+<span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Options</span><span class="p">(</span><span class="n">n_iters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><details>
+<summary>Matlab code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">Options</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">importlib</span><span class="p">.</span><span class="n">import_module</span><span class="p">(</span><span class="s">&#39;PyMPDATA&#39;</span><span class="p">).</span><span class="n">Options</span><span class="p">;</span>
+<span class="n">options</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Options</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="s">&#39;n_iters&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><details open>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">Options</span>
+<span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">n_iters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<h2 id="arakawa-c-grid-layer-and-boundary-conditions">Arakawa-C grid layer and boundary conditions</h2>
+
+<p>In PyMPDATA, the solution domain is assumed to extend from the
+first cell's boundary to the last cell's boundary (thus the
+first scalar field value is at $[\Delta x/2, \Delta y/2]$.
+The <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/scalar_field.html"><code>ScalarField</code></a>
+and <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/vector_field.html"><code>VectorField</code></a> classes implement the
+<a href="https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_C-grid">Arakawa-C staggered grid</a> logic
+in which:</p>
+
+<ul>
+<li>scalar fields are discretised onto cell centres (one value per cell),</li>
+<li>vector field components are discretised onto cell walls.</li>
+</ul>
+
+<p>The schematic of the employed grid/domain layout in two dimensions is given below
+(with the Python code snippet generating the figure as a part of CI workflow):
+<img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_grid.png" alt="plot" /></p>
+
+<p><details>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+
+<span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">pyplot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span>
+        <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dx</span> <span class="p">:</span> <span class="n">dx</span><span class="p">,</span>
+        <span class="n">dy</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dy</span> <span class="p">:</span> <span class="n">dy</span>
+    <span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">&#39;scalar-field values at cell centres&#39;</span>
+<span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span>
+        <span class="mi">0</span> <span class="p">:</span> <span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span> <span class="p">:</span> <span class="n">dx</span><span class="p">,</span>
+        <span class="n">dy</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dy</span> <span class="p">:</span> <span class="n">dy</span>
+    <span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pivot</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">.005</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">&#39;vector-field x-component values at cell walls&#39;</span>
+<span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span>
+        <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dx</span> <span class="p">:</span> <span class="n">dx</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dy</span> <span class="p">:</span> <span class="n">dy</span>
+    <span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pivot</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">.005</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">&#39;vector-field y-component values at cell walls&#39;</span>
+<span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span> <span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;staggered grid layout (grid=</span><span class="si">{</span><span class="n">grid</span><span class="si">}</span><span class="s1">, dx=</span><span class="si">{</span><span class="n">dx</span><span class="si">}</span><span class="s1">, dy=</span><span class="si">{</span><span class="n">dy</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">.1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;readme_grid.png&#39;</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p>The <code>__init__</code> methods of
+<a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/scalar_field.html"><code>ScalarField</code></a>
+and <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/vector_field.html"><code>VectorField</code></a>
+have the following signatures:</p>
+
+<ul>
+<li><a href="https://github.com/open-atmos/PyMPDATA/blob/main/PyMPDATA/scalar_field.py"><code>ScalarField(data: np.ndarray, halo: int, boundary_conditions)</code></a></li>
+<li><a href="https://github.com/open-atmos/PyMPDATA/blob/main/PyMPDATA/vector_field.py"><code>VectorField(data: Tuple[np.ndarray, ...], halo: int, boundary_conditions)</code></a>
+The <code>data</code> parameters are expected to be Numpy arrays or tuples of Numpy arrays, respectively.
+The <code>halo</code> parameter is the extent of ghost-cell region that will surround the
+data and will be used to implement boundary conditions.
+Its value (in practice 1 or 2) is
+dependent on maximal stencil extent for the MPDATA variant used and
+can be easily obtained using the <code>Options.n_halo</code> property.</li>
+</ul>
+
+<p>As an example, the code below shows how to instantiate a scalar
+and a vector field given a 2D constant-velocity problem,
+using a grid of 24x24 points, Courant numbers of -0.5 and -0.25
+in "x" and "y" directions, respectively, with periodic boundary
+conditions and with an initial Gaussian signal in the scalar field
+(settings as in Fig.&nbsp;5 in <a href="https://doi.org/10.3233/SPR-140379">Arabas et al. 2014</a>):</p>
+
+<p><details>
+<summary>Julia code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">ScalarField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyimport</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">ScalarField</span>
+<span class="n">VectorField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyimport</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">VectorField</span>
+<span class="n">Periodic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyimport</span><span class="p">(</span><span class="s">&quot;<a href="PyMPDATA/boundary_conditions.html">PyMPDATA.boundary_conditions</a>&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Periodic</span>
+
+<span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span>
+<span class="n">Cx</span><span class="p">,</span><span class="w"> </span><span class="n">Cy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">.25</span>
+<span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">CartesianIndices</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="p">))</span>
+<span class="n">halo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
+<span class="n">advectee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScalarField</span><span class="p">(</span>
+<span class="w">    </span><span class="n">data</span><span class="o">=</span><span class="n">exp</span><span class="o">.</span><span class="p">(</span>
+<span class="w">        </span><span class="o">-</span><span class="p">(</span><span class="n">getindex</span><span class="o">.</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">.-</span><span class="w"> </span><span class="mf">.5</span><span class="w"> </span><span class="o">.-</span><span class="w"> </span><span class="n">nx</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">        </span><span class="o">-</span><span class="p">(</span><span class="n">getindex</span><span class="o">.</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">.-</span><span class="w"> </span><span class="mf">.5</span><span class="w"> </span><span class="o">.-</span><span class="w"> </span><span class="n">ny</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">ny</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
+<span class="w">    </span><span class="n">boundary_conditions</span><span class="o">=</span><span class="p">(</span><span class="n">Periodic</span><span class="p">(),</span><span class="w"> </span><span class="n">Periodic</span><span class="p">())</span>
+<span class="p">)</span>
+<span class="n">advector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VectorField</span><span class="p">(</span>
+<span class="w">    </span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">fill</span><span class="p">(</span><span class="n">Cx</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="p">)),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">Cy</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">))),</span>
+<span class="w">    </span><span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
+<span class="w">    </span><span class="n">boundary_conditions</span><span class="o">=</span><span class="p">(</span><span class="n">Periodic</span><span class="p">(),</span><span class="w"> </span><span class="n">Periodic</span><span class="p">())</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details>
+<details>
+<summary>Matlab code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">ScalarField</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">importlib</span><span class="p">.</span><span class="n">import_module</span><span class="p">(</span><span class="s">&#39;PyMPDATA&#39;</span><span class="p">).</span><span class="n">ScalarField</span><span class="p">;</span>
+<span class="n">VectorField</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">importlib</span><span class="p">.</span><span class="n">import_module</span><span class="p">(</span><span class="s">&#39;PyMPDATA&#39;</span><span class="p">).</span><span class="n">VectorField</span><span class="p">;</span>
+<span class="n">Periodic</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">importlib</span><span class="p">.</span><span class="n">import_module</span><span class="p">(</span><span class="s">&#39;<a href="PyMPDATA/boundary_conditions.html">PyMPDATA.boundary_conditions</a>&#39;</span><span class="p">).</span><span class="n">Periodic</span><span class="p">;</span>
+
+<span class="n">nx</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">int32</span><span class="p">(</span><span class="mi">24</span><span class="p">);</span>
+<span class="n">ny</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">int32</span><span class="p">(</span><span class="mi">24</span><span class="p">);</span>
+
+<span class="n">Cx</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="mf">.5</span><span class="p">;</span>
+<span class="n">Cy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="mf">.25</span><span class="p">;</span>
+
+<span class="p">[</span><span class="n">xi</span><span class="p">,</span><span class="w"> </span><span class="n">yi</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">meshgrid</span><span class="p">(</span><span class="nb">double</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="nb">double</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="n">ny</span><span class="o">-</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="n">halo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">options</span><span class="p">.</span><span class="n">n_halo</span><span class="p">;</span>
+<span class="n">advectee</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">ScalarField</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="k">...</span>
+<span class="w">    </span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">numpy</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="nb">exp</span><span class="p">(</span><span class="w"> </span><span class="k">...</span>
+<span class="w">        </span><span class="o">-</span><span class="p">(</span><span class="n">xi</span><span class="o">+</span><span class="mf">.5</span><span class="o">-</span><span class="nb">double</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="nb">double</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>^<span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">...</span>
+<span class="w">        </span><span class="o">-</span><span class="p">(</span><span class="n">yi</span><span class="o">+</span><span class="mf">.5</span><span class="o">-</span><span class="nb">double</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.^</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="nb">double</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>^<span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">...</span>
+<span class="w">    </span><span class="p">)),</span><span class="w"> </span><span class="k">...</span>
+<span class="w">    </span><span class="s">&#39;halo&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">halo</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">    </span><span class="s">&#39;boundary_conditions&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">tuple</span><span class="p">({</span><span class="n">Periodic</span><span class="p">(),</span><span class="w"> </span><span class="n">Periodic</span><span class="p">()})</span><span class="w"> </span><span class="k">...</span>
+<span class="p">));</span>
+<span class="n">advector</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">VectorField</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="k">...</span>
+<span class="w">    </span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">tuple</span><span class="p">({</span><span class="w"> </span><span class="k">...</span>
+<span class="w">        </span><span class="n">Cx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">numpy</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">int32</span><span class="p">([</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="n">ny</span><span class="p">])),</span><span class="w"> </span><span class="k">...</span>
+<span class="w">        </span><span class="n">Cy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">numpy</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">int32</span><span class="p">([</span><span class="n">nx</span><span class="w"> </span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span><span class="w"> </span><span class="k">...</span>
+<span class="w">     </span><span class="p">}),</span><span class="w"> </span><span class="k">...</span>
+<span class="w">    </span><span class="s">&#39;halo&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">halo</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">    </span><span class="s">&#39;boundary_conditions&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">tuple</span><span class="p">({</span><span class="n">Periodic</span><span class="p">(),</span><span class="w"> </span><span class="n">Periodic</span><span class="p">()})</span><span class="w"> </span><span class="k">...</span>
+<span class="p">));</span>
+</code></pre>
+</div>
+
+<p></details>
+<details open>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">ScalarField</span>
+<span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">VectorField</span>
+<span class="kn">from</span> <span class="nn"><a href="PyMPDATA/boundary_conditions.html">PyMPDATA.boundary_conditions</a></span> <span class="kn">import</span> <span class="n">Periodic</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">24</span>
+<span class="n">Cx</span><span class="p">,</span> <span class="n">Cy</span> <span class="o">=</span> <span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">.25</span>
+<span class="n">halo</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">n_halo</span>
+
+<span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">advectee</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+  <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
+    <span class="o">-</span><span class="p">(</span><span class="n">xi</span><span class="o">+</span><span class="mf">.5</span><span class="o">-</span><span class="n">nx</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="o">-</span><span class="p">(</span><span class="n">yi</span><span class="o">+</span><span class="mf">.5</span><span class="o">-</span><span class="n">ny</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">ny</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+  <span class="p">),</span>
+  <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
+  <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">(</span><span class="n">Periodic</span><span class="p">(),</span> <span class="n">Periodic</span><span class="p">())</span>
+<span class="p">)</span>
+<span class="n">advector</span> <span class="o">=</span> <span class="n">VectorField</span><span class="p">(</span>
+  <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">nx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span> <span class="n">Cx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Cy</span><span class="p">)),</span>
+  <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
+  <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">(</span><span class="n">Periodic</span><span class="p">(),</span> <span class="n">Periodic</span><span class="p">())</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p>Note that the shapes of arrays representing components
+of the velocity field are different than the shape of
+the scalar field array due to employment of the staggered grid.</p>
+
+<p>Besides the exemplified <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/periodic.html"><code>Periodic</code></a> class representing
+periodic boundary conditions, PyMPDATA supports
+<a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/extrapolated.html"><code>Extrapolated</code></a>,
+<a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/constant.html"><code>Constant</code></a> and
+<a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/boundary_conditions/polar.html"><code>Polar</code></a>
+boundary conditions.</p>
+
+<h2 id="stepper">Stepper</h2>
+
+<p>The logic of the MPDATA iterative solver is represented
+in PyMPDATA by the <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html"><code>Stepper</code></a> class.</p>
+
+<p>When instantiating the <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html"><code>Stepper</code></a>, the user has a choice
+of either supplying just the  number of dimensions or specialising the stepper for a given grid:
+<details>
+<summary>Julia code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">Stepper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyimport</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Stepper</span>
+
+<span class="n">stepper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Stepper</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="n">n_dims</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details>
+<details>
+<summary>Matlab code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">Stepper</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">importlib</span><span class="p">.</span><span class="n">import_module</span><span class="p">(</span><span class="s">&#39;PyMPDATA&#39;</span><span class="p">).</span><span class="n">Stepper</span><span class="p">;</span>
+
+<span class="n">stepper</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Stepper</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="k">...</span>
+<span class="w">  </span><span class="s">&#39;options&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">  </span><span class="s">&#39;n_dims&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">int32</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">...</span>
+<span class="p">));</span>
+</code></pre>
+</div>
+
+<p></details>
+<details open>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">Stepper</span>
+
+<span class="n">stepper</span> <span class="o">=</span> <span class="n">Stepper</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">n_dims</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details>
+or
+<details>
+<summary>Julia code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">stepper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Stepper</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="n">grid</span><span class="o">=</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<p></details>
+<details>
+<summary>Matlab code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">stepper</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Stepper</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="k">...</span>
+<span class="w">  </span><span class="s">&#39;options&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">  </span><span class="s">&#39;grid&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">tuple</span><span class="p">({</span><span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="p">})</span><span class="w"> </span><span class="k">...</span>
+<span class="p">));</span>
+</code></pre>
+</div>
+
+<p></details>
+<details open>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">stepper</span> <span class="o">=</span> <span class="n">Stepper</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p>In the latter case, noticeably
+faster execution can be expected, however the resultant
+stepper is less versatile as bound to the given grid size.
+If number of dimensions is supplied only, the integration
+might take longer, yet same instance of the
+stepper can be used for different grids.</p>
+
+<p>Since creating an instance of the <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html"><code>Stepper</code></a> class
+involves time-consuming compilation of the algorithm code,
+the class is equipped with a cache logic - subsequent
+calls with same arguments return references to previously
+instantiated objects. Instances of <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html"><code>Stepper</code></a> contain no
+mutable data and are (thread-)safe to be reused.</p>
+
+<p>The init method of <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/stepper.html"><code>Stepper</code></a> has an optional
+<code>non_unit_g_factor</code> argument which is a Boolean flag
+enabling handling of the G factor term which can be used to
+represent coordinate transformations and/or variable fluid density.</p>
+
+<p>Optionally, the number of threads to use for domain decomposition
+in the first (non-contiguous) dimension during 2D and 3D calculations
+may be specified using the optional <code>n_threads</code> argument with a
+default value of <code>numba.get_num_threads()</code>. The multi-threaded
+logic of PyMPDATA depends thus on settings of numba, namely on the
+selected threading layer (either via <code>NUMBA_THREADING_LAYER</code> env
+var or via <code>numba.config.THREADING_LAYER</code>) and the selected size of the
+thread pool (<code>NUMBA_NUM_THREADS</code> env var or <code>numba.config.NUMBA_NUM_THREADS</code>).</p>
+
+<h2 id="solver">Solver</h2>
+
+<p>Instances of the <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html"><code>Solver</code></a> class are used to control
+the integration and access solution data. During instantiation,
+additional memory required by the solver is
+allocated according to the options provided.</p>
+
+<p>The only method of the <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html"><code>Solver</code></a> class besides the
+init is <a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA/solver.html#Solver.advance"><code>advance(n_steps, mu_coeff, ...)</code></a>
+which advances the solution by <code>n_steps</code> timesteps, optionally
+taking into account a given diffusion coefficient <code>mu_coeff</code>.</p>
+
+<p>Solution state is accessible through the <code>Solver.advectee</code> property.
+Multiple solver[s] can share a single stepper, e.g., as exemplified in the shallow-water system solution in the examples package.</p>
+
+<p>Continuing with the above code snippets, instantiating
+a solver and making 75 integration steps looks as follows:
+<details>
+<summary>Julia code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">Solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyimport</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Solver</span>
+<span class="n">solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Solver</span><span class="p">(</span><span class="n">stepper</span><span class="o">=</span><span class="n">stepper</span><span class="p">,</span><span class="w"> </span><span class="n">advectee</span><span class="o">=</span><span class="n">advectee</span><span class="p">,</span><span class="w"> </span><span class="n">advector</span><span class="o">=</span><span class="n">advector</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">n_steps</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+<span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="o">.</span><span class="n">advectee</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p></details>
+<details>
+<summary>Matlab code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">Solver</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">importlib</span><span class="p">.</span><span class="n">import_module</span><span class="p">(</span><span class="s">&#39;PyMPDATA&#39;</span><span class="p">).</span><span class="n">Solver</span><span class="p">;</span>
+<span class="n">solver</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Solver</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="s">&#39;stepper&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">stepper</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;advectee&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">advectee</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;advector&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">advector</span><span class="p">));</span>
+<span class="n">solver</span><span class="p">.</span><span class="n">advance</span><span class="p">(</span><span class="nb">pyargs</span><span class="p">(</span><span class="s">&#39;n_steps&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">75</span><span class="p">));</span>
+<span class="n">state</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="n">advectee</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+</code></pre>
+</div>
+
+<p></details>
+<details open>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">Solver</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">Solver</span><span class="p">(</span><span class="n">stepper</span><span class="o">=</span><span class="n">stepper</span><span class="p">,</span> <span class="n">advectee</span><span class="o">=</span><span class="n">advectee</span><span class="p">,</span> <span class="n">advector</span><span class="o">=</span><span class="n">advector</span><span class="p">)</span>
+<span class="n">state_0</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">advectee</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">n_steps</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">advectee</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p>Now let's plot the results using <code>matplotlib</code> roughly as in Fig.&nbsp;5 in <a href="https://doi.org/10.3233/SPR-140379">Arabas et al. 2014</a>:
+<details>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">zlim</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">psi</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="s2">&quot;3d&quot;</span><span class="p">})</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">plot_wireframe</span><span class="p">(</span>
+        <span class="n">xi</span><span class="o">+</span><span class="mf">.5</span><span class="p">,</span> <span class="n">yi</span><span class="o">+</span><span class="mf">.5</span><span class="p">,</span>
+        <span class="n">psi</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">.5</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="n">zlim</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">zaxis</span><span class="p">):</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">pane</span><span class="o">.</span><span class="n">fill</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">pane</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">pane</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x/dx&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y/dy&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_proj_type</span><span class="p">(</span><span class="s1">&#39;ortho&#39;</span><span class="p">)</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xi</span><span class="o">+</span><span class="mf">.5</span><span class="p">,</span> <span class="n">yi</span><span class="o">+</span><span class="mf">.5</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">zdir</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+    <span class="n">cbar</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">.04</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cbar</span><span class="o">.</span><span class="n">norm</span>
+
+<span class="n">zlim</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">norm</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">state_0</span><span class="p">,</span> <span class="n">zlim</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;readme_gauss_0.png&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">zlim</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
+<span class="n">pyplot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;readme_gauss.png&#39;</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_gauss_0.png" alt="plot" />
+<img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/readme_gauss.png" alt="plot" /></p>
+
+<h1 id="debugging">Debugging</h1>
+
+<p>PyMPDATA relies heavily on Numba to provide high-performance
+number crunching operations. Arguably, one of the key advantage
+of embracing Numba is that it can be easily switched off. This
+brings multiple-order-of-magnitude drop in performance, yet
+it also make the entire code of the library susceptible to
+interactive debugging, one way of enabling it is by setting the
+following environment variable before importing PyMPDATA:
+<details>
+<summary>Julia code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="nb">ENV</span><span class="p">[</span><span class="s">&quot;NUMBA_DISABLE_JIT&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1&quot;</span>
+</code></pre>
+</div>
+
+<p></details>
+<details>
+<summary>Matlab code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="nb">setenv</span><span class="p">(</span><span class="s">&#39;NUMBA_DISABLE_JIT&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<p></details>
+<details open>
+<summary>Python code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;NUMBA_DISABLE_JIT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<h1 id="contributing-reporting-issues-seeking-support">Contributing, reporting issues, seeking support</h1>
+
+<p>See <a href="README.md">https://github.com/open-atmos/PyMPDATA/tree/main/README.md</a>.</p>
+
+<h1 id="other-open-source-mpdata-implementations">Other open-source MPDATA implementations:</h1>
+
+<ul>
+<li>mpdat_2d in babyEULAG (FORTRAN)
+<a href="https://github.com/igfuw/bE_SDs/blob/master/babyEULAG.SDs.for#L741">https://github.com/igfuw/bE_SDs/blob/master/babyEULAG.SDs.for#L741</a></li>
+<li>mpdata-oop (C++, Fortran, Python)
+<a href="https://github.com/igfuw/mpdata-oop">https://github.com/igfuw/mpdata-oop</a></li>
+<li>apc-llc/mpdata (C++)
+<a href="https://github.com/apc-llc/mpdata">https://github.com/apc-llc/mpdata</a></li>
+<li>libmpdata++ (C++):
+<a href="https://github.com/igfuw/libmpdataxx">https://github.com/igfuw/libmpdataxx</a></li>
+<li>AtmosFOAM:
+<a href="https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam">https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam</a></li>
+</ul>
+
+<h1 id="other-python-packages-for-solving-hyperbolic-transport-equations">Other Python packages for solving hyperbolic transport equations</h1>
+
+<ul>
+<li>PyPDE: <a href="https://pypi.org/project/PyPDE/">https://pypi.org/project/PyPDE/</a></li>
+<li>FiPy: <a href="https://pypi.org/project/FiPy/">https://pypi.org/project/FiPy/</a></li>
+<li>ader: <a href="https://pypi.org/project/ader/">https://pypi.org/project/ader/</a></li>
+<li>centpy: <a href="https://pypi.org/project/centpy/">https://pypi.org/project/centpy/</a></li>
+<li>mattflow: <a href="https://pypi.org/project/mattflow/">https://pypi.org/project/mattflow/</a></li>
+<li>FastFD: <a href="https://pypi.org/project/FastFD/">https://pypi.org/project/FastFD/</a></li>
+<li>Pyclaw: <a href="https://www.clawpack.org/pyclaw/">https://www.clawpack.org/pyclaw/</a></li>
+</ul>
 </div>
 
                         <input id="mod-PyMPDATA-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
@@ -68,29 +648,23 @@ Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab
                         <label class="view-source-button" for="mod-PyMPDATA-view-source"><span>View Source</span></label>
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">Numba-accelerated Pythonic implementation of Multidimensional Positive Definite</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">Advection Transport Algorithm (MPDATA) with examples in Python, Julia and Matlab</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">.. include:: ../docs/markdown/pympdata_landing.md</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">PyMPDATA uses staggered grid with the following node placement for</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">`PyMPDATA.scalar_field.ScalarField` and</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">`PyMPDATA.vector_field.VectorField` elements:</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">![](https://github.com/atmos-cloud-sim-uj/PyMPDATA/releases/download/tip/readme_grid.png)</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="c1"># pylint: disable=invalid-name</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">PackageNotFoundError</span><span class="p">,</span> <span class="n">version</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="c1"># pylint: disable=invalid-name</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">PackageNotFoundError</span><span class="p">,</span> <span class="n">version</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span> <span class="nn">.options</span> <span class="kn">import</span> <span class="n">Options</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="kn">from</span> <span class="nn">.scalar_field</span> <span class="kn">import</span> <span class="n">ScalarField</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="kn">from</span> <span class="nn">.solver</span> <span class="kn">import</span> <span class="n">Solver</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="kn">from</span> <span class="nn">.stepper</span> <span class="kn">import</span> <span class="n">Stepper</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span> <span class="nn">.vector_field</span> <span class="kn">import</span> <span class="n">VectorField</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span> <span class="nn">.options</span> <span class="kn">import</span> <span class="n">Options</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="kn">from</span> <span class="nn">.scalar_field</span> <span class="kn">import</span> <span class="n">ScalarField</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="kn">from</span> <span class="nn">.solver</span> <span class="kn">import</span> <span class="n">Solver</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="kn">from</span> <span class="nn">.stepper</span> <span class="kn">import</span> <span class="n">Stepper</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="kn">from</span> <span class="nn">.vector_field</span> <span class="kn">import</span> <span class="n">VectorField</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="k">try</span><span class="p">:</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="c1"># package is not installed</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="k">pass</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="k">try</span><span class="p">:</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="c1"># package is not installed</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="k">pass</span>
 </span></pre></div>
 
 

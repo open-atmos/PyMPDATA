@@ -17,21 +17,127 @@
     <nav class="pdoc">
         <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
         <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
-        <div>    <h2>Available Modules</h2>
-    <ul>
-            <li><a href="PyMPDATA.html">PyMPDATA</a></li>
-            <li><a href="PyMPDATA_examples.html">PyMPDATA_examples</a></li>
-    </ul>
-</div>
+        <div></div>
     </nav>
     <main class="pdoc">
-    <a href="https://open-atmos.github.io/PyMPDATA/index.html">
-        <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:50pt" alt="pympdata logo">
-    </a>
-<h1 id="pympdata-documentation-home-page">PyMPDATA documentation home page</h1>
-
-<p>Work in progress...</p>
-
+        <div style="display: flex; align-items: center;">
+            <a href="https://open-atmos.github.io/PyMPDATA/index.html">
+                <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" style="height:6em" alt="pympdata logo">
+            </a>
+            <h1 style="padding-left: 0.5em; color: #13A4DE; font-weight: normal ">Documentation</h1>
+    </div>
+    <div style="padding-top: 2em">
+        <h2>What is PyMPDATA?</h2>
+        <p>
+            PyMPDATA is a <b>Numba-accelerated</b> Pythonic implementation of the <b>MPDATA algorithm</b>
+            of <a href="https://doi.org/10.1016/0021-9991(84)90121-9">Smolarkiewicz et al.</a> used in geophysical fluid dynamics and beyond for
+            <b>numerically solving generalised convection-diffusion PDEs</b>. PyMPDATA supports integration in 1D, 2D and 3D structured meshes
+            with optional coordinate transformations.
+        </p>
+        <p>
+            A separate project called <b>PyMPDATA-MPI</b> depicts how <b>numba-mpi</b> can be used to enable <b>distributed memory parallelism</b> in PyMPDATA.
+        </p>
+    </div>
+    <div style="padding-top: 0.5em">
+        <h2>What is the difference between PyMPDATA and PyMPDATA-examples?</h2>
+        <p>
+            PyMPDATA is a Python package that provides the MPDATA algorithm implementation.
+            It is a library that can be used in your own projects.
+        </p>
+        <p>
+            PyMPDATA-examples is a Python package that provides examples of how to use PyMPDATA.
+            It includes common Python modules used in PyMPDATA smoke tests and in example Jupyter notebooks
+            (but the package wheels do not include the notebooks, only .py files imported from the notebooks and PyMPDATA tests).
+        </p>
+        <p>The two projects exist separately on PyPI, but their development and issue tracking is hosted at the same GitHub repository.</p>
+    </div>
+    <div style="padding-top: 0.5em">
+        <h2><b style="font-weight: 600">Important links</b></h2>
+        <table style="width:100%">
+            <tr>
+                <th width="33%">PyMPDATA</th>
+                <th width="33%">PyMPDATA-examples</th>
+                <th width="33%">PyMPDATA-MPI</th>
+            <tr>
+            <tr>
+            <td>
+              <ul>
+                <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA.html">docs</a></li>
+                <li><a href="https://pypi.org/p/PyMPDATA">pypi</a></li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_examples.html">docs</a></li>
+                <li><a href="https://pypi.org/p/PyMPDATA-examples">pypi</a></li>
+              </ul>
+            </td>
+            <td>
+                <ul>
+                    <li><a href="https://open-atmos.github.io/PyMPDATA-MPI/PyMPDATA_MPI.html">docs</a></li>
+                    <li><a href="https://pypi.org/p/PyMPDATA-MPI/">pypi</a></li>
+                </ul>
+            </td>
+            </tr>
+            <tr>
+            <td colspan="2">
+                <ul>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA">repository</a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA/issues">issue tracker</a></li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI">repository</a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI/issues">issue tracker</a></li>
+                </ul>
+            </td>
+            </tr>
+        </table>
+        </div>
+    <div style="padding-top: 0.5em">
+        <h2>Installation</h2>
+        <p>
+            PyMPDATA is available on PyPI and can be installed using pip:
+        </p>
+        <pre><code>pip install PyMPDATA</code></pre>
+        <p>Note: the way above <b>will not</b> install PyMPDATA-examples, to install them both you can run:</p>
+        <pre><code>pip install PyMPDATA[tests]</code></pre>
+        <br>
+        <p>
+            PyMPDATA-examples is available on PyPI and can be installed using pip:
+        </p>
+        <pre><code>pip install PyMPDATA-examples</code></pre>
+        <p>Note: this will also install PyMPDATA</p>
+    </div>
+        <div style="padding-top: 0.5em">
+        <h2>Dependencies</h2>
+        <p>
+            PyMPDATA depends on <a href="https://numpy.org/">NumPy</a>, <a href="https://numba.pydata.org/">Numba</a> and <a href="">pystrict</a>.
+        </p>
+        <p>
+            PyMPDATA-examples requires additional packages listed in <code>install_requires</code> in
+            <a href="https://github.com/open-atmos/PyMPDATA/blob/main/examples/setup.py">setup.py</a>.
+            Amongst them is PyMPDATA.
+        </p>
+    </div>
+    <div style="padding-top: 0.5em">
+        <h2>Contributing, reporting issues and seeking support</h2>
+        <p>
+            Submitting new code to both packages is done through the same GitHub repository via
+            <a href="https://github.com/open-atmos/PyMPDATA/pulls">Pull requests</a>.
+        </p>
+        <p>
+            Issues regarding any incorrect, unintuitive or undocumented behaviour of PyMPDATA or PyMPDATA-examples
+            are best to be reported on the
+            <a href="https://github.com/open-atmos/PyMPDATA/issues/new">GitHub issue tracker</a>.
+        </p>
+        <p>
+            We encourage to use the <a href="https://github.com/open-atmos/PyMPDATA/discussions">GitHub Discussions</a>
+            feature (rather than the issue tracker) for seeking support in understanding,
+            using and extending PyMPDATA code.
+        </p>
+    </div>
     </main>
 <script>
     function escapeHTML(html) {
