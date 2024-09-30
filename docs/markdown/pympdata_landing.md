@@ -1,13 +1,14 @@
 <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" width=100 height=113 alt="pympdata logo">
 # Introduction
 PyMPDATA is a high-performance Numba-accelerated Pythonic implementation of the MPDATA
-  algorithm of Smolarkiewicz et al. used in geophysical fluid dynamics and beyond.
+  algorithm of [Smolarkiewicz et al.](https://doi.org/10.1016%2F0021-9991%2884%2990121-9)
+  used in geophysical fluid dynamics and beyond.
 MPDATA numerically solves generalised transport equations -
   partial differential equations used to model conservation/balance laws, scalar-transport problems,
   convection-diffusion phenomena.
 As of the current version, PyMPDATA supports homogeneous transport
   in 1D, 2D and 3D using structured meshes, optionally
-  generalised by employment of a Jacobian of coordinate transformation.
+  generalised by employment of a Jacobian of coordinate transformation or a fluid density profile.
 PyMPDATA includes implementation of a set of MPDATA variants including
   the non-oscillatory option, infinite-gauge, divergent-flow, double-pass donor cell (DPDC) and
   third-order-terms options.
@@ -29,7 +30,7 @@ PyMPDATA design features
   to concisely represent multi-dimensional stencil operations on both
   scalar and vector fields.
 The grid layer is built on top of NumPy's ndarrays (using "C" ordering)
-  using the Numba's ``@njit`` functionality for high-performance array traversals.
+  using the Numba's ``@jit(nopython=True)`` functionality for high-performance array traversals.
 It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 Numba ``prange()`` functionality is used for implementing multi-threading

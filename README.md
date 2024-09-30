@@ -77,7 +77,7 @@ The key classes constituting the PyMPDATA interface are summarised below.
 
 The [``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class
 groups both algorithm variant options as well as some implementation-related
-flags that need to be set at the first place.
+flags.
 
 #### Arakawa-C grid layer
 

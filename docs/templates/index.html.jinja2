@@ -19,8 +19,8 @@
         <p>
             PyMPDATA is a <b>Numba-accelerated</b> Pythonic implementation of the <b>MPDATA algorithm</b>
             of <a href="https://doi.org/10.1016/0021-9991(84)90121-9">Smolarkiewicz et al.</a> used in geophysical fluid dynamics and beyond for
-            <b>numerically solving generalised convection-diffusion PDEs</b> in 1D, 2D and 3D structured meshes
-            with coordinate transformations.
+            <b>numerically solving generalised convection-diffusion PDEs</b>. PyMPDATA supports integration in 1D, 2D and 3D structured meshes
+            with optional coordinate transformations.
         </p>
         <p>
             A separate project called <b>PyMPDATA-MPI</b> depicts how <b>numba-mpi</b> can be used to enable <b>distributed memory parallelism</b> in PyMPDATA.
@@ -34,10 +34,10 @@
         </p>
         <p>
             PyMPDATA-examples is a Python package that provides examples of how to use PyMPDATA.
-            It includes common Python modules used in PyMPDATA smoke tests and in example notebooks,
-            but the package wheels do not include the notebooks.
+            It includes common Python modules used in PyMPDATA smoke tests and in example Jupyter notebooks
+            (but the package wheels do not include the notebooks, only .py files imported from the notebooks and PyMPDATA tests).
         </p>
-        <p>They exist separately on PyPI, but their development and issue tracking is in the same GitHub repository.</p>
+        <p>The two projects exist separately on PyPI, but their development and issue tracking is hosted at the same GitHub repository.</p>
     </div>
     <div style="padding-top: 0.5em">
         <h2><b style="font-weight: 600">Important links</b></h2>
@@ -101,7 +101,7 @@
         <div style="padding-top: 0.5em">
         <h2>Dependencies</h2>
         <p>
-            PyMPDATA depends only on NumPy and Numba.
+            PyMPDATA depends on <a href="https://numpy.org/">NumPy</a>, <a href="https://numba.pydata.org/">Numba</a> and <a href="">pystrict</a>.
         </p>
         <p>
             PyMPDATA-examples requires additional packages listed in <code>install_requires</code> in
