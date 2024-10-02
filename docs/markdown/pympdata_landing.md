@@ -490,7 +490,7 @@ os.environ["NUMBA_DISABLE_JIT"] = "1"
 
 # Contributing, reporting issues, seeking support
 
-See [https://github.com/open-atmos/PyMPDATA/tree/main/README.md](README.md).
+See [README.md](https://github.com/open-atmos/PyMPDATA/tree/main/README.md).
 
 # Other open-source MPDATA implementations:
 - mpdat_2d in babyEULAG (FORTRAN)
