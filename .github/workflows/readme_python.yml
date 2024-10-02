@@ -24,9 +24,10 @@ jobs:
       - run: pip install pytest-codeblocks pytest matplotlib
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('docs/markdown/pympdata_landing.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='Python'); f.close()"
       - run: python -We readme.py
-      - run: cat readme_grid.png
-      - run: cat readme_gauss_0.png
-      - run: cat readme_gauss.png
+      - run: cat readme.py
+      - run: ls readme_grid.png
+      - run: ls readme_gauss_0.png
+      - run: ls readme_gauss.png
 
       - name: artefacts
         if: github.ref == 'refs/heads/main'
