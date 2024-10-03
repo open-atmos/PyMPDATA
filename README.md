@@ -140,6 +140,6 @@ We look forward to your contributions and feedback.
 Development of PyMPDATA was supported by the EU through a grant of the [Foundation for Polish Science](http://fnp.org.pl) (POIR.04.04.00-00-5E1C/18) 
 and by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220)
 
-copyright: Jagiellonian University (2019-2023) & AGH University of Krakow (2023 onwards)
+copyright: Jagiellonian University (2019-2023) & AGH University of Krakow (2023 onwards)   
 licence: GPL v3   
 
