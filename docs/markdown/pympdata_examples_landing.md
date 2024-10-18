@@ -8,6 +8,27 @@ Below is an example of how to use the PyMPDATA_examples package to run a simple 
 `PyMPDATA_examples.advection_diffusion_2d`
 ![adv_diff](https://github.com/open-atmos/PyMPDATA/releases/download/tip/advection_diffusion.gif)
 
+# Example gallery
+
+## in 1D
+| tags                                                   | link                                         |
+|:-------------------------------------------------------|:---------------------------------------------|
+| advection-diffusion                                    | `PyMPDATA_examples.advection_diffusion_1d` * |
+| Black-Scholes, option pricing                          | `PyMPDATA_examples.Arabas_and_Farhat_2020`   |
+| particle population condensational growth              | `PyMPDATA_examples.Olesik_et_al_2022`|
+| advection, homogeneous, infinite-gauge, flux-corrected | `PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12`|
+## in 2D
+| tags                 | link                                                                                                                                                                       |
+|:---------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| advection-diffusion  | `PyMPDATA_examples.advection_diffusion_2d`<br/><img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/advection_diffusion.gif" width="50%" alt="adv-diff"> |
+| droplet condensation | `PyMPDATA_examples.Shipway_and_Hill_2012`                                                                                                                                  |
+
+## in 3D
+| tags                | link                                       |
+|:--------------------|:-------------------------------------------|
+| advection-advection | `PyMPDATA_examples.Smolarkiewicz_1984` |
+\* - with analytic solution
+
 # Installation
 Since the examples package includes Jupyter notebooks (and their execution requires write access), the suggested install and launch steps are:
 
