@@ -11,12 +11,12 @@ Below is an example of how to use the PyMPDATA_examples package to run a simple 
 # Example gallery
 
 ## in 1D
-| tags                                                   | link                                         |
-|:-------------------------------------------------------|:---------------------------------------------|
-| advection-diffusion                                    | `PyMPDATA_examples.advection_diffusion_1d` * |
-| Black-Scholes, option pricing                          | `PyMPDATA_examples.Arabas_and_Farhat_2020`   |
-| particle population condensational growth              | `PyMPDATA_examples.Olesik_et_al_2022`|
-| advection, homogeneous, infinite-gauge, flux-corrected | `PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12`|
+| tags                                                                                   | link                                         |
+|:---------------------------------------------------------------------------------------|:---------------------------------------------|
+| <mark>advection-diffusion</mark><br/>$\\frac{x}{y}$                                    | `PyMPDATA_examples.advection_diffusion_1d` * |
+| <mark>Black-Scholes</mark>, option pricing                                             | `PyMPDATA_examples.Arabas_and_Farhat_2020`   |
+| particle population condensational growth                                              | `PyMPDATA_examples.Olesik_et_al_2022`|
+| <mark>advection</mark>, homogeneous, infinite-gauge, flux-corrected                    | `PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12`|
 ## in 2D
 | tags                 | link                                                                                                                                                                       |
 |:---------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
