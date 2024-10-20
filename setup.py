@@ -37,6 +37,7 @@ setup(
                 10: "==0.58.1",
                 11: "==0.58.1",
                 12: "==0.59.1",
+                13: "==0.59.1",
             }[sys.version_info.minor]
             if CI and not _32bit
             else ""
@@ -49,6 +50,7 @@ setup(
                 10: "==1.24.4",
                 11: "==1.24.4",
                 12: "==1.26.4",
+                13: "==1.26.4",
             }[sys.version_info.minor]
             if CI
             else ""
@@ -67,6 +69,7 @@ setup(
                     10: "==1.10.1",
                     11: "==1.10.1",
                     12: "==1.13.0",
+                    13: "==1.13.0",
                 }[sys.version_info.minor]
                 if CI and not _32bit
                 else ""
