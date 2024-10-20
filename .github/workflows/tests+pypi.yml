@@ -224,13 +224,16 @@ jobs:
           cd ../../../
           rm -rf libmpdataxx
 
+      - uses: julia-actions/setup-julia@v2
+      - run: julia --version
+
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
       - env:
           NUMBA_OPT: 1
-        run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
+        run: python -m pytest -rP -vv --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
       - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
         run: |
