@@ -153,7 +153,7 @@ use pyo3::types::{IntoPyDict, PyDict, PyTuple};
 Python::with_gil(|py| {
   let options_args = [("n_iters", 2)].into_py_dict_bound(py);
   let options = py.import_bound("PyMPDATA")?.getattr("Options")?.call((), Some(&options_args))?;
-})
+//...
 ```
 </details>
 <details>
@@ -530,6 +530,7 @@ let mut solver = solver_.call((), Some(&vec![("stepper", stepper), ("advectee", 
 let state_0 = solver.getattr("advectee")?.getattr("get")?.call0()?.getattr("copy")?.call0()?;
 solver.getattr("advance")?.call((), Some(&vec![("n_steps", 75)].into_py_dict_bound(py)))?;
 let state = solver.getattr("advectee")?.getattr("get")?.call0()?;
+Ok(())}
 ```
 </details>
 
