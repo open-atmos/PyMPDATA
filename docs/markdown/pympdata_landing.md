@@ -364,6 +364,7 @@ stepper = Stepper(pyargs(...
 
 ```Rust
     let stepper_arg = vec![("options", options), ("grid", PyTuple::new_bound(py, nx_ny).into_any())].into_py_dict_bound(py);
+    let stepper_ = py.import_bound("PyMPDATA")?.getattr("Stepper")?;
     let stepper = stepper_.call((), Some(&stepper_arg))?;
 ```
 </details>

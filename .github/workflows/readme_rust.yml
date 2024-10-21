@@ -36,5 +36,6 @@ jobs:
           EOF
       - run: mkdir src
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('docs/markdown/pympdata_landing.md'); f=open('src/main.rs', 'w'); f.writelines(block.code for block in code if block.syntax=='Rust'); f.close()"
+      - run: cat -n src/main.rs
       - run: cargo run
 
