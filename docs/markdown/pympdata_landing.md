@@ -484,7 +484,7 @@ let mut solver = solver_.call((), Some(&vec![("stepper", stepper), ("advectee", 
 let state_0 = solver.getattr("advectee")?.getattr("get")?.call0()?.getattr("copy")?.call0()?;
 solver.getattr("advance")?.call((), Some(&vec![("n_steps", 75)].into_py_dict_bound(py)))?;
 let state = solver.getattr("advectee")?.getattr("get")?.call0()?;
-Ok(())}
+Ok(())}}
 ```
 </details>
 
