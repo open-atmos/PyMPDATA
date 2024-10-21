@@ -42,7 +42,7 @@ The Numba's deviation from Python semantics rendering [closure variables
   information on domain extents, algorithm variant used and problem
   characteristics (e.g., coordinate transformation used, or lack thereof).
 
-# Tutorial (in Python, Julia and Matlab)
+# Tutorial (in Python, Julia, Rust and Matlab)
 ## Options class
 
 The [``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class
@@ -488,7 +488,7 @@ state = solver.advectee.get();
     solver.getattr("advance")?.call((), Some(&vec![("n_steps", 75)].into_py_dict_bound(py)))?;
     let state = solver.getattr("advectee")?.getattr("get")?.call0()?;
     Ok(())
-  }
+  })
 }
 ```
 </details>
