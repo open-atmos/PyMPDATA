@@ -35,6 +35,6 @@ jobs:
           pyo3 = { version = "0.22.2", features=["auto-initialize"]}
           EOF
       - run: mkdir src
-      - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('src/test.rs', 'w'); f.writelines(block.code for block in code if block.syntax=='Rust'); f.close()"
+      - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('docs/markdown/pympdata_landing.md'); f=open('src/test.rs', 'w'); f.writelines(block.code for block in code if block.syntax=='Rust'); f.close()"
       - run: cargo run
 

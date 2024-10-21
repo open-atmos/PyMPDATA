@@ -98,7 +98,7 @@ jobs:
           pip3 install pdoc
           pip install -e . -e ./examples
           export PDOC_ALLOW_EXEC=1
-          python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t pdoc_templates
+          python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t docs/templates
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
@@ -121,7 +121,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
-        python-version: ["3.8", "3.11", "system"]
+        python-version: ["3.9", "3.12", "system"]
         exclude:
           - platform: ubuntu-latest
             python-version: system
@@ -130,9 +130,9 @@ jobs:
           - platform: windows-latest
             python-version: system
           - platform: macos-14
-            python-version: "3.8"
+            python-version: "3.9"
           - platform: macos-14
-            python-version: "3.11"
+            python-version: "3.12"
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -177,7 +177,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
-        python-version: ["3.8", "3.11"]
+        python-version: ["3.9", "3.12"]
         exclude:
           - platform: ubuntu-latest
             python-version: system
@@ -186,9 +186,9 @@ jobs:
           - platform: windows-latest
             python-version: system
           - platform: macos-14
-            python-version: "3.8"
+            python-version: "3.9"
           - platform: macos-14
-            python-version: "3.11"
+            python-version: "3.12"
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -232,17 +232,25 @@ jobs:
           NUMBA_OPT: 1
         run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
+      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
         run: |
           mkdir -p /home/runner/work/_temp/_github_home/figures
+          rm /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_Pycurrent
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
-        
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
+          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
+
+      # - if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
+  
+      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
         uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             /github/home/figures/*.svg
+            /github/home/figures/*.gif
 
   devops:
     runs-on: ubuntu-latest
