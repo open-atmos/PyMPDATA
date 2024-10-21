@@ -399,7 +399,7 @@ stepper = Stepper(pyargs(...
 <summary>Rust code (click to expand)</summary>
 
 ```Rust
-    let stepper_arg = vec![("options", options),("n_dims", 2)].into_py_dict_bound(py)
+    let stepper_arg = vec![("options", options),("n_dims", 2)].into_py_dict_bound(py);
 ```
 </details>
 
