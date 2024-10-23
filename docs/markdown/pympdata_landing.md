@@ -363,9 +363,10 @@ stepper = Stepper(pyargs(...
 <summary>Rust code (click to expand)</summary>
 
 ```Rust
-    let stepper_arg = vec![("options", options), ("grid", PyTuple::new_bound(py, nx_ny).into_any())].into_py_dict_bound(py);
-    let stepper_ = py.import_bound("PyMPDATA")?.getattr("Stepper")?;
-    let stepper = stepper_.call((), Some(&stepper_arg))?;
+let n_dims: i32 = 2;
+let stepper_arg = PyDict::new_bound(py);
+PyDictMethods::set_item(&stepper_arg, "options", &options);
+PyDictMethods::set_item(&stepper_arg, "n_dims", &n_dims);
 ```
 </details>
 
@@ -400,10 +401,10 @@ stepper = Stepper(pyargs(...
 <summary>Rust code (click to expand)</summary>
 
 ```Rust
-let n_dims: i32 = 2;
-let stepper_arg_alternative = PyDict::new_bound(py);
-PyDictMethods::set_item(&stepper_arg_alternative, "options", &options);
-PyDictMethods::set_item(&stepper_arg_alternative, "n_dims", &n_dims);
+ let stepper_arg_alternative = vec![("options", &options), ("grid", PyTuple::new_bound(py, nx_ny).into_any())].into_py_dict_bound(py);
+ let stepper_ = py.import_bound("PyMPDATA")?.getattr("Stepper")?;
+ let stepper = stepper_.call((), Some(&stepper_arg))?;
+ //or stepper_arg_alternative
 ```
 </details>
 
@@ -487,10 +488,10 @@ state = solver.advectee.get();
 
 ```Rust
     let solver_ = py.import_bound("PyMPDATA")?.getattr("Solver")?;
-    let mut solver = solver_.call((), Some(&vec![("stepper", stepper), ("advectee", advectee), ("advector", advector)].into_py_dict_bound(py)))?;
-    let state_0 = solver.getattr("advectee")?.getattr("get")?.call0()?.getattr("copy")?.call0()?;
+    let solver = solver_.call((), Some(&vec![("stepper", stepper), ("advectee", advectee), ("advector", advector)].into_py_dict_bound(py)))?;
+    let _state_0 = solver.getattr("advectee")?.getattr("get")?.call0()?.getattr("copy")?.call0()?;
     solver.getattr("advance")?.call((), Some(&vec![("n_steps", 75)].into_py_dict_bound(py)))?;
-    let state = solver.getattr("advectee")?.getattr("get")?.call0()?;
+    let _state = solver.getattr("advectee")?.getattr("get")?.call0()?;
     Ok(())
   })
 }
