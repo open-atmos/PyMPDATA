@@ -121,18 +121,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
-        python-version: ["3.9", "3.12", "system"]
-        exclude:
-          - platform: ubuntu-latest
-            python-version: system
-          - platform: macos-12
-            python-version: system
-          - platform: windows-latest
-            python-version: system
-          - platform: macos-14
-            python-version: "3.9"
-          - platform: macos-14
-            python-version: "3.12"
+        python-version: ["3.9", "3.12"]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -140,18 +129,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0 
 
-      - if: matrix.platform != 'macos-14'
-        uses: actions/setup-python@v1
+      - uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
 
-      - if: matrix.platform == 'macos-14'
-        run: |
-          sudo ln -s `which python3` /usr/local/bin/python
-          echo "PIP_INSTALL_ARGS=--break-system-packages" >> $GITHUB_ENV
-
-          # Python 3.12 workaround  
-          python -m pip install --break-system-packages setuptools
       - run: |
           python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
           python -We -c "import PyMPDATA"
