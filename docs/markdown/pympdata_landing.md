@@ -258,7 +258,7 @@ advector = VectorField(pyargs(...
     let periodic = py.import_bound("PyMPDATA.boundary_conditions")?.getattr("Periodic")?;
 
     let nx_ny = [24, 24];
-    let Cx_Cy = [-0.5, -0.25];
+    let cx_cy = [-0.5, -0.25];
     let boundary_con = PyTuple::new_bound(py, [periodic.call0()?, periodic.call0()?]).into_any();
     let halo = options.getattr("n_halo")?;
 
@@ -281,7 +281,7 @@ import numpy as np
 nx, ny = {}, {}
 Cx, Cy = {}, {}
 data = (np.full((nx + 1, ny), Cx), np.full((nx, ny + 1), Cy))
-    "#, nx_ny[0], nx_ny[1], Cx_Cy[0], Cx_Cy[1]), None, Some(&full)).unwrap();
+    "#, nx_ny[0], nx_ny[1], cx_cy[0], cx_cy[1]), None, Some(&full)).unwrap();
     let boundary_con = PyTuple::new_bound(py, [periodic.call0()?, periodic.call0()?]).into_any();
     let advector_arg = vec![("data", full.get_item("data")?), ("halo", Some(halo.clone())), ("boundary_conditions", Some(boundary_con))].into_py_dict_bound(py);
     let advector = vector_field.call((), Some(&advector_arg))?;
@@ -365,8 +365,8 @@ stepper = Stepper(pyargs(...
 ```Rust
 let n_dims: i32 = 2;
 let stepper_arg = PyDict::new_bound(py);
-PyDictMethods::set_item(&stepper_arg, "options", &options);
-PyDictMethods::set_item(&stepper_arg, "n_dims", &n_dims);
+let _ = PyDictMethods::set_item(&stepper_arg, "options", &options);
+let _ = PyDictMethods::set_item(&stepper_arg, "n_dims", &n_dims);
 ```
 </details>
 
@@ -401,10 +401,9 @@ stepper = Stepper(pyargs(...
 <summary>Rust code (click to expand)</summary>
 
 ```Rust
- let stepper_arg_alternative = vec![("options", &options), ("grid", &PyTuple::new_bound(py, nx_ny).into_any())].into_py_dict_bound(py);
+ let _stepper_arg_alternative = vec![("options", &options), ("grid", &PyTuple::new_bound(py, nx_ny).into_any())].into_py_dict_bound(py);
  let stepper_ = py.import_bound("PyMPDATA")?.getattr("Stepper")?;
- let stepper = stepper_.call((), Some(&stepper_arg))?;
- //or stepper_arg_alternative
+ let stepper = stepper_.call((), Some(&stepper_arg))?; //or use stepper args alternative
 ```
 </details>
 
