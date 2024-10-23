@@ -400,6 +400,7 @@ stepper = Stepper(pyargs(...
 <summary>Rust code (click to expand)</summary>
 
 ```Rust
+let n_dims: i32 = 2;
 let stepper_arg_alternative = PyDict::new_bound(py);
 PyDictMethods::set_item(&stepper_arg_alternative, "options", &options);
 PyDictMethods::set_item(&stepper_arg_alternative, "n_dims", &n_dims);
