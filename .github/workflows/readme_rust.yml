@@ -17,8 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: actions/setup-python@v1 
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rust-src
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - run: pip install -e .
