@@ -53,7 +53,7 @@
             <h2>Contents</h2>
             <ul>
   <li><a href="#introduction">Introduction</a></li>
-  <li><a href="#tutorial-in-python-julia-and-matlab">Tutorial (in Python, Julia and Matlab)</a>
+  <li><a href="#tutorial-in-python-julia-rust-and-matlab">Tutorial (in Python, Julia, Rust and Matlab)</a>
   <ul>
     <li><a href="#options-class">Options class</a></li>
     <li><a href="#arakawa-c-grid-layer-and-boundary-conditions">Arakawa-C grid layer and boundary conditions</a></li>
@@ -138,7 +138,7 @@ The Numba's deviation from Python semantics rendering <a href="https://numba.pyd
   information on domain extents, algorithm variant used and problem
   characteristics (e.g., coordinate transformation used, or lack thereof).</p>
 
-<h1 id="tutorial-in-python-julia-and-matlab">Tutorial (in Python, Julia and Matlab)</h1>
+<h1 id="tutorial-in-python-julia-rust-and-matlab">Tutorial (in Python, Julia, Rust and Matlab)</h1>
 
 <h2 id="options-class">Options class</h2>
 
@@ -196,6 +196,22 @@ with arguments suiting the problem at hand, e.g.:</p>
 
 <p><details open>
 <summary>Python code (click to expand)</summary></p>
+
+<p><details>
+<summary>Rust code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="k">use</span><span class="w"> </span><span class="n">pyo3</span><span class="p">::</span><span class="n">prelude</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">pyo3</span><span class="p">::</span><span class="n">types</span><span class="p">::{</span><span class="n">IntoPyDict</span><span class="p">,</span><span class="w"> </span><span class="n">PyDict</span><span class="p">,</span><span class="w"> </span><span class="n">PyTuple</span><span class="p">};</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">PyResult</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Python</span><span class="p">::</span><span class="n">with_gil</span><span class="p">(</span><span class="o">|</span><span class="n">py</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">options_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[(</span><span class="s">&quot;n_iters&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)].</span><span class="n">into_py_dict_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import_bound</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;Options&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">call</span><span class="p">((),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="n">options_args</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p></details></p>
 
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">Options</span>
@@ -353,8 +369,50 @@ conditions and with an initial Gaussian signal in the scalar field
 </code></pre>
 </div>
 
-<p></details>
-<details open>
+<p></details></p>
+
+<p><details>
+<summary>Rust code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">vector_field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import_bound</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;VectorField&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">scalar_field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import_bound</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;ScalarField&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">periodic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import_bound</span><span class="p">(</span><span class="s">&quot;<a href="PyMPDATA/boundary_conditions.html">PyMPDATA.boundary_conditions</a>&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;Periodic&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">nx_ny</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">cx_cy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.25</span><span class="p">];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">boundary_con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyTuple</span><span class="p">::</span><span class="n">new_bound</span><span class="p">(</span><span class="n">py</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">periodic</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="n">periodic</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">]).</span><span class="n">into_any</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">halo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">options</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;n_halo&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">indices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyDict</span><span class="p">::</span><span class="n">new_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Python</span><span class="p">::</span><span class="n">run_bound</span><span class="p">(</span><span class="n">py</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="fm">format!</span><span class="p">(</span><span class="s">r#&quot;</span>
+<span class="s">import numpy as np</span>
+<span class="s">nx, ny = {}, {}</span>
+<span class="s">xi, yi = np.indices((nx, ny), dtype=float)</span>
+<span class="s">data=np.exp(</span>
+<span class="s">  -(xi+.5-nx/2)**2 / (2*(ny/10)**2)</span>
+<span class="s">  -(yi+.5-nx/2)**2 / (2*(ny/10)**2)</span>
+<span class="s">)</span>
+<span class="s">    &quot;#</span><span class="p">,</span><span class="w"> </span><span class="n">nx_ny</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">nx_ny</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="w"> </span><span class="nb">None</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="n">indices</span><span class="p">)).</span><span class="n">unwrap</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">advectee_arg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[(</span><span class="s">&quot;data&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">indices</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;halo&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">halo</span><span class="p">.</span><span class="n">clone</span><span class="p">())),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;boundary_conditions&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">boundary_con</span><span class="p">))].</span><span class="n">into_py_dict_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">advectee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scalar_field</span><span class="p">.</span><span class="n">call</span><span class="p">((),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="n">advectee_arg</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">full</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyDict</span><span class="p">::</span><span class="n">new_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Python</span><span class="p">::</span><span class="n">run_bound</span><span class="p">(</span><span class="n">py</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="fm">format!</span><span class="p">(</span><span class="s">r#&quot;</span>
+<span class="s">import numpy as np</span>
+<span class="s">nx, ny = {}, {}</span>
+<span class="s">Cx, Cy = {}, {}</span>
+<span class="s">data = (np.full((nx + 1, ny), Cx), np.full((nx, ny + 1), Cy))</span>
+<span class="s">    &quot;#</span><span class="p">,</span><span class="w"> </span><span class="n">nx_ny</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">nx_ny</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">cx_cy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">cx_cy</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="w"> </span><span class="nb">None</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="n">full</span><span class="p">)).</span><span class="n">unwrap</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">boundary_con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyTuple</span><span class="p">::</span><span class="n">new_bound</span><span class="p">(</span><span class="n">py</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">periodic</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="n">periodic</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">]).</span><span class="n">into_any</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">advector_arg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[(</span><span class="s">&quot;data&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">full</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;halo&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">halo</span><span class="p">.</span><span class="n">clone</span><span class="p">())),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;boundary_conditions&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">boundary_con</span><span class="p">))].</span><span class="n">into_py_dict_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">advector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vector_field</span><span class="p">.</span><span class="n">call</span><span class="p">((),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="n">advector_arg</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><details open>
 <summary>Python code (click to expand)</summary></p>
 
 <div class="pdoc-code codehilite">
@@ -429,8 +487,22 @@ of either supplying just the  number of dimensions or specialising the stepper f
 </div>
 
 <p></details>
-<details open>
-<summary>Python code (click to expand)</summary></p>
+<details open></p>
+
+<p><details>
+<summary>Rust code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">n_dims</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">stepper_arg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyDict</span><span class="p">::</span><span class="n">new_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyDictMethods</span><span class="p">::</span><span class="n">set_item</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stepper_arg</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;options&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">options</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PyDictMethods</span><span class="p">::</span><span class="n">set_item</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stepper_arg</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;n_dims&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">n_dims</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><summary>Python code (click to expand)</summary></p>
 
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="kn">from</span> <span class="nn">PyMPDATA</span> <span class="kn">import</span> <span class="n">Stepper</span>
@@ -461,8 +533,21 @@ or
 </code></pre>
 </div>
 
-<p></details>
-<details open>
+<p></details></p>
+
+<p><details>
+<summary>Rust code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="n">_stepper_arg_alternative</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[(</span><span class="s">&quot;options&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">options</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;grid&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">PyTuple</span><span class="p">::</span><span class="n">new_bound</span><span class="p">(</span><span class="n">py</span><span class="p">,</span><span class="w"> </span><span class="n">nx_ny</span><span class="p">).</span><span class="n">into_any</span><span class="p">())].</span><span class="n">into_py_dict_bound</span><span class="p">(</span><span class="n">py</span><span class="p">);</span>
+<span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="n">stepper_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import_bound</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;Stepper&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="n">stepper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stepper_</span><span class="p">.</span><span class="n">call</span><span class="p">((),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stepper_arg</span><span class="p">))</span><span class="o">?</span><span class="p">;</span><span class="w"> </span><span class="c1">//or use stepper args alternative</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><details open>
 <summary>Python code (click to expand)</summary></p>
 
 <div class="pdoc-code codehilite">
@@ -540,8 +625,26 @@ a solver and making 75 integration steps looks as follows:
 </code></pre>
 </div>
 
-<p></details>
-<details open>
+<p></details></p>
+
+<p><details>
+<summary>Rust code (click to expand)</summary></p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">solver_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="p">.</span><span class="n">import_bound</span><span class="p">(</span><span class="s">&quot;PyMPDATA&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;Solver&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver_</span><span class="p">.</span><span class="n">call</span><span class="p">((),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="fm">vec!</span><span class="p">[(</span><span class="s">&quot;stepper&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stepper</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;advectee&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">advectee</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;advector&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">advector</span><span class="p">)].</span><span class="n">into_py_dict_bound</span><span class="p">(</span><span class="n">py</span><span class="p">)))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">_state_0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;advectee&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;get&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;copy&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="n">solver</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;advance&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">call</span><span class="p">((),</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="fm">vec!</span><span class="p">[(</span><span class="s">&quot;n_steps&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">75</span><span class="p">)].</span><span class="n">into_py_dict_bound</span><span class="p">(</span><span class="n">py</span><span class="p">)))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;advectee&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">getattr</span><span class="p">(</span><span class="s">&quot;get&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">call0</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p></details></p>
+
+<p><details open>
 <summary>Python code (click to expand)</summary></p>
 
 <div class="pdoc-code codehilite">
