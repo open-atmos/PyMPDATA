@@ -143,4 +143,3 @@ and by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 20
 copyright: Jagiellonian University (2019-2023) & AGH University of Krakow (2023 onwards)   
 licence: GPL v3   
 
-
