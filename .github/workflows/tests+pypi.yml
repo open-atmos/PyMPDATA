@@ -95,10 +95,18 @@ jobs:
       - env:
           JUPYTER_PLATFORM_DIRS: 1
         run: |
-          pip3 install pdoc
+          pip3 install pdoc nbformat
           pip install -e . -e ./examples
-          export PDOC_ALLOW_EXEC=1
-          python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t docs/templates
+
+          python - <<EOF
+          import glob, nbformat
+          for notebook_path in glob.glob('examples/PyMPDATA_examples/*/*.ipynb'):
+            with open(notebook_path, encoding="utf8") as fin:
+              with open(notebook_path + ".badges.md", 'w') as fout:
+                fout.write(nbformat.read(fin, nbformat.NO_CONVERT).cells[0].source)
+          EOF
+
+          PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t docs/templates --math
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
