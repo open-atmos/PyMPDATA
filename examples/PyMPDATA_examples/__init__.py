@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/markdown/pympdata_examples_landing.md
+.. include:: ../docs/pympdata_examples_landing.md
 """
 
 from importlib.metadata import PackageNotFoundError, version
