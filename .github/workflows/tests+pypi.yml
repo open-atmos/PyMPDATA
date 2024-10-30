@@ -195,6 +195,8 @@ jobs:
           sudo make install
           cd ../../../
           rm -rf libmpdataxx
+      - uses: julia-actions/setup-julia@v2
+      - run: julia --version
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
