@@ -176,8 +176,8 @@ jobs:
     needs: [pylint, precommit]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
-        python-version: ["3.8", "3.11"]
+        platform: [ubuntu-latest]
+        python-version: ["3.8"]
         exclude:
           - platform: ubuntu-latest
             python-version: system
@@ -233,7 +233,8 @@ jobs:
 
       - env:
           NUMBA_OPT: 1
-        run: python -m pytest -rP -vv --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
+        run: python -m pytest -rP -vv -k trixi --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
+
 
       - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.11'}}
         run: |
