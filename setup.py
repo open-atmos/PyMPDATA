@@ -56,7 +56,7 @@ setup(
             else ""
         ),
         "pystrict",
-        "flexparser<0.4",
+        "flexparser<0.5",
     ],
     extras_require={
         "tests": [
