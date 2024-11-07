@@ -128,7 +128,7 @@ jobs:
     needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
+        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ["3.9", "3.12"]
         exclude:
           - platform: macos-14
@@ -168,7 +168,7 @@ jobs:
     needs: [pylint, precommit]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
+        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ["3.9", "3.12"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
