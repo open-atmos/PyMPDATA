@@ -39,7 +39,6 @@ setup(
         "scipy",
         "pint",
         "joblib",
-        "h5py",
         "sympy",
         "imageio",
         "meshio",
