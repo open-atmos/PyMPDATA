@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="pdoc 15.0.0"/>
-    <title>PyMPDATA_examples API documentation</title>
+    <title>PyMPDATA_examples.trixi_comparison API documentation</title>
 
     <style>/*! * Bootstrap Reboot v5.0.0 (https://getbootstrap.com/) * Copyright 2011-2021 The Bootstrap Authors * Copyright 2011-2021 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE) * Forked from Normalize.css, licensed MIT (https://github.com/necolas/normalize.css/blob/master/LICENSE.md) */*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#fff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}hr{margin:1rem 0;color:inherit;background-color:currentColor;border:0;opacity:.25}hr:not([size]){height:1px}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}abbr[data-bs-original-title],abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted;cursor:help;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none}address{margin-bottom:1rem;font-style:normal;line-height:inherit}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}blockquote{margin:0 0 1rem}b,strong{font-weight:bolder}small{font-size:.875em}mark{padding:.2em;background-color:#fcf8e3}sub,sup{position:relative;font-size:.75em;line-height:0;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}a{color:#0d6efd;text-decoration:underline}a:hover{color:#0a58ca}a:not([href]):not([class]),a:not([href]):not([class]):hover{color:inherit;text-decoration:none}code,kbd,pre,samp{font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:1em;direction:ltr;unicode-bidi:bidi-override}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:#d63384;word-wrap:break-word}a>code{color:inherit}kbd{padding:.2rem .4rem;font-size:.875em;color:#fff;background-color:#212529;border-radius:.2rem}kbd kbd{padding:0;font-size:1em;font-weight:700}figure{margin:0 0 1rem}img,svg{vertical-align:middle}table{caption-side:bottom;border-collapse:collapse}caption{padding-top:.5rem;padding-bottom:.5rem;color:#6c757d;text-align:left}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}label{display:inline-block}button{border-radius:0}button:focus:not(:focus-visible){outline:0}button,input,optgroup,select,textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button,select{text-transform:none}[role=button]{cursor:pointer}select{word-wrap:normal}select:disabled{opacity:1}[list]::-webkit-calendar-picker-indicator{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}::-moz-focus-inner{padding:0;border-style:none}textarea{resize:vertical}fieldset{min-width:0;padding:0;margin:0;border:0}legend{float:left;width:100%;padding:0;margin-bottom:.5rem;font-size:calc(1.275rem + .3vw);line-height:inherit}@media (min-width:1200px){legend{font-size:1.5rem}}legend+*{clear:left}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}[type=search]{outline-offset:-2px;-webkit-appearance:textfield}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::file-selector-button{font:inherit}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}output{display:inline-block}iframe{border:0}summary{display:list-item;cursor:pointer}progress{vertical-align:baseline}[hidden]{display:none!important}</style>
     <style>/*! syntax-highlighting.css */pre{line-height:125%;}span.linenos{color:inherit; background-color:transparent; padding-left:5px; padding-right:20px;}.pdoc-code .hll{background-color:#ffffcc}.pdoc-code{background:#f8f8f8;}.pdoc-code .c{color:#3D7B7B; font-style:italic}.pdoc-code .err{border:1px solid #FF0000}.pdoc-code .k{color:#008000; font-weight:bold}.pdoc-code .o{color:#666666}.pdoc-code .ch{color:#3D7B7B; font-style:italic}.pdoc-code .cm{color:#3D7B7B; font-style:italic}.pdoc-code .cp{color:#9C6500}.pdoc-code .cpf{color:#3D7B7B; font-style:italic}.pdoc-code .c1{color:#3D7B7B; font-style:italic}.pdoc-code .cs{color:#3D7B7B; font-style:italic}.pdoc-code .gd{color:#A00000}.pdoc-code .ge{font-style:italic}.pdoc-code .gr{color:#E40000}.pdoc-code .gh{color:#000080; font-weight:bold}.pdoc-code .gi{color:#008400}.pdoc-code .go{color:#717171}.pdoc-code .gp{color:#000080; font-weight:bold}.pdoc-code .gs{font-weight:bold}.pdoc-code .gu{color:#800080; font-weight:bold}.pdoc-code .gt{color:#0044DD}.pdoc-code .kc{color:#008000; font-weight:bold}.pdoc-code .kd{color:#008000; font-weight:bold}.pdoc-code .kn{color:#008000; font-weight:bold}.pdoc-code .kp{color:#008000}.pdoc-code .kr{color:#008000; font-weight:bold}.pdoc-code .kt{color:#B00040}.pdoc-code .m{color:#666666}.pdoc-code .s{color:#BA2121}.pdoc-code .na{color:#687822}.pdoc-code .nb{color:#008000}.pdoc-code .nc{color:#0000FF; font-weight:bold}.pdoc-code .no{color:#880000}.pdoc-code .nd{color:#AA22FF}.pdoc-code .ni{color:#717171; font-weight:bold}.pdoc-code .ne{color:#CB3F38; font-weight:bold}.pdoc-code .nf{color:#0000FF}.pdoc-code .nl{color:#767600}.pdoc-code .nn{color:#0000FF; font-weight:bold}.pdoc-code .nt{color:#008000; font-weight:bold}.pdoc-code .nv{color:#19177C}.pdoc-code .ow{color:#AA22FF; font-weight:bold}.pdoc-code .w{color:#bbbbbb}.pdoc-code .mb{color:#666666}.pdoc-code .mf{color:#666666}.pdoc-code .mh{color:#666666}.pdoc-code .mi{color:#666666}.pdoc-code .mo{color:#666666}.pdoc-code .sa{color:#BA2121}.pdoc-code .sb{color:#BA2121}.pdoc-code .sc{color:#BA2121}.pdoc-code .dl{color:#BA2121}.pdoc-code .sd{color:#BA2121; font-style:italic}.pdoc-code .s2{color:#BA2121}.pdoc-code .se{color:#AA5D1F; font-weight:bold}.pdoc-code .sh{color:#BA2121}.pdoc-code .si{color:#A45A77; font-weight:bold}.pdoc-code .sx{color:#008000}.pdoc-code .sr{color:#A45A77}.pdoc-code .s1{color:#BA2121}.pdoc-code .ss{color:#19177C}.pdoc-code .bp{color:#008000}.pdoc-code .fm{color:#0000FF}.pdoc-code .vc{color:#19177C}.pdoc-code .vg{color:#19177C}.pdoc-code .vi{color:#19177C}.pdoc-code .vm{color:#19177C}.pdoc-code .il{color:#666666}</style>
@@ -38,48 +38,17 @@
     <nav class="pdoc">
         <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
         <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
-        <div>            <a class="pdoc-button module-list-button" href="index.html">
+        <div>            <a class="pdoc-button module-list-button" href="../PyMPDATA_examples.html">
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
   <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
   <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
-</svg>                &nbsp;
-                Module Index
-            </a>
+</svg>                &nbsp;PyMPDATA_examples</a>
 
 
             <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
                    pattern=".+" required>
 
-            <h2>Contents</h2>
-            <ul>
-  <li><a href="#introduction">Introduction</a></li>
-  <li><a href="#example-gallery">Example gallery</a>
-  <ul>
-    <li><a href="#in-1d">in 1D</a></li>
-    <li><a href="#in-2d">in 2D</a></li>
-    <li><a href="#in-3d">in 3D</a></li>
-  </ul></li>
-  <li><a href="#installation">Installation</a></li>
-</ul>
 
-
-            <h2>Submodules</h2>
-            <ul>
-                    <li><a href="PyMPDATA_examples/Arabas_and_Farhat_2020.html">Arabas_and_Farhat_2020</a></li>
-                    <li><a href="PyMPDATA_examples/Bartman_et_al_2022.html">Bartman_et_al_2022</a></li>
-                    <li><a href="PyMPDATA_examples/DPDC.html">DPDC</a></li>
-                    <li><a href="PyMPDATA_examples/Jarecka_et_al_2015.html">Jarecka_et_al_2015</a></li>
-                    <li><a href="PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.html">Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12</a></li>
-                    <li><a href="PyMPDATA_examples/Olesik_et_al_2022.html">Olesik_et_al_2022</a></li>
-                    <li><a href="PyMPDATA_examples/Shipway_and_Hill_2012.html">Shipway_and_Hill_2012</a></li>
-                    <li><a href="PyMPDATA_examples/Smolarkiewicz_1984.html">Smolarkiewicz_1984</a></li>
-                    <li><a href="PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12.html">Smolarkiewicz_2006_Figs_3_4_10_11_12</a></li>
-                    <li><a href="PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14.html">Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14</a></li>
-                    <li><a href="PyMPDATA_examples/advection_diffusion_1d.html">advection_diffusion_1d</a></li>
-                    <li><a href="PyMPDATA_examples/advection_diffusion_2d.html">advection_diffusion_2d</a></li>
-                    <li><a href="PyMPDATA_examples/trixi_comparison.html">trixi_comparison</a></li>
-                    <li><a href="PyMPDATA_examples/utils.html">utils</a></li>
-            </ul>
 
 
 
@@ -93,148 +62,28 @@
     <main class="pdoc">
             <section class="module-info">
                     <h1 class="modulename">
-PyMPDATA_examples    </h1>
+<a href="./../PyMPDATA_examples.html">PyMPDATA_examples</a><wbr>.trixi_comparison    </h1>
 
-                        <div class="docstring"><h1 id="introduction">Introduction</h1>
+                        <div class="docstring"><p>This example uses a basic 2D advection test case to compare PyMPDATA
+solution against Trixi.jl (Julia DG code)</p>
 
-<p>PyMPDATA examples are bundled with PyMPDATA and located in the examples subfolder.
-They constitute a separate PyMPDATA_examples Python package which is also available at PyPI.
-The examples have additional dependencies listed in PyMPDATA_examples package setup.py file.
-Running the examples requires the PyMPDATA_examples package to be installed.</p>
-
-<p>We recommend you look through the example gallery below to see the examples in action.</p>
-
-<h1 id="example-gallery">Example gallery</h1>
-
-<p>Unless stated otherwise the following examples solve the <mark>basic advection equation</mark>:
-$$ \partial_t (\psi) + \nabla \cdot (u \psi) = 0 $$</p>
-
-<p>The examples are grouped by the dimensionality of the computational grid.</p>
-
-<h2 id="in-1d">in 1D</h2>
-
-<table>
-<thead>
-<tr>
-  <th style="text-align:left;">tags</th>
-  <th style="text-align:left;">link</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td style="text-align:left;"><mark>advection-diffusion equation</mark><br/>$$ \partial_t (\psi) + \nabla \cdot (u \psi) + \mu \Delta (\psi) = 0 $$</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/advection_diffusion_1d.html">PyMPDATA_examples.advection_diffusion_1d</a></code>*</td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>Black-Scholes equation</mark>, option pricing<br>$$  \frac{\partial f}{\partial t} + rS \frac{\partial f}{\partial S} + \frac{\sigma^2}{2} S^2 \frac{\partial^2 f}{\partial S^2} - rf = 0$$</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Arabas_and_Farhat_2020.html">PyMPDATA_examples.Arabas_and_Farhat_2020</a></code>*</td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>advection equation</mark>, homogeneous, several algorithm variants comparison: infinite-gauge, flux-corrected,..</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12.html">PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12</a></code></td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>Size-spectral advection</mark>, particle population condensational growth, coordinate transformation<br>$$ \partial_t (G \psi) + \nabla \cdot (Gu \psi) = 0 $$</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Olesik_et_al_2022.html">PyMPDATA_examples.Olesik_et_al_2022</a></code>*</td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>advection equation</mark>, <a href="https://osti.gov/servlets/purl/7049237">double-pass donor-cell option</a></td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/DPDC.html">PyMPDATA_examples.DPDC</a></code></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="in-2d">in 2D</h2>
-
-<table>
-<thead>
-<tr>
-  <th style="text-align:left;">tags</th>
-  <th style="text-align:left;">link</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td style="text-align:left;"><mark>advection-diffusion equation</mark><br/>$$ \partial_t (\psi) + \nabla \cdot (u \psi) + \mu \Delta (\psi) = 0 $$</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/advection_diffusion_2d.html">PyMPDATA_examples.advection_diffusion_2d</a></code>*<br/><img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/advection_diffusion.gif" width="50%" alt="adv-diff"></td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>Spectral-spatial advection</mark>, particle population condensational growth in a vertical column of air, time dependent flow</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Shipway_and_Hill_2012.html">PyMPDATA_examples.Shipway_and_Hill_2012</a></code><br/><img src="https://github.com/open-atmos/PyMPDATA/wiki/files/KiD-1D_PyMPDATA_n_iters=3.gif" width="50%" alt="spectral-spatial"></td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>shallow-water equations</mark><br/>$$\begin{eqnarray} \partial_t h + \partial_x (uh) + \partial_y (vh) &amp;=&amp; 0~  \\ \partial_t (uh) + \partial_x ( uuh) + \partial_y (vuh) &amp;=&amp; - h \partial_x h~ \\ \partial_t (vh) + \partial_x ( uvh) + \partial_y (vvh) &amp;=&amp; - h \partial_y h~ \end{eqnarray}$$</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Jarecka_et_al_2015.html">PyMPDATA_examples.Jarecka_et_al_2015</a></code>*</td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>advection equation</mark>, solid body rotation</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12.html">PyMPDATA_examples.Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12</a></code>*</td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>advection equation</mark>, coordinate transformation, spherical coordinates, see also examples in <a href="https://pypi.org/project/PyMPDATA-MPI/">PyMPDATA-MPI</a> $$ \partial_t (G \psi) + \nabla \cdot (Gu \psi) = 0 $$</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14.html">PyMPDATA_examples.Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14</a></code><br><img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="50%" alt="mpi-gif"></td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>advection equation</mark>, comparison against DG solution using <a href="https://trixi-framework.github.io/">Trixi.jl</a></td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/trixi_comparison.html">PyMPDATA_examples.trixi_comparison</a></code></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="in-3d">in 3D</h2>
-
-<table>
-<thead>
-<tr>
-  <th style="text-align:left;">tags</th>
-  <th style="text-align:left;">link</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td style="text-align:left;"><mark>homogeneous advection equation</mark></td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Smolarkiewicz_1984.html">PyMPDATA_examples.Smolarkiewicz_1984</a></code></td>
-</tr>
-<tr>
-  <td style="text-align:left;"><mark>homogeneous advection equation</mark>, performance comparison against libmpdata++, scalability analysis in respect to threads</td>
-  <td style="text-align:left;"><code><a href="PyMPDATA_examples/Bartman_et_al_2022.html">PyMPDATA_examples.Bartman_et_al_2022</a></code></td>
-</tr>
-</tbody>
-</table>
-
-<p>* - with comparison against analytic solution</p>
-
-<h1 id="installation">Installation</h1>
-
-<p>Since the examples package includes Jupyter notebooks (and their execution requires write access), the suggested install and launch steps are:</p>
-
-<pre><code>git clone https://github.com/open-atmos/PyMPDATA-examples.git
-cd PyMPDATA-examples
-pip install -e .
-jupyter-notebook
-</code></pre>
-
-<p>Alternatively, one can also install the examples package from pypi.org by using</p>
-
-<pre><code>pip install PyMPDATA-examples.
-</code></pre>
+<p>advection_comparison.ipynb:
+<a href="https://github.com/open-atmos/PyMPDATA/blob/main/examples/PyMPDATA_examples/trixi_comparison/advection_comparison.ipynb"><img src="https://img.shields.io/static/v1?label=render%20on&logo=github&color=87ce3e&message=GitHub" alt="preview notebook" /></a>
+<a href="https://mybinder.org/v2/gh/open-atmos/PyMPDATA.git/main?urlpath=lab/tree/examples/PyMPDATA_examples/trixi_comparison/advection_comparison.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt="launch on mybinder.org" /></a>
+<a href="https://colab.research.google.com/github/open-atmos/PyMPDATA/blob/main/examples/PyMPDATA_examples/trixi_comparison/advection_comparison.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="launch on Colab" /></a></p>
 </div>
 
-                        <input id="mod-PyMPDATA_examples-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                        <input id="mod-trixi_comparison-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
-                        <label class="view-source-button" for="mod-PyMPDATA_examples-view-source"><span>View Source</span></label>
+                        <label class="view-source-button" for="mod-trixi_comparison-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">.. include:: ../docs/pympdata_examples_landing.md</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">PackageNotFoundError</span><span class="p">,</span> <span class="n">version</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="k">try</span><span class="p">:</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>    <span class="c1"># package is not installed</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="k">pass</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">2</span></a><span class="sd">This example uses a basic 2D advection test case to compare PyMPDATA</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="sd">solution against Trixi.jl (Julia DG code)</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">5</span></a><span class="sd">advection_comparison.ipynb:</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a><span class="sd">.. include:: ./advection_comparison.ipynb.badges.md</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">7</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -292,7 +141,7 @@ jupyter-notebook
                 script.async = true;
                 script.onload = () => resolve(window.pdocSearch);
                 script.onerror = (e) => reject(e);
-                script.src = "search.js";
+                script.src = "../search.js";
                 document.getElementsByTagName("head")[0].appendChild(script);
             });
         } catch (e) {
@@ -334,7 +183,7 @@ jupyter-notebook
             }
             for (let result of results.slice(0, 10)) {
                 let doc = result.doc;
-                let url = `${doc.modulename.replaceAll(".", "/")}.html`;
+                let url = `../${doc.modulename.replaceAll(".", "/")}.html`;
                 if (doc.qualname) {
                     url += `#${doc.qualname}`;
                 }
