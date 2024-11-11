@@ -1,12 +1,27 @@
 {% extends "default/index.html.jinja2" %}
 
-{% block title %}PyMPDATA module list{% endblock %}
+{% block title %}PyMPDATA documentation{% endblock %}
 
 {% block nav %}
+    <style>
+    nav {
+        display: none;
+    }
+    </style>
 {% endblock %}
 
 
 {% block content %}
+    <style>
+    .pdoc {
+        margin: 0 auto;
+        padding: 1em;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    </style>
     <main class="pdoc">
         <div style="display: flex; align-items: center;">
             <a href="https://open-atmos.github.io/PyMPDATA/index.html">
@@ -51,33 +66,33 @@
             <td>
               <ul>
                 <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA.html">docs (<b>incl. tutorial</b>)</a></li>
-                <li><a href="https://pypi.org/p/PyMPDATA">pypi</a></li>
+                <li><a href="https://pypi.org/p/PyMPDATA"><img src="https://img.shields.io/pypi/v/pympdata?logo=pypi&logoColor=white"></a></li>
               </ul>
             </td>
             <td>
               <ul>
-                <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_examples.html">docs</a></li>
-                <li><a href="https://pypi.org/p/PyMPDATA-examples">pypi</a></li>
+                <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_examples.html">docs (<b>incl. example gallery</b>)</a></li>
+                <li><a href="https://pypi.org/p/PyMPDATA-examples"><img src="https://img.shields.io/pypi/v/pympdata-examples?logo=pypi&logoColor=white"></a></li>
               </ul>
             </td>
             <td>
                 <ul>
                     <li><a href="https://open-atmos.github.io/PyMPDATA-MPI/PyMPDATA_MPI.html">docs</a></li>
-                    <li><a href="https://pypi.org/p/PyMPDATA-MPI/">pypi</a></li>
+                    <li><a href="https://pypi.org/p/PyMPDATA-MPI/"><img src="https://img.shields.io/pypi/v/pympdata-mpi?logo=pypi&logoColor=white"></a></li>
                 </ul>
             </td>
             </tr>
             <tr>
             <td colspan="2">
                 <ul>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA">repository</a></li>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA/issues">issue tracker</a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA"><img src="https://img.shields.io/static/v1?label=PyMPDATA&logo=github&color=gold&message=code+repository"></a></li>
+                        <li><a href="https://github.com/open-atmos/PyMPDATA/issues"><img src="https://img.shields.io/github/issues/open-atmos/pympdata?label=PyMPDATA%20issues&logo=github&logoColor=white"></a></li>
                 </ul>
             </td>
             <td>
                 <ul>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI">repository</a></li>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI/issues">issue tracker</a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI"><img src="https://img.shields.io/static/v1?label=PyMPDATA-MPI&logo=github&color=gold&message=code+repository"></a></li>
+                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI/issues"><img src="https://img.shields.io/github/issues/open-atmos/pympdata-mpi?label=PyMPDATA-MPI%20issues&logo=github&logoColor=white)"></a></li>
                 </ul>
             </td>
             </tr>
