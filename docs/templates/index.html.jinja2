@@ -38,7 +38,8 @@
             with optional coordinate transformations.
         </p>
         <p>
-            A separate project called <b>PyMPDATA-MPI</b> depicts how <b>numba-mpi</b> can be used to enable <b>distributed memory parallelism</b> in PyMPDATA.
+            A separate project called <b><a href="https://github.com/open-atmos/PyMPDATA-MPI">PyMPDATA-MPI</a></b> depicts how 
+            <b><a href="https://github.com/numba-mpi/numba-mpi">numba-mpi</a></b> can be used to enable <mark>distributed memory parallelism</mark> in PyMPDATA.
         </p>
     </div>
     <div style="padding-top: 0.5em">
@@ -104,15 +105,25 @@
             PyMPDATA is available on PyPI and can be installed using pip:
         </p>
         <pre><code>pip install PyMPDATA</code></pre>
-        <p>Note: the way above <b>will not</b> install PyMPDATA-examples, to install them both you can run:</p>
-        <pre><code>pip install PyMPDATA[tests]</code></pre>
-        <br>
+        <p>Note: the way above <b>will not</b> install PyMPDATA-examples, to install them, and run the tests, likely the most convenient way is:</p>
+        <pre><code>git clone https://github.com/open-atmos/PySDM.git
+pip install -e PyMPDATA[tests] -e PyMPDATA/examples[tests]
+pytest PyMPDATA
+        </code></pre>
+        <p>(the above should be a viable way to set up development environment for PyMPDATA, see also our <a href="https://github.com/open-atmos/python-dev-hints/wiki">Python dev hints Wiki</a> for further information)</p>
         <p>
             PyMPDATA-examples is available on PyPI and can be installed using pip:
         </p>
         <pre><code>pip install PyMPDATA-examples</code></pre>
-        <p>Note: this will also install PyMPDATA</p>
-    </div>
+        <p>Note: this will also install PyMPDATA if needed, but the examples package wheels do not include the Jupyter notebooks - only common code used from the notebooks. 
+          All PyMPDATA example notebooks can be viewed on GitHub and feature header cells with badges enabling single-click execution on either 
+          <a href="https://colab.research.google.com">Google Colab</a> or <a href="https://mybinder.org">mybinder.org</a> platforms. 
+          To try the notebooks out locally, use:
+        </p>
+        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
+pip install -e PyMPDATA -e PyMPDATA/examples
+jupyter-notebook PyMPDATA/examples</code></pre>
+        </div>
         <div style="padding-top: 0.5em">
         <h2>Dependencies</h2>
         <p>
@@ -139,6 +150,28 @@
             We encourage to use the <a href="https://github.com/open-atmos/PyMPDATA/discussions">GitHub Discussions</a>
             feature (rather than the issue tracker) for seeking support in understanding,
             using and extending PyMPDATA code.
+        </p>
+    </div>
+     <div style="padding-top: 0.5em">
+        <h2>Licensing, credits, acknowledgements</h2>
+        <p>
+          PyMPDATA and PyMPDATA-examples are free/libre open-source software packages released under the
+            <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU GPL v3 license</a>.
+        <p>
+          Development of PyMPDATA was started by <a href="https://github.com/piotrbartman">Piotr Bartman[-Szwarc]</a>, 
+            <a href="https://github.com/slayoo">Sylwester Arabas</a> and collaborators
+            at the <a href="https://en.uj.edu.pl/en">Jagiellonian University in Kraków</a>.
+          For an overview of features of the initial release, see the
+            <a href="https://doi.org/10.21105/joss.03896">2022 PyMPDATA v1 JOSS paper</a>.
+          See <a href="https://github.com/open-atmos/PyMPDATA/graphs/contributors">list of code committers</a>
+            for a complete list of contributors.
+        </p>
+        <p>
+          Development of PySDM was supported by:
+          <ul>
+            <li><a href="https://www.fnp.org.pl/en/">Foundation for Polish Science</a> (grant no. POIR.04.04.00-00-5E1C/18 co-financed by the European Union under the European Regional Development Fund)</li>
+            <li><a href="https://ncn.gov.pl/en">Polish National Science Centre</a> (grant no. 2020/39/D/ST10/01220)</li>
+          </ul>
         </p>
     </div>
     </main>
