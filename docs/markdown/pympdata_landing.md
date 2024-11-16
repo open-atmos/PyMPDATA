@@ -42,7 +42,7 @@ The Numba's deviation from Python semantics rendering [closure variables
   information on domain extents, algorithm variant used and problem
   characteristics (e.g., coordinate transformation used, or lack thereof).
 
-# Tutorial (in Python, Julia and Matlab)
+# Tutorial (in Python, Julia, Rust and Matlab)
 ## Options class
 
 The [``Options``](https://open-atmos.github.io/PyMPDATA/PyMPDATA/options.html) class
@@ -71,7 +71,6 @@ with arguments suiting the problem at hand, e.g.:
 
 <details>
 <summary>Julia code (click to expand)</summary>
-
 ```Julia
 using Pkg
 Pkg.add("PyCall")
@@ -83,16 +82,27 @@ options = Options(n_iters=2)
 
 <details>
 <summary>Matlab code (click to expand)</summary>
-
 ```Matlab
 Options = py.importlib.import_module('PyMPDATA').Options;
 options = Options(pyargs('n_iters', 2));
 ```
 </details>
 
+<details>
+<summary>Rust code (click to expand)</summary>
+```Rust
+use pyo3::prelude::*;
+use pyo3::types::{IntoPyDict, PyDict, PyTuple};
+
+fn main() -> PyResult<()> {
+  Python::with_gil(|py| {
+    let options_args = [("n_iters", 2)].into_py_dict_bound(py);
+    let options = py.import_bound("PyMPDATA")?.getattr("Options")?.call((), Some(&options_args))?;
+```
+</details>
+
 <details open>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 from PyMPDATA import Options
 options = Options(n_iters=2)
@@ -117,7 +127,6 @@ The schematic of the employed grid/domain layout in two dimensions is given belo
 
 <details>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 import numpy as np
 from matplotlib import pyplot
@@ -176,7 +185,6 @@ conditions and with an initial Gaussian signal in the scalar field
 
 <details>
 <summary>Julia code (click to expand)</summary>
-
 ```Julia
 ScalarField = pyimport("PyMPDATA").ScalarField
 VectorField = pyimport("PyMPDATA").VectorField
@@ -201,9 +209,9 @@ advector = VectorField(
 )
 ```
 </details>
+
 <details>
 <summary>Matlab code (click to expand)</summary>
-
 ```Matlab
 ScalarField = py.importlib.import_module('PyMPDATA').ScalarField;
 VectorField = py.importlib.import_module('PyMPDATA').VectorField;
@@ -236,9 +244,47 @@ advector = VectorField(pyargs(...
 ));
 ```
 </details>
+
+<details>
+<summary>Rust code (click to expand)</summary>
+```Rust
+    let vector_field = py.import_bound("PyMPDATA")?.getattr("VectorField")?;
+    let scalar_field = py.import_bound("PyMPDATA")?.getattr("ScalarField")?;
+    let periodic = py.import_bound("PyMPDATA.boundary_conditions")?.getattr("Periodic")?;
+
+    let nx_ny = [24, 24];
+    let cx_cy = [-0.5, -0.25];
+    let boundary_con = PyTuple::new_bound(py, [periodic.call0()?, periodic.call0()?]).into_any();
+    let halo = options.getattr("n_halo")?;
+
+    let indices = PyDict::new_bound(py);
+    Python::run_bound(py, &format!(r#"
+import numpy as np
+nx, ny = {}, {}
+xi, yi = np.indices((nx, ny), dtype=float)
+data=np.exp(
+  -(xi+.5-nx/2)**2 / (2*(ny/10)**2)
+  -(yi+.5-nx/2)**2 / (2*(ny/10)**2)
+)
+    "#, nx_ny[0], nx_ny[1]), None, Some(&indices)).unwrap();
+
+    let advectee_arg = vec![("data", indices.get_item("data")?), ("halo", Some(halo.clone())), ("boundary_conditions", Some(boundary_con))].into_py_dict_bound(py);
+    let advectee = scalar_field.call((), Some(&advectee_arg))?;
+    let full = PyDict::new_bound(py);
+    Python::run_bound(py, &format!(r#"
+import numpy as np
+nx, ny = {}, {}
+Cx, Cy = {}, {}
+data = (np.full((nx + 1, ny), Cx), np.full((nx, ny + 1), Cy))
+    "#, nx_ny[0], nx_ny[1], cx_cy[0], cx_cy[1]), None, Some(&full)).unwrap();
+    let boundary_con = PyTuple::new_bound(py, [periodic.call0()?, periodic.call0()?]).into_any();
+    let advector_arg = vec![("data", full.get_item("data")?), ("halo", Some(halo.clone())), ("boundary_conditions", Some(boundary_con))].into_py_dict_bound(py);
+    let advector = vector_field.call((), Some(&advector_arg))?;
+```
+</details>
+
 <details open>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 from PyMPDATA import ScalarField
 from PyMPDATA import VectorField
@@ -286,7 +332,6 @@ When instantiating the [``Stepper``](https://open-atmos.github.io/PyMPDATA/PyMPD
 of either supplying just the  number of dimensions or specialising the stepper for a given grid:
 <details>
 <summary>Julia code (click to expand)</summary>
-
 ```Julia
 Stepper = pyimport("PyMPDATA").Stepper
 
@@ -295,7 +340,6 @@ stepper = Stepper(options=options, n_dims=2)
 </details>
 <details>
 <summary>Matlab code (click to expand)</summary>
-
 ```Matlab
 Stepper = py.importlib.import_module('PyMPDATA').Stepper;
 
@@ -306,8 +350,18 @@ stepper = Stepper(pyargs(...
 ```
 </details>
 <details open>
-<summary>Python code (click to expand)</summary>
 
+<details>
+<summary>Rust code (click to expand)</summary>
+```Rust
+let n_dims: i32 = 2;
+let stepper_arg = PyDict::new_bound(py);
+let _ = PyDictMethods::set_item(&stepper_arg, "options", &options);
+let _ = PyDictMethods::set_item(&stepper_arg, "n_dims", &n_dims);
+```
+</details>
+
+<summary>Python code (click to expand)</summary>
 ```Python
 from PyMPDATA import Stepper
 
@@ -317,14 +371,13 @@ stepper = Stepper(options=options, n_dims=2)
 or
 <details>
 <summary>Julia code (click to expand)</summary>
-
 ```Julia
 stepper = Stepper(options=options, grid=(nx, ny))
 ```
 </details>
+
 <details>
 <summary>Matlab code (click to expand)</summary>
-
 ```Matlab
 stepper = Stepper(pyargs(...
   'options', options, ...
@@ -332,9 +385,18 @@ stepper = Stepper(pyargs(...
 ));
 ```
 </details>
+
+<details>
+<summary>Rust code (click to expand)</summary>
+```Rust
+ let _stepper_arg_alternative = vec![("options", &options), ("grid", &PyTuple::new_bound(py, nx_ny).into_any())].into_py_dict_bound(py);
+ let stepper_ = py.import_bound("PyMPDATA")?.getattr("Stepper")?;
+ let stepper = stepper_.call((), Some(&stepper_arg))?; //or use stepper args alternative
+```
+</details>
+
 <details open>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 stepper = Stepper(options=options, grid=(nx, ny))
 ```
@@ -388,7 +450,6 @@ Continuing with the above code snippets, instantiating
 a solver and making 75 integration steps looks as follows:
 <details>
 <summary>Julia code (click to expand)</summary>
-
 ```Julia
 Solver = pyimport("PyMPDATA").Solver
 solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
@@ -396,9 +457,9 @@ solver.advance(n_steps=75)
 state = solver.advectee.get()
 ```
 </details>
+
 <details>
 <summary>Matlab code (click to expand)</summary>
-
 ```Matlab
 Solver = py.importlib.import_module('PyMPDATA').Solver;
 solver = Solver(pyargs('stepper', stepper, 'advectee', advectee, 'advector', advector));
@@ -406,9 +467,23 @@ solver.advance(pyargs('n_steps', 75));
 state = solver.advectee.get();
 ```
 </details>
+
+<details>
+<summary>Rust code (click to expand)</summary>
+```Rust
+    let solver_ = py.import_bound("PyMPDATA")?.getattr("Solver")?;
+    let solver = solver_.call((), Some(&vec![("stepper", stepper), ("advectee", advectee), ("advector", advector)].into_py_dict_bound(py)))?;
+    let _state_0 = solver.getattr("advectee")?.getattr("get")?.call0()?.getattr("copy")?.call0()?;
+    solver.getattr("advance")?.call((), Some(&vec![("n_steps", 75)].into_py_dict_bound(py)))?;
+    let _state = solver.getattr("advectee")?.getattr("get")?.call0()?;
+    Ok(())
+  })
+}
+```
+</details>
+
 <details open>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 from PyMPDATA import Solver
 
@@ -422,7 +497,6 @@ state = solver.advectee.get()
 Now let's plot the results using `matplotlib` roughly as in Fig.&nbsp;5 in [Arabas et al. 2014](https://doi.org/10.3233/SPR-140379):
 <details>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 def plot(psi, zlim, norm=None):
     xi, yi = np.indices(psi.shape)
@@ -467,21 +541,20 @@ interactive debugging, one way of enabling it is by setting the
 following environment variable before importing PyMPDATA:
 <details>
 <summary>Julia code (click to expand)</summary>
-
 ```Julia
 ENV["NUMBA_DISABLE_JIT"] = "1"
 ```
 </details>
+
 <details>
 <summary>Matlab code (click to expand)</summary>
-
 ```Matlab
 setenv('NUMBA_DISABLE_JIT', '1');
 ```
 </details>
+
 <details open>
 <summary>Python code (click to expand)</summary>
-
 ```Python
 import os
 os.environ["NUMBA_DISABLE_JIT"] = "1"
