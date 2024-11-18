@@ -28,7 +28,8 @@ def compute(simulation):
     return output
 
 
-def convergence_in_space(num=8):
+def convergence_in_space(num=None):
+    num = num or 8
     with parallel_backend("threading", n_jobs=-2):
         data = Parallel(verbose=10)(
             delayed(compute)(
@@ -49,7 +50,8 @@ def convergence_in_space(num=8):
         return result
 
 
-def convergence_in_time(num=13):
+def convergence_in_time(num=None):
+    num = num or 13
     with parallel_backend("threading", n_jobs=-2):
         data = Parallel(verbose=10)(
             delayed(compute)(

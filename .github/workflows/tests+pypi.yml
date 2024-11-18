@@ -125,7 +125,7 @@ jobs:
 
   tests:
     timeout-minutes: 120
-    needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
+    needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json, devops]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
@@ -165,7 +165,7 @@ jobs:
           python -m pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   examples:
-    needs: [pylint, precommit]
+    needs: [pylint, precommit, devops]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
@@ -245,7 +245,7 @@ jobs:
         package-dir: [".", "examples"]
       fail-fast: false
     runs-on: ubuntu-latest
-    needs: [tests, examples, devops]
+    needs: [tests, examples]
     permissions:
       id-token: write
     steps:
