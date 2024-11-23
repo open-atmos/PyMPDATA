@@ -12,7 +12,10 @@ def get_long_description():
         pdoc_links = re.compile(
             r"(`)([\w\d_-]*).([\w\d_-]*)(`)", re.MULTILINE | re.UNICODE
         )
-        return pdoc_links.sub(r'<a href="\2/\3.html">\3</a>', file.read())
+        return pdoc_links.sub(
+            r'<a href="https://open-atmos.github.io/PyMPDATA/\2/\3.html">\3</a>',
+            file.read(),
+        )
 
 
 CI = "CI" in os.environ
@@ -38,6 +41,7 @@ setup(
         "joblib",
         "sympy",
         "imageio",
+        "meshio",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     license="GPL-3.0",

@@ -128,7 +128,7 @@ jobs:
     needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
+        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ["3.9", "3.12"]
         exclude:
           - platform: macos-14
@@ -168,7 +168,7 @@ jobs:
     needs: [pylint, precommit]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
+        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ["3.9", "3.12"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
@@ -176,7 +176,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5.2.0
         with:
@@ -195,6 +195,8 @@ jobs:
           sudo make install
           cd ../../../
           rm -rf libmpdataxx
+      - uses: julia-actions/setup-julia@v2
+      - run: julia --version
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
@@ -267,13 +269,15 @@ jobs:
           cd ..
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: pypa/gh-action-pypi-publish@unstable/v1
+        uses: pypa/gh-action-pypi-publish@release/v1.12
         with:
+          attestations: false
           repository_url: https://test.pypi.org/legacy/
           packages-dir: ${{ matrix.package-dir }}/dist
 
       - if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@unstable/v1
+        uses: pypa/gh-action-pypi-publish@release/v1.12
         with:
+          attestations: false
           packages-dir: ${{ matrix.package-dir }}/dist
 
