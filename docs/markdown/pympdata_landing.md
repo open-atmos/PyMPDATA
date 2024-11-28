@@ -360,7 +360,7 @@ let _ = PyDictMethods::set_item(&stepper_arg, "options", &options);
 let _ = PyDictMethods::set_item(&stepper_arg, "n_dims", &n_dims);
 ```
 </details>
-
+<details>
 <summary>Python code (click to expand)</summary>
 ```Python
 from PyMPDATA import Stepper
