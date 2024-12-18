@@ -3,29 +3,22 @@ import numpy as np
 from PyMPDATA_examples.asian_option.options import OPTIONS
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
-from PyMPDATA.boundary_conditions import Extrapolated
+from PyMPDATA.boundary_conditions import Extrapolated, Constant, Periodic
 
 
 class Simulation:
     @staticmethod
     def _factory(
-        *, options: Options, advectee: np.ndarray, advector: float, time_to_maturity:float,  boundary_conditions, advectee_x_values
+        *, options: Options, advectee: np.ndarray, advector_s: float, advector_a: np.ndarray, boundary_conditions
     ):
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
         )
-        print(f"{advectee.shape=}")
-        # in the x dimension the advector is constant, so we can just repeat the value n+1 times
-        # in the a dimention the advector is constant, and equal to the value of x at the current point / time_to_maturity
-        a_dim_advector = advectee_x_values / time_to_maturity
-        print(f"{a_dim_advector.shape=}")
-        # stack the a_dim_advector n times to match the shape of the advectee
-        a_dim_advector = np.multiply.outer(np.ones(advectee.shape[0]+1, dtype=options.dtype), a_dim_advector)
-        print(f"{a_dim_advector.shape=}")
-        x_dim_advector = np.full((advectee.shape[0], advectee.shape[1]+1), advector, dtype=options.dtype)
+        a_dim_advector = np.multiply.outer(np.ones(advectee.shape[0]+1, dtype=options.dtype), advector_a)
+        x_dim_advector = np.full((advectee.shape[0], advectee.shape[1]+1), advector_s, dtype=options.dtype)
         print(f"{x_dim_advector.shape=}", f"{a_dim_advector.shape=}")
         advector_values = (a_dim_advector, x_dim_advector)
-        print(advector_values)
+        # print(advector_values)
         return Solver(
             stepper=stepper,
             advectee=ScalarField(
@@ -71,7 +64,7 @@ class Simulation:
             self.nx += 1
             S_beg = np.exp(np.log(settings.S_match) - self.nx * dx)
 
-        self.na = 100 # TODO: why?
+        self.na = 15 # TODO: why?
 
 
         self.ix_match = self.nx
@@ -83,9 +76,17 @@ class Simulation:
 
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
-        self.A = np.linspace(0, S_end, self.na)
+        self.A, self.da = np.linspace(0, S_end, self.na, retstep=True)
         print(f"{self.S.shape=}, {self.A.shape=}")
 
+
+        # a advector
+        self.C_a = (self.S / settings.T) * (-self.dt)/self.da
+        try:
+            assert np.max(np.abs(self.C_a)) < 1
+        except AssertionError:
+            print(f"{np.max(np.abs(self.C_a))=}")
+            raise
         # meshgrid
         self.S_mesh, self.A_mesh = np.meshgrid(self.S, self.A)
         print(f"{self.S_mesh.shape=}, {self.A_mesh.shape=}")
@@ -102,11 +103,12 @@ class Simulation:
         # )
         self.solvers[2] = self._factory(
             advectee=settings.payoff(self.A_mesh),
-            advector=self.C,
+            advector_s=self.C,
+            advector_a=self.C_a,
             options=Options(**OPTIONS),
-            boundary_conditions=(Extrapolated(), Extrapolated()),
-            time_to_maturity=settings.T,
-            advectee_x_values=self.S,
+            boundary_conditions=(Periodic(), Extrapolated()),
+            # time_to_maturity=settings.T,
+            # advectee_x_values=self.S,
         )
 
     def run(self, n_iters: int):
