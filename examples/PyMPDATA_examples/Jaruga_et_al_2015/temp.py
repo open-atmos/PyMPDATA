@@ -1,5 +1,3 @@
-from pyexpat.errors import XML_ERROR_BAD_CHAR_REF
-from PyMPDATA_examples.Jarecka_et_al_2015 import Simulation
 import numpy as np
 from PyMPDATA.scalar_field import ScalarField
 from PyMPDATA.vector_field import VectorField
@@ -9,49 +7,45 @@ def vip_rhs_apply(dt,vip_rhs, solvers):
          solvers[k].advectee.get()[:] += 0.5 * dt * vip_rhs[k]
          vip_rhs[k][:] = 0
 
-def calc_gc_extrapolate_in_time(solvers,stash):
+def calc_gc_extrapolate_in_time(solvers, stash):
     for k in ('u', 'w'):
         stash[k].get()[:] = -.5 * stash[k].get() + 1.5 * solvers[k].advectee.get()
         stash[k].get()[:] = -.5 * stash[k].get() + 1.5 * solvers[k].advectee.get()
         xchng_pres(stash[k])   
 
-def calc_gc_interpolate_in_space(advector: VectorField,stash: dict,dt:float,dxy: tuple):
-    idx = (
-        (slice(1, -1), slice(None, None)),  # [1:-1, :]
-        (slice(None, None), slice(1, -1))   # [:, 1:-1]
+def calc_gc_interpolate_in_space(advector: VectorField, stash: dict, dt:float, dxy: tuple):
+    idx_diff = ( 
+        (slice(None, -1), slice(None, None)),
+        (slice(None, None), slice(None, -1)),
     )
     for axis, psi in enumerate(('u', 'w')):
-        advector.get_component(axis)[idx[axis]] = dt/dxy[axis]*(
-            Simulation.interpolate(stash[psi].get(), axis)
-        )
-    xchng(advector.get_component(0), x=True, y=False, h=1)
-    xchng(advector.get_component(1), x=False, y=True, h=1)
-
+        advector.data[axis][:] = dt / dxy[axis] * (
+            np.diff(stash[psi].data, axis=axis) / 2 + stash[psi].data[idx_diff[axis]]
+        )[:]
 
 def fill_stash(solvers, stash):
     for k in stash.keys():
         stash[k].get()[:] = solvers[k].advectee.get()
+        xchng(stash[k].data, h=2)
 
 def apply_rhs(w, rhs_w, dt):
     w += rhs_w * dt/2
 
-def ini_pressure(Phi,solvers,N,M):
+def ini_pressure(Phi, solvers, N, M):
     npoints = N*M
     for k in ('u', 'w'):
         Phi.get()[:] -= 0.5 * np.power(solvers[k].advectee.get()[:],2)
     Phi_mean = np.sum(Phi.get()) / npoints
     Phi.get()[:] -= Phi_mean
 
-def xchng(data, x, y, h):
-    if x:
-        data[0:h,:] = data[-2*h:-h,:]
-        data[-h:,:] = data[h:2*h,:]
-    if y:
-        data[:,0:h] = data[:,-2*h:-h]
-        data[:,-h:] = data[:,h:2*h]
+def xchng(data, h):
+    data[0:h,:] = data[-2*h:-h,:]
+    data[-h:,:] = data[h:2*h,:]
+    data[:,0:h] = data[:,-2*h:-h]
+    data[:,-h:] = data[:,h:2*h]
 
-def xchng_pres(Phi, x=True, y=True):
-    xchng(h = Phi.halo, x=x, y=y, data=Phi.data)
+def xchng_pres(Phi):
+    xchng(h = Phi.halo, data=Phi.data)
 
 def update_rhs(*, tht, rhs_w, tht_ref, g):
     rhs_w[:] += g * (tht - tht_ref) / tht_ref
@@ -187,3 +181,4 @@ def vip_rhs_impl_fnlz(vip_rhs,dt,solvers,err,Phi,beta,lap_tmp,tmp_uvw,p_err,lap_
     for k in ('u', 'w'):
         vip_rhs[k][:] += solvers[k].advectee.get()
         vip_rhs[k][:] /= 0.5 * dt
+
