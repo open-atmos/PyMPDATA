@@ -1,6 +1,3 @@
-import os
-os.environ['NUMBA_DISABLE_JIT']='1'
-
 from PyMPDATA import Options
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA import ScalarField
@@ -11,25 +8,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PyMPDATA_examples.Jaruga_et_al_2015.temp import *
 
-N, M  = 20, 20
-dxy = 100, 100
+np.set_printoptions(linewidth=300, precision=3)
+
+N, M  = 10, 16
+dxy = 2000/N, 2000/M
 Tht_ref = 300
 g = 9.81
 r0 = 250
-nt = 10
-dt = 7.5
+dt = 100
+nt = 600//dt
+assert dt * nt == 600
 beta  = 0.25
-options = Options(n_iters=2)#,infinite_gauge= True,nonoscillatory = True)
-assert options.n_halo == 1
+options = Options(n_iters=2, infinite_gauge= True,nonoscillatory = True)
 mesh = np.full((N,M), fill_value=Tht_ref, dtype=float)
 
 xi, yi = np.indices((N, M))
 mask = np.sqrt((xi*dxy[0]-1000)**2+(yi*dxy[1]-260)**2) < r0
 mesh += np.where(mask, 0.5, 0)
 
-plt.imshow(mesh.T,origin='lower')
-plt.colorbar()
-plt.show()
+def plot(step):
+    data = solvers['tht'].advectee.get()
+    print(data)
+    plt.imshow(data.T, origin='lower')
+    plt.colorbar()
+    plt.savefig(f"output_step={step}.svg")
+    plt.close()
 
 
 halo = options.n_halo
@@ -92,9 +95,5 @@ for step in range(nt + 1):
     if step % outfreq == 0:
         output.append(solvers["tht"].advectee.get().copy())
     print(step)
-
-    plt.clf()
-    plt.imshow(solvers["tht"].advectee.get().T,origin='lower')
-    plt.colorbar()
-    plt.show()
+    plot(step)
 
