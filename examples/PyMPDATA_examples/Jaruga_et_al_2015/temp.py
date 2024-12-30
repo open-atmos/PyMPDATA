@@ -28,8 +28,8 @@ def fill_stash(solvers, stash):
         stash[k].get()[:] = solvers[k].advectee.get()
         xchng(stash[k].data, h=2)
 
-def apply_rhs(w, rhs_w, dt):
-    w += rhs_w * dt/2
+def apply_rhs(w, rhs_w : np.ndarray, dt : float):
+    w += rhs_w * dt/2 #same behaviour in step 1 observed in rhs_w as in libmpdata++
 
 def ini_pressure(Phi, solvers, N, M):
     npoints = N*M
@@ -47,9 +47,9 @@ def xchng(data, h):
 def xchng_pres(Phi):
     xchng(h = Phi.halo, data=Phi.data)
 
-def update_rhs(*, tht, rhs_w, tht_ref, g):
+def update_rhs(tht : np.ndarray, rhs_w : np.ndarray, tht_ref : int, g : float):
     rhs_w[:] += g * (tht - tht_ref) / tht_ref
-
+    #bug is here g- correct tht_ref correct? so is it tht? 
 def div(lap_tmp,dxy):
     h = lap_tmp['u'].halo
     return (

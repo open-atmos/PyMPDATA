@@ -7,16 +7,17 @@ from PyMPDATA import Stepper
 import numpy as np
 import matplotlib.pyplot as plt
 from PyMPDATA_examples.Jaruga_et_al_2015.temp import *
-
+import os
+#os.environ['NUMBA_DISABLE_JIT']='1'
 np.set_printoptions(linewidth=300, precision=3)
 
-N, M  = 10, 16
+N, M  = 50, 50
 dxy = 2000/N, 2000/M
-Tht_ref = 300
+Tht_ref = 300.
 g = 9.81
-r0 = 250
-dt = 100
-nt = 600//dt
+r0 = 250.
+dt = 0.75
+nt = int(600//dt)
 assert dt * nt == 600
 beta  = 0.25
 options = Options(n_iters=2, infinite_gauge= True,nonoscillatory = True)
@@ -78,22 +79,25 @@ def debug(where):
 hook_ante_loop(Phi,beta,vip_rhs,solvers,tmp_uvw,lap_tmp,err,p_err,lap_p_err,k_iters,err_tol,lap_err,dxy,N,M)#here
 for step in range(nt + 1):
     if step != 0:
+
         calc_gc_extrapolate_in_time(solvers, stash) # reads & writes to stash
         calc_gc_interpolate_in_space(advector, stash,dt,dxy) # reads from stash
         fill_stash(solvers, stash) # writes to stash
         apply_rhs(solvers["w"].advectee.get(), rhs_w, dt/2)
-        debug("A")
+
         vip_rhs_apply(dt,vip_rhs, solvers)
-        debug("B")
+
         for solver in solvers.values():
             solver.advance(n_steps=1)
+        #uncommenting causes a bug
         update_rhs(tht=solvers["tht"].advectee.get(), rhs_w=rhs_w, g=g, tht_ref=Tht_ref)
         apply_rhs(solvers["w"].advectee.get(), rhs_w, dt/2)
-        debug("C")
+
         vip_rhs_impl_fnlz(vip_rhs,dt,solvers,err,Phi,beta,lap_tmp,tmp_uvw,p_err,lap_p_err,dxy,k_iters,err_tol,lap_err)
-        debug("D")
+
     if step % outfreq == 0:
         output.append(solvers["tht"].advectee.get().copy())
+    if step == nt:
+        plot(step)
     print(step)
-    plot(step)
 
