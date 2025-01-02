@@ -1,18 +1,15 @@
-from PyMPDATA import Options
+from PyMPDATA import Options,ScalarField,VectorField,Solver,Stepper
 from PyMPDATA.boundary_conditions import Periodic
-from PyMPDATA import ScalarField
-from PyMPDATA import VectorField
-from PyMPDATA import Solver
-from PyMPDATA import Stepper
+from PyMPDATA_examples.Jaruga_et_al_2015.temp import *
 import numpy as np
 import matplotlib.pyplot as plt
-from PyMPDATA_examples.Jaruga_et_al_2015.temp import *
+
 import os
 #os.environ['NUMBA_DISABLE_JIT']='1'
 np.set_printoptions(linewidth=300, precision=3)
 
-N, M  = 50, 50
-dxy = 2000/N, 2000/M
+N, M  = 201, 201
+dxy = 2000/(N-1), 2000/(M-1)
 Tht_ref = 300.
 g = 9.81
 r0 = 250.
@@ -29,8 +26,10 @@ mesh += np.where(mask, 0.5, 0)
 
 def plot(step):
     data = solvers['tht'].advectee.get()
-    print(data)
-    plt.imshow(data.T, origin='lower')
+    plt.title("tht (t/dt="+str(step)+")")
+    plt.xlabel("x/dx")
+    plt.ylabel("y/dy")
+    plt.imshow(data.T, origin='lower',extent=[-100,100,-100,100])#[minx,maxx,miny,maxy] can be made into variable
     plt.colorbar()
     plt.savefig(f"output_step={step}.svg")
     plt.close()
@@ -56,7 +55,7 @@ solvers = {
 state_0 = solvers["tht"].advectee.get().copy()
 
 #actual going forward
-outfreq = 1
+outfreq = 20
 prs_tol = 1e-7;
 err_tol = prs_tol/dt
 output = []
@@ -89,15 +88,14 @@ for step in range(nt + 1):
 
         for solver in solvers.values():
             solver.advance(n_steps=1)
-        #uncommenting causes a bug
+
         update_rhs(tht=solvers["tht"].advectee.get(), rhs_w=rhs_w, g=g, tht_ref=Tht_ref)
         apply_rhs(solvers["w"].advectee.get(), rhs_w, dt/2)
 
         vip_rhs_impl_fnlz(vip_rhs,dt,solvers,err,Phi,beta,lap_tmp,tmp_uvw,p_err,lap_p_err,dxy,k_iters,err_tol,lap_err)
-
+        
     if step % outfreq == 0:
         output.append(solvers["tht"].advectee.get().copy())
-    if step == nt:
         plot(step)
     print(step)
 
