@@ -3,7 +3,6 @@ from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA_examples.Jaruga_et_al_2015.temp import *
 import numpy as np
 import matplotlib.pyplot as plt
-
 import os
 #os.environ['NUMBA_DISABLE_JIT']='1'
 np.set_printoptions(linewidth=300, precision=3)
@@ -74,8 +73,22 @@ lap_p_err = [np.empty((N,M)) for _ in range(k_iters)]
 def debug(where):
     psi = vip_rhs['w']
     print(f"{where=} {np.amin(psi)=} {np.amax(psi)=}")
+#action before loop
+# correct initial velocity
+Phi.get()[:] = 0
 
-hook_ante_loop(Phi,beta,vip_rhs,solvers,tmp_uvw,lap_tmp,err,p_err,lap_p_err,k_iters,err_tol,lap_err,dxy,N,M)#here
+pressure_solver_update(solvers,Phi,beta,lap_tmp,tmp_uvw,err,p_err,lap_p_err,dxy,k_iters,err_tol,lap_err,simple = True)
+
+xchng_pres(Phi)
+calc_grad(tmp_uvw, Phi, dxy)
+pressure_solver_apply(solvers,tmp_uvw)
+# potential pressure
+ini_pressure(Phi,solvers,N,M)
+# allow pressure_solver_apply at the first time step
+xchng_pres(Phi)
+calc_grad(tmp_uvw, Phi, dxy)
+for k in ('u', 'w'):
+     vip_rhs[k][:] -= tmp_uvw[k].get()
 for step in range(nt + 1):
     if step != 0:
 
@@ -92,7 +105,14 @@ for step in range(nt + 1):
         update_rhs(tht=solvers["tht"].advectee.get(), rhs_w=rhs_w, g=g, tht_ref=Tht_ref)
         apply_rhs(solvers["w"].advectee.get(), rhs_w, dt/2)
 
-        vip_rhs_impl_fnlz(vip_rhs,dt,solvers,err,Phi,beta,lap_tmp,tmp_uvw,p_err,lap_p_err,dxy,k_iters,err_tol,lap_err)
+        for k in ('u', 'w'):
+            vip_rhs[k][:] = -solvers[k].advectee.get()
+        pressure_solver_update(solvers,Phi,beta,lap_tmp,tmp_uvw,err,p_err,lap_p_err,dxy,k_iters,err_tol,lap_err)
+        pressure_solver_apply(solvers,tmp_uvw)
+
+        for k in ('u', 'w'):
+            vip_rhs[k][:] += solvers[k].advectee.get()
+            vip_rhs[k][:] /= 0.5 * dt
         
     if step % outfreq == 0:
         output.append(solvers["tht"].advectee.get().copy())
