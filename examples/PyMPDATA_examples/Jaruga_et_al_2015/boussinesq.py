@@ -3,10 +3,11 @@ from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA_examples.Jaruga_et_al_2015.temp import *
 import numpy as np
 import matplotlib.pyplot as plt
+from time import time
 import os
 #os.environ['NUMBA_DISABLE_JIT']='1'
 np.set_printoptions(linewidth=300, precision=3)
-
+start0 = time()
 N, M  = 201, 201
 dxy = 2000/(N-1), 2000/(M-1)
 Tht_ref = 300.
@@ -69,12 +70,13 @@ lap_err = np.zeros((N,M))
 err = new_sf(N,M)
 p_err = [new_sf(N,M) for _ in range(k_iters)]
 lap_p_err = [np.empty((N,M)) for _ in range(k_iters)]
-
+stop0 = time()
 def debug(where):
     psi = vip_rhs['w']
     print(f"{where=} {np.amin(psi)=} {np.amax(psi)=}")
 #action before loop
 # correct initial velocity
+start1 = time()
 Phi.get()[:] = 0
 
 pressure_solver_update(solvers,Phi,beta,lap_tmp,tmp_uvw,err,p_err,lap_p_err,dxy,k_iters,err_tol,lap_err,simple = True)
@@ -89,6 +91,7 @@ xchng_pres(Phi)
 calc_grad(tmp_uvw, Phi, dxy)
 for k in ('u', 'w'):
      vip_rhs[k][:] -= tmp_uvw[k].get()
+stop1 = time()
 for step in range(nt + 1):
     if step != 0:
 
