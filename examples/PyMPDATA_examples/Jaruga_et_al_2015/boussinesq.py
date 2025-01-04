@@ -8,8 +8,8 @@ import os
 #os.environ['NUMBA_DISABLE_JIT']='1'
 np.set_printoptions(linewidth=300, precision=3)
 start0 = time()
-N, M  = 201, 201
-dxy = 2000/(N-1), 2000/(M-1)
+N, M  = 200, 200
+dxy = 2000/(N), 2000/(M)
 Tht_ref = 300.
 g = 9.81
 r0 = 250.
@@ -92,9 +92,9 @@ calc_grad(tmp_uvw, Phi, dxy)
 for k in ('u', 'w'):
      vip_rhs[k][:] -= tmp_uvw[k].get()
 stop1 = time()
+start2= time()
 for step in range(nt + 1):
     if step != 0:
-
         calc_gc_extrapolate_in_time(solvers, stash) # reads & writes to stash
         calc_gc_interpolate_in_space(advector, stash,dt,dxy) # reads from stash
         fill_stash(solvers, stash) # writes to stash
@@ -121,4 +121,10 @@ for step in range(nt + 1):
         output.append(solvers["tht"].advectee.get().copy())
         plot(step)
     print(step)
-
+with open("output.npy", 'wb') as f:
+    np.save(f,np.array(output))
+stop2 = time()
+print("initialization time:"+str(stop0-start0))
+print("ante loop time:"+str(stop1-start1))
+print("calculation time:"+str(stop2-start1))
+print("total time: "+str(stop2-start0))
