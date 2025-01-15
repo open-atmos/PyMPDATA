@@ -1,5 +1,5 @@
 import numpy as np
-import PyMPDATA_examples.Arabas_and_Farhat_2020.Black_Scholes_1973 as BS
+import PyMPDATA_examples.utils.financial_formulae.Black_Scholes_1973 as BS
 
 
 def _phi(
