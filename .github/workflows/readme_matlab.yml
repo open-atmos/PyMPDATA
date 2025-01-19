@@ -37,4 +37,7 @@ jobs:
           release: ${{ matrix.matlab-version }}
       - uses: matlab-actions/run-command@v2.1.1
         with:
+          command: assert(pyenv.Version == "${{ matrix.python-version }}")
+      - uses: matlab-actions/run-command@v2.1.1
+        with:
           command: readme
