@@ -14,19 +14,27 @@ on:
 
 jobs:
   matlab:
+    strategy:
+      matrix:
+        # https://www.mathworks.com/support/requirements/python-compatibility.html
+        include:
+          - matlab-version: "R2021b"
+            python-version: "3.9"
+          - matlab-version: "R2024b"
+            python-version: "3.12"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python-version }}
       - run: pip install -e .
       - run: pip install pytest-codeblocks pytest
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('docs/markdown/pympdata_landing.md'); f=open('readme.m', 'w'); f.writelines(block.code for block in code if block.syntax=='Matlab'); f.close()"
       - run: cat readme.m
       - uses: matlab-actions/setup-matlab@v0
         with:
-          release: R2021a
+          release: ${{ matrix.matlab-version }}
       - uses: matlab-actions/run-command@v0
         with:
           command: readme
