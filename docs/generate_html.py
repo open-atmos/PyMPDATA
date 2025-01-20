@@ -73,11 +73,11 @@ def check_urls(urls_from_json):
                 if urls:
                     found_urls.extend((full_path, url) for url in urls)
 
-    unique_urls_found = {(url, path) for path, url in found_urls}
+    unique_urls_found = {url for _, url in found_urls}
     unique_urls_read = set(urls_from_json.keys())
 
-    for url, path in unique_urls_found:
-        assert url in unique_urls_read, f"{url} not found in the json file, {path}"
+    for url in unique_urls_found:
+        assert url in unique_urls_read, f"{url} not found in the json file"
     for url in unique_urls_read:
         assert url in unique_urls_found, f"{url} not referenced in the code"
 
@@ -86,8 +86,10 @@ def check_urls(urls_from_json):
         for url in unique_urls_found
     }
     for url in unique_urls_read:
-        assert url_usages_found[url] == sorted(urls_from_json[url]["usages"]), (
-            f"{url} usages mismatch:\n"
+        assert set(url_usages_found[url]) == set(
+            sorted(urls_from_json[url]["usages"])
+        ), (
+            f"{url} usages mismatch (please fix docs/bibliography.json):\n"
             f"\texpected: {url_usages_found[url]}\n"
             f"\tactual:   {urls_from_json[url]['usages']}"
         )

@@ -1,12 +1,12 @@
 {
   "https://doi.org/10.5194/gmd-15-3879-2022": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Olesik_et_al_2022\\demo_analytical_solution.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Olesik_et_al_2022\\demo_make_convergences.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Olesik_et_al_2022\\demo_make_dispersion_ratio.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Olesik_et_al_2022\\demo_make_plots.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Olesik_et_al_2022\\demo_wall_times.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Olesik_et_al_2022\\__init__.py"
+      "examples/PyMPDATA_examples/Olesik_et_al_2022/demo_analytical_solution.ipynb",
+      "examples/PyMPDATA_examples/Olesik_et_al_2022/demo_make_convergences.ipynb",
+      "examples/PyMPDATA_examples/Olesik_et_al_2022/demo_make_dispersion_ratio.ipynb",
+      "examples/PyMPDATA_examples/Olesik_et_al_2022/demo_make_plots.ipynb",
+      "examples/PyMPDATA_examples/Olesik_et_al_2022/demo_wall_times.ipynb",
+      "examples/PyMPDATA_examples/Olesik_et_al_2022/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -16,7 +16,7 @@
   },
   "https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14\\__init__.py"
+      "examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -26,8 +26,8 @@
   },
   "https://doi.org/10.1016/0021-9991(90)90105-A": {
     "usages": [
-      ".\\PyMPDATA\\options.py",
-      ".\\PyMPDATA\\impl\\formulae_nonoscillatory.py"
+      "PyMPDATA/options.py",
+      "PyMPDATA/impl/formulae_nonoscillatory.py"
     ],
     "label": "",
     "year": "",
@@ -37,7 +37,7 @@
   },
   "https://doi.org/10.1016/0021-9991(86)90270-6": {
     "usages": [
-      ".\\PyMPDATA\\options.py"
+      "PyMPDATA/options.py"
     ],
     "label": "",
     "year": "",
@@ -47,8 +47,8 @@
   },
   "https://doi.org/10.1006/jcph.1998.5901": {
     "usages": [
-      ".\\README.md",
-      ".\\docs\\markdown\\pympdata_landing.md"
+      "README.md",
+      "docs/markdown/pympdata_landing.md"
     ],
     "label": "",
     "year": "",
@@ -58,8 +58,8 @@
   },
   "https://doi.org/10.21105/joss.03896": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Bartman_et_al_2022\\fig_X.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Bartman_et_al_2022\\__init__.py"
+      "examples/PyMPDATA_examples/Bartman_et_al_2022/fig_X.ipynb",
+      "examples/PyMPDATA_examples/Bartman_et_al_2022/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -69,8 +69,7 @@
   },
   "https://doi.org/10.3233/SPR-140379": {
     "usages": [
-      ".\\docs\\markdown\\pympdata_landing.md",
-      ".\\docs\\markdown\\pympdata_landing.md"
+      "docs/markdown/pympdata_landing.md"
     ],
     "label": "",
     "year": "",
@@ -80,8 +79,8 @@
   },
   "https://doi.org/10.1016/j.jcp.2015.02.003": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Jarecka_et_al_2015\\fig_6.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Jarecka_et_al_2015\\__init__.py"
+      "examples/PyMPDATA_examples/Jarecka_et_al_2015/fig_6.ipynb",
+      "examples/PyMPDATA_examples/Jarecka_et_al_2015/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -91,7 +90,7 @@
   },
   "https://doi.org/10.5194/gmd-2020-404": {
     "usages": [
-      ".\\PyMPDATA\\options.py"
+      "PyMPDATA/options.py"
     ],
     "label": "",
     "year": "",
@@ -101,8 +100,7 @@
   },
   "https://doi.org/10.1002/fld.1070": {
     "usages": [
-      ".\\PyMPDATA\\options.py",
-      ".\\PyMPDATA\\options.py"
+      "PyMPDATA/options.py"
     ],
     "label": "",
     "year": "",
@@ -112,8 +110,8 @@
   },
   "https://doi.org/10.1002/fld.1071": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Smolarkiewicz_2006_Figs_3_4_10_11_12\\demo.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Smolarkiewicz_2006_Figs_3_4_10_11_12\\__init__.py"
+      "examples/PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/demo.ipynb",
+      "examples/PyMPDATA_examples/Smolarkiewicz_2006_Figs_3_4_10_11_12/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -123,9 +121,7 @@
   },
   "https://doi.org/10.1137/S106482759324700X": {
     "usages": [
-      ".\\PyMPDATA\\options.py",
-      ".\\PyMPDATA\\options.py",
-      ".\\PyMPDATA\\options.py"
+      "PyMPDATA/options.py"
     ],
     "label": "",
     "year": "",
@@ -135,8 +131,8 @@
   },
   "https://doi.org/10.1016/0021-9991(84)90121-9": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Smolarkiewicz_1984\\__init__.py",
-      ".\\PyMPDATA\\options.py"
+      "examples/PyMPDATA_examples/Smolarkiewicz_1984/__init__.py",
+      "PyMPDATA/options.py"
     ],
     "label": "",
     "year": "",
@@ -146,11 +142,11 @@
   },
   "https://doi.org/10.1016/j.cam.2019.05.023": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Arabas_and_Farhat_2020\\fig_1.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Arabas_and_Farhat_2020\\fig_2.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Arabas_and_Farhat_2020\\fig_3.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Arabas_and_Farhat_2020\\tab_1.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Arabas_and_Farhat_2020\\__init__.py"
+      "examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_1.ipynb",
+      "examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_2.ipynb",
+      "examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_3.ipynb",
+      "examples/PyMPDATA_examples/Arabas_and_Farhat_2020/tab_1.ipynb",
+      "examples/PyMPDATA_examples/Arabas_and_Farhat_2020/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -160,9 +156,9 @@
   },
   "https://doi.org/10.5194/gmd-8-1005-2015": {
     "usages": [
-      ".\\docs\\markdown\\pympdata_landing.md",
-      ".\\examples\\PyMPDATA_examples\\Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12\\demo.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12\\__init__.py"
+      "docs/markdown/pympdata_landing.md",
+      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb",
+      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py"
     ],
     "label": "",
     "year": "",
@@ -172,8 +168,8 @@
   },
   "https://doi.org/10.1002/qj.1913": {
     "usages": [
-      ".\\examples\\PyMPDATA_examples\\Shipway_and_Hill_2012\\fig_1.ipynb",
-      ".\\examples\\PyMPDATA_examples\\Shipway_and_Hill_2012\\__init__.py"
+      "examples/PyMPDATA_examples/Shipway_and_Hill_2012/fig_1.ipynb",
+      "examples/PyMPDATA_examples/Shipway_and_Hill_2012/__init__.py"
     ],
     "label": "",
     "year": "",
