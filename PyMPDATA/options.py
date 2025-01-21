@@ -16,8 +16,8 @@ class HashableDict(dict):
 @strict
 class Options:
     """representation of MPDATA algorithm variant choice, for an overview of
-    MPDATA options carried out using PyMPDATA, see
-    [Olesik et al. 2020](https://doi.org/10.5194/gmd-2020-404);
+    MPDATA options implemented in PyMPDATA, see
+    [Olesik et al. 2020](https://doi.org/10.5194/gmd-15-3879-2022);
     equipped with meaningful `__str__` `__hash__`, `__eq__`.
     """
 
@@ -120,7 +120,7 @@ class Options:
     @property
     def DPDC(self) -> bool:  # pylint: disable=invalid-name
         """flag enabling the double-pass donor-cell option, see:
-        [Beason & Margolin, 1988](https://www.osti.gov/servlets/purl/7049237),
+        [Beason & Margolin, 1988](https://osti.gov/biblio/7049237),
         [Margolin & Shashkov, 2006](https://doi.org/10.1002/fld.1070),
         [Margolin & Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)
         """

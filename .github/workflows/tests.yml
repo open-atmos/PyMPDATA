@@ -42,6 +42,7 @@ jobs:
         python -m pip install --upgrade pip
         # TODO #411 https://github.com/pylint-dev/pylint/issues/9099
         pip install "pylint<3.0.0" nbqa
+        pip install -r tests/devops_tests/requirements.txt
         pip install -e .[tests] -e ./examples[tests]
     - run: |
         pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
