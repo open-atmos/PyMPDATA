@@ -146,5 +146,12 @@
     ],
     "label": "Lam et al. 2015",
     "title": "Numba: a LLVM-based Python JIT compiler"
+  },
+  "https://doi.org/10.1175/1520-0450(1968)007%3C0160:AOFDMA%3E2.0.CO;2": {
+    "usages": [
+      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py"
+    ],
+    "label": "Molenkamp 1968 (J. Appl. Meteorol. Climatol. 7)",
+    "title": "Accuracy of Finite-Difference Methods Applied to the Advection Equation"
   }
 }
