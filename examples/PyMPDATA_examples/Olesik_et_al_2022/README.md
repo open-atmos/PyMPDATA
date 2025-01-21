@@ -1,6 +1,6 @@
 # Olesik et al 2022
 Following examples are used in article named "On numerical broadening of particle size spectra:\\
-a condensational growth study using PyMPDATA" (https://arxiv.org/abs/2011.14726)
+a condensational growth study using PyMPDATA" (https://doi.org/10.5194/gmd-15-3879-2022)
  
 ## Examples/Demos:
 - plots (Figures 1-9):

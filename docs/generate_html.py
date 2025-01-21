@@ -11,7 +11,7 @@ import sys
 
 import nbformat
 
-# <TEMPORARILY COPIED FROM DEVOPS_TESTS>
+# TODO #501 <TEMPORARILY COPIED FROM DEVOPS_TESTS>
 from git.cmd import Git
 
 
@@ -68,6 +68,7 @@ def check_urls(urls_from_json):
                 r"\b(https://digitallibrary\.un\.org/record/(?:[0-9])+)\b",
                 r"\b(http://mi\.mathnet\.ru/dan(?:[0-9])+)\b",
                 r"\b(https://archive.org/details/(?:[0-9a-z])+)\b",
+                r"\b(https://osti.gov/biblio/(?:[0-9])+)\b",
             ):
                 urls = re.findall(pattern, text)
                 if urls:
