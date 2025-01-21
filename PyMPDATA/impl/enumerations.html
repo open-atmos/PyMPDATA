@@ -56,25 +56,7 @@
                     <a class="variable" href="#MAX_DIM_NUM">MAX_DIM_NUM</a>
             </li>
             <li>
-                    <a class="variable" href="#IMPL_META_AND_DATA">IMPL_META_AND_DATA</a>
-            </li>
-            <li>
-                    <a class="variable" href="#IMPL_BC">IMPL_BC</a>
-            </li>
-            <li>
-                    <a class="variable" href="#META_AND_DATA_META">META_AND_DATA_META</a>
-            </li>
-            <li>
-                    <a class="variable" href="#META_AND_DATA_DATA">META_AND_DATA_DATA</a>
-            </li>
-            <li>
                     <a class="variable" href="#INVALID_INDEX">INVALID_INDEX</a>
-            </li>
-            <li>
-                    <a class="variable" href="#INVALID_INIT_VALUE">INVALID_INIT_VALUE</a>
-            </li>
-            <li>
-                    <a class="variable" href="#BUFFER_DEFAULT_VALUE">BUFFER_DEFAULT_VALUE</a>
             </li>
             <li>
                     <a class="variable" href="#INVALID_HALO_VALUE">INVALID_HALO_VALUE</a>
@@ -101,43 +83,54 @@
                     <h1 class="modulename">
 <a href="./../../PyMPDATA.html">PyMPDATA</a><wbr>.<a href="./../impl.html">impl</a><wbr>.enumerations    </h1>
 
-                        <div class="docstring"><p>common constants (mostly integer indices used for indexing tuples)</p>
+                        <div class="docstring"><p>common constants named with the intention of improving code readibility
+(mostly integer indices used for indexing tuples)</p>
 </div>
 
                         <input id="mod-enumerations-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-enumerations-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot; common constants (mostly integer indices used for indexing tuples) &quot;&quot;&quot;</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="n">ARG_FOCUS</span><span class="p">,</span> <span class="n">ARG_DATA</span><span class="p">,</span> <span class="n">ARG_DATA_OUTER</span><span class="p">,</span> <span class="n">ARG_DATA_MID3D</span><span class="p">,</span> <span class="n">ARG_DATA_INNER</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">MAX_DIM_NUM</span> <span class="o">=</span> <span class="mi">3</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot; common constants named with the intention of improving code readibility</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">(mostly integer indices used for indexing tuples) &quot;&quot;&quot;</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="n">ARG_FOCUS</span><span class="p">,</span> <span class="n">ARG_DATA</span><span class="p">,</span> <span class="n">ARG_DATA_OUTER</span><span class="p">,</span> <span class="n">ARG_DATA_MID3D</span><span class="p">,</span> <span class="n">ARG_DATA_INNER</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">&quot;&quot;&quot; indices within tuple passed in fill_halos boundary-condition calls &quot;&quot;&quot;</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="n">OUTER</span><span class="p">,</span> <span class="n">MID3D</span><span class="p">,</span> <span class="n">INNER</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">IMPL_META_AND_DATA</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="n">IMPL_BC</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="n">META_AND_DATA_META</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">META_AND_DATA_DATA</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="n">SIGN_LEFT</span><span class="p">,</span> <span class="n">SIGN_RIGHT</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="n">RNG_START</span><span class="p">,</span> <span class="n">RNG_STOP</span><span class="p">,</span> <span class="n">RNG_STEP</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="n">MAX_DIM_NUM</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">&quot;&quot;&quot; maximal number of dimensions supported by the package &quot;&quot;&quot;</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="n">OUTER</span><span class="p">,</span> <span class="n">MID3D</span><span class="p">,</span> <span class="n">INNER</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">&quot;&quot;&quot; labels for identifying 1st, 2nd, and 3rd dimensions &quot;&quot;&quot;</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">IMPL_META_AND_DATA</span><span class="p">,</span> <span class="n">IMPL_BC</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">&quot;&quot;&quot; indices of &quot;meta and data&quot; and &quot;bc&quot; elements of the impl tuple in Field instances &quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="n">META_AND_DATA_META</span><span class="p">,</span> <span class="n">META_AND_DATA_DATA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">&quot;&quot;&quot; indices of &quot;meta&quot; and &quot;data&quot; elements of the &quot;meta and data&quot; impl Field property &quot;&quot;&quot;</span>
 </span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="n">INVALID_INDEX</span> <span class="o">=</span> <span class="o">-</span><span class="mi">44</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="n">INVALID_INIT_VALUE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="n">BUFFER_DEFAULT_VALUE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="n">INVALID_HALO_VALUE</span> <span class="o">=</span> <span class="mi">666</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="n">INVALID_NULL_VALUE</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="n">SIGN_LEFT</span><span class="p">,</span> <span class="n">SIGN_RIGHT</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">&quot;&quot;&quot; left-hand and right-hand domain sides as used in boundary conditions logic &quot;&quot;&quot;</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="n">RNG_START</span><span class="p">,</span> <span class="n">RNG_STOP</span><span class="p">,</span> <span class="n">RNG_STEP</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">&quot;&quot;&quot; indices of elements in range-expressing tuples &quot;&quot;&quot;</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="n">INVALID_INDEX</span> <span class="o">=</span> <span class="o">-</span><span class="mi">44</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">&quot;&quot;&quot; value with which never-to-be-used unused-dimension tuples are filled with in traversals &quot;&quot;&quot;</span>
 </span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="n">ONE_FOR_STAGGERED_GRID</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="n">INVALID_INIT_VALUE</span><span class="p">,</span> <span class="n">BUFFER_DEFAULT_VALUE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">&quot;&quot;&quot; values with which arrays are filled at initialisation &quot;&quot;&quot;</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="n">INVALID_HALO_VALUE</span> <span class="o">=</span> <span class="mi">666</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="sd">&quot;&quot;&quot; value used when constructing never-to-be-used instances of Constant boundary condition &quot;&quot;&quot;</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="n">INVALID_NULL_VALUE</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="sd">&quot;&quot;&quot; value with which the never-to-be-used &quot;null&quot; fields are populated &quot;&quot;&quot;</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="n">ONE_FOR_STAGGERED_GRID</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="sd">&quot;&quot;&quot; used for explaining the purpose of +1 index addition if related to Arakawa-C grid shift &quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -151,55 +144,9 @@
     </div>
     <a class="headerlink" href="#MAX_DIM_NUM"></a>
     
-    
+            <div class="docstring"><p>maximal number of dimensions supported by the package</p>
+</div>
 
-                </section>
-                <section id="IMPL_META_AND_DATA">
-                    <div class="attr variable">
-            <span class="name">IMPL_META_AND_DATA</span>        =
-<span class="default_value">0</span>
-
-        
-    </div>
-    <a class="headerlink" href="#IMPL_META_AND_DATA"></a>
-    
-    
-
-                </section>
-                <section id="IMPL_BC">
-                    <div class="attr variable">
-            <span class="name">IMPL_BC</span>        =
-<span class="default_value">1</span>
-
-        
-    </div>
-    <a class="headerlink" href="#IMPL_BC"></a>
-    
-    
-
-                </section>
-                <section id="META_AND_DATA_META">
-                    <div class="attr variable">
-            <span class="name">META_AND_DATA_META</span>        =
-<span class="default_value">0</span>
-
-        
-    </div>
-    <a class="headerlink" href="#META_AND_DATA_META"></a>
-    
-    
-
-                </section>
-                <section id="META_AND_DATA_DATA">
-                    <div class="attr variable">
-            <span class="name">META_AND_DATA_DATA</span>        =
-<span class="default_value">1</span>
-
-        
-    </div>
-    <a class="headerlink" href="#META_AND_DATA_DATA"></a>
-    
-    
 
                 </section>
                 <section id="INVALID_INDEX">
@@ -211,31 +158,9 @@
     </div>
     <a class="headerlink" href="#INVALID_INDEX"></a>
     
-    
+            <div class="docstring"><p>value with which never-to-be-used unused-dimension tuples are filled with in traversals</p>
+</div>
 
-                </section>
-                <section id="INVALID_INIT_VALUE">
-                    <div class="attr variable">
-            <span class="name">INVALID_INIT_VALUE</span>        =
-<span class="default_value">nan</span>
-
-        
-    </div>
-    <a class="headerlink" href="#INVALID_INIT_VALUE"></a>
-    
-    
-
-                </section>
-                <section id="BUFFER_DEFAULT_VALUE">
-                    <div class="attr variable">
-            <span class="name">BUFFER_DEFAULT_VALUE</span>        =
-<span class="default_value">nan</span>
-
-        
-    </div>
-    <a class="headerlink" href="#BUFFER_DEFAULT_VALUE"></a>
-    
-    
 
                 </section>
                 <section id="INVALID_HALO_VALUE">
@@ -247,7 +172,9 @@
     </div>
     <a class="headerlink" href="#INVALID_HALO_VALUE"></a>
     
-    
+            <div class="docstring"><p>value used when constructing never-to-be-used instances of Constant boundary condition</p>
+</div>
+
 
                 </section>
                 <section id="INVALID_NULL_VALUE">
@@ -259,7 +186,9 @@
     </div>
     <a class="headerlink" href="#INVALID_NULL_VALUE"></a>
     
-    
+            <div class="docstring"><p>value with which the never-to-be-used "null" fields are populated</p>
+</div>
+
 
                 </section>
                 <section id="ONE_FOR_STAGGERED_GRID">
@@ -271,7 +200,9 @@
     </div>
     <a class="headerlink" href="#ONE_FOR_STAGGERED_GRID"></a>
     
-    
+            <div class="docstring"><p>used for explaining the purpose of +1 index addition if related to Arakawa-C grid shift</p>
+</div>
+
 
                 </section>
     </main>
