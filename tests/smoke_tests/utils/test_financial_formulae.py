@@ -30,7 +30,7 @@ class TestFinancialFormulae:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "fun",
+        "fun, expected_value",
         (
             (AO.geometric_asian_average_price_c, 3.246),
             (AO.geometric_asian_average_price_p, 2.026),
@@ -38,16 +38,10 @@ class TestFinancialFormulae:
             (AO.geometric_asian_average_strike_p, 1.869),
         ),
     )
-    @pytest.mark.parametrize("S", (40,))
-    @pytest.mark.parametrize("K", (40,))
-    @pytest.mark.parametrize("T", (1,))
-    @pytest.mark.parametrize("r", (0.08,))
-    @pytest.mark.parametrize("sgma", (0.3,))
-    @pytest.mark.parametrize("dividend_yield", (0,))
-    def test_asian_geometric_average(fun: callable, S, K, T, r, sgma, dividend_yield):
+    def test_asian_geometric_average(fun: callable, expected_value):
         """
         Analytic results are taken from [Derivatives Markets](
         https://faculty.ksu.edu.sa/sites/default/files/derivatives_markets_3e_0.pdf) page 413
         """
-        price = fun[0](S=S, K=K, T=T, r=r, sgma=sgma, dividend_yield=dividend_yield)
-        assert np.allclose(price, fun[1], rtol=1e-3)
+        price = fun(S=40, K=40, T=1, r=0.08, sgma=0.3, dividend_yield=0)
+        assert np.allclose(price, expected_value, rtol=1e-3)
