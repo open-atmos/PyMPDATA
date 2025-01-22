@@ -1,5 +1,5 @@
-# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,invalid-name
-# pylint: disable=too-many-arguments
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+# pylint: disable=too-many-arguments,invalid-name
 import numpy as np
 import pytest
 from PyMPDATA_examples.utils.financial_formulae import Black_Scholes_1973 as BS73
