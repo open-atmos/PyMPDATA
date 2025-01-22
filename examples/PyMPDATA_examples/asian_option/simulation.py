@@ -3,19 +3,28 @@ import numpy as np
 from PyMPDATA_examples.asian_option.options import OPTIONS
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
-from PyMPDATA.boundary_conditions import Extrapolated, Constant, Periodic
+from PyMPDATA.boundary_conditions import Constant, Extrapolated, Periodic
 
 
 class Simulation:
     @staticmethod
     def _factory(
-        *, options: Options, advectee: np.ndarray, advector_s: float, advector_a: np.ndarray, boundary_conditions
+        *,
+        options: Options,
+        advectee: np.ndarray,
+        advector_s: float,
+        advector_a: np.ndarray,
+        boundary_conditions,
     ):
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
         )
-        a_dim_advector = np.multiply.outer(np.ones(advectee.shape[0]+1, dtype=options.dtype), advector_a)
-        x_dim_advector = np.full((advectee.shape[0], advectee.shape[1]+1), advector_s, dtype=options.dtype)
+        a_dim_advector = np.multiply.outer(
+            np.ones(advectee.shape[0] + 1, dtype=options.dtype), advector_a
+        )
+        x_dim_advector = np.full(
+            (advectee.shape[0], advectee.shape[1] + 1), advector_s, dtype=options.dtype
+        )
         print(f"{x_dim_advector.shape=}", f"{a_dim_advector.shape=}")
         advector_values = (a_dim_advector, x_dim_advector)
         # print(advector_values)
@@ -64,8 +73,7 @@ class Simulation:
             self.nx += 1
             S_beg = np.exp(np.log(settings.S_match) - self.nx * dx)
 
-        self.na = 15 # TODO: why?
-
+        self.na = 15  # TODO: why?
 
         self.ix_match = self.nx
 
@@ -79,9 +87,16 @@ class Simulation:
         self.A, self.da = np.linspace(0, S_end, self.na, retstep=True)
         print(f"{self.S.shape=}, {self.A.shape=}")
 
-
         # a advector
-        self.C_a = (self.S / settings.T) * (-self.dt)/self.da
+        geometric = True
+        arithmetic = False
+        assert geometric ^ arithmetic
+        if geometric:
+            self.C_a = np.log(self.S / self.A)
+        if arithmetic:
+            self.C_a = self.S - self.A
+        self.C_a *= (-self.dt) / self.da / settings.T
+
         try:
             assert np.max(np.abs(self.C_a)) < 1
         except AssertionError:
@@ -102,7 +117,7 @@ class Simulation:
         #     advectee_x_values=self.S,
         # )
         self.solvers[2] = self._factory(
-            advectee=settings.payoff(self.A_mesh),
+            advectee=settings.terminal_value(self.A_mesh),
             advector_s=self.C,
             advector_a=self.C_a,
             options=Options(**OPTIONS),

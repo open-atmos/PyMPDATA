@@ -4,8 +4,6 @@ from pystrict import strict
 from scipy.stats import norm
 
 
-
-
 @strict
 class Settings:
     # S0 = 55
@@ -25,14 +23,15 @@ class Settings:
         self.C_opt = C_opt
 
     def payoff(self, A: np.ndarray):
-        return np.exp(-self.r * self.T) * np.maximum(0, A - self.K1)
+        return np.maximum(0, A - self.K1)
 
-        # return np.exp(-self.r * self.T) * (
-        #     np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
-        # )
+    def terminal_value(self, A: np.ndarray):
+        return np.exp(-self.r * self.T) * self.payoff(A)
 
     def analytical_solution(self, S: np.ndarray):
-        return MKH.geometric_mkhize(s_t=S, K=self.K1, r=self.r, sigma=self.sigma, T=self.T, T_0=0)
+        return MKH.geometric_mkhize(
+            s_t=S, K=self.K1, r=self.r, sigma=self.sigma, T=self.T, T_0=0
+        )
 
         # return BS73.p_euro(
         #     S, K=self.K2, T=self.T, r=self.r, b=self.r, sgma=self.sigma
