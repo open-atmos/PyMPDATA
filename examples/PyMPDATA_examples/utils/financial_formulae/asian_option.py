@@ -3,6 +3,7 @@ Closed-forms for geometric Asian options are taken from:
 [Derivatives Markets Appendix 19A](https://media.pearsoncmg.com/ph/bp/bridgepages/teamsite/mcdonald/McDonald-web-19-A.pdf)
 """
 
+# pylint: disable=line-too-long
 import numpy as np
 
 from .Black_Scholes_1973 import c_euro_with_dividend, p_euro_with_dividend
