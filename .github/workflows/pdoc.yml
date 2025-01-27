@@ -29,8 +29,9 @@ jobs:
       - env:
           JUPYTER_PLATFORM_DIRS: 1
         run: |
-          pip3 install pdoc nbformat
+          pip install pdoc nbformat gitpython
           pip install -e . -e ./examples
+          python -We docs/generate_html.py . .
 
           python - <<EOF
           import glob, nbformat
