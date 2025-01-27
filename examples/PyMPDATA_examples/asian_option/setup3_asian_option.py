@@ -13,7 +13,7 @@ class Settings:
     S_max = 2000
     sigma = 0.6
     r = 0.008
-    K1 = 75
+    K1 = 100
     # K2 = 175
     S_match = 175
 
