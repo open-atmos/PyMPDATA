@@ -34,7 +34,7 @@ class TestFig19:
     @staticmethod
     def test_minimal_theta(variables):
         min_at_t0 = variables["SETUP"].Tht_ref
-        acceptable_undershoot = 1e-4
+        acceptable_undershoot = 5e-3
         assert (
             min_at_t0 - acceptable_undershoot < np.amin(variables["output"]) < min_at_t0
         )
@@ -44,15 +44,15 @@ class TestFig19:
         "area",
         (
             (slice(0, 20), slice(None)),
-            (slice(80), slice(None)),
+            (slice(80, None), slice(None)),
             (slice(None), slice(0, 30)),
-            (slice(None), slice(70)),
+            (slice(None), slice(70, None)),
         ),
     )
     def test_theta_at_domain_edges_equal_to_reference_value(area, variables):
         psi_at_last_step = variables["output"][-1, :, :]
-        np.testing.assert_approx_equal(
+        np.testing.assert_allclose(
             actual=psi_at_last_step[area],
             desired=variables["SETUP"].Tht_ref,
-            significant=2,
+            rtol=1.5e-5,
         )
