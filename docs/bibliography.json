@@ -153,5 +153,17 @@
     ],
     "label": "Molenkamp 1968 (J. Appl. Meteorol. Climatol. 7)",
     "title": "Accuracy of Finite-Difference Methods Applied to the Advection Equation"
+  },
+  "https://osti.gov/biblio/785403": {
+    "usages": [
+    ],
+    "label": "Smolarkiewicz & Margolin 2000 (LANL report)",
+    "title": "Variational methods for elliptic problems in fluid models"
+  },
+  "https://doi.org/10.1175/1520-0469(1992)049%3C2082:ACOSLA%3E2.0.CO;2": {
+    "usages": [
+    ],
+    "label": "Smolarkiewicz and Pudykiewicz 1992 (J. Atmos. Sci. 49)",
+    "title": "A Class of Semi-Lagrangian Approximations for Fluids"
   }
 }
