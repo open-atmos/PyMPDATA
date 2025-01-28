@@ -25,8 +25,11 @@ _32bit = platform.architecture()[0] == "32bit"
 setup(
     name="PyMPDATA",
     description="Numba-accelerated Pythonic implementation of MPDATA "
-    "with examples in Python, Julia and Matlab",
-    use_scm_version={"local_scheme": lambda _: "", "version_scheme": "post-release"},
+    "with examples in Python, Julia, Rust and Matlab",
+    use_scm_version={
+        "local_scheme": "no-local-version",
+        "version_scheme": "post-release",
+    },
     setup_requires=["setuptools_scm"],
     install_requires=[
         "numba"

@@ -1,4 +1,4 @@
-name: tests+pypi
+name: tests
 
 defaults:
   run:
@@ -11,8 +11,6 @@ on:
     branches: [ main ]
   schedule:
     - cron: '0 13 * * 4'
-  release:
-    types: [published]
 
 jobs:
   precommit:
@@ -21,36 +19,12 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v5.2.0
         with:
-          python-version: "3.10" 
+          python-version: "3.10"
       - run: |
           pip install pre-commit
           pre-commit clean
           pre-commit autoupdate
           pre-commit run --all-files
-
-  nojit_and_codecov:
-    runs-on: ubuntu-latest
-    env:
-      NUMBA_DISABLE_JIT: 1
-    steps:
-    - uses: actions/checkout@master
-      with:
-        submodules: recursive
-        fetch-depth: 0 
-    - uses: actions/setup-python@v5.2.0
-      with:
-        python-version: 3.9
-    - name: Generate coverage report
-      run: |
-        pip install -e .[tests] -e ./examples
-        pip install pytest-cov
-        pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: true
-        verbose: true
 
   pylint:
     runs-on: ubuntu-latest
@@ -58,7 +32,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-        fetch-depth: 0 
+        fetch-depth: 0
     - name: Set up Python 3.9
       uses: actions/setup-python@v5.2.0
       with:
@@ -68,6 +42,7 @@ jobs:
         python -m pip install --upgrade pip
         # TODO #411 https://github.com/pylint-dev/pylint/issues/9099
         pip install "pylint<3.0.0" nbqa
+        pip install -r tests/devops_tests/requirements.txt
         pip install -e .[tests] -e ./examples[tests]
     - run: |
         pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
@@ -79,56 +54,60 @@ jobs:
         # TODO #299
         nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,wrong-import-order,ungrouped-imports \
                     --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
-  pdoc:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          persist-credentials: false
-      - uses: actions/setup-python@v5.2.0
-        with:
-          python-version: 3.9
-      - env:
-          JUPYTER_PLATFORM_DIRS: 1
-        run: |
-          pip3 install pdoc nbformat
-          pip install -e . -e ./examples
-
-          python - <<EOF
-          import glob, nbformat
-          for notebook_path in glob.glob('examples/PyMPDATA_examples/*/*.ipynb'):
-            with open(notebook_path, encoding="utf8") as fin:
-              with open(notebook_path + ".badges.md", 'w') as fout:
-                fout.write(nbformat.read(fin, nbformat.NO_CONVERT).cells[0].source)
-          EOF
-
-          PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t docs/templates --math
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
-        uses: JamesIves/github-pages-deploy-action@4.1.1
-        with:
-          BRANCH: pdoc
-          FOLDER: html
-          CLEAN: true
 
   zenodo_json:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: '.zenodo.json'
           prop_path: 'creators'
 
+  devops:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
+      - run: pip install -r tests/devops_tests/requirements.txt
+      - run: pip install -e . -e ./examples
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
+
+  nojit_and_codecov:
+    needs: [ precommit, pylint, zenodo_json, devops ]
+    runs-on: ubuntu-latest
+    env:
+      NUMBA_DISABLE_JIT: 1
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: actions/setup-python@v5.2.0
+        with:
+          python-version: 3.9
+      - name: Generate coverage report
+        run: |
+          pip install -e .[tests] -e ./examples
+          pip install pytest-cov
+          pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
+
   tests:
     timeout-minutes: 120
-    needs: [nojit_and_codecov, pylint, pdoc, precommit, zenodo_json]
+    needs: [nojit_and_codecov]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
+        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ["3.9", "3.12"]
         exclude:
           - platform: macos-14
@@ -138,7 +117,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5.2.0
         with:
@@ -152,7 +131,7 @@ jobs:
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
-        
+
       - env:
           NUMBA_OPT: 1
         run: |
@@ -165,10 +144,10 @@ jobs:
           python -m pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   examples:
-    needs: [pylint, precommit]
+    needs: [nojit_and_codecov]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12, macos-14, windows-latest]
+        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ["3.9", "3.12"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
@@ -176,7 +155,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5.2.0
         with:
@@ -195,6 +174,8 @@ jobs:
           sudo make install
           cd ../../../
           rm -rf libmpdataxx
+      - uses: julia-actions/setup-julia@v2
+      - run: julia --version
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
@@ -215,7 +196,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
       #   with:
       #     limit-access-to-actor: true
-  
+
       - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
         uses: eine/tip@master
         with:
@@ -223,57 +204,4 @@ jobs:
           files: |
             /github/home/figures/*.svg
             /github/home/figures/*.gif
-
-  devops:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
-      - run: pip install -r tests/devops_tests/requirements.txt
-      - run: pip install -e . -e ./examples
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
-
-  dist:
-    strategy:
-      matrix:
-        package-dir: [".", "examples"]
-      fail-fast: false
-    runs-on: ubuntu-latest
-    needs: [tests, examples, devops]
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
-      - uses: actions/setup-python@v5.2.0
-        with:
-          python-version: "3.10"
-
-      - run: pip install twine build
-
-      - run: |
-          unset CI
-          cd ${{ matrix.package-dir }}
-          python -m build 2>&1 | tee build.log
-          exit `fgrep -v "warning: no previously-included files matching" buid.log | fgrep -i warning | wc -l`
-          twine check --strict dist/*
-          exit `tar tzf dist/*.tar.gz | fgrep ".ipynb" | wc -l`
-          cd ..
-
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: pypa/gh-action-pypi-publish@unstable/v1
-        with:
-          repository_url: https://test.pypi.org/legacy/
-          packages-dir: ${{ matrix.package-dir }}/dist
-
-      - if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@unstable/v1
-        with:
-          packages-dir: ${{ matrix.package-dir }}/dist
 
