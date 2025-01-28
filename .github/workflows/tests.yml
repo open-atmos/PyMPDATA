@@ -189,6 +189,7 @@ jobs:
         run: |
           mkdir -p /home/runner/work/_temp/_github_home/figures
           rm /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_Pycurrent
+          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/boussinesq_2d_anim.gif /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
 
