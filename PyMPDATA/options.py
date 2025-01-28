@@ -168,6 +168,5 @@ class Options:
                 "fastmath": True,
                 "error_model": "numpy",
                 "boundscheck": False,
-                "nopython": True,
             }
         )
