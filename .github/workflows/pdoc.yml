@@ -1,0 +1,50 @@
+name: pdoc
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+
+jobs:
+  pdoc:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5.2.0
+        with:
+          python-version: 3.9
+      - env:
+          JUPYTER_PLATFORM_DIRS: 1
+        run: |
+          pip install pdoc nbformat gitpython
+          pip install -e . -e ./examples
+          python -We docs/generate_html.py . .
+
+          python - <<EOF
+          import glob, nbformat
+          for notebook_path in glob.glob('examples/PyMPDATA_examples/*/*.ipynb'):
+            with open(notebook_path, encoding="utf8") as fin:
+              with open(notebook_path + ".badges.md", 'w') as fout:
+                fout.write(nbformat.read(fin, nbformat.NO_CONVERT).cells[0].source)
+          EOF
+
+          PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html PyMPDATA examples/PyMPDATA_examples -t docs/templates --math
+      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          branch: pdoc
+          folder: html
+          clean: true
