@@ -1,4 +1,4 @@
-""" scalar field traversals (incl. multi-threading) """
+"""scalar field traversals (incl. multi-threading)"""
 
 import numba
 

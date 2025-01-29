@@ -1,5 +1,5 @@
-""" common constants named with the intention of improving code readibility
-(mostly integer indices used for indexing tuples) """
+"""common constants named with the intention of improving code readibility
+(mostly integer indices used for indexing tuples)"""
 
 import numpy as np
 

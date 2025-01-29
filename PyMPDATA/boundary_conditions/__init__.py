@@ -1,4 +1,4 @@
-""" classes representing boundary conditions """
+"""classes representing boundary conditions"""
 
 from .constant import Constant
 from .extrapolated import Extrapolated

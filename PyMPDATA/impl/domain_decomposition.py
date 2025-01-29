@@ -1,4 +1,4 @@
-""" logic defining domain decomposition scheme for multi-threading """
+"""logic defining domain decomposition scheme for multi-threading"""
 
 import math
 
