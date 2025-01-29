@@ -1,4 +1,4 @@
-""" logic for handling the Fickian term by modifying physical velocity """
+"""logic for handling the Fickian term by modifying physical velocity"""
 
 import numba
 

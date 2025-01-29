@@ -1,6 +1,7 @@
-""" tests for buoyant-bubble test case from Fig. 3 in [Smolarkiewicz & Pudykiewicz
+"""tests for buoyant-bubble test case from Fig. 3 in [Smolarkiewicz & Pudykiewicz
 1992](https://doi.org/10.1175/1520-0469(1992)049%3C2082:ACOSLA%3E2.0.CO;2),
-as in libmpdata++ paper ([Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 19)"""
+as in libmpdata++ paper ([Jaruga et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015), Fig. 19)
+"""
 
 # pylint: disable=missing-class-docstring,missing-function-docstring
 
