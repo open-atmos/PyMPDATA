@@ -115,7 +115,8 @@
       "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb",
       "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py",
       "tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py",
-      "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb"
+      "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb",
+      "examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py"
     ],
     "label": "Jaruga et al. 2015 (Geosci. Model Dev. 8)",
     "title": "libmpdata++ 1.0: a library of parallel MPDATA solvers for systems of generalised transport equations "
@@ -167,7 +168,8 @@
   "https://doi.org/10.1175/1520-0469(1992)049%3C2082:ACOSLA%3E2.0.CO;2": {
     "usages": [
       "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb",
-      "tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py"
+      "tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py",
+      "examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py"
     ],
     "label": "Smolarkiewicz and Pudykiewicz 1992 (J. Atmos. Sci. 49)",
     "title": "A Class of Semi-Lagrangian Approximations for Fluids"
