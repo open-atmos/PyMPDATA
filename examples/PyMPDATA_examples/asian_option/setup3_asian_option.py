@@ -10,14 +10,14 @@ class Settings:
     T = 0.5
     # amer = False
     S_min = 10
-    S_max = 2000
+    S_max = 1000
     sigma = 0.6
     r = 0.008
-    K1 = 100
+    K1 = 200
     # K2 = 175
-    S_match = 175
+    S_match = 200
 
-    def __init__(self, *, n_iters: int = 2, l2_opt: int = 2, C_opt: float = 0.034):
+    def __init__(self, *, n_iters: int = 2, l2_opt: int = 2, C_opt: float = 0.015):
         self.n_iters = n_iters
         self.l2_opt = l2_opt
         self.C_opt = C_opt
@@ -25,8 +25,19 @@ class Settings:
     def payoff(self, A: np.ndarray):
         return np.maximum(0, A - self.K1)
 
+    # def terminal_value(self, A: np.ndarray):
+    #     return np.exp(-self.r * self.T) * self.payoff(A)
+
     def terminal_value(self, A: np.ndarray):
-        return np.exp(-self.r * self.T) * self.payoff(A)
+        # put zeros everrywhere except for a 2x2 square in the middle where we put 1
+        cond = np.zeros_like(A, dtype=np.float64)
+        print(f"{cond.shape=}")
+        print(f"{A.shape[0]//2-1}, {A.shape[0]//2+1}")
+        cond[
+            A.shape[0] // 2 - 1 : A.shape[0] // 2 + 1,
+            A.shape[1] // 2 - 1 : A.shape[1] // 2 + 1,
+        ] = 1
+        return cond
 
     def analytical_solution(self, S: np.ndarray):
         return MKH.geometric_mkhize(

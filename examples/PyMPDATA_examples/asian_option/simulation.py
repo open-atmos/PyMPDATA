@@ -58,6 +58,8 @@ class Simulation:
             self.nt += 1
             self.dt = settings.T / self.nt
 
+        print(f"{self.nt=}, {self.dt=}")
+
         # adjusting dx to match requested l^2
         dx = np.sqrt(settings.l2_opt * self.dt) * settings.sigma
 
@@ -87,29 +89,32 @@ class Simulation:
 
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
-        self.A, self.da = np.linspace(S_beg, S_end, self.na, retstep=True)
+        self.A = self.S
+        self.dy = dx
+        self.ny = self.nx
+        # self.A, self.da = np.linspace(S_beg, S_end, self.na, retstep=True)
         print(f"{self.S.shape=}, {self.A.shape=}")
 
         # a advector
-        geometric = True
-        arithmetic = False
-        assert geometric ^ arithmetic
-        if geometric:
-            # meshgrid for the advector, a
-            c_a_dummy = np.zeros((self.na, self.nx))
-            for i in range(self.na):
-                c_a_dummy[i, :] = np.log(self.S / self.A[i])
-            self.C_a = c_a_dummy
-        # if arithmetic: # TODO
-        #     self.C_a = self.S - self.A
-        self.C_a *= (-self.dt) / self.da / settings.T
-        # self.A_courant_multiplier = (-self.dt) / self.da / settings.T
-        # self.C_a = self.C_a.T
-        try:
-            assert np.max(np.abs(self.C_a)) < 1
-        except AssertionError:
-            print(f"{np.max(np.abs(self.C_a))=}")
-            raise
+        # geometric = True
+        # arithmetic = False
+        # assert geometric ^ arithmetic
+        # if geometric:
+        #     # meshgrid for the advector, a
+        #     c_a_dummy = np.zeros((self.na, self.nx))
+        #     for i in range(self.na):
+        #         c_a_dummy[i, :] = np.log(self.S / self.A[i])
+        #     self.C_a = c_a_dummy
+        # # if arithmetic: # TODO
+        # #     self.C_a = self.S - self.A
+        # self.C_a *= (-self.dt) / self.da / settings.T
+        # # self.A_courant_multiplier = (-self.dt) / self.da / settings.T
+        # # self.C_a = self.C_a.T
+        # try:
+        #     assert np.max(np.abs(self.C_a)) < 1
+        # except AssertionError:
+        #     print(f"{np.max(np.abs(self.C_a))=}")
+        #     raise
         # meshgrid
         self.S_mesh, self.A_mesh = np.meshgrid(self.S, self.A)
         print(f"{self.S_mesh.shape=}, {self.A_mesh.shape=}")
@@ -125,26 +130,45 @@ class Simulation:
         #     advectee_x_values=self.S,
         # )
 
-        advectee = settings.payoff(self.A_mesh)
+        advectee = settings.terminal_value(self.A_mesh)
+        print(f"{advectee.shape=}")
         advector_value_s = self.C
         # advector_a = self.C_a
         options = Options(**OPTIONS)
-        boundary_conditions = (Periodic(), Periodic())
+        boundary_conditions = (Constant(0), Constant(0))
+        # boundary_conditions = (Extrapolated(), Extrapolated())
 
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
         )
 
-        a_dim_advector_linspace = np.linspace(S_beg, S_end + self.da, self.na + 1)
-        a_dim_advector = np.zeros((self.na + 1, self.nx))
-        for i in range(self.na + 1):
-            a_dim_advector[i, :] = np.log(self.S / a_dim_advector_linspace[i])
+        a_dim_advector_linspace = np.linspace(S_beg, S_end + self.dy, self.ny + 1)
+        a_dim_advector = np.zeros((self.ny + 1, self.nx))
+        for i in range(self.ny + 1):
+            a_dim_advector[i, :] = (
+                np.log(self.S / a_dim_advector_linspace[i])
+                * (-self.dt)
+                / self.dy
+                / settings.T
+            )
+            # a_dim_advector[i, :] = (self.S / a_dim_advector_linspace[i]) * (-self.dt) / self.da / settings.T
 
+        try:
+            assert np.max(np.abs(a_dim_advector)) < 1
+            print(f"{np.max(np.abs(a_dim_advector))=}")
+        except AssertionError:
+            print(f"{a_dim_advector.shape=}")
+            print(f"{np.max(np.abs(a_dim_advector))=}")
         x_dim_advector = np.full(
             (advectee.shape[0], advectee.shape[1] + 1),
             advector_value_s,
             dtype=options.dtype,
         )
+        try:
+            assert np.max(np.abs(x_dim_advector)) < 1
+            print(f"{np.max(np.abs(a_dim_advector))=}")
+        except AssertionError:
+            print(f"{np.max(np.abs(x_dim_advector))=}")
 
         print(f"{x_dim_advector.shape=}", f"{a_dim_advector.shape=}")
         advector_values = (a_dim_advector, x_dim_advector)
@@ -172,8 +196,12 @@ class Simulation:
         # )
 
     def run(self, n_iters: int):
-        self.solver.advance(self.nt, self.mu_coeff)
-        return self.solver.advectee.get()
+        # for i in range(self.nt):
+        #     print(f"{i=}")
+        #     self.solver.advance(1, self.mu_coeff)
+        # # self.solver.advance(self.nt, self.mu_coeff)
+        self.solver.advance(1, self.mu_coeff)
+        return self.solver.advectee.get().copy()
 
     # def terminal_value(self):
     #     return self.solvers[1].advectee.get()
