@@ -77,7 +77,7 @@ class Simulation:
 
         # self.na = 15
         # self.na = self.nx # TODO: why?
-        self.na = 42
+        # self.na = 42
         # self.da = dx
 
         self.ix_match = self.nx
@@ -89,6 +89,7 @@ class Simulation:
 
         # asset price
         self.S = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
+
         self.A = self.S
         self.dy = dx
         self.ny = self.nx
@@ -120,6 +121,7 @@ class Simulation:
         print(f"{self.S_mesh.shape=}, {self.A_mesh.shape=}")
 
         self.mu_coeff = (0.5 / self.l2, 0)
+        # self.mu_coeff = (0, 0)
         # self.solver = {}
         # self.solvers[1] = self._factory(
         #     advectee=settings.payoff(self.A_mesh),
@@ -137,41 +139,56 @@ class Simulation:
         options = Options(**OPTIONS)
         boundary_conditions = (Constant(0), Constant(0))
         # boundary_conditions = (Extrapolated(), Extrapolated())
+        # boundary_conditions = (Periodic(), Periodic())
 
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
         )
 
-        a_dim_advector_linspace = np.linspace(S_beg, S_end + self.dy, self.ny + 1)
-        a_dim_advector = np.zeros((self.ny + 1, self.nx))
+        # a_dim_advector_linspace = np.linspace(S_beg, S_end + self.dy, self.ny + 1)
+        self.x = np.log(S_beg) + np.arange(self.nx) * dx
+        self.y = np.log(S_beg) + np.arange(self.ny + 1) * dx
+        a_dim_advector = np.zeros((self.nx, self.ny + 1))
         for i in range(self.ny + 1):
-            a_dim_advector[i, :] = (
-                np.log(self.S / a_dim_advector_linspace[i])
-                * (-self.dt)
-                / self.dy
-                / settings.T
+            a_dim_advector[:, i] = (
+                (self.x - self.y[i]) * (-self.dt) / self.dy / settings.T
             )
-            # a_dim_advector[i, :] = (self.S / a_dim_advector_linspace[i]) * (-self.dt) / self.da / settings.T
+        # for i in range(self.ny + 1):
+        #     a_dim_advector[i, :] = (
+        #         np.log(self.S / a_dim_advector_linspace[i])
+        #         * (-self.dt)
+        #         / self.dy
+        #         / settings.T
+        #     )
+        # a_dim_advector[i, :] = (self.S / a_dim_advector_linspace[i]) * (-self.dt) / self.da / settings.T
 
-        try:
-            assert np.max(np.abs(a_dim_advector)) < 1
-            print(f"{np.max(np.abs(a_dim_advector))=}")
-        except AssertionError:
-            print(f"{a_dim_advector.shape=}")
-            print(f"{np.max(np.abs(a_dim_advector))=}")
+        # try:
+        #     assert np.max(np.abs(a_dim_advector)) < 1
+        #     print(f"{np.max(np.abs(a_dim_advector))=}")
+        # except AssertionError:
+        #     print(f"{a_dim_advector.shape=}")
+        #     print(f"{np.max(np.abs(a_dim_advector))=}")
         x_dim_advector = np.full(
-            (advectee.shape[0], advectee.shape[1] + 1),
+            (advectee.shape[0] + 1, advectee.shape[1]),
             advector_value_s,
             dtype=options.dtype,
         )
+
+        # x dim advector should have values in the x direction
+        # a dim advector should have values in the a direction
+        # x_dim_advector = np.zeros((self.nx + 1, self.ny))
+        # for i in range(self.nx + 1):
+        #     x_dim_advector[i, :] = advector_value_s
         try:
             assert np.max(np.abs(x_dim_advector)) < 1
-            print(f"{np.max(np.abs(a_dim_advector))=}")
+            print(f"{np.max(np.abs(a_dim_advector))=}, {a_dim_advector.shape}")
+            print(f"{np.max(np.abs(x_dim_advector))=}, {x_dim_advector.shape}")
         except AssertionError:
             print(f"{np.max(np.abs(x_dim_advector))=}")
 
         print(f"{x_dim_advector.shape=}", f"{a_dim_advector.shape=}")
-        advector_values = (a_dim_advector, x_dim_advector)
+        # advector_values = (a_dim_advector, x_dim_advector)
+        advector_values = (x_dim_advector, a_dim_advector)
 
         self.solver = Solver(
             stepper=stepper,

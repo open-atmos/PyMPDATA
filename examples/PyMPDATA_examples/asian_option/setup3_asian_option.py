@@ -34,7 +34,7 @@ class Settings:
         print(f"{cond.shape=}")
         print(f"{A.shape[0]//2-1}, {A.shape[0]//2+1}")
         cond[
-            A.shape[0] // 2 - 1 : A.shape[0] // 2 + 1,
+            A.shape[0] // 3 - 1 : A.shape[0] // 3 + 1,
             A.shape[1] // 2 - 1 : A.shape[1] // 2 + 1,
         ] = 1
         return cond
