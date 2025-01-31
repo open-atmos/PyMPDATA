@@ -120,8 +120,8 @@ class Simulation:
         self.S_mesh, self.A_mesh = np.meshgrid(self.S, self.A)
         print(f"{self.S_mesh.shape=}, {self.A_mesh.shape=}")
 
-        self.mu_coeff = (0.5 / self.l2, 0)
-        # self.mu_coeff = (0, 0)
+        # self.mu_coeff = (0.5 / self.l2, 0)
+        self.mu_coeff = (0, 0)
         # self.solver = {}
         # self.solvers[1] = self._factory(
         #     advectee=settings.payoff(self.A_mesh),
