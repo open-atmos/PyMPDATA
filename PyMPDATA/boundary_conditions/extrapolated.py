@@ -1,6 +1,6 @@
-""" boundary condition extrapolating values from the edge to the halo for scalars
+"""boundary condition extrapolating values from the edge to the halo for scalars
 and returning edge-of-the-domain value for vectors (with all negative scalar values
-set to zero) """
+set to zero)"""
 
 # pylint: disable=too-many-arguments
 from functools import lru_cache

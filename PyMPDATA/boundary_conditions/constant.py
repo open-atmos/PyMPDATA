@@ -1,4 +1,4 @@
-""" boundary condition filling halos with a constant value """
+"""boundary condition filling halos with a constant value"""
 
 # pylint: disable=too-many-arguments
 from functools import lru_cache
