@@ -1,4 +1,4 @@
-""" array indexing logic for 1D, 2D and 3D staggered grids """
+"""array indexing logic for 1D, 2D and 3D staggered grids"""
 
 # pylint: disable=missing-function-docstring
 

@@ -1,4 +1,4 @@
-""" staggered-grid flux logic including infinite-gauge logic handling """
+"""staggered-grid flux logic including infinite-gauge logic handling"""
 
 import numba
 import numpy as np

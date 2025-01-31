@@ -1,4 +1,4 @@
-""" vector field traversals (incl. multi-threading) """
+"""vector field traversals (incl. multi-threading)"""
 
 import numba
 
