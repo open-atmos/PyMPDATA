@@ -1,4 +1,4 @@
-""" commons for scalar and vector field traversals """
+"""commons for scalar and vector field traversals"""
 
 # pylint: disable=too-many-arguments,line-too-long,unused-argument
 import numba

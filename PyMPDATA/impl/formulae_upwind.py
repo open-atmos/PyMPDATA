@@ -1,4 +1,4 @@
-""" upwind/donor-cell formula logic including G-factor handling """
+"""upwind/donor-cell formula logic including G-factor handling"""
 
 import numba
 

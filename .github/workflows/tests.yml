@@ -126,7 +126,7 @@ jobs:
       - run: |
           python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
           python -We -c "import PyMPDATA"
-          python -m pip install $PIP_INSTALL_ARGS -e .[tests] ./examples
+          python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
@@ -161,7 +161,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: python -m pip install $PIP_INSTALL_ARGS -e .[tests] ./examples
+      - run: python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
       - run: python -m pip install $PIP_INSTALL_ARGS -r tests/devops_tests/requirements.txt
       - if: matrix.platform == 'ubuntu-latest'
         run: |
@@ -189,6 +189,7 @@ jobs:
         run: |
           mkdir -p /home/runner/work/_temp/_github_home/figures
           rm /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_Pycurrent
+          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/boussinesq_2d_anim.gif /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
 

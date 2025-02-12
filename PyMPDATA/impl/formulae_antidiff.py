@@ -1,5 +1,5 @@
-""" antidiffusive velocity formulae incl. divergent-flow,
-    third-order-terms, DPDC and partially also infinite-gauge logic """
+"""antidiffusive velocity formulae incl. divergent-flow,
+third-order-terms, DPDC and partially also infinite-gauge logic"""
 
 import numba
 import numpy as np

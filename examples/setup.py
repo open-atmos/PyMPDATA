@@ -1,4 +1,4 @@
-""" the magick behind ``pip install ...`` """
+"""the magick behind ``pip install ...``"""
 
 import os
 import re

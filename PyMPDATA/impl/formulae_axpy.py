@@ -1,4 +1,4 @@
-""" basic a*x+y operation logic for use in Fickian term handling """
+"""basic a*x+y operation logic for use in Fickian term handling"""
 
 import numba
 
