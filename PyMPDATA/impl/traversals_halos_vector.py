@@ -1,4 +1,4 @@
-""" halo-filling logic for vector field traversals (incl. multi-threading) """
+"""halo-filling logic for vector field traversals (incl. multi-threading)"""
 
 # pylint: disable=too-many-statements,too-many-locals,too-many-lines,too-many-function-args,too-many-arguments
 

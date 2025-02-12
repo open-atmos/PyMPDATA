@@ -1,5 +1,5 @@
-""" the nonoscillatory option for MPDATA as introduced in
-    [Smolarkiewicz & Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A) """
+"""the nonoscillatory option for MPDATA as introduced in
+[Smolarkiewicz & Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)"""
 
 import numba
 import numpy as np

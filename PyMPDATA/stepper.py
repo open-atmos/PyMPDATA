@@ -1,4 +1,4 @@
-""" MPDATA iteration logic """
+"""MPDATA iteration logic"""
 
 import sys
 import warnings
