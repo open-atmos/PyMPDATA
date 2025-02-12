@@ -1,4 +1,4 @@
-""" periodic/cyclic boundary condition logic """
+"""periodic/cyclic boundary condition logic"""
 
 from functools import lru_cache
 

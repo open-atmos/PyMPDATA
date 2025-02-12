@@ -1,4 +1,4 @@
-""" halo-filling logic for scalar field traversals (incl. multi-threading) """
+"""halo-filling logic for scalar field traversals (incl. multi-threading)"""
 
 # pylint: disable=too-many-arguments
 import numba
