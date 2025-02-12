@@ -17,7 +17,7 @@ class Settings:
     # K2 = 175
     S_match = 200
 
-    def __init__(self, *, n_iters: int = 2, l2_opt: int = 2, C_opt: float = 0.015):
+    def __init__(self, *, n_iters: int = 2, l2_opt: int = 2, C_opt: float = 0.034):
         self.n_iters = n_iters
         self.l2_opt = l2_opt
         self.C_opt = C_opt

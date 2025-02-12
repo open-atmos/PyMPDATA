@@ -58,10 +58,12 @@ class Simulation:
             self.nt += 1
             self.dt = settings.T / self.nt
 
-        print(f"{self.nt=}, {self.dt=}")
-
         # adjusting dx to match requested l^2
         dx = np.sqrt(settings.l2_opt * self.dt) * settings.sigma
+
+        self.dt = self.dt / 10
+        self.nt = self.nt * 10
+        print(f"{self.nt=}, {self.dt=}")
 
         # calculating actual u number and lambda
         self.C = -(0.5 * sigma2 - settings.r) * (-self.dt) / dx
@@ -120,8 +122,8 @@ class Simulation:
         self.S_mesh, self.A_mesh = np.meshgrid(self.S, self.A)
         print(f"{self.S_mesh.shape=}, {self.A_mesh.shape=}")
 
-        # self.mu_coeff = (0.5 / self.l2, 0)
-        self.mu_coeff = (0, 0)
+        self.mu_coeff = (0.5 / self.l2, 0)
+        # self.mu_coeff = (0, 0)
         # self.solver = {}
         # self.solvers[1] = self._factory(
         #     advectee=settings.payoff(self.A_mesh),
@@ -137,9 +139,9 @@ class Simulation:
         advector_value_s = self.C
         # advector_a = self.C_a
         options = Options(**OPTIONS)
-        boundary_conditions = (Constant(0), Constant(0))
+        # boundary_conditions = (Constant(0), Constant(0))
         # boundary_conditions = (Extrapolated(), Extrapolated())
-        # boundary_conditions = (Periodic(), Periodic())
+        boundary_conditions = (Periodic(), Periodic())
 
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
@@ -151,7 +153,7 @@ class Simulation:
         a_dim_advector = np.zeros((self.nx, self.ny + 1))
         for i in range(self.ny + 1):
             a_dim_advector[:, i] = (
-                (self.x - self.y[i]) * (-self.dt) / self.dy / settings.T
+                ((self.x - self.y[i]) / settings.T) * -(self.dt) / self.dy
             )
         # for i in range(self.ny + 1):
         #     a_dim_advector[i, :] = (
@@ -171,6 +173,7 @@ class Simulation:
         x_dim_advector = np.full(
             (advectee.shape[0] + 1, advectee.shape[1]),
             advector_value_s,
+            # 0,
             dtype=options.dtype,
         )
 
