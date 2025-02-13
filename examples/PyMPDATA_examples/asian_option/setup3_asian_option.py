@@ -13,9 +13,9 @@ class Settings:
     S_max = 1000
     sigma = 0.6
     r = 0.008
-    K1 = 200
+    K1 = 100
     # K2 = 175
-    S_match = 200
+    S_match = 100
 
     def __init__(self, *, n_iters: int = 2, l2_opt: int = 2, C_opt: float = 0.034):
         self.n_iters = n_iters
@@ -23,21 +23,30 @@ class Settings:
         self.C_opt = C_opt
 
     def payoff(self, A: np.ndarray):
-        return np.maximum(0, A - self.K1)
-
-    # def terminal_value(self, A: np.ndarray):
-    #     return np.exp(-self.r * self.T) * self.payoff(A)
+        # A is a 1d array,
+        # the payoff is the max of the average price minus the strike price
+        # however, we need to transform it into a 2d array, that is square
+        print(f"{np.max(A)=}, {np.min(A)=}")
+        payoff = np.maximum(0, A - self.K1)
+        payoff_matrix = np.zeros((payoff.shape[0], payoff.shape[0]))
+        for i in range(payoff.shape[0]):
+            payoff_matrix[i, :] = payoff
+        return payoff_matrix
+        # return np.maximum(0, A - self.K1)
 
     def terminal_value(self, A: np.ndarray):
-        # put zeros everrywhere except for a 2x2 square in the middle where we put 1
-        cond = np.zeros_like(A, dtype=np.float64)
-        print(f"{cond.shape=}")
-        print(f"{A.shape[0]//2-1}, {A.shape[0]//2+1}")
-        cond[
-            A.shape[0] // 3 - 1 : A.shape[0] // 3 + 1,
-            A.shape[1] // 2 - 1 : A.shape[1] // 2 + 1,
-        ] = 1
-        return cond
+        return np.exp(-self.r * self.T) * self.payoff(A)
+
+    # def terminal_value(self, A: np.ndarray):
+    #     # put zeros everrywhere except for a 2x2 square in the middle where we put 1
+    #     cond = np.zeros_like(A, dtype=np.float64)
+    #     print(f"{cond.shape=}")
+    #     # print(f"{A.shape[0]//2-1}, {A.shape[0]//2+1}")
+    #     cond[
+    #         A.shape[0] // 3 - 1 : A.shape[0] // 3 + 1,
+    #         A.shape[1] // 2 - 1 : A.shape[1] // 2 + 1,
+    #     ] = 1
+    #     return cond
 
     def analytical_solution(self, S: np.ndarray):
         return MKH.geometric_mkhize(

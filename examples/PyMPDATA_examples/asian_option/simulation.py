@@ -134,27 +134,33 @@ class Simulation:
         #     advectee_x_values=self.S,
         # )
 
-        advectee = settings.terminal_value(self.A_mesh)
-        print(f"{advectee.shape=}")
+        self.x = np.log(S_beg) + np.arange(self.nx) * dx
+        self.y = np.log(S_beg) + np.arange(self.ny + 1) * dx
+        self.A_values = np.exp(np.log(S_beg) + np.arange(self.ny) * dx)
+        self.S_values = np.exp(np.log(S_beg) + np.arange(self.nx) * dx)
+        a_dim_advector = np.zeros((self.nx, self.ny + 1))
+        for i in range(self.ny + 1):
+            a_dim_advector[:, i] = (
+                ((self.x - self.y[i]) / settings.T) * -(self.dt) / self.dy
+            )
+
+        advectee = settings.terminal_value(
+            np.exp(np.log(S_beg) + np.arange(self.ny) * dx)
+        )
+        print(f"{advectee.shape=}, {np.max(advectee)=}, {np.min(advectee)=}")
         advector_value_s = self.C
         # advector_a = self.C_a
         options = Options(**OPTIONS)
-        # boundary_conditions = (Constant(0), Constant(0))
+        boundary_conditions = (Constant(0), Constant(0))
         # boundary_conditions = (Extrapolated(), Extrapolated())
-        boundary_conditions = (Periodic(), Periodic())
+        # boundary_conditions = (Periodic(), Periodic())
 
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
         )
 
         # a_dim_advector_linspace = np.linspace(S_beg, S_end + self.dy, self.ny + 1)
-        self.x = np.log(S_beg) + np.arange(self.nx) * dx
-        self.y = np.log(S_beg) + np.arange(self.ny + 1) * dx
-        a_dim_advector = np.zeros((self.nx, self.ny + 1))
-        for i in range(self.ny + 1):
-            a_dim_advector[:, i] = (
-                ((self.x - self.y[i]) / settings.T) * -(self.dt) / self.dy
-            )
+
         # for i in range(self.ny + 1):
         #     a_dim_advector[i, :] = (
         #         np.log(self.S / a_dim_advector_linspace[i])
