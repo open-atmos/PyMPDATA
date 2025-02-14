@@ -14,6 +14,8 @@ from PyMPDATA.impl.enumerations import (
     INVALID_NULL_VALUE,
     MID3D,
     OUTER,
+    IMPL_META_AND_DATA,
+    IMPL_BC,
 )
 from PyMPDATA.impl.field import Field
 from PyMPDATA.scalar_field import ScalarField
@@ -110,3 +112,12 @@ class VectorField(Field):
             ),
             traversals,
         )
+    def _fill_halos(self, traversals):
+        f = traversals._code["fill_halos_vector"]
+        #TODO: assert n_threads == 1
+        buf = traversals.data.buffer
+        f(0, self.impl[IMPL_META_AND_DATA][0], (
+            self.impl[IMPL_META_AND_DATA][1],
+            self.impl[IMPL_META_AND_DATA][2],
+            self.impl[IMPL_META_AND_DATA][3],
+        ), self.impl[IMPL_BC], buf)
