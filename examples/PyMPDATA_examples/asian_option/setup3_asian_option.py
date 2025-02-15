@@ -7,15 +7,15 @@ from scipy.stats import norm
 @strict
 class Settings:
     # S0 = 55
-    T = 0.5
+    T = 1
     # amer = False
-    S_min = 10
-    S_max = 1000
-    sigma = 0.6
-    r = 0.008
-    K1 = 100
+    S_min = 1
+    S_max = 1600
+    sigma = 0.3
+    r = 0.08
+    K1 = 40
     # K2 = 175
-    S_match = 100
+    S_match = 40
 
     def __init__(self, *, n_iters: int = 2, l2_opt: int = 2, C_opt: float = 0.034):
         self.n_iters = n_iters
@@ -28,10 +28,11 @@ class Settings:
         # however, we need to transform it into a 2d array, that is square
         print(f"{np.max(A)=}, {np.min(A)=}")
         payoff = np.maximum(0, A - self.K1)
-        payoff_matrix = np.zeros((payoff.shape[0], payoff.shape[0]))
-        for i in range(payoff.shape[0]):
-            payoff_matrix[i, :] = payoff
-        return payoff_matrix
+        return np.repeat([payoff], payoff.shape[0], axis=0)
+        # payoff_matrix = np.zeros((payoff.shape[0], payoff.shape[0]))
+        # for i in range(payoff.shape[0]):
+        #     payoff_matrix[i, :] = payoff
+        # return payoff_matrix
         # return np.maximum(0, A - self.K1)
 
     def terminal_value(self, A: np.ndarray):

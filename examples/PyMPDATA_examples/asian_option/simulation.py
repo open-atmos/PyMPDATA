@@ -141,7 +141,7 @@ class Simulation:
         a_dim_advector = np.zeros((self.nx, self.ny + 1))
         for i in range(self.ny + 1):
             a_dim_advector[:, i] = (
-                ((self.x - self.y[i]) / settings.T) * -(self.dt) / self.dy
+                ((self.x - (self.y[i] - dx / 2)) / settings.T) * -(self.dt) / self.dy
             )
 
         advectee = settings.terminal_value(
@@ -151,9 +151,10 @@ class Simulation:
         advector_value_s = self.C
         # advector_a = self.C_a
         options = Options(**OPTIONS)
-        boundary_conditions = (Constant(0), Constant(0))
+        # boundary_conditions = (Periodic(), Constant(2000))
         # boundary_conditions = (Extrapolated(), Extrapolated())
         # boundary_conditions = (Periodic(), Periodic())
+        boundary_conditions = (Extrapolated(dim=0), Extrapolated(dim=-1))
 
         stepper = Stepper(
             options=options, n_dims=len(advectee.shape), non_unit_g_factor=False
