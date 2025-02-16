@@ -50,17 +50,16 @@ def quick_look(field: Field, plot: bool = True):
             for i, val in enumerate(field.data[dim].flatten()):
                 if np.isfinite(val):
                     continue
-                else:
-                    pyplot.annotate(
-                        text="NaN",
-                        xy=(
-                            arrows_xy[dim][0].flatten()[i],
-                            arrows_xy[dim][1].flatten()[i],
-                        ),
-                        ha="center",
-                        va="center",
-                        color=arrow_colors[dim],
-                    )
+                pyplot.annotate(
+                    text="NaN",
+                    xy=(
+                        arrows_xy[dim][0].flatten()[i],
+                        arrows_xy[dim][1].flatten()[i],
+                    ),
+                    ha="center",
+                    va="center",
+                    color=arrow_colors[dim],
+                )
     else:
         assert False
     pyplot.hlines(
@@ -79,8 +78,8 @@ def quick_look(field: Field, plot: bool = True):
     )
     pyplot.hlines(y=range(grid[1] + 1), xmin=0, xmax=grid[0], color="r", linewidth=3)
     pyplot.vlines(x=range(grid[0] + 1), ymin=0, ymax=grid[1], color="r", linewidth=3)
-    for i, xy in enumerate(("x", "y")):
-        getattr(pyplot, f"{xy}ticks")(
+    for i, x_y in enumerate(("x", "y")):
+        getattr(pyplot, f"{x_y}ticks")(
             np.linspace(-halo + 0.5, grid[i] + halo - 0.5, grid[i] + 2 * halo)
         )
     pyplot.xlabel("x/dx (outer dim)")
