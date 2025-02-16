@@ -6,7 +6,6 @@ set to zero)"""
 from functools import lru_cache
 
 import numba
-import numpy as np
 
 from PyMPDATA.impl.enumerations import (
     ARG_FOCUS,
@@ -54,18 +53,22 @@ class Extrapolated:
 # pylint: disable=too-many-arguments
 def _make_scalar_extrapolated(dim, eps, ats, set_value, halo, dtype, jit_flags):
     @numba.njit(**jit_flags)
-    def impl(psi, span, sign):
+    def impl(focus_psi, span, sign):
         if sign == SIGN_LEFT:
-            edg = halo - psi[ARG_FOCUS][dim]
-            nom = ats(*psi, edg + 1) - ats(*psi, edg)
-            den = ats(*psi, edg + 2) - ats(*psi, edg + 1)
+            edg = halo - focus_psi[ARG_FOCUS][dim]
+            nom = ats(*focus_psi, edg + 1) - ats(*focus_psi, edg)
+            den = ats(*focus_psi, edg + 2) - ats(*focus_psi, edg + 1)
             cnst = nom / den if abs(den) > eps else 0
-            return max(ats(*psi, 1) - (ats(*psi, 2) - ats(*psi, 1)) * cnst, 0)
-        edg = span + halo - 1 - psi[ARG_FOCUS][dim]
-        den = ats(*psi, edg - 1) - ats(*psi, edg - 2)
-        nom = ats(*psi, edg) - ats(*psi, edg - 1)
+            return max(
+                ats(*focus_psi, 1) - (ats(*focus_psi, 2) - ats(*focus_psi, 1)) * cnst, 0
+            )
+        edg = span + halo - 1 - focus_psi[ARG_FOCUS][dim]
+        den = ats(*focus_psi, edg - 1) - ats(*focus_psi, edg - 2)
+        nom = ats(*focus_psi, edg) - ats(*focus_psi, edg - 1)
         cnst = nom / den if abs(den) > eps else 0
-        return max(ats(*psi, -1) + (ats(*psi, -1) - ats(*psi, -2)) * cnst, 0)
+        return max(
+            ats(*focus_psi, -1) + (ats(*focus_psi, -1) - ats(*focus_psi, -2)) * cnst, 0
+        )
 
     if dtype == complex:
 
@@ -96,8 +99,8 @@ def _make_vector_extrapolated(atv, set_value, jit_flags, dimension_index):
         return atv(*focus_psi, sign + 0.5)
 
     @numba.njit(**jit_flags)
-    def fill_halos_normal(_, __, ___, ____):
-        return np.nan
+    def fill_halos_normal(focus_psi, _, sign, __):
+        return atv(*focus_psi, sign, 0.5)
 
     return make_fill_halos_loop_vector(
         jit_flags, set_value, fill_halos_parallel, fill_halos_normal, dimension_index
