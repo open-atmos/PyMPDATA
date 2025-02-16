@@ -7,7 +7,7 @@ import inspect
 import numpy as np
 
 from PyMPDATA.boundary_conditions import Constant
-from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE
+from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, IMPL_META_AND_DATA, IMPL_BC
 from PyMPDATA.impl.field import Field
 
 
@@ -62,3 +62,8 @@ class ScalarField(Field):
             ),
             traversals,
         )
+    def _fill_halos(self, traversals):
+        f = traversals._code["fill_halos_scalar"]
+        buf = traversals.data.buffer
+        #TODO: assert n_threads == 1
+        f(0, *self.impl[IMPL_META_AND_DATA], self.impl[IMPL_BC], buf)

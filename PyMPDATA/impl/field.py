@@ -120,3 +120,4 @@ class Field:
         n_dims: int, traversals
     ):  # pylint: disable=missing-function-docstring
         raise NotImplementedError()
+        
