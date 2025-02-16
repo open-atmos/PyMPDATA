@@ -1,1 +1,0 @@
-colors = ("purple", "teal", "turquoise")
