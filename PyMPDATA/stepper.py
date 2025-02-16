@@ -174,7 +174,6 @@ def make_step_impl(
                             *advector.field,
                             *advector_orig.field,
                         )
-                        print(np.nanmax(abs(advector.field[ARG_DATA].ravel())))
                     flux_first_pass(null_impl, vectmp_a, advector, advectee)
                     flux = vectmp_a
                 else:
