@@ -26,7 +26,7 @@ def quick_look(field: Field, plot: bool = True):
     elif isinstance(field, VectorField):
         arrow_colors = ("green", "blue")
         quiver_common_kwargs = {"pivot": "mid", "width": 0.005}
-        max_in_domain = [np.amax(field.get_component(i)) for i in (0, 1)]
+        abs_max_in_domain = max([np.amax(np.abs(field.get_component(i))) for i in (0, 1)])
         arrows_xy = (
             np.mgrid[
                 -(halo - 1) : grid[0] + 1 + (halo - 1) : 1,
@@ -42,8 +42,8 @@ def quick_look(field: Field, plot: bool = True):
         for dim in (0, 1):
             pyplot.quiver(
                 *arrows_xy[dim],
-                field.data[dim].flatten() / max_in_domain[dim] if dim == 0 else 0,
-                field.data[dim].flatten() / max_in_domain[dim] if dim == 1 else 0,
+                field.data[dim].flatten() / abs_max_in_domain if dim == 0 else 0,
+                field.data[dim].flatten() / abs_max_in_domain if dim == 1 else 0,
                 color=arrow_colors[dim],
                 **quiver_common_kwargs,
             )
