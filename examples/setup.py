@@ -21,7 +21,7 @@ def get_long_description():
 CI = "CI" in os.environ
 
 setup(
-    name="PyMPDATA-examples",
+    name="pympdata-examples",
     description="PyMPDATA usage examples reproducing results from literature"
     " and depicting how to use PyMPDATA in Python from Jupyter notebooks",
     use_scm_version={
