@@ -25,7 +25,7 @@ setup(
     description="PyMPDATA usage examples reproducing results from literature"
     " and depicting how to use PyMPDATA in Python from Jupyter notebooks",
     use_scm_version={
-        "local_scheme": lambda _: "",
+        "local_scheme": "no-local-version",
         "version_scheme": "post-release",
         "root": "..",
     },
