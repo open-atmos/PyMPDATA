@@ -26,22 +26,21 @@ class BSModel:
 
 
 class PathDependentOption:
-    def __init__(self, T, M):
+    def __init__(self, T):
         self.T = T
-        self.M = M
         self.payoff: Callable[[np.ndarray], float] = lambda path: 0.0
 
     def price_by_mc(self, model: BSModel, N):
         sum_ct = 0.0
-        for _ in tqdm(range(N), desc="Pricing by MC", ncols=100):
+        for _ in range(N):
             path = model.generate_path()
             sum_ct += self.payoff(path)
         return np.exp(-model.r * self.T) * (sum_ct / N)
 
 
 class FixedStrikeArithmeticAsianOption(PathDependentOption):
-    def __init__(self, T, M, K, type="call"):
-        super().__init__(T, M)
+    def __init__(self, T, K, type="call"):
+        super().__init__(T)
         self.K = K
 
         if type == "call":
@@ -53,8 +52,8 @@ class FixedStrikeArithmeticAsianOption(PathDependentOption):
 
 
 class FixedStrikeGeometricAsianOption(PathDependentOption):
-    def __init__(self, T, M, K, type="call"):
-        super().__init__(T, M)
+    def __init__(self, T, K, type="call"):
+        super().__init__(T)
         self.K = K
 
         if type == "call":
