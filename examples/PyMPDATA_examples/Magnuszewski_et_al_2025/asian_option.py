@@ -1,27 +1,41 @@
-import os
-os.environ["NUMBA_DISABLE_JIT"] = "1"
+# import os
+# os.environ["NUMBA_DISABLE_JIT"] = "1"
 
+from functools import cached_property, lru_cache
 from types import SimpleNamespace
-from functools import lru_cache, cached_property
 
-import numpy as np
 import numba
-from matplotlib import pyplot, colors
-from pystrict import strict
+import numpy as np
+import PyMPDATA_examples.utils.financial_formulae.asian_option as asian_analytic
 from ipywidgets import IntProgress
+from matplotlib import colors, pyplot
+
+# from PyMPDATA_examples.utils.quick_look import quick_look
+from monte_carlo import (
+    BSModel,
+    FixedStrikeArithmeticAsianOption,
+    FixedStrikeGeometricAsianOption,
+)
+from open_atmos_jupyter_utils import show_anim, show_plot
+from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
+from PyMPDATA_examples.utils.financial_formulae import (
+    Bjerksund_and_Stensland_1993,
+    Black_Scholes_1973,
+)
+from pystrict import strict
 from tqdm import tqdm
 
-from open_atmos_jupyter_utils import show_plot, show_anim
-from PyMPDATA.impl.traversals_common import make_fill_halos_loop
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
-from PyMPDATA.boundary_conditions import Extrapolated, Constant
-from PyMPDATA.impl.enumerations import SIGN_RIGHT, ARG_FOCUS, META_AND_DATA_META, META_AND_DATA_DATA, OUTER, INNER
-import PyMPDATA_examples.utils.financial_formulae.asian_option as asian_analytic
-from PyMPDATA_examples.utils.financial_formulae import Black_Scholes_1973, Bjerksund_and_Stensland_1993
-# from PyMPDATA_examples.utils.quick_look import quick_look
-from monte_carlo import BSModel, FixedStrikeGeometricAsianOption, FixedStrikeArithmeticAsianOption
-from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
-
+from PyMPDATA.boundary_conditions import Constant, Extrapolated
+from PyMPDATA.impl.enumerations import (
+    ARG_FOCUS,
+    INNER,
+    META_AND_DATA_DATA,
+    META_AND_DATA_META,
+    OUTER,
+    SIGN_RIGHT,
+)
+from PyMPDATA.impl.traversals_common import make_fill_halos_loop
 
 OPTIONS = {
     "n_iters": 3,
@@ -37,7 +51,7 @@ class Settings:
     params = SimpleNamespace(
         T=1,
         sgma=0.1,
-        r=.1,
+        r=0.1,
         K=100,
     )
 
@@ -60,12 +74,15 @@ class Settings:
         output = discretised_analytical_solution(rh, call)
         return output
 
+
 _t = np.nan
 
 
 @lru_cache()
 # pylint: disable=too-many-arguments
-def _make_scalar_custom(dim, eps, ats, set_value, halo, dtype, jit_flags, data, inner_or_outer, S_max, dx, T):
+def _make_scalar_custom(
+    dim, eps, ats, set_value, halo, dtype, jit_flags, data, inner_or_outer, S_max, dx, T
+):
     @numba.njit(**jit_flags)
     def impl(focus_psi, span, sign):
         focus = focus_psi[0]
@@ -76,11 +93,14 @@ def _make_scalar_custom(dim, eps, ats, set_value, halo, dtype, jit_flags, data, 
             nom = ats(*focus_psi, edg) - ats(*focus_psi, edg - 1)
             cnst = nom / den if abs(den) > eps else 0
             return max(
-                ats(*focus_psi, -1) + (ats(*focus_psi, -1) - ats(*focus_psi, -2)) * cnst, 0
+                ats(*focus_psi, -1)
+                + (ats(*focus_psi, -1) - ats(*focus_psi, -2)) * cnst,
+                0,
             )
         return data[i]
 
     if dtype == complex:
+
         @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, span, sign):
             return complex(
@@ -91,7 +111,9 @@ def _make_scalar_custom(dim, eps, ats, set_value, halo, dtype, jit_flags, data, 
                     (psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].imag), span, sign
                 ),
             )
+
     else:
+
         @numba.njit(**jit_flags)
         def fill_halos_scalar(psi, span, sign):
             return impl(psi, span, sign)
@@ -136,7 +158,9 @@ class Simulation:
         log_s_min = np.log(settings.S_min)
         log_s_max = np.log(settings.S_max)
         self.S = np.exp(np.linspace(log_s_min, log_s_max, self.nx))
-        self.A, self.dy = np.linspace(0, settings.S_max, self.ny, retstep=True, endpoint=True)
+        self.A, self.dy = np.linspace(
+            0, settings.S_max, self.ny, retstep=True, endpoint=True
+        )
         self.dx = (log_s_max - log_s_min) / self.nx
         # self.dy =
 
@@ -144,7 +168,9 @@ class Simulation:
         self.step_number = 0
 
         sigma_squared = pow(settings.params.sgma, 2)
-        courant_number_x = -(0.5 * sigma_squared - settings.params.r) * (-self.dt) / self.dx
+        courant_number_x = (
+            -(0.5 * sigma_squared - settings.params.r) * (-self.dt) / self.dx
+        )
 
         self.l2 = self.dx * self.dx / sigma_squared / self.dt
 
@@ -152,7 +178,9 @@ class Simulation:
 
         print(f"{self.l2=}")
 
-        assert self.l2 > 2, f"Lambda squared should be more than 2 for stability {self.l2}"
+        assert (
+            self.l2 > 2
+        ), f"Lambda squared should be more than 2 for stability {self.l2}"
 
         print(f"dx: {self.dx}, dy: {self.dy}, dt: {self.dt}, l2: {self.l2}")
 
@@ -166,9 +194,12 @@ class Simulation:
             courant_number_x,
             dtype=options.dtype,
         )
-        print(f"CFL {np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector))}")
-        assert np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(
-            x_dim_advector)) < 1, f"CFL condition not met {np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector))}"
+        print(
+            f"CFL {np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector))}"
+        )
+        assert (
+            np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector)) < 1
+        ), f"CFL condition not met {np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector))}"
 
         courant_x = np.max(np.abs(x_dim_advector))
         courant_y = np.max(np.abs(self.a_dim_advector))
@@ -179,7 +210,8 @@ class Simulation:
         self.solver = Solver(
             stepper=stepper,
             advectee=ScalarField(
-                self.payoff_2d.astype(dtype=options.dtype) * np.exp(-self.settings.params.r * self.settings.params.T),
+                self.payoff_2d.astype(dtype=options.dtype)
+                * np.exp(-self.settings.params.r * self.settings.params.T),
                 halo=options.n_halo,
                 boundary_conditions=self.boundary_conditions,
             ),
@@ -228,7 +260,8 @@ class _Asian(Simulation):
     def boundary_conditions(self):
         return (
             KemnaVorstBoundaryCondition(
-                data_left=self.payoff_2d[0, :] * np.exp(-self.settings.params.r * self.settings.params.T),
+                data_left=self.payoff_2d[0, :]
+                * np.exp(-self.settings.params.r * self.settings.params.T),
                 dim=OUTER,
                 dx=self.dx,
                 S_max=self.settings.S_max,
@@ -263,8 +296,13 @@ class AsianGeometric(_Asian):
         # A_edg = np.exp(y_edg - self.dy / 2)
         A_edg = np.arange(self.ny + 1) * self.dy
         for i in range(self.ny + 1):
-            a_dim_advector[:, i] = -self.dt / self.dy * np.log(self.S) * (
-                        A_edg[i] - self.dy / 2) / self.settings.params.T
+            a_dim_advector[:, i] = (
+                -self.dt
+                / self.dy
+                * np.log(self.S)
+                * (A_edg[i] - self.dy / 2)
+                / self.settings.params.T
+            )
         return a_dim_advector
 
     def add_half_rhs(self):
@@ -303,55 +341,64 @@ class American(European):
         psi[:] = np.maximum(psi, self.payoff_2d / np.exp(self.settings.params.r * t))
 
 
-def plot_solution(settings, frame_index, ax, history, S_linspace, arithmetic_by_mc, option_type: str):
-    params = {k: v for k, v in settings.params.__dict__.items() if not k.startswith("K")}
+def plot_solution(
+    settings, frame_index, ax, history, S_linspace, arithmetic_by_mc, option_type: str
+):
+    params = {
+        k: v for k, v in settings.params.__dict__.items() if not k.startswith("K")
+    }
 
     ax.plot(
         S_linspace,
         (
-            Black_Scholes_1973.c_euro(S=S_linspace, K=settings.params.K, **params, b=settings.params.r)
+            Black_Scholes_1973.c_euro(
+                S=S_linspace, K=settings.params.K, **params, b=settings.params.r
+            )
         ),
-        label="European analytic (Black-Scholes '73)", linestyle=':'
+        label="European analytic (Black-Scholes '73)",
+        linestyle=":",
     )
     ax.plot(
         S_linspace,
         (
             asian_analytic.geometric_asian_average_price_c(
-                S=S_linspace,
-                K=settings.params.K,
-                **params,
-                dividend_yield=0
+                S=S_linspace, K=settings.params.K, **params, dividend_yield=0
             )
         ),
-        label="Asian analytic (geometric, Kemna & Vorst 1990)", alpha=0.5, linestyle="--"
+        label="Asian analytic (geometric, Kemna & Vorst 1990)",
+        alpha=0.5,
+        linestyle="--",
     )
 
+    ax.plot(S_linspace, arithmetic_by_mc, label="Asian arithmetic by Monte-Carlo")
     ax.plot(
         S_linspace,
-        arithmetic_by_mc,
-        label="Asian arithmetic by Monte-Carlo"
+        history[frame_index][:, 0],
+        label=f"MPDATA solution ({option_type})",
+        marker=".",
     )
-    ax.plot(S_linspace, history[frame_index][:, 0], label=f"MPDATA solution ({option_type})", marker='.')
-    ax.legend(loc='upper right')
+    ax.legend(loc="upper right")
     ax.grid()
     minmax = (np.amin(history[0]), np.amax(history[0]))
     span = minmax[1] - minmax[0]
-    ax.set_ylim(minmax[0] - .05 * span, minmax[1] + .25 * span)
+    ax.set_ylim(minmax[0] - 0.05 * span, minmax[1] + 0.25 * span)
     ax.set_title(f"instrument parameters: {settings.params.__dict__}")
     ax.set_xlabel("underlying S(t=0)=A(t=0) (and A(T) for terminal condition)")
     ax.set_ylabel("option price")
 
 
-def plot_difference_arithmetic(settings, frame_index, ax, history, S_linspace, arithmetic_by_mc, option_type: str):
+def plot_difference_arithmetic(
+    settings, frame_index, ax, history, S_linspace, arithmetic_by_mc, option_type: str
+):
     ax.plot(
         S_linspace,
         abs(arithmetic_by_mc - history[frame_index][:, 0]) / arithmetic_by_mc,
-        label="Difference in price of Asian arithmetic option MPDATA vs MC"
+        label="Difference in price of Asian arithmetic option MPDATA vs MC",
     )
-    ax.legend(loc='upper right')
+    ax.legend(loc="upper right")
     ax.grid()
     ax.set_title(f"instrument parameters: {settings.params.__dict__}")
     ax.set_xlabel("underlying S(t=0)=A(t=0) (and A(T) for terminal condition)")
     ax.set_ylabel("option price")
-    ax.set_yscale('log')
+    ax.set_yscale("log")
     ax.set_ylim(0, 100)
