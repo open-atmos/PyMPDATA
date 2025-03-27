@@ -128,7 +128,6 @@ jobs:
           python -We -c "import PyMPDATA"
           python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
 
-      # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 

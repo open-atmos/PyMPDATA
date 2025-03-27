@@ -38,6 +38,8 @@ jobs:
       - uses: matlab-actions/run-command@v2.1.1
         with:
           command: pe=pyenv; assert(pe.Version == "${{ matrix.python-version }}");
+      - if: startsWith(matrix.platform, 'ubuntu-')
+        run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
       - uses: matlab-actions/run-command@v2.1.1
         with:
           command: readme
