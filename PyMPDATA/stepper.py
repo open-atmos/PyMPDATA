@@ -64,22 +64,22 @@ class Stepper:
                 )
                 self.__n_threads = 1
 
-                if not numba.config.DISABLE_JIT:
+            if not numba.config.DISABLE_JIT:  # pylint: disable=no-member
+                @numba.jit(parallel=True)
+                def fill_array_with_thread_id(arr):
+                    """writes thread id to corresponding array element"""
+                    for i in numba.prange( # pylint: disable=not-an-iterable
+                        numba.get_num_threads()
+                    ):
+                        arr[i] = numba.get_thread_id()
 
-                    @numba.jit(parallel=True)
-                    def fill_array_with_thread_id(arr):
-                        """writes thread id to corresponding array element"""
-                        for i in numba.prange(
-                            numba.get_num_threads()
-                        ):  # pylint: disable=not-an-iterable
-                            arr[i] = numba.get_thread_id()
-
-                    arr = np.full(numba.get_num_threads(), -1)
-                    fill_array_with_thread_id(arr)
-                    if not (max(arr) > 0):
-                        raise ValueError(
-                            "n_threads>1 requested, but Numba does not seem to parallelize (try changing Numba threading backend?)"
-                        )
+                arr = np.full(numba.get_num_threads(), -1)
+                fill_array_with_thread_id(arr)
+                if not max(arr) > 0:
+                    raise ValueError(
+                        "n_threads>1 requested, but Numba does not seem to parallelize"
+                        " (try changing Numba threading backend?)"
+                    )
 
         self.__n_dims = n_dims
         self.__call, self.traversals = make_step_impl(
