@@ -65,10 +65,11 @@ class Stepper:
                 self.__n_threads = 1
 
             if not numba.config.DISABLE_JIT:  # pylint: disable=no-member
-                @numba.jit(parallel=True)
+
+                @numba.jit(parallel=True, nopython=True)
                 def fill_array_with_thread_id(arr):
                     """writes thread id to corresponding array element"""
-                    for i in numba.prange( # pylint: disable=not-an-iterable
+                    for i in numba.prange(  # pylint: disable=not-an-iterable
                         numba.get_num_threads()
                     ):
                         arr[i] = numba.get_thread_id()
