@@ -182,7 +182,7 @@ class Simulation:
             self.l2 > 2
         ), f"Lambda squared should be more than 2 for stability {self.l2}"
 
-        print(f"dx: {self.dx}, dy: {self.dy}, dt: {self.dt}, l2: {self.l2}")
+        # print(f"dx: {self.dx}, dy: {self.dy}, dt: {self.dt}")
 
         self.payoff = settings.payoff(A=self.A, da=self.dy)
 
