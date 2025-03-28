@@ -38,6 +38,7 @@ jobs:
       - uses: matlab-actions/run-command@v2.1.1
         with:
           command: pe=pyenv; assert(pe.Version == "${{ matrix.python-version }}");
+      - run: echo NUMBA_NUM_THREADS=1 >> $GITHUB_ENV
       - uses: matlab-actions/run-command@v2.1.1
         with:
           command: readme
