@@ -85,7 +85,8 @@
   },
   "https://doi.org/10.1137/S106482759324700X": {
     "usages": [
-      "PyMPDATA/options.py"
+      "PyMPDATA/options.py",
+      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
     ],
     "label": "Margolin & Smolarkiewicz 1998 (SIAM J. Sci. Comput. 20)",
     "title": "Antidiffusive Velocities for Multipass Donor Cell Advection"
@@ -116,7 +117,8 @@
       "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py",
       "tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py",
       "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb",
-      "examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py"
+      "examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py",
+      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
     ],
     "label": "Jaruga et al. 2015 (Geosci. Model Dev. 8)",
     "title": "libmpdata++ 1.0: a library of parallel MPDATA solvers for systems of generalised transport equations "
@@ -153,10 +155,18 @@
   },
   "https://doi.org/10.1175/1520-0450(1968)007%3C0160:AOFDMA%3E2.0.CO;2": {
     "usages": [
-      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py"
+      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py",
+      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
     ],
     "label": "Molenkamp 1968 (J. Appl. Meteorol. Climatol. 7)",
     "title": "Accuracy of Finite-Difference Methods Applied to the Advection Equation"
+  },
+  "http://doi.org/10.1175/1520-0469(1974)031%3C1500:ACONSO%3E2.0.CO;2": {
+    "usages": [
+      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
+    ],
+    "label": "Anderson & Fattahi 1974",
+    "title": "A Comparison of Numerical Solutions of the Advective Equation"
   },
   "https://osti.gov/biblio/785403": {
     "usages": [
