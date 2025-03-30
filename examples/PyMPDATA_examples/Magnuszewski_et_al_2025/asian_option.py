@@ -70,8 +70,11 @@ class Settings:
         def call(x):
             return np.maximum(0, x - self.params.K)
 
+        def put(x):
+            return np.maximum(0, self.params.K - x)
+
         rh = np.linspace(A[0] - da / 2, A[-1] + da / 2, len(A) + 1)
-        output = discretised_analytical_solution(rh, call)
+        output = discretised_analytical_solution(rh, put)
         return output
 
 
