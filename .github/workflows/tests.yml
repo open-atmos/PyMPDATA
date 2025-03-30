@@ -192,6 +192,7 @@ jobs:
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/boussinesq_2d_anim.gif /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
+          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/wikipedia_example.gif /home/runner/work/_temp/_github_home/figures
 
       # - if: ${{ failure() }}
       #   uses: mxschmitt/action-tmate@v3
