@@ -40,7 +40,8 @@
     "usages": [
       "README.md",
       "docs/markdown/pympdata_landing.md",
-      "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb"
+      "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb",
+      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
     ],
     "label": "Smolarkiewicz & Margolin 1998 (J. Comp. Phys. 140)",
     "title": "MPDATA: A Finite-Difference Solver for Geophysical Flows"
@@ -85,8 +86,7 @@
   },
   "https://doi.org/10.1137/S106482759324700X": {
     "usages": [
-      "PyMPDATA/options.py",
-      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
+      "PyMPDATA/options.py"
     ],
     "label": "Margolin & Smolarkiewicz 1998 (SIAM J. Sci. Comput. 20)",
     "title": "Antidiffusive Velocities for Multipass Donor Cell Advection"
