@@ -161,7 +161,7 @@
     "label": "Molenkamp 1968 (J. Appl. Meteorol. Climatol. 7)",
     "title": "Accuracy of Finite-Difference Methods Applied to the Advection Equation"
   },
-  "http://doi.org/10.1175/1520-0469(1974)031%3C1500:ACONSO%3E2.0.CO;2": {
+  "https://doi.org/10.1175/1520-0469(1974)031%3C1500:ACONSO%3E2.0.CO;2": {
     "usages": [
       "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
     ],
