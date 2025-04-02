@@ -576,6 +576,8 @@ See [README.md](https://github.com/open-atmos/PyMPDATA/tree/main/README.md).
   https://github.com/igfuw/libmpdataxx
 - AtmosFOAM:
   https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
+- advectionHPCtester (Fortran, CUDA, C preprocessor):
+  https://zenodo.org/records/8178549
 
 # Other Python packages for solving hyperbolic transport equations
 

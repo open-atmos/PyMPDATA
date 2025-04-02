@@ -128,7 +128,6 @@ jobs:
           python -We -c "import PyMPDATA"
           python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
 
-      # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 
@@ -192,6 +191,7 @@ jobs:
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/boussinesq_2d_anim.gif /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
           mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
+          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/wikipedia_example.gif /home/runner/work/_temp/_github_home/figures
 
       # - if: ${{ failure() }}
       #   uses: mxschmitt/action-tmate@v3
