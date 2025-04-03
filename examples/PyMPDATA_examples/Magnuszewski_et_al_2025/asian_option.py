@@ -66,15 +66,20 @@ class Settings:
         self.S_min = S_min
         self.S_max = S_max
 
-    def payoff(self, A: np.ndarray, da: np.float32 = 0):
+    def payoff(self, A: np.ndarray, da: np.float32 = 0, variant="call"):
         def call(x):
             return np.maximum(0, x - self.params.K)
 
         def put(x):
             return np.maximum(0, self.params.K - x)
 
+        if variant == "call":
+            payoff_func = call
+        else:
+            payoff_func = put
+
         rh = np.linspace(A[0] - da / 2, A[-1] + da / 2, len(A) + 1)
-        output = discretised_analytical_solution(rh, put)
+        output = discretised_analytical_solution(rh, payoff_func)
         return output
 
 
@@ -84,13 +89,14 @@ _t = np.nan
 @lru_cache()
 # pylint: disable=too-many-arguments
 def _make_scalar_custom(
-    dim, eps, ats, set_value, halo, dtype, jit_flags, data, inner_or_outer, S_max, dx, T
+    dim, eps, ats, set_value, halo, dtype, jit_flags, data, inner_or_outer
 ):
     @numba.njit(**jit_flags)
     def impl(focus_psi, span, sign):
         focus = focus_psi[0]
         i = min(max(0, focus[inner_or_outer] - halo), span - 1)
         if sign == SIGN_RIGHT:
+            # TODO: reuse the code from Extrapolated (here copy & paste!)
             edg = span + halo - 1 - focus_psi[ARG_FOCUS][dim]
             den = ats(*focus_psi, edg - 1) - ats(*focus_psi, edg - 2)
             nom = ats(*focus_psi, edg) - ats(*focus_psi, edg - 1)
@@ -125,13 +131,14 @@ def _make_scalar_custom(
 
 
 class KemnaVorstBoundaryCondition(Extrapolated):
-    def __init__(self, *, data_left, T, dx, S_max, dim):
+    """eq. (12) in [Kemna & Vorst (1990)](TODO) but without discounting
+    which is embedded in the advectee definition (and applied to the initial condition)
+    """
+
+    def __init__(self, *, data_left, dim):
         super().__init__(dim=dim)
         self.data = tuple(data_left)
         self.inner_or_outer = (INNER, OUTER)[dim]
-        self.S_max = S_max
-        self.dx = dx
-        self.T = T
 
     def make_scalar(self, indexers, halo, dtype, jit_flags, dimension_index):
         return _make_scalar_custom(
@@ -144,14 +151,11 @@ class KemnaVorstBoundaryCondition(Extrapolated):
             jit_flags,
             self.data,
             self.inner_or_outer,
-            S_max=self.S_max,
-            dx=self.dx,
-            T=self.T,
         )
 
 
 class Simulation:
-    def __init__(self, settings, *, nx, ny, nt):
+    def __init__(self, settings, *, nx, ny, nt, variant="call"):
         self.nx = nx
         self.nt = nt
         self.settings = settings
@@ -187,7 +191,7 @@ class Simulation:
 
         # print(f"dx: {self.dx}, dy: {self.dy}, dt: {self.dt}")
 
-        self.payoff = settings.payoff(A=self.A, da=self.dy)
+        self.payoff = settings.payoff(A=self.A, da=self.dy, variant=variant)
 
         options = Options(**OPTIONS)
         stepper = Stepper(options=options, n_dims=2)
@@ -262,14 +266,12 @@ class _Asian(Simulation):
     @cached_property
     def boundary_conditions(self):
         return (
-            KemnaVorstBoundaryCondition(
-                data_left=self.payoff_2d[0, :]
-                * np.exp(-self.settings.params.r * self.settings.params.T),
-                dim=OUTER,
-                dx=self.dx,
-                S_max=self.settings.S_max,
-                T=self.settings.params.T,
-            ),
+            # KemnaVorstBoundaryCondition(
+            #     data_left=self.payoff_2d[0, :]
+            #     * np.exp(-self.settings.params.r * self.settings.params.T),
+            #     dim=OUTER,
+            # ),
+            Extrapolated(OUTER),
             Extrapolated(INNER),
         )
 
@@ -345,16 +347,29 @@ class American(European):
 
 
 def plot_solution(
-    settings, frame_index, ax, history, S_linspace, arithmetic_by_mc, option_type: str
+    settings,
+    frame_index,
+    ax,
+    history,
+    S_linspace,
+    arithmetic_by_mc,
+    option_type: str,
+    variant,
 ):
     params = {
         k: v for k, v in settings.params.__dict__.items() if not k.startswith("K")
     }
+    if variant == "call":
+        BS_price_func = Black_Scholes_1973.c_euro
+        geometric_price_func = asian_analytic.geometric_asian_average_price_c
+    else:
+        BS_price_func = Black_Scholes_1973.p_euro
+        geometric_price_func = asian_analytic.geometric_asian_average_price_p
 
     ax.plot(
         S_linspace,
         (
-            Black_Scholes_1973.c_euro(
+            BS_price_func(
                 S=S_linspace, K=settings.params.K, **params, b=settings.params.r
             )
         ),
@@ -364,7 +379,7 @@ def plot_solution(
     ax.plot(
         S_linspace,
         (
-            asian_analytic.geometric_asian_average_price_c(
+            geometric_price_func(
                 S=S_linspace, K=settings.params.K, **params, dividend_yield=0
             )
         ),
@@ -402,6 +417,6 @@ def plot_difference_arithmetic(
     ax.grid()
     ax.set_title(f"instrument parameters: {settings.params.__dict__}")
     ax.set_xlabel("underlying S(t=0)=A(t=0) (and A(T) for terminal condition)")
-    ax.set_ylabel("option price")
+    ax.set_ylabel("option price error")
     ax.set_yscale("log")
     ax.set_ylim(0, 100)
