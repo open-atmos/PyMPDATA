@@ -21,10 +21,11 @@ class Settings:
         self.l2_opt = l2_opt
         self.C_opt = C_opt
 
+    def terminal_condition(self, S: np.ndarray):
+        return np.exp(-self.r * self.T) * self.payoff(S)
+
     def payoff(self, S: np.ndarray):
-        return np.exp(-self.r * self.T) * (
-            np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
-        )
+        return np.maximum(0, self.K2 - S) - np.maximum(0, self.K1 - S)
 
     def analytical_solution(self, S: np.ndarray):
         return BS73.p_euro(
