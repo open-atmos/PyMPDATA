@@ -1,4 +1,4 @@
-""" common base class for MPI boundary conditions """
+"""common base class for MPI boundary conditions"""
 
 from PyMPDATA_MPI.impl.boundary_condition_commons import make_scalar_boundary_condition
 

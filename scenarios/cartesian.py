@@ -1,4 +1,4 @@
-""" 2D constant-advector carthesian example """
+"""2D constant-advector carthesian example"""
 
 import numba
 import numpy as np

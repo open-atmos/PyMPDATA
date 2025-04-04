@@ -1,7 +1,9 @@
-""" test for asserting equivalence of results from single node environment and multi-node one """
+"""test for asserting equivalence of results from single node environment and multi-node one"""
 
 import os
+import platform
 import shutil
+import sys
 from pathlib import Path
 
 import numba
@@ -53,7 +55,8 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
     n_threads,
     courant_field_multiplier,
     output_steps,
-    grid=(64, 32),  # TODO #101
+    grid=(64, 32),
+    request,  # TODO #101  # pylint: disable=unused-argument
 ):
     """
     Test is divided into three logical stages.
@@ -81,6 +84,20 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
 
     if n_threads > 1 and numba.config.DISABLE_JIT:  # pylint: disable=no-member
         pytest.skip("threading requires Numba JIT to be enabled")
+
+    # pylint: disable=too-many-boolean-expressions
+    if (
+        mpi_dim == INNER
+        and sys.platform == "darwin"
+        and not platform.machine() == "arm64"
+        and options_kwargs.get("nonoscillatory", False)
+        and not numba.config.DISABLE_JIT  # pylint: disable=no-member
+        and mpi.size() > 1
+        and n_threads == 1
+        and mpi.rank() != 0
+    ):
+        pass
+        # request.node.add_marker(pytest.mark.xfail(reason="TODO #162", strict=True))
 
     plot = (
         "CI_PLOTS_PATH" in os.environ

@@ -2,11 +2,9 @@
 """
 PyMPDATA + numba-mpi coupler sandbox
 """
-
-from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, VersionConflict):
-    # package is not installed
+    __version__ = version(__name__)
+except PackageNotFoundError:
     pass

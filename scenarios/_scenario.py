@@ -1,4 +1,4 @@
-""" Provides base _Scenario base class that every scenario should inherit """
+"""Provides base _Scenario base class that every scenario should inherit"""
 
 from PyMPDATA import Solver
 from PyMPDATA.impl.enumerations import INNER, OUTER

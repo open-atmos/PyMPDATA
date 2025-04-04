@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Linting
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - uses: mpi4py/setup-mpi@v1
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: mpi4py/setup-mpi@v1
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Install dependencies
@@ -88,12 +88,14 @@ jobs:
   tests_setup:
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12]
+        platform: [macos-13, macos-14, ubuntu-latest]
         mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
         exclude:
           # as of time of writing, mpi4py/setup-mpi does not support it
-          - platform: macos-12
+          - platform: macos-13
+            mpi: intelmpi
+          - platform: macos-14
             mpi: intelmpi
 
           # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
@@ -101,13 +103,19 @@ jobs:
             mpi: intelmpi
 
           # https://github.com/Homebrew/homebrew-core/issues/26974
-          - platform: macos-12
+          - platform: macos-13
             mpi: mpich
-
+          - platform: macos-14
+            mpi: mpich
+            
+          # HDF5_MPI expects arm architecture with python 3.12 on macos
+          - platform: macos-13
+            python-version: '3.12'
+            
     runs-on: ${{ matrix.platform }}
     steps:
         - uses: actions/checkout@v2
-        - uses: actions/setup-python@v1
+        - uses: actions/setup-python@v5
           with:
             python-version: ${{ matrix.python-version }}
         - run: |
@@ -135,12 +143,12 @@ jobs:
             echo HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/mpich >> $GITHUB_ENV
             echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
         - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'macos-')
-          run: | 
-            brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+          run: |
+            brew install hdf5-mpi && echo HDF5_DIR="$(brew --cellar hdf5-mpi)/$(brew list --versions hdf5-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_ENV
             sysctl -a | grep cpu | grep hw
         - if: steps.cache.outputs.cache-hit != 'true'
           run: |
-            HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.10.0
+            HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.13.0
             pip install -e .[tests]
         - run: pip show numpy
         - id: cache-save
@@ -149,19 +157,21 @@ jobs:
           with:
             path: ${{ env.pip_user_site }}
             key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
-
+      
   tests:
     needs: [zenodo_json, pylint, pdoc, precommit, tests_setup]
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-12]
+        platform: [macos-13, macos-14, ubuntu-latest]
         mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
         disable-jit: [1, 0]
         mpi-np: [1, 2, 3]
         exclude:
           # as of time of writing, mpi4py/setup-mpi does not support it
-          - platform: macos-12
+          - platform: macos-13
+            mpi: intelmpi
+          - platform: macos-14
             mpi: intelmpi
 
           # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
@@ -169,16 +179,22 @@ jobs:
             mpi: intelmpi
 
           # https://github.com/Homebrew/homebrew-core/issues/26974
-          - platform: macos-12
+          - platform: macos-13
             mpi: mpich
-
+          - platform: macos-14
+            mpi: mpich
+            
+          # HDF5_MPI expects arm architecture with python 3.12 on macos
+          - platform: macos-13
+            python-version: '3.12'
+            
       fail-fast: false
 
     runs-on: ${{ matrix.platform }}
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - run: |
@@ -196,9 +212,13 @@ jobs:
       - if: matrix.mpi == 'mpich'
         run: echo _ch="ch" >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'ubuntu-')
-        run: sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
+        run: |
+          sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
+          echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'macos-')
         run: brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+      - if: matrix.platform == 'macos-14'
+        run: echo DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH >> $GITHUB_ENV
       - run: python -We -c "import PyMPDATA_MPI"
       - if: matrix.mpi == 'openmpi'
         run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
@@ -226,14 +246,15 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
-
+      # - if: ${{ failure() }} && matrix.platform == "macos-14"
+      #   uses: mxschmitt/action-tmate@v3
   package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
@@ -295,7 +316,7 @@ jobs:
           merge-multiple: true
           path: plots
       - run: |
-          sudo apt install -y librsvg2-bin
+          sudo apt install -y librsvg2-bin graphicsmagick-imagemagick-compat
           for scenario in ./plots/${{ env.animation_run }}/*; do
               for test_plots in $scenario/*; do
                   if [ ! $(find "$test_plots" -maxdepth 0 -empty | wc -l) -eq 1 ]; then

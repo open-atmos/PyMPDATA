@@ -1,4 +1,4 @@
-""" polar boundary condition logic """
+"""polar boundary condition logic"""
 
 from functools import lru_cache
 
