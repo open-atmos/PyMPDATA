@@ -41,7 +41,8 @@
       "README.md",
       "docs/markdown/pympdata_landing.md",
       "examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb",
-      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
+      "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb",
+      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb"
     ],
     "label": "Smolarkiewicz & Margolin 1998 (J. Comp. Phys. 140)",
     "title": "MPDATA: A Finite-Difference Solver for Geophysical Flows"
