@@ -157,6 +157,7 @@
   "https://doi.org/10.1175/1520-0450%281968%29007%3C0160:AOFDMA%3E2.0.CO;2": {
     "usages": [
       "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py",
+      "examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb",
       "examples/PyMPDATA_examples/wikipedia_example/demo.ipynb"
     ],
     "label": "Molenkamp 1968 (J. Appl. Meteorol. Climatol. 7)",
