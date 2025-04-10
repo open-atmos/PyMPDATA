@@ -105,7 +105,7 @@ jobs:
     needs: [ precommit, pylint, zenodo_json, devops ]
     runs-on: ubuntu-latest
     env:
-      NUMBA_ALWAYS_WARN_UNINIT_VAR=1
+      NUMBA_ALWAYS_WARN_UNINIT_VAR: 1
     steps:
       - uses: actions/checkout@master
         with:
