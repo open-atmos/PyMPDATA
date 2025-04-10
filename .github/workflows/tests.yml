@@ -101,9 +101,27 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
+  numba_always_warn_uninit:
+    needs: [ precommit, pylint, zenodo_json, devops ]
+    runs-on: ubuntu-latest
+    env:
+      NUMBA_ALWAYS_WARN_UNINIT_VAR=1
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: actions/setup-python@v5.2.0
+        with:
+          python-version: 3.12
+      - name: Run tests
+        run: |
+          pip install -e .[tests] -e ./examples
+          pytest --durations=10 -We -x --capture=tee-sys tests/unit_tests
+          
   tests:
     timeout-minutes: 120
-    needs: [nojit_and_codecov]
+    needs: [nojit_and_codecov, numba_always_warn_uninit]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
