@@ -78,8 +78,8 @@ class Settings:
         else:
             payoff_func = put
 
-        rh = np.linspace(A[0] - da / 2, A[-1] + da / 2, len(A) + 1)
-        output = discretised_analytical_solution(rh, payoff_func)
+        self.rh = np.linspace(A[0] - da / 2, A[-1] + da / 2, len(A) + 1)
+        output = discretised_analytical_solution(self.rh, payoff_func)
         return output
 
 
@@ -355,15 +355,18 @@ def plot_solution(
     arithmetic_by_mc,
     option_type: str,
     variant,
+    A_space,
 ):
     params = {
         k: v for k, v in settings.params.__dict__.items() if not k.startswith("K")
     }
     if variant == "call":
         BS_price_func = Black_Scholes_1973.c_euro
+        Amer_price_func = Bjerksund_and_Stensland_1993.c_amer
         geometric_price_func = asian_analytic.geometric_asian_average_price_c
     else:
         BS_price_func = Black_Scholes_1973.p_euro
+        Amer_price_func = Bjerksund_and_Stensland_1993.p_amer
         geometric_price_func = asian_analytic.geometric_asian_average_price_p
 
     ax.plot(
@@ -374,8 +377,18 @@ def plot_solution(
             )
         ),
         label="European analytic (Black-Scholes '73)",
-        linestyle=":",
+        linestyle="--",
+        alpha=0.5,
     )
+    # ax.plot(
+    #     S_linspace,
+    #     (
+    #         Amer_price_func(
+    #             S=S_linspace, K=settings.params.K, **params, b=settings.params.r
+    #         )
+    #     ),
+    #     label="American analytic (Bjerksund & Stensland '93)", linestyle='--'
+    # )
     ax.plot(
         S_linspace,
         (
@@ -387,12 +400,22 @@ def plot_solution(
         alpha=0.5,
         linestyle="--",
     )
-
-    ax.plot(S_linspace, arithmetic_by_mc, label="Asian arithmetic by Monte-Carlo")
+    ax.plot(
+        S_linspace,
+        arithmetic_by_mc,
+        label="Asian arithmetic by Monte-Carlo",
+        linestyle=":",
+    )
     ax.plot(
         S_linspace,
         history[frame_index][:, 0],
         label=f"MPDATA solution ({option_type})",
+        marker=".",
+    )
+    ax.plot(
+        A_space,
+        history[0][0, :],
+        label=f"Terminal condition (discounted payoff)",
         marker=".",
     )
     ax.legend(loc="upper right")
@@ -401,8 +424,9 @@ def plot_solution(
     span = minmax[1] - minmax[0]
     ax.set_ylim(minmax[0] - 0.05 * span, minmax[1] + 0.25 * span)
     ax.set_title(f"instrument parameters: {settings.params.__dict__}")
-    ax.set_xlabel("underlying S(t=0)=A(t=0) (and A(T) for terminal condition)")
-    ax.set_ylabel("option price")
+    # ax.set_xlabel("underlying S(t=0)=A(t=0) (and A(T) for terminal condition)")
+    ax.set_xlabel("average at t=T for payoff, spot at t=0 for other datasets")
+    ax.set_ylabel("value")
 
 
 def plot_difference_arithmetic(
