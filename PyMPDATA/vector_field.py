@@ -3,8 +3,10 @@ vector field abstractions for the staggered grid
 """
 
 import inspect
+import warnings
 
 import numpy as np
+from numba import NumbaExperimentalFeatureWarning
 
 from PyMPDATA.boundary_conditions.constant import Constant
 from PyMPDATA.impl.enumerations import (
@@ -110,3 +112,18 @@ class VectorField(Field):
             ),
             traversals,
         )
+
+    def _debug_fill_halos(self, traversals, threads):
+        meta_and_data, fill_halos_fun = self.impl
+        meta_and_data = (
+            meta_and_data[0],
+            (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
+        )
+        # pylint:disable=protected-access
+        sut = traversals._code["fill_halos_vector"]
+        with warnings.catch_warnings():
+            warnings.simplefilter(
+                action="ignore", category=NumbaExperimentalFeatureWarning
+            )
+            for thread_id in threads:
+                sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
