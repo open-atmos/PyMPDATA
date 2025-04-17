@@ -3,6 +3,7 @@ scalar field abstractions for the staggered grid
 """
 
 import inspect
+import warnings
 
 import numpy as np
 
@@ -10,6 +11,7 @@ from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl.enumerations import INVALID_INIT_VALUE, IMPL_META_AND_DATA, IMPL_BC
 from PyMPDATA.impl.field import Field
 
+from numba import NumbaExperimentalFeatureWarning
 
 class ScalarField(Field):
     """n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc."""
@@ -62,8 +64,10 @@ class ScalarField(Field):
             ),
             traversals,
         )
-    def _fill_halos(self, traversals):
-        f = traversals._code["fill_halos_scalar"]
-        buf = traversals.data.buffer
-        #TODO: assert n_threads == 1
-        f(0, *self.impl[IMPL_META_AND_DATA], self.impl[IMPL_BC], buf)
+    def _debug_fill_halos(self, traversals, threads):
+        meta_and_data, fill_halos_fun = self.impl
+        sut = traversals._code["fill_halos_scalar"]
+        with warnings.catch_warnings():
+            warnings.simplefilter(action="ignore", category=NumbaExperimentalFeatureWarning)
+            for thread_id in threads:
+                sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)

@@ -1,8 +1,8 @@
 """
 vector field abstractions for the staggered grid
 """
-
 import inspect
+import warnings
 
 import numpy as np
 
@@ -20,6 +20,7 @@ from PyMPDATA.impl.enumerations import (
 from PyMPDATA.impl.field import Field
 from PyMPDATA.scalar_field import ScalarField
 
+from numba import NumbaExperimentalFeatureWarning
 
 class VectorField(Field):
     """n-component n-dimensional vector field including halo data,
@@ -112,12 +113,14 @@ class VectorField(Field):
             ),
             traversals,
         )
-    def _fill_halos(self, traversals):
-        f = traversals._code["fill_halos_vector"]
-        #TODO: assert n_threads == 1
-        buf = traversals.data.buffer
-        f(0, self.impl[IMPL_META_AND_DATA][0], (
-            self.impl[IMPL_META_AND_DATA][1],
-            self.impl[IMPL_META_AND_DATA][2],
-            self.impl[IMPL_META_AND_DATA][3],
-        ), self.impl[IMPL_BC], buf)
+    def _debug_fill_halos(self, traversals, threads):
+        meta_and_data, fill_halos_fun = self.impl
+        meta_and_data = (
+            meta_and_data[0],
+            (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
+        )
+        sut = traversals._code["fill_halos_vector"]
+        with warnings.catch_warnings():
+            warnings.simplefilter(action="ignore", category=NumbaExperimentalFeatureWarning)
+            for thread_id in threads:
+                sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
