@@ -108,5 +108,6 @@ class Simulation:
 
         return self.solvers[n_iters].advectee.get()
 
-    def terminal_value(self):
+    def state(self):
+        """returns the state for MPDATA solution"""
         return self.solvers[1].advectee.get()
