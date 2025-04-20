@@ -10,31 +10,42 @@ from PyMPDATA.impl.traversals import Traversals
 JIT_FLAGS = Options().jit_flags
 
 
-def assert_slice_size(s: slice, halo):
-    if s.stop is None:
-        if abs(s.start) != halo and abs(s.start) != halo - 1:
+def assert_slice_size(used_slice: slice, halo):
+    if used_slice.stop is None:
+        if abs(used_slice.start) != halo and abs(used_slice.start) != halo - 1:
             raise AssertionError("Slice and halo size mismatch")
-    elif s.stop is not None:
-        if abs(s.stop - s.start) != halo and abs(s.stop - s.start) != halo - 1:
+    elif used_slice.stop is not None:
+        if (
+            abs(used_slice.stop - used_slice.start) != halo
+            and abs(used_slice.stop - used_slice.start) != halo - 1
+        ):
             raise AssertionError("Slice and halo size mismatch")
     else:
         assert False
 
 
-def assert_array_not_equal(a, b):
-    return np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, a, b)
+def assert_array_not_equal(arr_a, arr_b):
+    return np.testing.assert_raises(
+        AssertionError, np.testing.assert_array_equal, arr_a, arr_b
+    )
 
 
-@pytest.mark.parametrize("bc", (Periodic(),))
+@pytest.mark.parametrize("boundary_condition", (Periodic(),))
 @pytest.mark.parametrize("n_threads", (1, 2))
 @pytest.mark.parametrize("halo", (1, 2, 3))
 @pytest.mark.parametrize(
     "field_factory",
     (
-        lambda halo, bc: ScalarField(np.zeros(3), halo, bc),  # 1d
-        lambda halo, bc: VectorField((np.zeros(3),), halo, bc),  # 1d
-        lambda halo, bc: ScalarField(np.zeros((3, 3)), halo, bc),  # 2d
-        lambda halo, bc: VectorField(
+        lambda halo, boundary_condition: ScalarField(
+            np.zeros(3), halo, boundary_condition
+        ),  # 1d
+        lambda halo, boundary_condition: VectorField(
+            (np.zeros(3),), halo, boundary_condition
+        ),  # 1d
+        lambda halo, boundary_condition: ScalarField(
+            np.zeros((3, 3)), halo, boundary_condition
+        ),  # 2d
+        lambda halo, boundary_condition: VectorField(
             (
                 np.zeros(
                     (4, 3),
@@ -44,13 +55,13 @@ def assert_array_not_equal(a, b):
                 ),
             ),
             halo,
-            bc,
+            boundary_condition,
         ),  # 2d
     ),
 )
-def test_explicit_fill_halos(field_factory, halo, bc, n_threads):
+def test_explicit_fill_halos(field_factory, halo, boundary_condition, n_threads):
     # arange
-    field = field_factory(halo, (bc, bc))
+    field = field_factory(halo, (boundary_condition, boundary_condition))
     if len(field.grid) == 1 and n_threads > 1:
         pytest.skip("Skip 1D tests with n_threads > 1")
     traversals = Traversals(
@@ -69,8 +80,8 @@ def test_explicit_fill_halos(field_factory, halo, bc, n_threads):
         left_edge = slice(halo, 2 * halo)
         right_edge = slice(-2 * halo, -halo)
         slices = [left_halo, right_halo, left_edge, right_edge]
-        for s in slices:
-            assert_slice_size(s, halo)
+        for slice_to_check in slices:
+            assert_slice_size(slice_to_check, halo)
         data = field.data
     elif isinstance(field, VectorField):
         if field.get_component(0)[:].ndim > 1:
