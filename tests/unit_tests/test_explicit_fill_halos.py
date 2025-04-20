@@ -26,7 +26,7 @@ def assert_array_not_equal(a, b):
 
 
 @pytest.mark.parametrize("bc", (Periodic(),))
-@pytest.mark.parametrize("n_threads", (1,))
+@pytest.mark.parametrize("n_threads", (1, 2))
 @pytest.mark.parametrize("halo", (1, 2, 3))
 @pytest.mark.parametrize(
     "field_factory",
@@ -51,6 +51,8 @@ def assert_array_not_equal(a, b):
 def test_explicit_fill_halos(field_factory, halo, bc, n_threads):
     # arange
     field = field_factory(halo, (bc, bc))
+    if len(field.grid) == 1 and n_threads > 1:
+        pytest.skip("Skip 1D tests with n_threads > 1")
     traversals = Traversals(
         grid=field.grid,
         halo=halo,
@@ -77,7 +79,7 @@ def test_explicit_fill_halos(field_factory, halo, bc, n_threads):
         else:
             field.get_component(0)[:] = np.arange(1, field.grid[0] + 2)
         if halo == 1:
-            pytest.skip()
+            pytest.skip("Skip VectorField test if halo == 1")
         left_halo = slice(0, halo - 1)
         right_halo = slice(-(halo - 1), None)
         left_edge = slice(halo, 2 * (halo - 1) + 1)
