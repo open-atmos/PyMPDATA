@@ -1,4 +1,4 @@
-# pylint:disable=missing-module-docstring,missing-function-docstring
+# pylint:disable=missing-module-docstring,missing-function-docstring,duplicate-code
 import numpy as np
 import pytest
 
@@ -96,8 +96,8 @@ def test_explicit_fill_halos(field_factory, halo, boundary_condition, n_threads)
         left_edge = slice(halo, 2 * (halo - 1) + 1)
         right_edge = slice(-2 * (halo - 1) - 1, -(halo - 1) - 1)
         slices = [left_halo, right_halo, left_edge, right_edge]
-        for s in slices:
-            assert_slice_size(s, halo)
+        for slice_to_check in slices:
+            assert_slice_size(slice_to_check, halo)
         data = field.data[0]
     else:
         assert False
