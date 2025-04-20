@@ -121,6 +121,7 @@ class VectorField(Field):
         )
         # pylint:disable=protected-access
         sut = traversals._code["fill_halos_vector"]
+        # pylint:disable=duplicate-code
         with warnings.catch_warnings():
             warnings.simplefilter(
                 action="ignore", category=NumbaExperimentalFeatureWarning

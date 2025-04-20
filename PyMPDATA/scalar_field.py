@@ -69,6 +69,7 @@ class ScalarField(Field):
         meta_and_data, fill_halos_fun = self.impl
         # pylint:disable=protected-access
         sut = traversals._code["fill_halos_scalar"]
+        # pylint:disable=duplicate-code
         with warnings.catch_warnings():
             warnings.simplefilter(
                 action="ignore", category=NumbaExperimentalFeatureWarning
