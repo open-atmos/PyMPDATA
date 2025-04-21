@@ -23,14 +23,9 @@ CI = "CI" in os.environ
 _32bit = platform.architecture()[0] == "32bit"
 
 setup(
-    name="PyMPDATA",
+    name="pympdata",
     description="Numba-accelerated Pythonic implementation of MPDATA "
     "with examples in Python, Julia, Rust and Matlab",
-    use_scm_version={
-        "local_scheme": "no-local-version",
-        "version_scheme": "post-release",
-    },
-    setup_requires=["setuptools_scm"],
     install_requires=[
         "numba"
         + (
@@ -79,11 +74,13 @@ setup(
             ),
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
+            "ipykernel" + ("<6.22.0" if CI else ""),
             "ghapi",
             "pytest",
             "pytest-benchmark",
             "joblib" + ("==1.4.0" if CI else ""),
             "imageio",
+            "nbformat",
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",

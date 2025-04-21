@@ -1,4 +1,4 @@
-""" halo-filling logic for vector field traversals (incl. multi-threading) """
+"""halo-filling logic for vector field traversals (incl. multi-threading)"""
 
 # pylint: disable=too-many-statements,too-many-locals,too-many-lines,too-many-function-args,too-many-arguments
 
@@ -88,7 +88,7 @@ def __make_outer_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
         if first_thread:
             i_rng = range(
                 halos[OUTER][OUTER] - 1, -1, -1
-            )  # note: non-reverse order assumed in Extrapolated
+            )  # note: reverse order assumed in Extrapolated
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
             k_rng = range(0, span[INNER] + 2 * halos[OUTER][INNER])
             fun(
@@ -182,7 +182,9 @@ def __make_outer_mid3d(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
 def __make_outer_inner(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs):
     @numba.njit(**jit_flags)
     def outer_inner_left_k(span, components, dim, fun, i, j, buffer):
-        k_rng = range(0, halos[OUTER][INNER])
+        k_rng = range(
+            halos[OUTER][INNER] - 1, -1, -1
+        )  # note: reverse order assumed in Extrapolated
         fun(buffer, i, j, k_rng, components, dim, span[INNER], SIGN_LEFT)
 
     @numba.njit(**jit_flags)
@@ -368,7 +370,9 @@ def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
         first_thread, _last_thread, span, components, dim, fun, buffer
     ):
         if first_thread:
-            i_rng = range(0, halos[INNER][OUTER])
+            i_rng = range(
+                halos[INNER][OUTER] - 1, -1, -1
+            )  # note: reverse order assumed in Extrapolated
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
             k_rng = range(
                 0,
@@ -384,7 +388,7 @@ def __make_inner_outer(*, jit_flags, halo, n_dims, halos, left_first, **_kwargs)
         if last_thread:
             i_rng = range(
                 span[OUTER] + halos[INNER][OUTER], span[OUTER] + 2 * halos[INNER][OUTER]
-            )
+            )  # note: non-reverse order assumed in Extrapolated
             j_rng = range(0, span[MID3D] + 2 * halo) if n_dims > 2 else (INVALID_INDEX,)
             k_rng = range(
                 0,

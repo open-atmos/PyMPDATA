@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/open-atmos/PyMPDATA/main/.github/pympdata_logo.svg" width=100 height=113 alt="pympdata logo">
 # Introduction
-PyMPDATA is a high-performance Numba-accelerated Pythonic implementation of the MPDATA
+PyMPDATA is a high-performance [Numba-accelerated](https://doi.org/10.1145/2833157.2833162) Pythonic implementation of the MPDATA
   algorithm of [Smolarkiewicz et al.](https://doi.org/10.1016%2F0021-9991%2884%2990121-9)
   used in geophysical fluid dynamics and beyond.
 MPDATA numerically solves generalised transport equations -
@@ -62,7 +62,7 @@ of instantiation using the following keyword arguments of the constructor
 - ``dtype: np.floating = np.float64``: floating point precision
 
 For a discussion of the above options, see e.g., [Smolarkiewicz & Margolin 1998](https://doi.org/10.1006/jcph.1998.5901),
-[Jaruga, Arabas et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015) and [Olesik, Arabas et al. 2020](https://arxiv.org/abs/2011.14726)
+[Jaruga, Arabas et al. 2015](https://doi.org/10.5194/gmd-8-1005-2015) and [Olesik et al. 2020](https://doi.org/10.5194/gmd-15-3879-2022)
 (the last with examples using PyMPDATA).
 
 In most use cases of PyMPDATA, the first thing to do is to instantiate the
@@ -576,6 +576,8 @@ See [README.md](https://github.com/open-atmos/PyMPDATA/tree/main/README.md).
   https://github.com/igfuw/libmpdataxx
 - AtmosFOAM:
   https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
+- advectionHPCtester (Fortran, CUDA, C preprocessor):
+  https://zenodo.org/records/8178549
 
 # Other Python packages for solving hyperbolic transport equations
 

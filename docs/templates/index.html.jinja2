@@ -32,15 +32,22 @@
     <div style="padding-top: 2em">
         <h2>What is PyMPDATA?</h2>
         <p>
-            <img align="right" src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif">
+            <div style="float:right; width:25%">
+                <img width="100%" src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.3_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif">
+                <br />
+                <br />
+                <img width="100%" src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/boussinesq_2d_anim.gif">
+            </div>
             PyMPDATA is a <b><a href="https://numba.pydata.org">Numba-accelerated</a></b> <mark>multi-threaded</mark> Pythonic implementation of the 
             <b>MPDATA algorithm</b> of <a href="https://doi.org/10.1016/0021-9991(84)90121-9">Smolarkiewicz et al.</a> used in 
             <mark>geophysical fluid dynamics</mark> and beyond for
             <b>numerically solving generalised <mark>convection-diffusion PDEs</mark></b>.
             PyMPDATA supports integration in 1D, 2D and 3D structured meshes
               with optional coordinate transformations.
-            The animation shown depicts a "hello-world" 2D advection-only simulation
+            The first animation shown depicts a "hello-world" 2D advection-only simulation
               with dotted lines indicating <mark>domain decomposition</mark> across three threads.
+            The second animation depicts an MPDATA solution to coupled mass and momentum conservation equations
+              for a buoyancy-driven flow in Boussinesq approximation (see <a href="/PyMPDATA/PyMPDATA_examples/Jaruga_et_al_2015.html">Jaruga et al. 2015</a> example). 
         </p>
         <p>
             A separate project called <b><a href="https://github.com/open-atmos/PyMPDATA-MPI">PyMPDATA-MPI</a></b> depicts how 
@@ -172,12 +179,20 @@ jupyter-notebook PyMPDATA/examples</code></pre>
         </p>
         <p>
           Development of PyMPDATA was supported by:
-          <ul>
+        </p>
+         <ul style="list-style:square;">
             <li><a href="https://www.fnp.org.pl/en/">Foundation for Polish Science</a> (grant no. POIR.04.04.00-00-5E1C/18 co-financed by the European Union under the European Regional Development Fund)</li>
             <li><a href="https://ncn.gov.pl/en">Polish National Science Centre</a> (grant no. 2020/39/D/ST10/01220)</li>
           </ul>
-        </p>
     </div>
+    <div>
+        <h2>Bibliography with code cross-references</h2>
+        <p>
+            The list below summarises all literature references included in PyMPDATA codebase and includes links to both the referenced papers, as well as to the referring PyMPDATA source files.
+        </p>
+        {% include "bibliography.html" %}
+        <h2>EOF</h2>
+        </div>
     </main>
-    {% include "search.html.jinja2" %}
+{#    {% include "search.html.jinja2" %}#}
 {% endblock %}
