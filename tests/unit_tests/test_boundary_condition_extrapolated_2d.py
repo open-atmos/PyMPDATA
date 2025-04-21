@@ -1,14 +1,11 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
-import warnings
 
 import numpy as np
 import pytest
-from numba import NumbaExperimentalFeatureWarning
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Constant, Extrapolated
 from PyMPDATA.impl.enumerations import MAX_DIM_NUM
-from PyMPDATA.impl.field import Field
 from PyMPDATA.impl.traversals import Traversals
 from tests.unit_tests.quick_look import quick_look
 
@@ -48,9 +45,9 @@ class TestBoundaryConditionExtrapolated2D:
 
         # act / plot
         quick_look(advectee, plot)
-        advectee._debug_fill_halos(
+        advectee._debug_fill_halos(  # pylint:disable=protected-access
             traversals, range(n_threads)
-        )  # pylint:disable=protected-access
+        )
         quick_look(advectee, plot)
 
         # assert
@@ -91,9 +88,9 @@ class TestBoundaryConditionExtrapolated2D:
 
         # act / plot
         quick_look(advector, plot)
-        advector._debug_fill_halos(
+        advector._debug_fill_halos(  # pylint:disable=protected-access
             traversals, range(n_threads)
-        )  # pylint:disable=protected-access
+        )
         quick_look(advector, plot)
 
         # assert
