@@ -2,7 +2,10 @@
  `PyMPDATA.vector_field.VectorField` classes """
 
 import abc
+import warnings
 from collections import namedtuple
+
+from numba import NumbaExperimentalFeatureWarning
 
 from PyMPDATA.boundary_conditions.constant import Constant
 
@@ -120,3 +123,22 @@ class Field:
         n_dims: int, traversals
     ):  # pylint: disable=missing-function-docstring
         raise NotImplementedError()
+
+    def _debug_fill_halos(self, traversals, n_threads):
+        meta_and_data, fill_halos_fun = self.impl
+        if self.__class__.__name__ == "VectorField":
+            meta_and_data = (
+                meta_and_data[0],
+                (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
+            )
+        sut = traversals._code[  # pylint:disable=protected-access
+            {"ScalarField": "fill_halos_scalar", "VectorField": "fill_halos_vector"}[
+                self.__class__.__name__
+            ]
+        ]
+        with warnings.catch_warnings():
+            warnings.simplefilter(
+                action="ignore", category=NumbaExperimentalFeatureWarning
+            )
+            for thread_id in n_threads:
+                sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
