@@ -15,25 +15,6 @@ from tests.unit_tests.quick_look import quick_look
 JIT_FLAGS = Options().jit_flags
 
 
-def fill_halos(field: Field, traversals: Traversals, threads):
-    field.assemble(traversals)
-    meta_and_data, fill_halos_fun = field.impl
-    if isinstance(field, VectorField):
-        meta_and_data = (
-            meta_and_data[0],
-            (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
-        )
-    sut = traversals._code[  # pylint:disable=protected-access
-        {"ScalarField": "fill_halos_scalar", "VectorField": "fill_halos_vector"}[
-            field.__class__.__name__
-        ]
-    ]
-    with warnings.catch_warnings():
-        warnings.simplefilter(action="ignore", category=NumbaExperimentalFeatureWarning)
-        for thread_id in threads:
-            sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
-
-
 class TestBoundaryConditionExtrapolated2D:
     @staticmethod
     @pytest.mark.parametrize("n_threads", (1, 2))
@@ -67,7 +48,9 @@ class TestBoundaryConditionExtrapolated2D:
 
         # act / plot
         quick_look(advectee, plot)
-        fill_halos(advectee, traversals, threads=range(n_threads))
+        advectee._debug_fill_halos(
+            traversals, range(n_threads)
+        )  # pylint:disable=protected-access
         quick_look(advectee, plot)
 
         # assert
@@ -108,7 +91,9 @@ class TestBoundaryConditionExtrapolated2D:
 
         # act / plot
         quick_look(advector, plot)
-        fill_halos(advector, traversals, threads=range(n_threads))
+        advector._debug_fill_halos(
+            traversals, range(n_threads)
+        )  # pylint:disable=protected-access
         quick_look(advector, plot)
 
         # assert
