@@ -33,7 +33,6 @@ class TestBoundaryConditionExtrapolated2D:
             boundary_conditions=boundary_conditions,
             halo=n_halo,
         )
-
         traversals = Traversals(
             grid=advectee.grid,
             halo=n_halo,
@@ -42,6 +41,7 @@ class TestBoundaryConditionExtrapolated2D:
             left_first=tuple([True] * MAX_DIM_NUM),
             buffer_size=0,
         )
+        advectee.assemble(traversals)
 
         # act / plot
         quick_look(advectee, plot)
@@ -85,6 +85,7 @@ class TestBoundaryConditionExtrapolated2D:
             left_first=tuple([True] * MAX_DIM_NUM),
             buffer_size=0,
         )
+        advector.assemble(traversals)
 
         # act / plot
         quick_look(advector, plot)
