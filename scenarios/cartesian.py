@@ -3,7 +3,7 @@
 import numba
 import numpy as np
 from matplotlib import pyplot
-from PyMPDATA import ScalarField, Stepper, VectorField
+from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.enumerations import INNER, OUTER
@@ -70,9 +70,9 @@ class CartesianScenario(_Scenario):
             * 2  # for complex dtype
             * (2 if mpi_dim == OUTER else n_threads),
         )
-        super().__init__(
-            mpi_dim=mpi_dim, stepper=stepper, advectee=advectee, advector=advector
-        )
+        solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
+
+        super().__init__(mpi_dim=mpi_dim, solver=solver)
 
     @staticmethod
     def initial_condition(xi, yi, grid):
