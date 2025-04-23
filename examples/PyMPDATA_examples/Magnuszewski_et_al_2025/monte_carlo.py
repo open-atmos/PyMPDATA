@@ -50,6 +50,7 @@ class PathDependentOption:
         self.model = model
         self.N = N
         self.payoff: Callable[[np.ndarray], float] = lambda path: 0.0
+        self.std = 0
 
     @cached_property
     def price_by_mc(self):
@@ -63,11 +64,16 @@ class PathDependentOption:
         @jit
         def body():
             sum_ct = 0.0
+            sum_sq = 0.0
             path = np.empty(M)
             for _ in range(N):
                 model_generate_path(path)
-                sum_ct += payoff(path)
-            return np.exp(-model_r * T) * (sum_ct / N)
+                partial_payoff = payoff(path)
+                sum_ct += partial_payoff
+                sum_sq += partial_payoff**2
+            return np.exp(-model_r * T) * (sum_ct / N), np.exp(-model_r * T) * np.sqrt(
+                (sum_sq / N) - (sum_ct / N) ** 2
+            )
 
         return body
 
