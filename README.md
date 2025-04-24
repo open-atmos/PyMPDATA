@@ -99,17 +99,20 @@ In this example, two corrective MPDATA iterations are employed.
 </p>
 
 ### Shallow Water Scenario 
-The Shallow Water Scenario is based on a numerical test case from [Jarecka et al. 2015](https://doi.org/10.1016/j.jcp.2015.02.003). The scenario follows Cartesian Scenario, but implements its own solving algorithm to account for changes of the advector field induced by the advectee.  
-### Shallow Water Scenario (Upwind, n_threads = 1, MPI_DIM=-1 then MPI_DIM=0)
+The Shallow Water Scenario is based on a numerical test case from [Jarecka et al. 2015](https://doi.org/10.1016/j.jcp.2015.02.003). The scenario follows Cartesian Scenario, but implements its own solving algorithm to account for changes of the advector field induced by the advectee.
+
+### upwind, n_threads = 1, Left: MPI_DIM=-1 Right: MPI_DIM=0
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_0.5.0.25._mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif" width="49%">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_0.5.0.25._mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif" width="49%">
-<p>
-### Shallow Water Scenario (MPDATA with "nonoscillatory" and "infinite_gauge" options, n_threads = 1, MPI_DIM=-1 then MPI_DIM=0)
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif" width="49%" />
+</p>
+
+### MPDATA with "nonoscillatory" and "infinite-gauge" options, n_threads = 1, Left: MPI_DIM=-1 Right: MPI_DIM=0
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif", width="49%">
-  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif", width="49%">
-<p>
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA-MPI/releases/download/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
+</p>
+
 ## Package architecture
 
 ```mermaid
