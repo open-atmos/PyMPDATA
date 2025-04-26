@@ -1,14 +1,11 @@
 import os
+from functools import cached_property, lru_cache, partial
 from typing import Callable
 
+import numba
 import numpy as np
 
 os.environ["NUMBA_OPT"] = "3"
-
-from functools import cached_property, lru_cache, partial
-
-import numba
-
 jit = partial(numba.jit, fastmath=True, error_model="numpy", cache=True, nogil=True)
 
 
@@ -99,20 +96,20 @@ def make_payoff(K: float, option_type: str, average_type: str = "arithmetic"):
 
 
 class FixedStrikeArithmeticAsianOption(PathDependentOption):
-    def __init__(self, T, K, type, model, N):
+    def __init__(self, T, K, variant, model, N):
         super().__init__(T, model, N)
         self.K = K
-        self.payoff = make_payoff(K, type)
+        self.payoff = make_payoff(K, variant)
 
 
 class FixedStrikeGeometricAsianOption(PathDependentOption):
-    def __init__(self, T, K, type, model, N):
+    def __init__(self, T, K, variant, model, N):
         super().__init__(T, model, N)
         self.K = K
 
-        if type == "call":
+        if variant == "call":
             self.payoff = lambda path: max(np.exp(np.mean(np.log(path))) - K, 0)
-        elif type == "put":
+        elif variant == "put":
             self.payoff = lambda path: max(K - np.exp(np.mean(np.log(path))), 0)
         else:
             raise ValueError("Invalid option type")
