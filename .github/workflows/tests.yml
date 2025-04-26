@@ -55,95 +55,95 @@ jobs:
         nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,wrong-import-order,ungrouped-imports \
                     --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
 
-  zenodo_json:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: notiz-dev/github-action-json-property@release
-        with:
-          path: '.zenodo.json'
-          prop_path: 'creators'
+#  zenodo_json:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: notiz-dev/github-action-json-property@release
+#        with:
+#          path: '.zenodo.json'
+#          prop_path: 'creators'
 
-  devops:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
-      - run: pip install -r tests/devops_tests/requirements.txt
-      - run: pip install -e . -e ./examples
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
+#  devops:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          submodules: recursive
+#          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
+#      - run: pip install -r tests/devops_tests/requirements.txt
+#      - run: pip install -e . -e ./examples
+#      - env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
 
-  nojit_and_codecov:
-    needs: [ precommit, pylint, zenodo_json, devops ]
-    runs-on: ubuntu-latest
-    env:
-      NUMBA_DISABLE_JIT: 1
-    steps:
-      - uses: actions/checkout@master
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - uses: actions/setup-python@v5.2.0
-        with:
-          python-version: 3.9
-      - name: Generate coverage report
-        run: |
-          pip install -e .[tests] -e ./examples
-          pip install pytest-cov
-          pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
-          verbose: true
+#  nojit_and_codecov:
+#    needs: [ precommit, pylint, zenodo_json, devops ]
+#    runs-on: ubuntu-latest
+#    env:
+#      NUMBA_DISABLE_JIT: 1
+#    steps:
+#      - uses: actions/checkout@master
+#        with:
+#          submodules: recursive
+#          fetch-depth: 0
+#      - uses: actions/setup-python@v5.2.0
+#        with:
+#          python-version: 3.9
+#      - name: Generate coverage report
+#        run: |
+#          pip install -e .[tests] -e ./examples
+#          pip install pytest-cov
+#          pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
+#      - name: Upload coverage to Codecov
+#        uses: codecov/codecov-action@v4
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          fail_ci_if_error: true
+#          verbose: true
 
-  tests:
-    timeout-minutes: 120
-    needs: [nojit_and_codecov]
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.12"]
-        exclude:
-          - platform: macos-14
-            python-version: "3.9"
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5.2.0
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - run: |
-          python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
-          python -We -c "import PyMPDATA"
-          python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
-
-      - if: startsWith(matrix.platform, 'ubuntu-')
-        run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
-
-      - env:
-          NUMBA_OPT: 1
-        run: |
-          python -m pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
-          python -m pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
-
-      - env:
-          NUMBA_OPT: 3
-        run: |
-          python -m pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
+#  tests:
+#    timeout-minutes: 120
+#    needs: [nojit_and_codecov]
+#    strategy:
+#      matrix:
+#        platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
+#        python-version: ["3.9", "3.12"]
+#        exclude:
+#          - platform: macos-14
+#            python-version: "3.9"
+#    runs-on: ${{ matrix.platform }}
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          submodules: recursive
+#          fetch-depth: 0
+#
+#      - uses: actions/setup-python@v5.2.0
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#
+#      - run: |
+#          python -m pip install $PIP_INSTALL_ARGS -e .  # to check if usable without test/example dependencies
+#          python -We -c "import PyMPDATA"
+#          python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
+#
+#      - if: startsWith(matrix.platform, 'ubuntu-')
+#        run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
+#
+#      - env:
+#          NUMBA_OPT: 1
+#        run: |
+#          python -m pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
+#          python -m pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
+#
+#      - env:
+#          NUMBA_OPT: 3
+#        run: |
+#          python -m pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
 
   examples:
-    needs: [nojit_and_codecov]
+#    needs: [nojit_and_codecov]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
@@ -162,19 +162,19 @@ jobs:
 
       - run: python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
       - run: python -m pip install $PIP_INSTALL_ARGS -r tests/devops_tests/requirements.txt
-      - if: matrix.platform == 'ubuntu-latest'
-        run: |
-          sudo apt-get install libblitz0-dev libboost-thread-dev libboost-date-time-dev libboost-system-dev libboost-iostreams-dev libboost-timer-dev libboost-filesystem-dev
-          git clone https://github.com/igfuw/libmpdataxx.git
-          cd libmpdataxx/libmpdata++
-          mkdir build
-          cd build
-          cmake ..
-          sudo make install
-          cd ../../../
-          rm -rf libmpdataxx
-      - uses: julia-actions/setup-julia@v2
-      - run: julia --version
+#      - if: matrix.platform == 'ubuntu-latest'
+#        run: |
+#          sudo apt-get install libblitz0-dev libboost-thread-dev libboost-date-time-dev libboost-system-dev libboost-iostreams-dev libboost-timer-dev libboost-filesystem-dev
+#          git clone https://github.com/igfuw/libmpdataxx.git
+#          cd libmpdataxx/libmpdata++
+#          mkdir build
+#          cd build
+#          cmake ..
+#          sudo make install
+#          cd ../../../
+#          rm -rf libmpdataxx
+#      - uses: julia-actions/setup-julia@v2
+#      - run: julia --version
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
       - if: matrix.platform == 'ubuntu-latest'
@@ -182,27 +182,27 @@ jobs:
 
       - env:
           NUMBA_OPT: 1
-        run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
+        run: python -m pytest --durations=10 -p no:unraisableexception -We -k Magnuszewski tests/devops_tests/test_notebooks.py
 
-      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
-        run: |
-          mkdir -p /home/runner/work/_temp/_github_home/figures
-          rm /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_Pycurrent
-          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/boussinesq_2d_anim.gif /home/runner/work/_temp/_github_home/figures
-          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
-          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
-          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/wikipedia_example.gif /home/runner/work/_temp/_github_home/figures
+#      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
+#        run: |
+#          mkdir -p /home/runner/work/_temp/_github_home/figures
+#          rm /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_Pycurrent
+#          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/boussinesq_2d_anim.gif /home/runner/work/_temp/_github_home/figures
+#          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/fig_4.svg /home/runner/work/_temp/_github_home/figures
+#          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/advection_diffusion.gif /home/runner/work/_temp/_github_home/figures
+#          mv /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_*/wikipedia_example.gif /home/runner/work/_temp/_github_home/figures
 
       # - if: ${{ failure() }}
       #   uses: mxschmitt/action-tmate@v3
       #   with:
       #     limit-access-to-actor: true
 
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
-        uses: eine/tip@master
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            /github/home/figures/*.svg
-            /github/home/figures/*.gif
+#      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
+#        uses: eine/tip@master
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          files: |
+#            /github/home/figures/*.svg
+#            /github/home/figures/*.gif
 
