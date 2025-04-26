@@ -82,7 +82,6 @@ def _make_scalar_custom(
         focus = focus_psi[0]
         i = min(max(0, focus[inner_or_outer] - halo), span - 1)
         if sign == SIGN_RIGHT:
-            # TODO: reuse the code from Extrapolated (here copy & paste!)
             edg = span + halo - 1 - focus_psi[ARG_FOCUS][dim]
             den = ats(*focus_psi, edg - 1) - ats(*focus_psi, edg - 2)
             nom = ats(*focus_psi, edg) - ats(*focus_psi, edg - 1)
@@ -114,30 +113,6 @@ def _make_scalar_custom(
             return impl(psi, span, sign)
 
     return make_fill_halos_loop(jit_flags, set_value, fill_halos_scalar)
-
-
-class KemnaVorstBoundaryCondition(Extrapolated):
-    """eq. (12) in [Kemna & Vorst (1990)](TODO) but without discounting
-    which is embedded in the advectee definition (and applied to the initial condition)
-    """
-
-    def __init__(self, *, data_left, dim):
-        super().__init__(dim=dim)
-        self.data = tuple(data_left)
-        self.inner_or_outer = (INNER, OUTER)[dim]
-
-    def make_scalar(self, indexers, halo, dtype, jit_flags, dimension_index):
-        return _make_scalar_custom(
-            self.dim,
-            self.eps,
-            indexers.ats[dimension_index],
-            indexers.set,
-            halo,
-            dtype,
-            jit_flags,
-            self.data,
-            self.inner_or_outer,
-        )
 
 
 class Simulation:
@@ -282,9 +257,6 @@ class AsianArithmetic(_Asian):
 
     def add_half_rhs(self):
         pass
-        # psi = self.solver.advectee.get()
-        # self.rhs[:] = -psi / self.settings.params.T # todo male t
-        # psi[:] = np.maximum(0, psi + -self.dt * self.rhs / 2)
 
 
 class AsianGeometric(_Asian):
