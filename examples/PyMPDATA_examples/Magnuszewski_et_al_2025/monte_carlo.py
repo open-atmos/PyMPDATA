@@ -8,6 +8,8 @@ import numpy as np
 os.environ["NUMBA_OPT"] = "3"
 jit = partial(numba.jit, fastmath=True, error_model="numpy", cache=True, nogil=True)
 
+# pylint: disable=too-few-public-methods
+
 
 class BSModel:
     def __init__(self, S0, r, sigma, T, M):

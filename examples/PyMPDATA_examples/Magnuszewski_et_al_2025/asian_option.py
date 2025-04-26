@@ -25,6 +25,7 @@ OPTIONS = {
     "third_order_terms": False,
     "non_zero_mu_coeff": True,
 }
+# pylint: disable=too-few-public-methods, too-many-lines, global-statement, abstract-method
 
 
 class Settings:
@@ -143,9 +144,10 @@ class Simulation:
             courant_number_x,
             dtype=options.dtype,
         )
-        assert (
-            np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector)) < 1
-        ), f"CFL condition not met {np.max(np.abs(self.a_dim_advector)) + np.max(np.abs(x_dim_advector))}"
+        cfl_condition = np.max(np.abs(self.a_dim_advector)) + np.max(
+            np.abs(x_dim_advector)
+        )
+        assert cfl_condition < 1, f"CFL condition not met {cfl_condition}"
         self.solver = Solver(
             stepper=stepper,
             advectee=ScalarField(
