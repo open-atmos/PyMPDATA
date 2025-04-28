@@ -1,7 +1,7 @@
 """
 This code is a Python numba-fied implementation of the Monte Carlo method
 for pricing Asian options taken from
-[Numerical Methods in Finance with C++](ISBN 9781107003712)
+[Numerical Methods in Finance with C++](https://doi.org/10.1017/CBO9781139017404)
 """
 
 from functools import cached_property, lru_cache, partial

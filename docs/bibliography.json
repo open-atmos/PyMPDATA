@@ -186,5 +186,12 @@
     ],
     "label": "Smolarkiewicz and Pudykiewicz 1992 (J. Atmos. Sci. 49)",
     "title": "A Class of Semi-Lagrangian Approximations for Fluids"
+  },
+  "https://doi.org/10.1017/CBO9781139017404": {
+    "usages": [
+      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/monte_carlo.py"
+    ],
+    "label": "Capiński and Zastawniak 2012 (Cambridge University Press)",
+    "title": "Numerical Methods in Finance with C++"
   }
 }
