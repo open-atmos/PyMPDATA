@@ -1,20 +1,11 @@
-from functools import cached_property, lru_cache
+from functools import cached_property
 
-import numba
 import numpy as np
 from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Extrapolated
-from PyMPDATA.impl.enumerations import (
-    ARG_FOCUS,
-    INNER,
-    META_AND_DATA_DATA,
-    META_AND_DATA_META,
-    OUTER,
-    SIGN_RIGHT,
-)
-from PyMPDATA.impl.traversals_common import make_fill_halos_loop
+from PyMPDATA.impl.enumerations import INNER, OUTER
 
 
 # pylint: disable=too-few-public-methods
@@ -45,55 +36,8 @@ class Settings:
         return output
 
 
-# _t = np.nan
-
-
-@lru_cache()
-# pylint: disable=too-many-arguments
-def _make_scalar_custom(
-    dim, eps, ats, set_value, halo, dtype, jit_flags, data, inner_or_outer
-):
-    @numba.njit(**jit_flags)
-    def impl(focus_psi, span, sign):
-        focus = focus_psi[0]
-        i = min(max(0, focus[inner_or_outer] - halo), span - 1)
-        if sign == SIGN_RIGHT:
-            edg = span + halo - 1 - focus_psi[ARG_FOCUS][dim]
-            den = ats(*focus_psi, edg - 1) - ats(*focus_psi, edg - 2)
-            nom = ats(*focus_psi, edg) - ats(*focus_psi, edg - 1)
-            cnst = nom / den if abs(den) > eps else 0
-            return max(
-                ats(*focus_psi, -1)
-                + (ats(*focus_psi, -1) - ats(*focus_psi, -2)) * cnst,
-                0,
-            )
-        return data[i]
-
-    if dtype == complex:
-
-        @numba.njit(**jit_flags)
-        def fill_halos_scalar(psi, span, sign):
-            return complex(
-                impl(
-                    (psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].real), span, sign
-                ),
-                impl(
-                    (psi[META_AND_DATA_META], psi[META_AND_DATA_DATA].imag), span, sign
-                ),
-            )
-
-    else:
-
-        @numba.njit(**jit_flags)
-        def fill_halos_scalar(psi, span, sign):
-            return impl(psi, span, sign)
-
-    return make_fill_halos_loop(jit_flags, set_value, fill_halos_scalar)
-
-
 class Simulation:
     def __init__(self, settings, *, nx, ny, nt, OPTIONS, variant="call"):
-        self._t = np.nan
         self.nx = nx
         self.nt = nt
         self.settings = settings
@@ -107,7 +51,6 @@ class Simulation:
         )
         self.dx = (log_s_max - log_s_min) / self.nx
         self.settings = settings
-        self.step_number = 0
         sigma_squared = pow(settings.sgma, 2)
         courant_number_x = -(0.5 * sigma_squared - settings.r) * (-self.dt) / self.dx
         self.l2 = self.dx * self.dx / sigma_squared / self.dt
@@ -158,21 +101,8 @@ class Simulation:
             Extrapolated(INNER),
         )
 
-    def add_half_rhs(self):
-        pass
-
-    def free_boundary(self, t):
-        pass
-
-    def step(self):
-        # global _t
-        self._t = self.settings.T - (self.step_number + 0.5) * self.dt
-        self.add_half_rhs()
-        self.free_boundary(t=self._t)
-        self.solver.advance(1, self.mu_coeff)
-        self.add_half_rhs()
-        self.free_boundary(t=self._t)
-        self.step_number += 1
+    def step(self, nt=1):
+        self.solver.advance(n_steps=nt, mu_coeff=self.mu_coeff)
 
 
 class AsianArithmetic(Simulation):
