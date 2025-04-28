@@ -1,11 +1,14 @@
-import os
+"""
+This code is a Python numba-fied implementation of the Monte Carlo method for pricing Asian options taken from
+[Numerical Methods in Finance with C++](ISBN 9781107003712)
+"""
+
 from functools import cached_property, lru_cache, partial
 from typing import Callable
 
 import numba
 import numpy as np
 
-os.environ["NUMBA_OPT"] = "3"
 jit = partial(numba.jit, fastmath=True, error_model="numpy", cache=True, nogil=True)
 
 # pylint: disable=too-few-public-methods
