@@ -17,7 +17,7 @@ from PyMPDATA.impl.enumerations import (
 from PyMPDATA.impl.traversals_common import make_fill_halos_loop
 
 
-# pylint: disable=too-few-public-methods, too-many-lines, global-statement, abstract-method
+# pylint: disable=too-few-public-methods
 class Settings:
     def __init__(self, T, sgma, r, K, S_min, S_max):
         self.T = T
@@ -45,7 +45,7 @@ class Settings:
         return output
 
 
-_t = np.nan
+# _t = np.nan
 
 
 @lru_cache()
@@ -93,6 +93,7 @@ def _make_scalar_custom(
 
 class Simulation:
     def __init__(self, settings, *, nx, ny, nt, OPTIONS, variant="call"):
+        self._t = np.nan
         self.nx = nx
         self.nt = nt
         self.settings = settings
@@ -164,13 +165,13 @@ class Simulation:
         pass
 
     def step(self):
-        global _t
-        _t = self.settings.T - (self.step_number + 0.5) * self.dt
+        # global _t
+        self._t = self.settings.T - (self.step_number + 0.5) * self.dt
         self.add_half_rhs()
-        self.free_boundary(t=_t)
+        self.free_boundary(t=self._t)
         self.solver.advance(1, self.mu_coeff)
         self.add_half_rhs()
-        self.free_boundary(t=_t)
+        self.free_boundary(t=self._t)
         self.step_number += 1
 
 
