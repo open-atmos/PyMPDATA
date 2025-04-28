@@ -1,5 +1,6 @@
 """
-This code is a Python numba-fied implementation of the Monte Carlo method for pricing Asian options taken from
+This code is a Python numba-fied implementation of the Monte Carlo method
+for pricing Asian options taken from
 [Numerical Methods in Finance with C++](ISBN 9781107003712)
 """
 
