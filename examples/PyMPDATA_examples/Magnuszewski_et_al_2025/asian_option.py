@@ -175,13 +175,11 @@ class Simulation:
         self.step_number += 1
 
 
-class _Asian(Simulation):
+class AsianArithmetic(Simulation):
     @cached_property
     def payoff_2d(self):
         return np.repeat([self.payoff], self.nx, axis=0)
 
-
-class AsianArithmetic(_Asian):
     @property
     def a_dim_advector(self):
         a_dim_advector = np.zeros((self.nx, self.ny + 1))
