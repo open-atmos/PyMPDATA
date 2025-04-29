@@ -37,7 +37,7 @@ class Settings:
 
 
 class Simulation:
-    def __init__(self, settings, *, nx, ny, nt, OPTIONS, variant="call"):
+    def __init__(self, settings, *, nx, ny, nt, options, variant="call"):
         self.nx = nx
         self.nt = nt
         self.settings = settings
@@ -59,7 +59,6 @@ class Simulation:
             self.l2 > 2
         ), f"Lambda squared should be more than 2 for stability {self.l2}"
         self.payoff = settings.payoff(A=self.A, da=self.dy, variant=variant)
-        options = Options(**OPTIONS)
         stepper = Stepper(options=options, n_dims=2)
         x_dim_advector = np.full(
             (self.nx + 1, self.ny),
