@@ -3,7 +3,7 @@ from functools import cached_property
 import numpy as np
 from PyMPDATA_examples.utils.discretisation import discretised_analytical_solution
 
-from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
+from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Extrapolated
 from PyMPDATA.impl.enumerations import INNER, OUTER
 
