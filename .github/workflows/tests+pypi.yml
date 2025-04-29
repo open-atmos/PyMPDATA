@@ -345,3 +345,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: plots/*-anim.gif
           tag: 'latest-generated-plots'
+          rm: true
