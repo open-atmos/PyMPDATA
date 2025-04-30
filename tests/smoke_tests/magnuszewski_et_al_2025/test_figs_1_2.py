@@ -20,7 +20,8 @@ def variables_fixture():
 
 
 class TestFigs:
-    """ basic assertions for Fig 1 and Fig 2 data and axes """
+    """basic assertions for Fig 1 and Fig 2 data and axes"""
+
     @staticmethod
     def test_fig_1_axis_ranges(variables):
         """
@@ -33,17 +34,20 @@ class TestFigs:
 
     # TODO #543
     @staticmethod
-    @pytest.mark.parametrize("condition", (
-        # UPWIND above MPDATA
-        # European analytic above UPWIND
-        # MC above geometric Asian analytic and below UPWIND
-    ))
+    @pytest.mark.parametrize(
+        "condition",
+        (
+            # UPWIND above MPDATA
+            # European analytic above UPWIND
+            # MC above geometric Asian analytic and below UPWIND
+        ),
+    )
     def test_fig_2_order_of_lines(variables, condition):
-        """ checks if a given set of points is above/below another one """
+        """checks if a given set of points is above/below another one"""
         pass
 
     # TODO #543
     @staticmethod
     def test_fig_2_all_datasets_monotonic(variables):
-        """ checks if all points within a dataset constitute a monotonically increasing set """
+        """checks if all points within a dataset constitute a monotonically increasing set"""
         pass
