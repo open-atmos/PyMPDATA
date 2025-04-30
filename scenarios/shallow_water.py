@@ -49,7 +49,7 @@ class ShallowWaterScenario(_Scenario):
             """returns advectee array for a given grid indices"""
             # pylint: disable=invalid-name
             A = 1 / lx / ly
-            h = A * (1 - (x / lx) ** 2 - (y / ly) ** 2)
+            h = A * (1 - (x / lx) ** 2 - (y / ly) ** 2) * 6.25
             return np.where(h > 0, h, 0)
 
         # pylint: disable=invalid-name
@@ -65,8 +65,8 @@ class ShallowWaterScenario(_Scenario):
         self.dx = 32 / grid[0]
         self.dy = 32 / grid[1]
         self.eps = 1e-7
-        self.lx0 = 2
-        self.ly0 = 1
+        self.lx0 = 5
+        self.ly0 = 2.5
 
         # pylint: disable=duplicate-code
         mpi_periodic = MPIPeriodic(size=size, mpi_dim=mpi_dim)
