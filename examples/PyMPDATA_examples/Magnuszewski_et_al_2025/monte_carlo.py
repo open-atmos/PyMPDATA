@@ -4,9 +4,10 @@ for pricing Asian options taken from
 [Numerical Methods in Finance with C++](https://doi.org/10.1017/CBO9781139017404)
 """
 
+import random
 from functools import cached_property, lru_cache, partial
 from typing import Callable
-import random
+
 import numba
 import numpy as np
 
@@ -36,17 +37,20 @@ class BSModel:
         bt = self.bt
         sigma = self.sigma
         sqrt_tm = self.sqrt_tm
-        seed = self.seed        
+        seed = self.seed
 
         @jit
         def numba_seed():
             np.random.seed(seed)
-        if seed is not None: 
+
+        if seed is not None:
             numba_seed()
 
         @jit
         def body(path):
-            path[:] = S0 * np.exp(bt + sigma * np.cumsum(np.random.standard_normal(M)) * sqrt_tm)
+            path[:] = S0 * np.exp(
+                bt + sigma * np.cumsum(np.random.standard_normal(M)) * sqrt_tm
+            )
 
         return body
 
