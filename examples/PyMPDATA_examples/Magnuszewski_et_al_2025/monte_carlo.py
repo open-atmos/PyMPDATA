@@ -4,7 +4,6 @@ for pricing Asian options taken from
 [Numerical Methods in Finance with C++](https://doi.org/10.1017/CBO9781139017404)
 """
 
-import random
 from functools import cached_property, lru_cache, partial
 from typing import Callable
 
