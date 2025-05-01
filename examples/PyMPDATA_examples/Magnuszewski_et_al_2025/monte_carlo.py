@@ -6,7 +6,7 @@ for pricing Asian options taken from
 
 from functools import cached_property, lru_cache, partial
 from typing import Callable
-
+import random
 import numba
 import numpy as np
 
@@ -16,7 +16,7 @@ jit = partial(numba.jit, fastmath=True, error_model="numpy", cache=True, nogil=T
 
 
 class BSModel:
-    def __init__(self, S0, r, sigma, T, M):
+    def __init__(self, S0, r, sigma, T, M, seed):
         self.S0 = S0
         self.r = r
         self.sigma = sigma
@@ -27,6 +27,7 @@ class BSModel:
         self.t = np.linspace(0, T, M)
         self.bt = self.b * self.t
         self.sqrt_tm = np.sqrt(T / M)
+        self.seed = seed
 
     @cached_property
     def generate_path(self):
@@ -35,12 +36,17 @@ class BSModel:
         bt = self.bt
         sigma = self.sigma
         sqrt_tm = self.sqrt_tm
+        seed = self.seed        
+
+        @jit
+        def numba_seed():
+            np.random.seed(seed)
+        if seed is not None: 
+            numba_seed()
 
         @jit
         def body(path):
-            path[:] = S0 * np.exp(
-                bt + sigma * np.cumsum(np.random.standard_normal(M)) * sqrt_tm
-            )
+            path[:] = S0 * np.exp(bt + sigma * np.cumsum(np.random.standard_normal(M)) * sqrt_tm)
 
         return body
 
@@ -51,7 +57,6 @@ class PathDependentOption:
         self.model = model
         self.N = N
         self.payoff: Callable[[np.ndarray], float] = lambda path: 0.0
-        self.std = 0
 
     @cached_property
     def price_by_mc(self):
@@ -65,16 +70,11 @@ class PathDependentOption:
         @jit
         def body():
             sum_ct = 0.0
-            sum_sq = 0.0
             path = np.empty(M)
             for _ in range(N):
                 model_generate_path(path)
-                partial_payoff = payoff(path)
-                sum_ct += partial_payoff
-                sum_sq += partial_payoff**2
-            return np.exp(-model_r * T) * (sum_ct / N), np.exp(-model_r * T) * np.sqrt(
-                (sum_sq / N) - (sum_ct / N) ** 2
-            )
+                sum_ct += payoff(path)
+            return np.exp(-model_r * T) * (sum_ct / N)
 
         return body
 
