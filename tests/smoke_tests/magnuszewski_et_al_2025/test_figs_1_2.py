@@ -25,12 +25,10 @@ class TestFigs:
     @staticmethod
     def test_fig_1_axis_ranges(variables):
         """
-        - to use cell-center values at t=0/y=0, the grid starts at y=-dy/2 in the running-sum dim.
-        - the underlying price dimension (which uses logarithm transform) starts at y=0
-        """
-        for ax in variables["axs"]:
-            assert ax.get_xlim()[0] < 0
-            assert ax.get_ylim()[0] == 0
+        checks if both X and Y axes start at -dx/2, -dy/2, respectively """
+        for ax in variables["fig1_axs"]:
+            assert ax.get_xlim()[0] == -.5
+            assert ax.get_ylim()[0] == -.5
 
     # TODO #543
     @staticmethod
