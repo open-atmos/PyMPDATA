@@ -35,7 +35,7 @@ class TestFigs:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "xy, lr, fmt",
+        "x_or_y, l_or_r, fmt",
         (
             ("x", 0, "-0.5"),
             ("y", 0, "-0.5"),
@@ -43,11 +43,11 @@ class TestFigs:
             ("y", 1, "{grid_minus_half[1]}"),
         ),
     )
-    def test_fig_1_axis_ranges(variables, xy, lr, fmt):
+    def test_fig_1_axis_ranges(variables, x_or_y, l_or_r, fmt):
         """
         checks if both X and Y axes start at -dx/2, -dy/2, respectively"""
         for axs in variables["fig1_axs"]:
-            assert str(getattr(axs, f"get_{xy}lim")()[lr]) == fmt.format(
+            assert str(getattr(axs, f"get_{x_or_y}lim")()[l_or_r]) == fmt.format(
                 grid_minus_half=(variables["grid"][0] - 0.5, variables["grid"][1] - 0.5)
             )
 
