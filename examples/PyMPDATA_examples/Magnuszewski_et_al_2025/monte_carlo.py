@@ -10,7 +10,7 @@ from typing import Callable
 import numba
 import numpy as np
 
-jit = partial(numba.jit, fastmath=True, error_model="numpy", cache=True, nogil=True)
+jit = partial(numba.jit, fastmath=True, error_model="numpy", cache=True, nopython=True)
 
 # pylint: disable=too-few-public-methods
 
