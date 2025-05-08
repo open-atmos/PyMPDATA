@@ -108,7 +108,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.12"]
+        python-version: ["3.9", "3.13"]
         exclude:
           - platform: macos-14
             python-version: "3.9"
@@ -147,7 +147,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.12"]
+        python-version: ["3.9", "3.13"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -184,7 +184,7 @@ jobs:
           NUMBA_OPT: 1
         run: python -m pytest --durations=10 -p no:unraisableexception -We tests/devops_tests/test_notebooks.py
 
-      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
+      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.13'}}
         run: |
           mkdir -p /home/runner/work/_temp/_github_home/figures
           rm /tmp/pytest-of-runner/pytest-current/test_run_notebooks_examples_Pycurrent
@@ -198,7 +198,7 @@ jobs:
       #   with:
       #     limit-access-to-actor: true
 
-      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12'}}
+      - if: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.13'}}
         uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
