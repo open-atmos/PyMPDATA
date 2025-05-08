@@ -33,10 +33,10 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0
-    - name: Set up Python 3.9
+    - name: Set up Python 3.13
       uses: actions/setup-python@v5.2.0
       with:
-        python-version: 3.9
+        python-version: 3.13
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
