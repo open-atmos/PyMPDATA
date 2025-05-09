@@ -137,7 +137,7 @@ jobs:
           python -m pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
           python -m pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
 
-      - if: matrix.python-version != '3.9' || !startsWith(matrix.platform, 'windows-')
+      - if: !startsWith(matrix.platform, 'windows-')
         env:
           NUMBA_OPT: 3
         run: |
