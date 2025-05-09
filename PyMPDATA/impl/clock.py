@@ -23,4 +23,4 @@ else:
         """Numba-JITable version of clock function for Python > 3.12"""
         result = np.empty(shape=(1,), dtype=np.int64)
         clock_impl(result.ctypes)
-        return result
+        return result[0]
