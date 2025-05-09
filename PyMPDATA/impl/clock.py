@@ -16,7 +16,7 @@ else:
     clock_impl.argtypes = [ctypes.c_void_p]
     clock_impl.restype = ctypes.c_int
 
-    assert ctypes.c_time_t == ctypes.c_int64
+    assert ctypes.c_time_t == ctypes.c_int64  # pylint: disable=no-member
 
     @numba.jit(nopython=True)
     def clock():
