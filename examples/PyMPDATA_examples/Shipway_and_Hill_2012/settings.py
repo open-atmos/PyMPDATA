@@ -1,11 +1,11 @@
 from typing import Optional
 
 import numpy as np
+from numdifftools import Derivative
 from PyMPDATA_examples.Olesik_et_al_2022.settings import ksi_1 as default_ksi_1
 from pystrict import strict
 from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
-from scipy.misc import derivative
 
 from . import formulae
 from .arakawa_c import arakawa_c
@@ -53,7 +53,7 @@ class Settings:
             drhod_dz = formulae.drho_dz(const.g, p, T, self.qv(z), const.lv)
             if not apprx_drhod_dz:  # to resolve issue #335
                 qv = self.qv(z)
-                dqv_dz = derivative(self.qv, z)
+                dqv_dz = Derivative(self.qv)(z)
                 drhod_dz = drhod_dz / (1 + qv) - rhod * dqv_dz / (1 + qv)
             return drhod_dz
 
