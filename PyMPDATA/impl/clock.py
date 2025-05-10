@@ -18,7 +18,7 @@ else:
 
     assert ctypes.c_time_t == ctypes.c_int64  # pylint: disable=no-member
 
-    @numba.jit(nopython=True)
+    @numba.jit("int64()", nopython=True)
     def clock():
         """Numba-JITable version of clock function for Python > 3.12"""
         result = np.empty(shape=(1,), dtype=np.int64)
