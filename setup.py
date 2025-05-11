@@ -75,7 +75,7 @@ setup(
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "jupyter_client" + ("==8.6.3" if CI else ""),
             "ipywidgets" + ("!=8.0.3" if CI else ""),
-            "ipykernel" + ("=6.29.5" if CI else ""),
+            "ipykernel" + ("==6.29.5" if CI else ""),
             "ghapi",
             "pytest",
             "pytest-benchmark",
