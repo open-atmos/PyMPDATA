@@ -14,7 +14,7 @@ if sys.version_info < (3, 13):
 else:
     clock_impl = ctypes.pythonapi.PyTime_Time
     clock_impl.argtypes = [ctypes.c_void_p]
-    clock_impl.restype = ctypes.c_int
+    clock_impl.restype = ctypes.c_int64
 
     assert ctypes.c_time_t == ctypes.c_int64  # pylint: disable=no-member
 
