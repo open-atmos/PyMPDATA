@@ -10,7 +10,7 @@ import numpy as np
 if sys.version_info < (3, 13):
     clock = ctypes.pythonapi._PyTime_GetSystemClock  # pylint:disable=protected-access
     clock.argtypes = []
-    clock.restype = ctypes.c_int
+    clock.restype = ctypes.c_int64
 else:
     clock_impl = ctypes.pythonapi.PyTime_Time
     clock_impl.argtypes = [ctypes.c_void_p]
