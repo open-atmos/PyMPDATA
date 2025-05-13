@@ -29,7 +29,7 @@ setup(
         "open-atmos-jupyter-utils",
         "pystrict",
         "matplotlib",
-        "ipywidgets" + "<8.0.3" if CI else "",
+        "ipywidgets" + "==8.1.7" if CI else "",
         "scipy",
         "pint",
         "joblib",
