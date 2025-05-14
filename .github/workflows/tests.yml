@@ -79,6 +79,9 @@ jobs:
 
   nojit_and_codecov:
     needs: [ precommit, pylint, zenodo_json, devops ]
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
     runs-on: ubuntu-latest
     env:
       NUMBA_DISABLE_JIT: 1
@@ -89,7 +92,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5.2.0
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
       - name: Generate coverage report
         run: |
           pip install -e .[tests] -e ./examples
