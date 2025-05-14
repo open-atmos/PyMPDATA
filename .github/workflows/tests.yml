@@ -85,6 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NUMBA_DISABLE_JIT: 1
+      PYTHON: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@master
         with:
@@ -101,6 +102,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
+          env_vars: PYTHON
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
