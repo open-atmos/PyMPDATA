@@ -35,7 +35,7 @@ setup(
                 10: "==0.58.1",
                 11: "==0.58.1",
                 12: "==0.59.1",
-                13: "==0.59.1",
+                13: "==0.61.2",
             }[sys.version_info.minor]
             if CI and not _32bit
             else ""
@@ -48,7 +48,7 @@ setup(
                 10: "==1.24.4",
                 11: "==1.24.4",
                 12: "==1.26.4",
-                13: "==1.26.4",
+                13: "==2.2.5",
             }[sys.version_info.minor]
             if CI
             else ""
@@ -67,14 +67,15 @@ setup(
                     10: "==1.10.1",
                     11: "==1.10.1",
                     12: "==1.13.0",
-                    13: "==1.13.0",
+                    13: "==1.15.3",
                 }[sys.version_info.minor]
                 if CI and not _32bit
                 else ""
             ),
             "jupyter-core" + ("<5.0.0" if CI else ""),
-            "ipywidgets" + ("!=8.0.3" if CI else ""),
-            "ipykernel" + ("<6.22.0" if CI else ""),
+            "jupyter_client" + ("==8.6.3" if CI else ""),
+            "ipywidgets" + ("==8.1.7" if CI else ""),
+            "ipykernel" + ("==7.0.0a1" if CI else ""),
             "ghapi",
             "pytest",
             "pytest-benchmark",
