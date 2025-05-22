@@ -55,14 +55,6 @@ jobs:
         nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,wrong-import-order,ungrouped-imports \
                     --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
 
-  zenodo_json:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: notiz-dev/github-action-json-property@release
-        with:
-          path: '.zenodo.json'
-          prop_path: 'creators'
 
   devops:
     runs-on: ubuntu-latest
@@ -78,7 +70,7 @@ jobs:
         run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
 
   nojit_and_codecov:
-    needs: [ precommit, pylint, zenodo_json, devops ]
+    needs: [ precommit, pylint, devops ]
     strategy:
       matrix:
         python-version: ["3.9", "3.13"]
