@@ -20,6 +20,7 @@ class ScalarField(Field):
             boundary_conditions=boundary_conditions,
             halo=halo,
             dtype=data.dtype,
+            fill_halos_name="fill_halos_scalar",
         )
 
         for dim_length in data.shape:
