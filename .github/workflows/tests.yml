@@ -79,9 +79,13 @@ jobs:
 
   nojit_and_codecov:
     needs: [ precommit, pylint, zenodo_json, devops ]
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
     runs-on: ubuntu-latest
     env:
       NUMBA_DISABLE_JIT: 1
+      PYTHON: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@master
         with:
@@ -89,7 +93,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5.2.0
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
       - name: Generate coverage report
         run: |
           pip install -e .[tests] -e ./examples
@@ -98,6 +102,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
+          env_vars: PYTHON
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
@@ -137,7 +142,8 @@ jobs:
           python -m pytest --durations=10 -p no:unraisableexception -We tests/unit_tests
           python -m pytest --durations=10 -p no:unraisableexception -We -k "not test_timing_3d" tests/smoke_tests
 
-      - env:
+      - if: ${{!startsWith(matrix.platform, 'windows-')}}
+        env:
           NUMBA_OPT: 3
         run: |
           python -m pytest --durations=10 -p no:unraisableexception -We -k "test_timing_3d" tests/smoke_tests
