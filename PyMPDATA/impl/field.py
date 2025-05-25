@@ -140,10 +140,10 @@ class Field:
                 meta_and_data[0],
                 (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
             )
-        sut = traversals._code[self.fill_halos_name]  # pylint:disable=protected-access
+        code = traversals._code[self.fill_halos_name]  # pylint:disable=protected-access
         with warnings.catch_warnings():
             warnings.simplefilter(
                 action="ignore", category=NumbaExperimentalFeatureWarning
             )
             for thread_id in n_threads:
-                sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
+                code(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
