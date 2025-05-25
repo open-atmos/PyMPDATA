@@ -20,7 +20,15 @@ _Properties = namedtuple(
 class Field:
     """abstract base class for scalar and vector fields"""
 
-    def __init__(self, *, grid: tuple, boundary_conditions: tuple, halo: int, dtype):
+    def __init__(
+        self,
+        *,
+        grid: tuple,
+        boundary_conditions: tuple,
+        halo: int,
+        dtype,
+        fill_halos_name: str
+    ):
         assert len(grid) <= len(boundary_conditions)
 
         self.fill_halos = [None] * MAX_DIM_NUM
@@ -48,6 +56,7 @@ class Field:
         self.__impl = None
         self.__jit_flags = None
         self._impl_data = None
+        self.fill_halos_name = fill_halos_name
 
     @property
     def n_dims(self):
@@ -131,14 +140,10 @@ class Field:
                 meta_and_data[0],
                 (meta_and_data[1], meta_and_data[2], meta_and_data[3]),
             )
-        sut = traversals._code[  # pylint:disable=protected-access
-            {"ScalarField": "fill_halos_scalar", "VectorField": "fill_halos_vector"}[
-                self.__class__.__name__
-            ]
-        ]
+        code = traversals._code[self.fill_halos_name]  # pylint:disable=protected-access
         with warnings.catch_warnings():
             warnings.simplefilter(
                 action="ignore", category=NumbaExperimentalFeatureWarning
             )
             for thread_id in n_threads:
-                sut(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)
+                code(thread_id, *meta_and_data, fill_halos_fun, traversals.data.buffer)

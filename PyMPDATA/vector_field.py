@@ -29,6 +29,7 @@ class VectorField(Field):
             boundary_conditions=boundary_conditions,
             halo=halo,
             dtype=data[0].dtype,
+            fill_halos_name="fill_halos_vector",
         )
 
         for comp, field in enumerate(data):
