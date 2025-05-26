@@ -82,6 +82,7 @@ setup(
             "joblib" + ("==1.4.0" if CI else ""),
             "imageio",
             "nbformat",
+            "py-pde" + ("==0.45.0" if CI else ""),
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
