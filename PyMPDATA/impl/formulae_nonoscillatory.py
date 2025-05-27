@@ -27,7 +27,9 @@ def make_psi_extrema(options, traversals):
 
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
-            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.ats[at_idx], options),
+            __make_psi_extrema(
+                options.jit_flags, traversals.n_dims, idx.ats[at_idx], options
+            ),
             None,
             None,
         )
