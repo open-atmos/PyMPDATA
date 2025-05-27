@@ -27,7 +27,7 @@ def make_psi_extrema(options, traversals):
 
         at_idx = INNER if traversals.n_dims == 1 else OUTER
         formulae = (
-            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.ats[at_idx]),
+            __make_psi_extrema(options.jit_flags, traversals.n_dims, idx.ats[at_idx], options),
             None,
             None,
         )
@@ -55,8 +55,8 @@ def make_psi_extrema(options, traversals):
     return apply
 
 
-def __make_psi_extrema(jit_flags, n_dims, ats):
-    if n_dims == 1:
+def __make_psi_extrema(jit_flags, n_dims, ats, options):
+    if n_dims == 1 or options.dimensionally_split:
 
         @numba.njit(**jit_flags)
         def _impl(psi, extremum):
@@ -118,7 +118,7 @@ def make_beta(non_unit_g_factor, options, traversals):
                 ats=idx.ats[at_idx],
                 atv=idx.atv[at_idx],
                 non_unit_g_factor=non_unit_g_factor,
-                epsilon=options.epsilon,
+                options=options,
             ),
             None,
             None,
@@ -147,8 +147,11 @@ def make_beta(non_unit_g_factor, options, traversals):
     return apply
 
 
-def __make_beta(*, jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
-    if n_dims == 1:
+def __make_beta(*, jit_flags, n_dims, ats, atv, non_unit_g_factor, options):
+    epsilon = options.epsilon
+    dimensionally_split = options.dimensionally_split
+
+    if n_dims == 1 or dimensionally_split:
 
         @numba.njit(**jit_flags)
         def denominator(flux, sign):
@@ -199,7 +202,7 @@ def __make_beta(*, jit_flags, n_dims, ats, atv, non_unit_g_factor, epsilon):
         def g_fun(_):
             return 1
 
-    if n_dims == 1:
+    if n_dims == 1 or dimensionally_split:
 
         @numba.njit(**jit_flags)
         # pylint: disable=too-many-arguments
