@@ -37,9 +37,10 @@ class Settings:
 
 
 class Simulation:
-    def __init__(self, settings, *, nx, ny, nt, options, variant="call"):
+    def __init__(self, settings, *, nx, ny, nt, options, variant="call", eps=1e-10):
         self.nx = nx
         self.nt = nt
+        self.eps = eps
         self.settings = settings
         self.ny = ny
         self.dt = settings.T / self.nt
@@ -96,8 +97,8 @@ class Simulation:
     @property
     def boundary_conditions(self):
         return (
-            Extrapolated(OUTER),
-            Extrapolated(INNER),
+            Extrapolated(OUTER, eps=self.eps),
+            Extrapolated(INNER, eps=self.eps),
         )
 
     def step(self, nt=1):
