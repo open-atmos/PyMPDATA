@@ -1,4 +1,4 @@
-# table 6 from Barraquand and Pudet 1994
+# table 6 from [Barraquand and Pudet 1994](10.1111/j.1467-9965.1996.tb00111.x)
 headers = ["sigma", "T", "K", "call_price", "put_price"]
 table = """
 0.1,0.25,95,6.132,0.013
