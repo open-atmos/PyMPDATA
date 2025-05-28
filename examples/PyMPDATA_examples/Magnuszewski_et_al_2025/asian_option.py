@@ -59,7 +59,7 @@ class Simulation:
             self.l2 > 2
         ), f"Lambda squared should be more than 2 for stability {self.l2}"
         self.payoff = settings.payoff(A=self.A, da=self.dy, variant=variant)
-        stepper = Stepper(options=options, n_dims=2, n_threads=1) # TODO #570
+        stepper = Stepper(options=options, n_dims=2, n_threads=1)  # TODO #570
         x_dim_advector = np.full(
             (self.nx + 1, self.ny),
             courant_number_x,
