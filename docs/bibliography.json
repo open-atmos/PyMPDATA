@@ -193,5 +193,12 @@
     ],
     "label": "Capiński and Zastawniak 2012 (Cambridge University Press)",
     "title": "Numerical Methods in Finance with C++"
+  },
+  "https://doi.org/10.1111/j.1467-9965.1996.tb00111.x": {
+    "usages": [
+      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/barraquand_data.py"
+    ],
+    "label": "Barraquand & Pudet 1996 (Math. Financ. 6)",
+    "title": "Pricing of American path‐dependent contingent claims"
   }
 }

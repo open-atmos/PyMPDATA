@@ -37,9 +37,10 @@ class Settings:
 
 
 class Simulation:
-    def __init__(self, settings, *, nx, ny, nt, options, variant="call"):
+    def __init__(self, settings, *, nx, ny, nt, options, variant="call", eps=1e-10):
         self.nx = nx
         self.nt = nt
+        self.eps = eps
         self.settings = settings
         self.ny = ny
         self.dt = settings.T / self.nt
@@ -59,7 +60,7 @@ class Simulation:
             self.l2 > 2
         ), f"Lambda squared should be more than 2 for stability {self.l2}"
         self.payoff = settings.payoff(A=self.A, da=self.dy, variant=variant)
-        stepper = Stepper(options=options, n_dims=2)
+        stepper = Stepper(options=options, n_dims=2, n_threads=1)  # TODO #570
         x_dim_advector = np.full(
             (self.nx + 1, self.ny),
             courant_number_x,
@@ -96,8 +97,8 @@ class Simulation:
     @property
     def boundary_conditions(self):
         return (
-            Extrapolated(OUTER),
-            Extrapolated(INNER),
+            Extrapolated(OUTER, eps=self.eps),
+            Extrapolated(INNER, eps=self.eps),
         )
 
     def step(self, nt=1):
