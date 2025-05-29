@@ -24,7 +24,8 @@ def _datasets(variables):
     return {
         "mc": variables["arithmetic_by_mc"],
         "upwind": variables["output"]["UPWIND"][-1][:, 0],
-        "mpdata": variables["output"]["MPDATA"][-1][:, 0],
+        "mpdata_2it": variables["output"]["MPDATA (2 it.)"][-1][:, 0],
+        "mpdata_4it": variables["output"]["MPDATA (4 it.)"][-1][:, 0],
         "kemna-vorst": variables["geometric_price"],
         "black-scholes": variables["euro_price"],
     }
@@ -55,7 +56,8 @@ class TestFigs:
     @pytest.mark.parametrize(
         "lower, higher",
         (
-            ("mpdata", "upwind"),
+            ("mpdata_4it", "upwind"),
+            ("mpdata_2it", "upwind"),
             ("mc", "black-scholes"),  # European analytic above UPWIND
             ("kemna-vorst", "mc"),
             ("mc", "upwind"),
@@ -68,7 +70,7 @@ class TestFigs:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "key", ("mc", "upwind", "mpdata", "kemna-vorst", "black-scholes")
+        "key", ("mc", "upwind", "mpdata_2it", "mpdata_4it", "kemna-vorst", "black-scholes")
     )
     def test_fig_2_all_datasets_monotonic(variables, key):
         """checks if all points within a dataset constitute a monotonically increasing set"""
