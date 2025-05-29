@@ -70,7 +70,8 @@ class TestFigs:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "key", ("mc", "upwind", "mpdata_2it", "mpdata_4it", "kemna-vorst", "black-scholes")
+        "key",
+        ("mc", "upwind", "mpdata_2it", "mpdata_4it", "kemna-vorst", "black-scholes"),
     )
     def test_fig_2_all_datasets_monotonic(variables, key):
         """checks if all points within a dataset constitute a monotonically increasing set"""
