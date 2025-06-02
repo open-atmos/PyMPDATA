@@ -200,5 +200,13 @@
     ],
     "label": "Barraquand & Pudet 1996 (Math. Financ. 6)",
     "title": "Pricing of American path‐dependent contingent claims"
+  },
+  "https://doi.org/10.48550/arXiv.2505.24435": {
+    "usages": [
+      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/figs.ipynb",
+      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/table_1.ipynb"
+    ],
+    "label": "Magnuszewski & Arabas 2025 (arXiv)",
+    "title": "Path-dependent option pricing with two-dimensional PDE using MPDATA"
   }
 }
