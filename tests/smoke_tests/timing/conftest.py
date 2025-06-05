@@ -14,8 +14,8 @@ except numba.core.errors.UnsupportedParforsError:
     pass
 
 
-@pytest.fixture(params=__num_threads)
-def num_threads(request):
+@pytest.fixture(params=__num_threads, name="num_threads")
+def num_threads_fixture(request):
     """pytest fixture providing thread-pool size for tests: single-thread case
     for setups in which Numba reports no parallel support, and single-
     as well as multi-threaded test runs otherwise. For the multi-threaded
