@@ -10,9 +10,6 @@ from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.enumerations import INNER, MAX_DIM_NUM, MID3D, OUTER
 from PyMPDATA.impl.traversals import Traversals
-from tests.unit_tests.fixtures.n_threads import n_threads
-
-assert hasattr(n_threads, "_pytestfixturefunction")
 
 
 LEFT, RIGHT = "left", "right"

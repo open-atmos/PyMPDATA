@@ -9,6 +9,6 @@ except numba.core.errors.UnsupportedParforsError:
     __n_threads = (1,)
 
 
-@pytest.fixture(params=__n_threads)
-def n_threads(request):
+@pytest.fixture(params=__n_threads, name="n_threads")
+def n_threads_fixture(request):
     return request.param
