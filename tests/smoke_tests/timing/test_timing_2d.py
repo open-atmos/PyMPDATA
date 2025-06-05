@@ -7,7 +7,6 @@ from matplotlib import pyplot
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
-
 GRID = (126, 101)
 
 TIMESTEP = 0.1

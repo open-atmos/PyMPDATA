@@ -11,7 +11,6 @@ from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.enumerations import INNER, MAX_DIM_NUM, MID3D, OUTER
 from PyMPDATA.impl.traversals import Traversals
 
-
 LEFT, RIGHT = "left", "right"
 ALL = (None, None)
 
