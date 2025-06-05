@@ -1,0 +1,48 @@
+[tool.setuptools]
+packages = ["PyMPDATA_MPI", "PyMPDATA_MPI.impl"]
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+version_scheme = "post-release"
+
+[build-system]
+requires = ['setuptools==75.8.2', 'setuptools-scm==8.2.0']
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pympdata-mpi"
+description = "PyMPDATA + numba-mpi coupler sandbox"
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["MPI", "MPDATA", "Numba", "PyMPDATA"]
+license = {text = "GPL-3.0"}
+classifiers = [
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Atmospheric Science",
+        "Topic :: Scientific/Engineering :: Mathematics",
+        "Topic :: Scientific/Engineering :: Physics"
+]
+dependencies = [
+    # TODO #94
+    "numba<0.57.0",
+    "numpy<1.25.0",
+    "numba_mpi>=0.30",
+    "PyMPDATA==1.3.6",    
+    "mpi4py",
+    "h5py",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "pytest-mpi",
+    "pytest-timeout",
+    "matplotlib",
+]
+
+

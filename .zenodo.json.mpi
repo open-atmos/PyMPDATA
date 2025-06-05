@@ -1,0 +1,22 @@
+{
+  "title": "PyMPDATA-MPI",
+  "description": "PyMPDATA + numba-mpi coupler sandbox",
+  "creators": [
+    {
+      "affiliation": "Jagiellonian University, Kraków, Poland",
+      "name": "Derlatka, Kacper"
+    },
+    {
+      "affiliation": "AGH University of Krakow, Kraków, Poland",
+      "name": "Arabas, Sylwester",
+      "orcid": "0000-0003-2361-0082"
+    }
+  ],
+  "keywords": [
+    "MPDATA",
+    "MPI",
+    "Numba"
+  ],
+  "license": "GPL-3.0-only",
+  "upload_type": "software"
+}
