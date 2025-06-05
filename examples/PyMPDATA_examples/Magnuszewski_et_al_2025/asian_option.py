@@ -54,6 +54,7 @@ class Simulation:
         self.settings = settings
         sigma_squared = pow(settings.sgma, 2)
         courant_number_x = -(0.5 * sigma_squared - settings.r) * (-self.dt) / self.dx
+        print(f"{courant_number_x=}")
         self.l2 = self.dx * self.dx / sigma_squared / self.dt
         self.mu_coeff = (0.5 / self.l2, 0)
         assert (
@@ -69,6 +70,7 @@ class Simulation:
         cfl_condition = np.max(np.abs(self.a_dim_advector)) + np.max(
             np.abs(x_dim_advector)
         )
+        print(f"{cfl_condition=}")
         assert cfl_condition < 1, f"CFL condition not met {cfl_condition}"
         self.solver = Solver(
             stepper=stepper,
