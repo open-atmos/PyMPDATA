@@ -1,3 +1,7 @@
+"""
+Test the similarity of solutions from MPDATA and PyPDE for 2D diffusion
+"""
+
 from dataclasses import dataclass
 
 import numpy as np
@@ -11,8 +15,13 @@ from PyMPDATA.boundary_conditions import Periodic
 
 @dataclass
 class InitialConditions:
+    """
+    Initial conditions for the 2D diffusion problem.
+    """
+
     def __init__(
         self,
+        *,
         diffusion_coefficient: float,
         time_step: float,
         time_end: float,
@@ -43,14 +52,17 @@ class InitialConditions:
 
     @property
     def dx(self) -> float:
+        """Calculate the grid spacing in the x-direction."""
         return (self.max_x - self.min_x) / self.nx
 
     @property
     def dy(self) -> float:
+        """Calculate the grid spacing in the y-direction."""
         return (self.max_y - self.min_y) / self.ny
 
     @property
     def n_steps(self) -> int:
+        """Calculate the number of time steps based on the time range and time step."""
         return int(self.time_end / self.time_step)
 
 
@@ -58,6 +70,9 @@ type Two2DiffusionSolution = npt.NDArray[np.float64]
 
 
 def py_pde_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolution:
+    """
+    Solve the 2D diffusion equation using PyPDE.
+    """
     grid = CartesianGrid(
         bounds=[
             initial_conditions.grid_range_x,
@@ -80,6 +95,9 @@ def py_pde_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolut
 
 
 def mpdata_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolution:
+    """
+    Solve the 2D diffusion equation using PyMPDATA.
+    """
     opt = Options(
         n_iters=2,
         non_zero_mu_coeff=True,
@@ -90,6 +108,9 @@ def mpdata_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolut
     )
 
     def create_pde_like_data(ic) -> npt.NDArray[np.float64]:
+        """
+        Create a 2D array with a pulse at the specified position.
+        """
         x = np.linspace(ic.min_x + ic.dx / 2, ic.max_x - ic.dx / 2, ic.nx)
         y = np.linspace(ic.min_y + ic.dy / 2, ic.max_y - ic.dy / 2, ic.ny)
         result = np.zeros((ic.nx, ic.ny))
