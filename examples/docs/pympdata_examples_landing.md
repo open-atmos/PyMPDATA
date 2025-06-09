@@ -20,6 +20,8 @@ The examples are grouped by the dimensionality of the computational grid.
 | <mark>advection equation</mark>, homogeneous, several algorithm variants comparison: infinite-gauge, flux-corrected,..                                                                            | `PyMPDATA_examples.Smolarkiewicz_2006_Figs_3_4_10_11_12` |
 | <mark>Size-spectral advection</mark>, particle population condensational growth, coordinate transformation<br>$$ \partial_t (G \psi) + \nabla \cdot (Gu \psi) = 0 $$                              | `PyMPDATA_examples.Olesik_et_al_2022`*                   |
 | <mark>advection equation</mark>, [double-pass donor-cell option](https://osti.gov/biblio/7049237)                                                                                                                       | `PyMPDATA_examples.DPDC`                                 |
+| <mark>Burgers' equation</mark><br/>$$ \frac{\partial u}{\partial t} = -\frac{1}{2} \frac{\partial u^2}{\partial x} $$                                                                             | `PyMPDATA_examples.burgers_equation`*              |
+
 
 ## in 2D
 | tags                                                                                                                                                                                                                                                                                                    | link                                                                                                                                                                                                                                                                                                  |
