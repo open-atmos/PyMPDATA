@@ -7,13 +7,12 @@ import pytest
 import time
 from numpy.ma.testutils import assert_almost_equal
 
-from examples.PyMPDATA_examples.comparison_against_pypde_et_al_2025.diffusion_2d import (
+from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d import (
     InitialConditions,
     Two2DiffusionSolution,
     mpdata_solution,
     py_pde_solution,
 )
-
 
 @pytest.fixture(name="initial_conditions")
 def _initial_conditions() -> InitialConditions:
@@ -50,28 +49,32 @@ def test_initial_conditions(initial_conditions: InitialConditions) -> None:
 def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     """Test that the solutions from PyPDE and MPDATA for 2D diffusion are similar."""
 
-    py_pde_start = time.perf_counter()
+    # initial solutions
     py_pde_result: Two2DiffusionSolution = py_pde_solution(
         initial_conditions=initial_conditions,
     )
-    py_pde_elapsed = time.perf_counter() - py_pde_start
-    assert py_pde_elapsed < 10, "PyPDE solution took too long to compute"
 
-    mpdata_start = time.perf_counter()
     mpdata_result: Two2DiffusionSolution = mpdata_solution(
         initial_conditions=initial_conditions,
     )
-    mpdata_elapsed = time.perf_counter() - mpdata_start
-    assert mpdata_elapsed < 40, "MPDATA solution took too long to compute"
 
+    # calculate solutions again to time them and ensure they are consistent across runs
+    py_pde_start = time.perf_counter()
     py_pde_result2: Two2DiffusionSolution = py_pde_solution(
         initial_conditions=initial_conditions,
     )
     assert np.all(py_pde_result == py_pde_result2), "PyPDE results are not consistent across runs"
+
+    py_pde_elapsed = time.perf_counter() - py_pde_start
+    assert py_pde_elapsed < 10, "PyPDE solution took too long to compute"
     
+    mpdata_start = time.perf_counter()
     mpdata_result2: Two2DiffusionSolution = mpdata_solution(
         initial_conditions=initial_conditions,
     )
+    mpdata_elapsed = time.perf_counter() - mpdata_start
+    assert mpdata_elapsed < 10, "MPDATA solution took too long to compute"
+
     assert np.all(mpdata_result == mpdata_result2), "MPDATA results are not consistent across runs"
 
     # sanity checks
