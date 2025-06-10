@@ -18,7 +18,6 @@ from PyMPDATA.boundary_conditions import Constant
 class SimulationArgs:
     """Dataclass to hold simulation arguments."""
 
-    sim_name: str
     grid_bounds: Tuple[float, float]
     grid_points: int
     initial_value: float
@@ -30,7 +29,7 @@ class SimulationArgs:
 class SimulationResult:
     """Dataclass to hold simulation results, and additional produced plots."""
 
-    result_matrix: np.ndarray
+    kymograph_result: np.ndarray
     figures: Dict[str, matplotlib.figure.Figure] = dataclasses.field(
         default_factory=dict
     )
@@ -51,15 +50,13 @@ def py_pde_solution(args: SimulationArgs):
     result = eq.solve(field, args.sim_time, dt=args.dt, tracker=storage.tracker(1))
 
     return SimulationResult(
-        result_matrix=result.data,
-        extra={"storage": storage},
+        kymograph_result=np.array(storage.data),
+        extra={"final_result": result, "storage": storage},
     )
 
 
 def pympdata_solution(args: SimulationArgs) -> SimulationResult:
     """Runs the simulation using PyMPDATA."""
-
-    logging.info(f"Running PyMPDATA simulation: {args.sim_name}")
 
     xmin, xmax = args.grid_bounds
     dx = (xmax - xmin) / args.grid_points
@@ -178,4 +175,4 @@ def pympdata_solution(args: SimulationArgs) -> SimulationResult:
         f"Relative mass change: {abs(kymo[-1].sum() - kymo[0].sum()) / kymo[0].sum() * 100:.2e}%"
     )
 
-    return SimulationResult(result_matrix=res_kymo, figures=figs)
+    return SimulationResult(kymograph_result=res_kymo, figures=figs)
