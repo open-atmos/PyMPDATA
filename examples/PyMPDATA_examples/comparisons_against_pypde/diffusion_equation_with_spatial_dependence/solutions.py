@@ -1,16 +1,20 @@
-import os
-import logging
-import numpy as np
-import matplotlib.pyplot as plt
-from typing import Tuple
-from typing import Dict
-import matplotlib.figure
+"""
+Helper functions to run two different implementations of the diffusion equation with spatial dependence.
+"""
+
 import dataclasses
+import logging
+import os
+from typing import Dict, Tuple
+
+import matplotlib.figure
+import matplotlib.pyplot as plt
+import numpy as np
 
 # from pde import PDE, CartesianGrid, MemoryStorage, ScalarField, plot_kymograph
 import pde as py_pde
 
-from PyMPDATA import Options, ScalarField, VectorField, Stepper, Solver
+from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
 
 
