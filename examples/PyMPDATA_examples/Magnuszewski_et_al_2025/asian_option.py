@@ -70,6 +70,7 @@ class Simulation:
         cfl_condition = np.max(np.abs(self.a_dim_advector)) + np.max(
             np.abs(x_dim_advector)
         )
+        print(f"courant_y={np.max(np.abs(self.a_dim_advector))}")
         print(f"{cfl_condition=}")
         assert cfl_condition < 1, f"CFL condition not met {cfl_condition}"
         self.solver = Solver(
