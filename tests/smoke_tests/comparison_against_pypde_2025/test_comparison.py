@@ -14,6 +14,7 @@ from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d impor
     py_pde_solution,
 )
 
+
 @pytest.fixture(name="initial_conditions")
 def _initial_conditions() -> InitialConditions:
     """Fixture providing initial conditions for the diffusion problem."""
@@ -27,6 +28,7 @@ def _initial_conditions() -> InitialConditions:
         grid_range_y=(0.0, 2.0),
         pulse_position=(0.0, 1.0),
     )
+
 
 def test_initial_conditions(initial_conditions: InitialConditions) -> None:
     """Test that the initial conditions are set up correctly."""
@@ -63,11 +65,13 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     py_pde_result2: Two2DiffusionSolution = py_pde_solution(
         initial_conditions=initial_conditions,
     )
-    assert np.all(py_pde_result == py_pde_result2), "PyPDE results are not consistent across runs"
+    assert np.all(py_pde_result == py_pde_result2), (
+        "PyPDE results are not consistent across runs"
+    )
 
     py_pde_elapsed = time.perf_counter() - py_pde_start
     assert py_pde_elapsed < 10, "PyPDE solution took too long to compute"
-    
+
     mpdata_start = time.perf_counter()
     mpdata_result2: Two2DiffusionSolution = mpdata_solution(
         initial_conditions=initial_conditions,
@@ -75,7 +79,9 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     mpdata_elapsed = time.perf_counter() - mpdata_start
     assert mpdata_elapsed < 10, "MPDATA solution took too long to compute"
 
-    assert np.all(mpdata_result == mpdata_result2), "MPDATA results are not consistent across runs"
+    assert np.all(mpdata_result == mpdata_result2), (
+        "MPDATA results are not consistent across runs"
+    )
 
     # sanity checks
     assert py_pde_result.shape == mpdata_result.shape
@@ -87,8 +93,12 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     # total mass check
     assert_almost_equal(py_pde_result.sum(), mpdata_result.sum(), decimal=5)
 
-    py_pde_total_mass = py_pde_result.sum() * initial_conditions.dx * initial_conditions.dy
-    mpdata_total_mass = mpdata_result.sum() * initial_conditions.dx * initial_conditions.dy
+    py_pde_total_mass = (
+        py_pde_result.sum() * initial_conditions.dx * initial_conditions.dy
+    )
+    mpdata_total_mass = (
+        mpdata_result.sum() * initial_conditions.dx * initial_conditions.dy
+    )
     assert np.isclose(py_pde_total_mass, 1.0, rtol=1e-3)
     assert np.isclose(mpdata_total_mass, 1.0, rtol=1e-3)
 
