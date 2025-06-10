@@ -13,7 +13,7 @@ from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NU
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_axpy import make_axpy
 from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
-from .impl.formulae_laplacian import make_laplacian, make_heterogeneous_laplacian
+from .impl.formulae_laplacian import make_heterogeneous_laplacian, make_laplacian
 from .impl.formulae_nonoscillatory import make_beta, make_correction, make_psi_extrema
 from .impl.formulae_upwind import make_upwind
 from .impl.meta import _Impl

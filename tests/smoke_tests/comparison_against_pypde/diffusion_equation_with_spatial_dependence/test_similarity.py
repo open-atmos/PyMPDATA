@@ -1,9 +1,9 @@
 import numpy as np
 import pde as py_pde
-
 from PyMPDATA_examples.comparisons_against_pypde.diffusion_equation_with_spatial_dependence import (
     solutions,
 )
+
 from PyMPDATA import Options
 
 

@@ -58,6 +58,7 @@ def make_heterogeneous_laplacian(
         @numba.njit(**options.jit_flags)
         def apply(_1, _2, _3, _4):
             return
+
     else:
         idx = traversals.indexers[traversals.n_dims]
         apply_vector = traversals.apply_vector()
