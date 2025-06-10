@@ -32,8 +32,9 @@ class Options:
         DPDC: bool = False,  # pylint: disable=invalid-name
         epsilon: float = 1e-15,
         non_zero_mu_coeff: bool = False,
+        heterogeneous_diffusion: bool = False,
         dimensionally_split: bool = False,
-        dtype: [np.float32, np.float64] = np.float64
+        dtype: np.float32 | np.float64 = np.float64,
     ):
         self._values = HashableDict(
             {
@@ -47,6 +48,7 @@ class Options:
                 "dimensionally_split": dimensionally_split,
                 "dtype": dtype,
                 "DPDC": DPDC,
+                "heterogeneous_diffusion": heterogeneous_diffusion,
             }
         )
 
@@ -135,6 +137,11 @@ class Options:
     def dimensionally_split(self) -> bool:
         """flag disabling cross-dimensional terms in antidiffusive velocities"""
         return self._values["dimensionally_split"]
+
+    @property
+    def heterogeneous_diffusion(self) -> bool:
+        """flag enabling spatially varying diffusivity support"""
+        return self._values["heterogeneous_diffusion"]
 
     def __str__(self):
         return str(self._values)

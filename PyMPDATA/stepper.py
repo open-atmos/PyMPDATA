@@ -13,7 +13,7 @@ from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NU
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_axpy import make_axpy
 from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent
-from .impl.formulae_laplacian import make_laplacian
+from .impl.formulae_laplacian import make_heterogeneous_laplacian, make_laplacian
 from .impl.formulae_nonoscillatory import make_beta, make_correction, make_psi_extrema
 from .impl.formulae_upwind import make_upwind
 from .impl.meta import _Impl
@@ -34,7 +34,7 @@ class Stepper:
         grid: (tuple, None) = None,
         n_threads: (int, None) = None,
         left_first: (tuple, None) = None,
-        buffer_size: int = 0
+        buffer_size: int = 0,
     ):
         if n_dims is not None and grid is not None:
             raise ValueError()
@@ -144,6 +144,7 @@ def make_step_impl(
     n_iters = options.n_iters
     non_zero_mu_coeff = options.non_zero_mu_coeff
     nonoscillatory = options.nonoscillatory
+    heterogeneous_diffusion = options.heterogeneous_diffusion
 
     upwind = make_upwind(options, non_unit_g_factor, traversals)
     flux_first_pass = make_flux_first_pass(options, traversals)
@@ -153,6 +154,9 @@ def make_step_impl(
         non_unit_g_factor, options, traversals, last_pass=True
     )
     laplacian = make_laplacian(non_unit_g_factor, options, traversals)
+    heterogeneous_laplacian = make_heterogeneous_laplacian(
+        non_unit_g_factor, options, traversals
+    )
     nonoscillatory_psi_extrema = make_psi_extrema(options, traversals)
     nonoscillatory_beta = make_beta(non_unit_g_factor, options, traversals)
     nonoscillatory_correction = make_correction(options, traversals)
@@ -168,6 +172,7 @@ def make_step_impl(
         advectee,
         advector,
         g_factor,
+        diffusivity_field,
         vectmp_a,
         vectmp_b,
         vectmp_c,
@@ -185,7 +190,12 @@ def make_step_impl(
                     if nonoscillatory:
                         nonoscillatory_psi_extrema(null_impl, psi_extrema, advectee)
                     if non_zero_mu_coeff:
-                        laplacian(null_impl, advector, advectee)
+                        if heterogeneous_diffusion:
+                            heterogeneous_laplacian(
+                                null_impl, advector, advectee, diffusivity_field
+                            )
+                        else:
+                            laplacian(null_impl, advector, advectee)
                         axpy(
                             *advector.field,
                             mu_coeff,

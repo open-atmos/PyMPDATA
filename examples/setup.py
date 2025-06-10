@@ -38,6 +38,7 @@ setup(
         "meshio",
         "numdifftools",
         "pandas",
+        "py-pde" + ("==0.45.0" if CI else ""),
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     license="GPL-3.0",
