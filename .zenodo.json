@@ -49,7 +49,10 @@
     {
       "affiliation": "Jagiellonian University, Kraków, Poland",
       "name": "Sadowski, Michał"
-    }
+    },
+    {
+      "affiliation": "AGH University of Krakow, Poland",
+      "name": "Wroński, Michał"
   ],
   "keywords": [
     "advection-diffusion",
