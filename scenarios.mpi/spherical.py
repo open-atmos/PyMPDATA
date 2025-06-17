@@ -83,7 +83,7 @@ class WilliamsonAndRasch89Settings:
 
 class SphericalScenario(_Scenario):
     """class representation of a test case from
-    [Williamson & Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117<0102:TDSLTW>2.0.CO;2)
+    [Williamson & Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2)
     """
 
     def __init__(  # pylint: disable=too-many-arguments
