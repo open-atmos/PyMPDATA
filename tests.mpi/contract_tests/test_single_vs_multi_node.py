@@ -15,10 +15,10 @@ from mpi4py import MPI
 from PyMPDATA_MPI.domain_decomposition import subdomain
 from PyMPDATA_MPI.hdf_storage import HDFStorage
 from PyMPDATA_MPI.utils import barrier_enclosed, setup_dataset_and_sync_all_workers
-from scenarios import CartesianScenario, ShallowWaterScenario, SphericalScenario
 
 from PyMPDATA import Options
 from PyMPDATA.impl.enumerations import INNER, OUTER
+from scenarios_mpi import CartesianScenario, ShallowWaterScenario, SphericalScenario
 
 OPTIONS_KWARGS = (
     {"n_iters": 1},
