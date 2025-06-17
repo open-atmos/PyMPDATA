@@ -4,7 +4,6 @@ import h5py
 import numba
 import numba_mpi as mpi
 from mpi4py import MPI
-
 from PyMPDATA_MPI.utils import barrier_enclosed
 
 

@@ -3,9 +3,9 @@ tests for domain decomposition utilities
 """
 
 import pytest
-from PyMPDATA.impl.enumerations import INNER, OUTER
-
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
+
+from PyMPDATA.impl.enumerations import INNER, OUTER
 
 
 @pytest.mark.parametrize(
