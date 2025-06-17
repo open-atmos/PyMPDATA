@@ -28,11 +28,10 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    # TODO #570
-    "numba==0.59.0",
-    "numpy<1.25.0",
+    "numba",
+    "numpy",
     "numba_mpi>=0.30",
-    "PyMPDATA==1.3.6",
+    "PyMPDATA",
     "mpi4py",
     "h5py",
 ]
