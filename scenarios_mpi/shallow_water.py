@@ -144,7 +144,7 @@ class ShallowWaterScenario(_Scenario):
             self.solvers[  # pylint: disable=protected-access
                 "h"
             ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-            for xy, k in enumerate(("uh", "vh")):
+            for xy, k in enumerate(("uh", "vh")):  # pylint: disable=invalid-name
                 mask = self.data("h") > self.eps
                 vel = np.where(mask, np.nan, 0)
                 self.solvers[  # pylint: disable=protected-access
@@ -158,7 +158,7 @@ class ShallowWaterScenario(_Scenario):
             self.solvers[  # pylint: disable=protected-access
                 "h"
             ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-            for xy, k in enumerate(("uh", "vh")):
+            for xy, k in enumerate(("uh", "vh")):  # pylint: disable=invalid-name
                 self[k][:] -= (
                     self.dt
                     / 2
