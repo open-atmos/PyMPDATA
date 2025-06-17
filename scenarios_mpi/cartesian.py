@@ -5,12 +5,12 @@ import numpy as np
 from matplotlib import pyplot
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
 from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
-from scenarios._scenario import _Scenario
 
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.enumerations import INNER, OUTER
+from scenarios_mpi._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
 

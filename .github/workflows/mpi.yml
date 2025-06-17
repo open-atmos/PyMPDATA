@@ -174,7 +174,7 @@ jobs:
             export COV_ARGS="--cov=PyMPDATA-MPI --cov=examples --cov=scenarios --cov-report=xml"
             pip install pytest-cov
           fi
-          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests.mpi;
+          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests_mpi;
       - uses: actions/upload-artifact@v4
         with:
           name: plots-${{matrix.mpi-np}}

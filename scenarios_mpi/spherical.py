@@ -8,9 +8,9 @@ import numpy as np
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
 from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
 from PyMPDATA_MPI.mpi_polar import MPIPolar
-from scenarios._scenario import _Scenario
 
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
+from scenarios_mpi._scenario import _Scenario
 
 # Polar only for upwind: https://github.com/open-atmos/PyMPDATA/issues/120
 OPTIONS_KWARGS = ({"n_iters": 1},)
