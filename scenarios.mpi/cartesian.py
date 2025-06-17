@@ -3,14 +3,14 @@
 import numba
 import numpy as np
 from matplotlib import pyplot
+from PyMPDATA_MPI.domain_decomposition import mpi_indices
+from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
+from scenarios._scenario import _Scenario
+
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.enumerations import INNER, OUTER
-
-from PyMPDATA_MPI.domain_decomposition import mpi_indices
-from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
-from scenarios._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
 
@@ -62,10 +62,10 @@ class CartesianScenario(_Scenario):
             n_dims=2,
             n_threads=n_threads,
             left_first=tuple([rank % 2 == 0] * 2),
-            # TODO #70 (see also https://github.com/open-atmos/PyMPDATA/issues/386)
+            # TODO #580 (see also https://github.com/open-atmos/PyMPDATA/issues/386)
             buffer_size=(
                 (ny if mpi_dim == OUTER else nx + 2 * halo) * halo
-            )  # TODO #38 support for 3D domain
+            )  # TODO #581 support for 3D domain
             * 2  # for temporary send/recv buffer on one side
             * 2  # for complex dtype
             * (2 if mpi_dim == OUTER else n_threads),

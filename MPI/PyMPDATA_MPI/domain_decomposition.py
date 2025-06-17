@@ -1,6 +1,7 @@
 """MPI-aware domain decomposition utilities"""
 
 import numpy as np
+
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 
 subdomain = make_subdomain(jit_flags={})

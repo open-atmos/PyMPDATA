@@ -12,13 +12,13 @@ import numpy as np
 import pytest
 from matplotlib import pyplot
 from mpi4py import MPI
-from PyMPDATA import Options
-from PyMPDATA.impl.enumerations import INNER, OUTER
-
 from PyMPDATA_MPI.domain_decomposition import subdomain
 from PyMPDATA_MPI.hdf_storage import HDFStorage
 from PyMPDATA_MPI.utils import barrier_enclosed, setup_dataset_and_sync_all_workers
 from scenarios import CartesianScenario, ShallowWaterScenario, SphericalScenario
+
+from PyMPDATA import Options
+from PyMPDATA.impl.enumerations import INNER, OUTER
 
 OPTIONS_KWARGS = (
     {"n_iters": 1},
@@ -48,7 +48,7 @@ SPHERICAL_OUTPUT_STEPS = range(0, 2000, 100)
         (CartesianScenario, CARTESIAN_OUTPUT_STEPS, 1),
         (CartesianScenario, CARTESIAN_OUTPUT_STEPS, 2),
         (CartesianScenario, CARTESIAN_OUTPUT_STEPS, 3),
-        (SphericalScenario, SPHERICAL_OUTPUT_STEPS, 1),  # TODO #56
+        (SphericalScenario, SPHERICAL_OUTPUT_STEPS, 1),  # TODO #120
         (ShallowWaterScenario, SHALLOW_WATER_OUTPUT_STEPS, 1),
     ),
 )
@@ -64,8 +64,8 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
     n_threads,
     courant_field_multiplier,
     output_steps,
-    grid=(64, 32),
-    request,  # TODO #101  # pylint: disable=unused-argument
+    grid=(64, 32),  # TODO #582
+    request,  # pylint: disable=unused-argument
 ):
     """
     Test is divided into three logical stages.
@@ -85,19 +85,19 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
         pytest.skip("Courant field multiplier is not used in ShallowWaterScenario")
 
     if scenario_class is SphericalScenario and options_kwargs["n_iters"] > 1:
-        pytest.skip("TODO #56")
+        pytest.skip("TODO #120")
 
     if scenario_class is SphericalScenario and mpi.size() > 2:
-        pytest.skip("TODO #56")
+        pytest.skip("TODO #120")
 
     if scenario_class is SphericalScenario and mpi_dim == INNER:
-        pytest.skip("TODO #56")
+        pytest.skip("TODO #120")
 
     if n_threads > 1 and options_kwargs.get("nonoscillatory", False):
-        pytest.skip("TODO #99")
+        pytest.skip("TODO #583")
 
     if mpi_dim == INNER and options_kwargs.get("third_order_terms", False):
-        pytest.skip("TODO #102")
+        pytest.skip("TODO #584")
 
     if n_threads > 1 and numba.config.DISABLE_JIT:  # pylint: disable=no-member
         pytest.skip("threading requires Numba JIT to be enabled")
@@ -118,7 +118,7 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
         and mpi.rank() != 0
     ):
         pass
-        # request.node.add_marker(pytest.mark.xfail(reason="TODO #162", strict=True))
+        # request.node.add_marker(pytest.mark.xfail(reason="TODO #570", strict=True))
 
     plot = (
         "CI_PLOTS_PATH" in os.environ

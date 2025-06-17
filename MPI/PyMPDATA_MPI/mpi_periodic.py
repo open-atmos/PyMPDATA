@@ -4,11 +4,11 @@ from functools import lru_cache
 
 import numba
 import numba_mpi as mpi
-from PyMPDATA.boundary_conditions import Periodic
-from PyMPDATA.impl.enumerations import SIGN_LEFT, SIGN_RIGHT
-
 from PyMPDATA_MPI.impl import MPIBoundaryCondition
 from PyMPDATA_MPI.impl.boundary_condition_commons import make_vector_boundary_condition
+
+from PyMPDATA.boundary_conditions import Periodic
+from PyMPDATA.impl.enumerations import SIGN_LEFT, SIGN_RIGHT
 
 
 class MPIPeriodic(MPIBoundaryCondition):

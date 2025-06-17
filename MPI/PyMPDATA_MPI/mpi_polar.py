@@ -4,10 +4,10 @@ from functools import lru_cache
 
 import numba
 import numba_mpi as mpi
+from PyMPDATA_MPI.impl import MPIBoundaryCondition
+
 from PyMPDATA.boundary_conditions import Polar
 from PyMPDATA.impl.enumerations import INNER, OUTER
-
-from PyMPDATA_MPI.impl import MPIBoundaryCondition
 
 
 class MPIPolar(MPIBoundaryCondition):

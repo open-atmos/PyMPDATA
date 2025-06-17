@@ -5,12 +5,12 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from PyMPDATA import ScalarField, Solver, Stepper, VectorField
-
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
 from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
 from PyMPDATA_MPI.mpi_polar import MPIPolar
 from scenarios._scenario import _Scenario
+
+from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 
 # Polar only for upwind: https://github.com/open-atmos/PyMPDATA/issues/120
 OPTIONS_KWARGS = ({"n_iters": 1},)
@@ -144,7 +144,7 @@ class SphericalScenario(_Scenario):
             ]
         )
 
-        # TODO #81: <move out>
+        # TODO #510: <move out>
         Cx_max = np.amax(
             np.abs((advector_x[1:, :] + advector_x[:-1, :]) / 2 / g_factor_z)
         )
@@ -154,7 +154,7 @@ class SphericalScenario(_Scenario):
             np.abs((advector_y[:, 1:] + advector_y[:, :-1]) / 2 / g_factor_z)
         )
         assert Cy_max < 1
-        # TODO #81: </move out>
+        # TODO #510: </move out>
 
         g_factor = ScalarField(
             data=g_factor_z,
@@ -181,7 +181,7 @@ class SphericalScenario(_Scenario):
             n_dims=2,
             n_threads=n_threads,
             left_first=tuple([rank % 2 == 0, True]),
-            # TODO #70 (see also https://github.com/open-atmos/PyMPDATA/issues/386)
+            # TODO #580 (see also https://github.com/open-atmos/PyMPDATA/issues/386)
             buffer_size=((ny + 2 * halo) * halo)
             * 2  # for temporary send/recv buffer on one side
             * 2,  # for complex dtype
