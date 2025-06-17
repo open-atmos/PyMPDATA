@@ -17,7 +17,7 @@ class MPIBoundaryCondition:
         """returns (lru-cached) numba-compiled callable."""
         raise NotImplementedError()
 
-    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    # pylint: disable=too-many-arguments
     def make_scalar(self, indexers, halo, dtype, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled scalar halo-filling callable"""
         if self.__mpi_size_one:

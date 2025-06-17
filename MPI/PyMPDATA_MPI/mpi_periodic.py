@@ -24,7 +24,7 @@ class MPIPeriodic(MPIBoundaryCondition):
 
         super().__init__(size=size, base=Periodic, mpi_dim=mpi_dim)
 
-    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    # pylint: disable=too-many-arguments
     def make_vector(self, indexers, halo, dtype, jit_flags, dimension_index):
         """returns (lru-cached) Numba-compiled vector halo-filling callable"""
         if self.worker_pool_size == 1:
