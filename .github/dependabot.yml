@@ -8,3 +8,8 @@ updates:
   directory: "/examples/"
   schedule:
     interval: daily
+- package-ecosystem: pip
+  directory: "/MPI/"
+  schedule:
+    interval: daily
+
