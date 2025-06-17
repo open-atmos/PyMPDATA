@@ -44,7 +44,9 @@ class CartesianScenario(_Scenario):
             mpi_periodic if mpi_dim == INNER else periodic,
         )
         advectee = ScalarField(
-            data=self.initial_condition(*xyi, grid),
+            data=self.initial_condition(
+                *xyi, grid
+            ),  # pylint:disable=no-value-for-parameter
             halo=mpdata_options.n_halo,
             boundary_conditions=boundary_conditions,
         )
