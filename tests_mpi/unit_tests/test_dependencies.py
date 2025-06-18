@@ -1,5 +1,7 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
+import mpi4py
 import numba_mpi
+import numpy
 
 import PyMPDATA
 
