@@ -30,7 +30,7 @@ jobs:
           JUPYTER_PLATFORM_DIRS: 1
         run: |
           pip install pdoc nbformat gitpython
-          pip install -e . -e ./examples
+          pip install -e . -e ./examples -e ./MPI
           python -We docs/generate_html.py . .
 
           python - <<EOF
