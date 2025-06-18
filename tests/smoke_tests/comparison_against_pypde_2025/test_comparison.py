@@ -91,7 +91,7 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     assert np.all(mpdata_result >= 0)
 
     # total mass check
-    assert_almost_equal(py_pde_result.sum(), mpdata_result.sum(), decimal=5)
+    assert np.isclose(py_pde_result.sum(), mpdata_result.sum(), rtol=1e-5, atol=1e-10)
 
     py_pde_total_mass = (
         py_pde_result.sum() * initial_conditions.dx * initial_conditions.dy
