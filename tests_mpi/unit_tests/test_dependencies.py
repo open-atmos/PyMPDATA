@@ -1,4 +1,5 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
+import h5py
 import mpi4py
 import numba_mpi
 import numpy
