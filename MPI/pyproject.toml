@@ -13,7 +13,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pympdata-mpi"
 description = "PyMPDATA + numba-mpi coupler sandbox"
-readme = "README.md"
+readme = "docs/pympdata_mpi_landing.md"
 requires-python = ">=3.10"
 keywords = ["MPI", "MPDATA", "Numba", "PyMPDATA"]
 license = {text = "GPL-3.0"}
