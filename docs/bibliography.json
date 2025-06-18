@@ -17,7 +17,8 @@
   "https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2": {
     "usages": [
 	"examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/__init__.py",
-	"scenarios_mpi/spherical.py"
+	"scenarios_mpi/spherical.py",
+	"MPI/docs/pympdata_mpi_landing.md"
     ],
     "label": "Williamson & Rasch 1989 (Mon. Weather Rev. 117)",
     "title": "Two-Dimensional Semi-Lagrangian Transport with Shape-Preserving Interpolation"
@@ -59,7 +60,8 @@
   "https://doi.org/10.3233/SPR-140379": {
     "usages": [
 	"docs/markdown/pympdata_landing.md",
-	"scenarios_mpi/cartesian.py"
+	"scenarios_mpi/cartesian.py",
+	"MPI/docs/pympdata_mpi_landing.md"
     ],
     "label": "Arabas et al. 2014 (Sci. Prog. 22)",
     "title": "Formula Translation in Blitz++, NumPy and Modern Fortran: A Case Study of the Language Choice Tradeoffs"
@@ -68,7 +70,8 @@
     "usages": [
 	"examples/PyMPDATA_examples/Jarecka_et_al_2015/fig_6.ipynb",
 	"examples/PyMPDATA_examples/Jarecka_et_al_2015/__init__.py",
-	"scenarios_mpi/shallow_water.py"
+	"scenarios_mpi/shallow_water.py",
+	"MPI/docs/pympdata_mpi_landing.md"
     ],
     "label": "Jarecka et al. 2015 (J. Comp. Phys. 289)",
     "title": "A spreading drop of shallow water"
