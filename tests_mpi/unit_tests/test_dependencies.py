@@ -5,5 +5,5 @@ import PyMPDATA
 
 
 def test_dependencies():
-    for package in [numba_mpi, PyMPDATA]:
+    for package in [numba_mpi, PyMPDATA, h5py, mpi4py, numpy]:
         print(package.__version__)
