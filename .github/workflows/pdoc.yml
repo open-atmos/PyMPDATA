@@ -29,6 +29,8 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
       - env:
           JUPYTER_PLATFORM_DIRS: 1
+      - if: matrix.platform == "macos-latest"
+        run: echo DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH >> $GITHUB_ENV
         run: |
           pip install pdoc nbformat gitpython
           pip install -e . -e ./examples -e ./MPI
