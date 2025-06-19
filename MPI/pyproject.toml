@@ -28,7 +28,7 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Physics"
 ]
 dependencies = [
-    "numba",
+    "numba<0.57.0",
     "numpy",
     "numba_mpi>=0.30",
     "PyMPDATA",
