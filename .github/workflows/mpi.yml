@@ -164,6 +164,8 @@ jobs:
       - name: "mpiexec pytest"
         env:
           NUMBA_DISABLE_JIT: ${{ matrix.disable-jit }} 
+          PYTHON: ${{ matrix.python-version }}
+          MPI: 1
         run: |
           if [ "$animation_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
             export CI_PLOTS_PATH=plots/$animation_run
@@ -182,6 +184,7 @@ jobs:
       - if: env.CODECOV_RUN == '1'
         uses: codecov/codecov-action@v4
         with: 
+          env_vars: PYTHON,MPI
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
