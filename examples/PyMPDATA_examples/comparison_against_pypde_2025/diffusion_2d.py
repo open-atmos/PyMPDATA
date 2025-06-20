@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from pde import CartesianGrid, DiffusionPDE
+from pde import CartesianGrid, DiffusionPDE, DataFieldBase
 from pde import ScalarField as PDEScalarField
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
@@ -75,15 +75,9 @@ class InitialConditions:
     def n_steps(self) -> int:
         """Calculate the number of time steps based on the time range and time step."""
         return int(self.time_end / self.time_step)
-
-
-Two2DDiffusionSolution = npt.NDArray[np.float64]
-
-
-def py_pde_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolution:
-    """
-    Solve the 2D diffusion equation using PyPDE.
-    """
+    
+    
+def create_pde_state(initial_conditions: InitialConditions) -> DataFieldBase:
     grid = CartesianGrid(
         bounds=[
             initial_conditions.grid_range_x,
@@ -96,6 +90,17 @@ def py_pde_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolu
         point=np.array(initial_conditions.pulse_position),
         amount=1,
     )
+    return state
+
+
+Grid = npt.NDArray[np.float64]
+
+
+def py_pde_solution(initial_conditions: InitialConditions) -> Grid:
+    """
+    Solve the 2D diffusion equation using PyPDE.
+    """
+    state = create_pde_state(initial_conditions=initial_conditions)
     eq = DiffusionPDE(diffusivity=initial_conditions.diffusion_coefficient)
     result = eq.solve(
         state=state,
@@ -105,7 +110,7 @@ def py_pde_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolu
     return result.data
 
 
-def mpdata_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolution:
+def mpdata_solution(initial_conditions: InitialConditions) -> Grid:
     """
     Solve the 2D diffusion equation using PyMPDATA.
     """
@@ -118,26 +123,7 @@ def mpdata_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolu
         n_dims=initial_conditions.N_DIMS,
     )
 
-    def create_pde_like_data(
-        ic: InitialConditions,
-        mass_to_distribute: float = 1.0,
-    ) -> npt.NDArray[np.float64]:
-        """
-        Create a 2D array with a pulse at the specified position.
-        """
-        x = np.linspace(ic.min_x + ic.dx / 2, ic.max_x - ic.dx / 2, ic.nx)
-        y = np.linspace(ic.min_y + ic.dy / 2, ic.max_y - ic.dy / 2, ic.ny)
-        result = np.zeros((ic.nx, ic.ny))
-        # Locate cell nearest (0, 1)
-        i = np.argmin(np.abs(x - ic.pulse_x))
-        j = np.argmin(np.abs(y - ic.pulse_y))
-        # Distribute mass over 2x2 cells (py-pde seems to do this internally)
-        pulse_blocks = ic.pulse_shape[0] * ic.pulse_shape[1]
-        mass_per_cell = mass_to_distribute / (pulse_blocks * ic.dx * ic.dy)
-        result[i : i + ic.pulse_shape[0], j : j + ic.pulse_shape[1]] = mass_per_cell
-        return result
-
-    data = create_pde_like_data(ic=initial_conditions)
+    data = create_pde_state(initial_conditions=initial_conditions).data
 
     advectee = ScalarField(
         data=data, halo=opt.n_halo, boundary_conditions=(Periodic(), Periodic())

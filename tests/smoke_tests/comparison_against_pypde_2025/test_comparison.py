@@ -8,7 +8,7 @@ import time
 
 from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d import (
     InitialConditions,
-    Two2DDiffusionSolution,
+    Grid,
     mpdata_solution,
     py_pde_solution,
 )
@@ -54,17 +54,17 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     """Test that the solutions from PyPDE and MPDATA for 2D diffusion are similar."""
 
     # initial solutions
-    py_pde_result: Two2DDiffusionSolution = py_pde_solution(
+    py_pde_result: Grid = py_pde_solution(
         initial_conditions=initial_conditions,
     )
 
-    mpdata_result: Two2DDiffusionSolution = mpdata_solution(
+    mpdata_result: Grid = mpdata_solution(
         initial_conditions=initial_conditions,
     )
 
     # calculate solutions again to time them and ensure they are consistent across runs
     py_pde_start = time.perf_counter()
-    py_pde_result2: Two2DDiffusionSolution = py_pde_solution(
+    py_pde_result2: Grid = py_pde_solution(
         initial_conditions=initial_conditions,
     )
     assert np.all(py_pde_result == py_pde_result2), (
@@ -77,7 +77,7 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     assert py_pde_elapsed < MAX_ELAPSED_TIME, "PyPDE solution took too long to compute"
 
     mpdata_start = time.perf_counter()
-    mpdata_result2: Two2DDiffusionSolution = mpdata_solution(
+    mpdata_result2: Grid = mpdata_solution(
         initial_conditions=initial_conditions,
     )
     mpdata_elapsed = time.perf_counter() - mpdata_start
