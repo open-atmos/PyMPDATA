@@ -56,7 +56,9 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def a_term(psi):
-        """eq. 13 in Smolarkiewicz 1984; eq. 17a in Smolarkiewicz & Margolin 1998"""
+        """eq. 13 in [Smolarkiewicz 1984](https://doi.org/10.1016/0021-9991(84)90121-9);
+        eq. 17a in [Smolarkiewicz & Margolin 1998](https://doi.org/10.1006/jcph.1998.5901)
+        """
         result = ats(*psi, 1) - ats(*psi, 0)
         if infinite_gauge:
             return result / 2
@@ -64,7 +66,9 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def b_term(psi):
-        """eq. 13 in Smolarkiewicz 1984; eq. 17b in Smolarkiewicz & Margolin 1998"""
+        """eq. 13 in [Smolarkiewicz 1984](https://doi.org/10.1016/0021-9991(84)90121-9);
+        eq. 17b in [Smolarkiewicz & Margolin 1998](https://doi.org/10.1006/jcph.1998.5901)
+        """
         result = ats(*psi, 1, 1) + ats(*psi, 0, 1) - ats(*psi, 1, -1) - ats(*psi, 0, -1)
         if infinite_gauge:
             return result / 4
@@ -79,7 +83,7 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def antidiff_basic(psi, g_c, _):
-        """eq. 13 in Smolarkiewicz 1984"""
+        """eq. 13 in [Smolarkiewicz 1984](https://doi.org/10.1016/0021-9991(84)90121-9)"""
         tmp = a_term(psi)
         result = (np.abs(atv(*g_c, 0.5)) - atv(*g_c, +0.5) ** 2) * tmp
         if dpdc and last_pass:
@@ -103,7 +107,7 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 
     @numba.njit(**options.jit_flags)
     def antidiff_variants(psi, g_c, g_factor):
-        """eq. 13 in Smolarkiewicz 1984"""
+        """eq. 13 in [Smolarkiewicz 1984](https://doi.org/10.1016/0021-9991(84)90121-9)"""
         result = antidiff_basic(psi, g_c, g_factor)
 
         g_bar = (ats(*g_factor, 1) + ats(*g_factor, 0)) / 2 if non_unit_g_factor else 1
@@ -161,7 +165,7 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
                 result += tmp
 
         # divergent flow option
-        # eq.(30) in Smolarkiewicz_and_Margolin_1998
+        # eq.(30) in [Smolarkiewicz and Margolin 1998](https://doi.org/10.1006/jcph.1998.5901)
         if divergent_flow:
             # assert psi.dimension == 1
             tmp = -0.25 * atv(*g_c, 0.5) * (atv(*g_c, 1.5) - atv(*g_c, -0.5))
