@@ -18,37 +18,48 @@ class InitialConditions:
     """
     Initial conditions for the 2D diffusion problem.
     """
+    N_DIMS = 2
 
-    def __init__(
-        self,
-        *,
-        diffusion_coefficient: float,
-        time_step: float,
-        time_end: float,
-        grid_shape: tuple[int, int],
-        grid_range_x: tuple[float, float],
-        grid_range_y: tuple[float, float],
-        pulse_position: tuple[float, float],
-    ) -> None:
-        self.diffusion_coefficient = diffusion_coefficient
-        self.time_step = time_step
-        self.time_end = time_end
-        self.grid_shape = grid_shape
-        self.grid_range_x = grid_range_x
-        self.grid_range_y = grid_range_y
-        self.pulse_position = pulse_position
-        self.nx, self.ny = grid_shape
-        self.min_x, self.max_x = grid_range_x
-        self.min_y, self.max_y = grid_range_y
-        self.pulse_x, self.pulse_y = pulse_position
+    diffusion_coefficient: float
+    time_step: float
+    time_end: float
+    grid_shape: tuple[int, int]
+    grid_range_x: tuple[float, float]
+    grid_range_y: tuple[float, float]
+    pulse_position: tuple[float, float]
+    pulse_shape: tuple[int, int]
 
-    def __repr__(self) -> str:
-        return (
-            f"InitialConditions(diffusion_coefficient={self.diffusion_coefficient}, "
-            f"time_step={self.time_step}, time_end={self.time_end}, "
-            f"grid_shape={self.grid_shape}, grid_range_x={self.grid_range_x}, "
-            f"grid_range_y={self.grid_range_y}, pulse_position={self.pulse_position})"
-        )
+    @property
+    def nx(self) -> int:
+        return self.grid_shape[0]
+
+    @property
+    def ny(self) -> int:
+        return self.grid_shape[1]
+
+    @property
+    def min_x(self) -> float:
+        return self.grid_range_x[0]
+
+    @property
+    def max_x(self) -> float:
+        return self.grid_range_x[1]
+
+    @property
+    def min_y(self) -> float:
+        return self.grid_range_y[0]
+
+    @property
+    def max_y(self) -> float:
+        return self.grid_range_y[1]
+
+    @property
+    def pulse_x(self) -> float:
+        return self.pulse_position[0]
+
+    @property
+    def pulse_y(self) -> float:
+        return self.pulse_position[1]
 
     @property
     def dx(self) -> float:
@@ -66,10 +77,10 @@ class InitialConditions:
         return int(self.time_end / self.time_step)
 
 
-type Two2DiffusionSolution = npt.NDArray[np.float64]
+Two2DDiffusionSolution = npt.NDArray[np.float64]
 
 
-def py_pde_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolution:
+def py_pde_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolution:
     """
     Solve the 2D diffusion equation using PyPDE.
     """
@@ -94,7 +105,7 @@ def py_pde_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolut
     return result.data
 
 
-def mpdata_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolution:
+def mpdata_solution(initial_conditions: InitialConditions) -> Two2DDiffusionSolution:
     """
     Solve the 2D diffusion equation using PyMPDATA.
     """
@@ -104,10 +115,13 @@ def mpdata_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolut
     )
     stepper = Stepper(
         options=opt,
-        n_dims=2,
+        n_dims=initial_conditions.N_DIMS,
     )
 
-    def create_pde_like_data(ic) -> npt.NDArray[np.float64]:
+    def create_pde_like_data(
+        ic: InitialConditions,
+        mass_to_distribute: float = 1.0,
+    ) -> npt.NDArray[np.float64]:
         """
         Create a 2D array with a pulse at the specified position.
         """
@@ -118,11 +132,9 @@ def mpdata_solution(initial_conditions: InitialConditions) -> Two2DiffusionSolut
         i = np.argmin(np.abs(x - ic.pulse_x))
         j = np.argmin(np.abs(y - ic.pulse_y))
         # Distribute mass over 2x2 cells (py-pde seems to do this internally)
-        mass_per_cell = 1.0 / (4 * ic.dx * ic.dy)
-        result[i, j] = mass_per_cell
-        result[i + 1, j] = mass_per_cell
-        result[i, j + 1] = mass_per_cell
-        result[i + 1, j + 1] = mass_per_cell
+        pulse_blocks = ic.pulse_shape[0] * ic.pulse_shape[1]
+        mass_per_cell = mass_to_distribute / (pulse_blocks * ic.dx * ic.dy)
+        result[i : i + ic.pulse_shape[0], j : j + ic.pulse_shape[1]] = mass_per_cell
         return result
 
     data = create_pde_like_data(ic=initial_conditions)
