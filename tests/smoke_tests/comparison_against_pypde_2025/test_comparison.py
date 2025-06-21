@@ -2,10 +2,16 @@
 Test the similarity of solutions from MPDATA and PyPDE for 2D diffusion
 """
 
+import numba
+import pytest
+
+if numba.__version__ < "0.59.1":
+    pytest.skip("Skipping whole file: needs numba >= 0.59.1", allow_module_level=True)
+
+
 import time
 
 import numpy as np
-import pytest
 
 from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d import (
     Grid,
