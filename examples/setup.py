@@ -38,6 +38,7 @@ setup(
         "meshio",
         "numdifftools",
         "py-pde",
+        "pandas",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     license="GPL-3.0",

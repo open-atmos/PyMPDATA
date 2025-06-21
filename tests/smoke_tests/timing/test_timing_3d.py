@@ -6,10 +6,6 @@ from PyMPDATA_examples.Smolarkiewicz_1984 import Settings, Simulation
 
 from PyMPDATA import Options
 
-from .fixtures import num_threads
-
-assert hasattr(num_threads, "_pytestfixturefunction")
-
 
 @pytest.mark.parametrize(
     "options",

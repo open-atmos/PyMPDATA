@@ -16,7 +16,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 [![Github Actions Build Status](https://github.com/open-atmos/PyMPDATA/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/open-atmos/PyMPDATA/actions)
-[![Appveyor Build status](http://ci.appveyor.com/api/projects/status/github/open-atmos/PyMPDATA?branch=main&svg=true)](https://ci.appveyor.com/project/slayoo/pympdata/branch/main)
 [![Coverage Status](https://codecov.io/gh/open-atmos/PyMPDATA/branch/main/graph/badge.svg)](https://app.codecov.io/gh/open-atmos/PyMPDATA)
 
 [![PyPI version](https://badge.fury.io/py/PyMPDATA.svg)](https://pypi.org/project/PyMPDATA)

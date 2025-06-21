@@ -23,9 +23,6 @@ from PyMPDATA.impl.enumerations import (
 )
 from PyMPDATA.impl.meta import META_HALO_VALID
 from PyMPDATA.impl.traversals import Traversals
-from tests.unit_tests.fixtures.n_threads import n_threads
-
-assert hasattr(n_threads, "_pytestfixturefunction")
 
 jit_flags = Options().jit_flags
 

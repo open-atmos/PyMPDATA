@@ -7,11 +7,6 @@ from matplotlib import pyplot
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 
-from .fixtures import num_threads
-
-assert hasattr(num_threads, "_pytestfixturefunction")
-
-
 GRID = (126, 101)
 
 TIMESTEP = 0.1
