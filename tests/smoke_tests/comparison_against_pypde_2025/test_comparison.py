@@ -2,13 +2,14 @@
 Test the similarity of solutions from MPDATA and PyPDE for 2D diffusion
 """
 
-import numpy as np
-import pytest
 import time
 
+import numpy as np
+import pytest
+
 from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d import (
-    InitialConditions,
     Grid,
+    InitialConditions,
     mpdata_solution,
     py_pde_solution,
 )
@@ -67,9 +68,9 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     py_pde_result2: Grid = py_pde_solution(
         initial_conditions=initial_conditions,
     )
-    assert np.all(py_pde_result == py_pde_result2), (
-        "PyPDE results are not consistent across runs"
-    )
+    assert np.all(
+        py_pde_result == py_pde_result2
+    ), "PyPDE results are not consistent across runs"
 
     MAX_ELAPSED_TIME = 10  # seconds
     assert py_pde_result.shape == mpdata_result.shape
@@ -83,9 +84,9 @@ def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     mpdata_elapsed = time.perf_counter() - mpdata_start
     assert mpdata_elapsed < MAX_ELAPSED_TIME, "MPDATA solution took too long to compute"
 
-    assert np.all(mpdata_result == mpdata_result2), (
-        "MPDATA results are not consistent across runs"
-    )
+    assert np.all(
+        mpdata_result == mpdata_result2
+    ), "MPDATA results are not consistent across runs"
 
     # sanity checks
     assert py_pde_result.shape == mpdata_result.shape

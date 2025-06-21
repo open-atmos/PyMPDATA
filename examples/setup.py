@@ -37,7 +37,7 @@ setup(
         "imageio",
         "meshio",
         "numdifftools",
-        "py-pde"
+        "py-pde",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
     license="GPL-3.0",

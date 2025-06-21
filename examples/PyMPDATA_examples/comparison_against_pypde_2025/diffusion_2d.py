@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from pde import CartesianGrid, DiffusionPDE, DataFieldBase
+from pde import CartesianGrid, DataFieldBase, DiffusionPDE
 from pde import ScalarField as PDEScalarField
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
@@ -18,6 +18,7 @@ class InitialConditions:
     """
     Initial conditions for the 2D diffusion problem.
     """
+
     N_DIMS = 2
 
     diffusion_coefficient: float
@@ -75,8 +76,8 @@ class InitialConditions:
     def n_steps(self) -> int:
         """Calculate the number of time steps based on the time range and time step."""
         return int(self.time_end / self.time_step)
-    
-    
+
+
 def create_pde_state(initial_conditions: InitialConditions) -> DataFieldBase:
     grid = CartesianGrid(
         bounds=[
