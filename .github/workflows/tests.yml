@@ -90,7 +90,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Generate coverage report
         run: |
-          pip install -e .[tests] -e ./examples 
+          pip install -e .[tests] -e ./examples
           pip install pytest-cov
           pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
       - name: Upload coverage to Codecov
