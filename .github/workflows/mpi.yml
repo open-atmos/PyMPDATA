@@ -173,7 +173,7 @@ jobs:
           fi
           if [ "${{ matrix.mpi-np }}" == "1" ] && [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
             echo "CODECOV_RUN=1" >> $GITHUB_ENV
-            export COV_ARGS="--cov=PyMPDATA-MPI --cov=scenarios --cov-report=xml"
+            export COV_ARGS="--cov=MPI --cov=scenarios_mpi --cov-report=xml"
             pip install pytest-cov
           fi
           NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests_mpi;
