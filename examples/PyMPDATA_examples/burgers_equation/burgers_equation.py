@@ -2,15 +2,13 @@
 Solution for the Burgers equation solution with MPDATA
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from open_atmos_jupyter_utils import show_plot
 from scipy.optimize import root_scalar
 
-from open_atmos_jupyter_utils import show_plot
-
-from PyMPDATA import Options, Solver, Stepper, VectorField, ScalarField
+from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
-
 
 OPTIONS = Options(nonoscillatory=False, infinite_gauge=True)
 
@@ -29,17 +27,22 @@ def f(x0, t, xi):
     The function to solve: x0 - sin(pi*x0)*t - xi = 0
     where xi is the initial condition at x0.
     """
-    return x0 - np.sin(np.pi*x0)*t - xi
+    return x0 - np.sin(np.pi * x0) * t - xi
+
 
 def df(x0, t, _):
     """
     The derivative of the function f with respect to x0.
     """
-    return 1 - np.cos(np.pi*x0)*np.pi*t
+    return 1 - np.cos(np.pi * x0) * np.pi * t
+
 
 def find_root(x0, t, xi):
     """Find the root of the equation f(x0, t, xi) = 0 using Newton's method."""
-    return root_scalar(f, args=(t, xi), x0=x0, method='newton', maxiter=1000, fprime=df).root
+    return root_scalar(
+        f, args=(t, xi), x0=x0, method="newton", maxiter=1000, fprime=df
+    ).root
+
 
 def analytical_solution(x, t):
     """
@@ -54,12 +57,13 @@ def analytical_solution(x, t):
             if xi == 0:
                 u[i] = 0
             else:
-                # After the schock occurs, we have discontinuity at the x=0 so we have to start finding roots from some other 
+                # After the schock occurs, we have discontinuity at the x=0 so we have to start finding roots from some other
                 # arbitraty point from which we have continuous function, we are starting from the -1 for the negative x values
                 # and from the 1 for the positive x values
-                x0 = find_root(x0=xi/abs(xi), t=t, xi=xi)
+                x0 = find_root(x0=xi / abs(xi), t=t, xi=xi)
                 u[i] = -np.sin(np.pi * x0)
     return u
+
 
 def initialize_simulation(nt, nx, t_max):
     """
@@ -72,17 +76,16 @@ def initialize_simulation(nt, nx, t_max):
 
     stepper = Stepper(options=OPTIONS, n_dims=1)
     advectee = ScalarField(
-        data=u0,
-        halo=OPTIONS.n_halo,
-        boundary_conditions=(Constant(0), Constant(0))
+        data=u0, halo=OPTIONS.n_halo, boundary_conditions=(Constant(0), Constant(0))
     )
     advector = VectorField(
         data=(np.full(courants_x.shape, 0.0),),
         halo=OPTIONS.n_halo,
-        boundary_conditions=(Constant(0), Constant(0))
+        boundary_conditions=(Constant(0), Constant(0)),
     )
     solver = Solver(stepper=stepper, advectee=advectee, advector=advector)
     return dt, dx, x, advectee, advector, solver
+
 
 def update_advector_n(vel, dt, dx, slice_idx):
     """
@@ -91,9 +94,14 @@ def update_advector_n(vel, dt, dx, slice_idx):
     indices = np.arange(slice_idx.start, slice_idx.stop)
     return 0.5 * ((vel[indices] - vel[indices - 1]) / 2 + vel[:-1]) * dt / dx
 
+
 def calculate_analytical_solutions():
     """
     Calculate the analytical solutions for the given time range.
+    Initial and boundary conditions:
+    - -1 <= x <= 1
+    - u(x, 0) = -sin(pi * x)
+    - u(-1, t) = u(1, t) = 0
     """
     solutions = np.zeros((len(X_ANAL), len(T_RANGE)))
 
@@ -101,6 +109,7 @@ def calculate_analytical_solutions():
         solutions[:, j] = analytical_solution(X_ANAL, t)
 
     return solutions
+
 
 def run_numerical_simulation(nt=400, nx=100, t_max=1):
     """
@@ -125,6 +134,7 @@ def run_numerical_simulation(nt=400, nx=100, t_max=1):
 
     return np.array(states), x, dt, dx
 
+
 def plot_analytical_solutions(solutions, t_range, figsize=(5, 5)):
     """
     Plots the analytical solution of the Burgers' equation.
@@ -141,11 +151,11 @@ def plot_analytical_solutions(solutions, t_range, figsize=(5, 5)):
     """
     fig = plt.figure(figsize=figsize)
     plt.plot(X_ANAL, solutions)
-    plt.xlabel('x')
-    plt.ylabel('u')
+    plt.xlabel("x")
+    plt.ylabel("u")
     plt.xlim([-1, 1])
     plt.ylim([-1, 1])
-    plt.title('Analytical Burgers Equation Solution')
+    plt.title("Analytical Burgers Equation Solution")
     plt.legend([f"t={t}" for t in t_range])
     plt.grid(True)
     show_plot(fig=fig, filename="analytical")
@@ -166,8 +176,8 @@ def plot_numerical_vs_analytical(states, x, t, t_max, nt):
     numerical = states[time_index, :]
 
     plt.figure(figsize=(8, 5))
-    plt.plot(x, numerical, label='Numerical')
-    plt.plot(x, analytical, label='Analytical', linestyle='--')
+    plt.plot(x, numerical, label="Numerical")
+    plt.plot(x, analytical, label="Analytical", linestyle="--")
     plt.xlabel("x")
     plt.ylabel("Advectee")
     plt.title(f"1D Advection with PyMPDATA at t={t:.3f}")
@@ -181,9 +191,9 @@ def plot_gif(step, states, x, dt):
     Plots the numerical solution at a specific step alongside the analytical solution.
     """
     fig = plt.figure()
-    plt.plot(x, analytical_solution(x, 0), label='Start')
-    plt.plot(x, states[step], label='Numerical')
-    plt.step(x, analytical_solution(x, step * dt), label='Analytical')
+    plt.plot(x, analytical_solution(x, 0), label="Start")
+    plt.plot(x, states[step], label="Numerical")
+    plt.step(x, analytical_solution(x, step * dt), label="Analytical")
     plt.xlabel("x")
     plt.ylabel("Advectee")
     plt.title(f"1D Advection with PyMPDATA for time={step * dt:.3f}")
