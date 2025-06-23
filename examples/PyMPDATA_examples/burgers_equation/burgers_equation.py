@@ -23,16 +23,6 @@ NX = 100
 
 X_ANAL = np.linspace(-1, 1, NX)
 
-class One:
-    """A class to represent a slice that can be added or subtracted from"""
-
-    def __radd__(self, other):
-        """"""
-        return slice(other.start + 1, other.stop + 1)
-
-    def __rsub__(self, other):
-        """"""
-        return slice(other.start - 1, other.stop - 1)
 
 def f(x0, t, xi):
     """
