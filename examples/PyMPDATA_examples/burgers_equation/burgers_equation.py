@@ -130,7 +130,7 @@ def plot_analytical_solutions(solutions, t_range, figsize=(5, 5)):
         x (list or np.ndarray): The x-coordinates.
         solutions (list or np.ndarray): The solutions corresponding to each t in t_range.
         t_range (list): The time points corresponding to the solutions.
-        filename (str): The name of the file to save the plot. Default is "analitical".
+        filename (str): The name of the file to save the plot. Default is "analytical".
         figsize (tuple): The figure size. Default is (5, 5).
 
     Returns:
@@ -145,7 +145,7 @@ def plot_analytical_solutions(solutions, t_range, figsize=(5, 5)):
     plt.title('Analytical Burgers Equation Solution')
     plt.legend([f"t={t}" for t in t_range])
     plt.grid(True)
-    show_plot(fig=fig, filename="analitical")
+    show_plot(fig=fig, filename="analytical")
 
 
 def plot_numerical_vs_analytical(states, x, t, t_max, nt):

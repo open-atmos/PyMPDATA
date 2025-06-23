@@ -6,7 +6,7 @@ import numpy as np
 from examples.PyMPDATA_examples.burgers_equation.burgers_equation import run_numerical_simulation
 
 
-class TestGeneralNumericalVeryfication(unittest.TestCase):
+class TestGeneralNumericalVerification(unittest.TestCase):
     """Test suite for general numerical verification of Burgers' equation simulation."""
 
     def setUp(self):
