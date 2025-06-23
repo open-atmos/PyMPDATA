@@ -54,6 +54,9 @@ def analytical_solution(x, t):
             if xi == 0:
                 u[i] = 0
             else:
+                # After the schock occurs, we have discontinuity at the x=0 so we have to start finding roots from some other 
+                # arbitraty point from which we have continuous function, we are starting from the -1 for the negative x values
+                # and from the 1 for the positive x values
                 x0 = find_root(x0=xi/abs(xi), t=t, xi=xi)
                 u[i] = -np.sin(np.pi * x0)
     return u
