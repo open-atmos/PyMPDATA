@@ -4,7 +4,7 @@ Helper functions to run two different implementations of the diffusion equation 
 
 import dataclasses
 import logging
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Any
 
 import matplotlib.figure
 import matplotlib.pyplot as plt
@@ -36,7 +36,7 @@ class SimulationResult:
     figures: Dict[str, matplotlib.figure.Figure] = dataclasses.field(
         default_factory=dict
     )
-    extra: Dict[str, any] = dataclasses.field(default_factory=dict)
+    extra: Dict[str, Any] = dataclasses.field(default_factory=dict)
 
 
 def py_pde_solution(args: SimulationArgs):
