@@ -1,3 +1,7 @@
+"""
+Tests for comparing the results of PyMPDATA and py-pde for a diffusion equation with spatial dependence.
+"""
+
 import numpy as np
 import pde as py_pde
 import pytest
@@ -9,7 +13,7 @@ from PyMPDATA import Options
 
 
 @pytest.fixture
-def simulation_args() -> solutions.SimulationArgs:
+def original_simulation_args() -> solutions.SimulationArgs:
     """Fixture with the simulation arguments."""
 
     return solutions.SimulationArgs(
@@ -21,16 +25,29 @@ def simulation_args() -> solutions.SimulationArgs:
     )
 
 
-def test_similarity(simulation_args: solutions.SimulationArgs):
+@pytest.fixture
+def quicker_simulation_args() -> solutions.SimulationArgs:
+    """Fixture with the simulation arguments."""
+
+    return solutions.SimulationArgs(
+        grid_bounds=(-5.0, 0),  # (-0.5, 0.5) -> (-5.0, 0)
+        grid_points=32,  # 64 -> 32
+        initial_value=1.0,
+        sim_time=10.0,  # 100.0 -> 10.0
+        dt=1e-3,
+    )
+
+
+def test_similarity(original_simulation_args: solutions.SimulationArgs):
     """Tests that the results of the two implementations (py-pde and PyMPDATA) are similar."""
 
     assert hasattr(
         Options, "heterogeneous_diffusion"
     ), "Options should have heterogeneous_diffusion field"
 
-    py_pde_result = solutions.py_pde_solution(simulation_args)
+    py_pde_result = solutions.py_pde_solution(original_simulation_args)
 
-    pympdata_result = solutions.pympdata_solution(simulation_args)
+    pympdata_result = solutions.pympdata_solution(original_simulation_args)
 
     difference = np.abs(
         pympdata_result.kymograph_result - py_pde_result.kymograph_result
@@ -47,15 +64,17 @@ def test_similarity(simulation_args: solutions.SimulationArgs):
     assert rmse < 0.05
 
 
-def test_consistency_across_runs(simulation_args: solutions.SimulationArgs):
+def test_consistency_across_runs(
+    quicker_simulation_args: solutions.SimulationArgs,
+):
     """Tests that the results of the two implementations (py-pde and PyMPDATA) are similar."""
 
     assert hasattr(
         Options, "heterogeneous_diffusion"
     ), "Options should have heterogeneous_diffusion field"
 
-    py_pde_result_1 = solutions.py_pde_solution(simulation_args)
-    py_pde_result_2 = solutions.py_pde_solution(simulation_args)
+    py_pde_result_1 = solutions.py_pde_solution(quicker_simulation_args)
+    py_pde_result_2 = solutions.py_pde_solution(quicker_simulation_args)
 
     assert (
         py_pde_result_1.kymograph_result.shape == py_pde_result_2.kymograph_result.shape
@@ -66,8 +85,8 @@ def test_consistency_across_runs(simulation_args: solutions.SimulationArgs):
         atol=0.2,
     ), "Kymograph results from both runs should be similar within the tolerance."
 
-    pympdata_result_1 = solutions.pympdata_solution(simulation_args)
-    pympdata_result_2 = solutions.pympdata_solution(simulation_args)
+    pympdata_result_1 = solutions.pympdata_solution(quicker_simulation_args)
+    pympdata_result_2 = solutions.pympdata_solution(quicker_simulation_args)
 
     assert (
         pympdata_result_1.kymograph_result.shape
