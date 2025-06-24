@@ -4,7 +4,7 @@ Helper functions to run two different implementations of the diffusion equation 
 
 import dataclasses
 import logging
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 import matplotlib.figure
 import matplotlib.pyplot as plt
