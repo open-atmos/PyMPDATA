@@ -4,7 +4,7 @@ Helper functions to run two different implementations of the diffusion equation 
 
 import dataclasses
 import logging
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 import matplotlib.figure
 import matplotlib.pyplot as plt
@@ -36,7 +36,7 @@ class SimulationResult:
     figures: Dict[str, matplotlib.figure.Figure] = dataclasses.field(
         default_factory=dict
     )
-    extra: Dict[str, any] = dataclasses.field(default_factory=dict)
+    extra: Dict[str, Any] = dataclasses.field(default_factory=dict)
 
 
 def py_pde_solution(args: SimulationArgs):
@@ -76,7 +76,7 @@ def pympdata_solution(args: SimulationArgs) -> SimulationResult:
 
     # ── build a Solver with native heterogeneous diffusion ───────────────────────────
     opts = Options(
-        n_iters=10,  # more MPDATA iterations → sharper features
+        n_iters=3,  # more MPDATA iterations → sharper features
         non_zero_mu_coeff=True,
         heterogeneous_diffusion=True,  # Enable native heterogeneous diffusion
     )
