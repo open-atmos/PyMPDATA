@@ -52,12 +52,18 @@ def make_laplacian(non_unit_g_factor: bool, options: Options, traversals: Traver
 def make_heterogeneous_laplacian(
     non_unit_g_factor: bool, options: Options, traversals: Traversals
 ):
-    """returns njit-ted function for heterogeneous diffusion with spatially varying diffusivity"""
-    if not options.non_zero_mu_coeff:
+    """returns njit-ted function for heterogeneous diffusion with spatially varying diffusivity
 
-        @numba.njit(**options.jit_flags)
-        def apply(_1, _2, _3, _4):
-            return
+    Note: heterogeneous diffusion is only supported when options.non_zero_mu_coeff is enabled
+    """
+    if not options.non_zero_mu_coeff:
+        raise NotImplementedError(
+            "Heterogeneous diffusion requires options.non_zero_mu_coeff to be enabled"
+        )
+    elif not options.heterogeneous_diffusion:
+        raise NotImplementedError(
+            "Heterogeneous diffusion requires options.heterogeneous_diffusion to be enabled"
+        )
 
     else:
         idx = traversals.indexers[traversals.n_dims]
@@ -108,7 +114,11 @@ def __make_laplacian(jit_flags, ats, epsilon, non_unit_g_factor):
 
 
 def __make_heterogeneous_laplacian(jit_flags, ats, epsilon, non_unit_g_factor):
-    """Create heterogeneous Laplacian function that matches MPDATA's one-sided gradient pattern"""
+    """Create heterogeneous Laplacian function that matches MPDATA's one-sided gradient pattern
+
+    Note: Diffusivity values are expected to be non-negative. Negative values will cause
+    an assertion error. Zero values are handled by setting a minimum threshold (epsilon).
+    """
     if non_unit_g_factor:
         raise NotImplementedError()
 
@@ -121,6 +131,14 @@ def __make_heterogeneous_laplacian(jit_flags, ats, epsilon, non_unit_g_factor):
         # Get diffusivity values
         D_curr = ats(*diffusivity, 0)
         D_right = ats(*diffusivity, 1)
+
+        # Input validation for diffusivity values
+        assert D_curr >= 0.0, "Diffusivity values must be non-negative"
+        assert D_right >= 0.0, "Diffusivity values must be non-negative"
+
+        # Handle near-zero diffusivity by setting minimum threshold
+        D_curr = max(D_curr, epsilon)
+        D_right = max(D_right, epsilon)
 
         # Match the exact MPDATA pattern but with diffusivity weighting
         # Regular: -2 * (c[i+1] - c[i]) / (c[i+1] + c[i] + epsilon)
