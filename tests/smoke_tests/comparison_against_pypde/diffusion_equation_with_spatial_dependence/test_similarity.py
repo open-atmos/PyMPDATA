@@ -38,5 +38,5 @@ def test_similarity():
         pympdata_result.kymograph_result.shape == py_pde_result.kymograph_result.shape
     ), "Kymograph results from both implementations should have the same shape."
     assert np.allclose(
-        pympdata_result.kymograph_result, py_pde_result.kymograph_result, atol=5 * 1e-1
+        pympdata_result.kymograph_result, py_pde_result.kymograph_result, atol=0.2
     ), "Kymograph results from both implementations should be similar within the tolerance."
