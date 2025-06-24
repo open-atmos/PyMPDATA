@@ -2,6 +2,8 @@
 MPDATA variants, iterations, data-type and jit-flags settings
 """
 
+from typing import Union
+
 import numpy as np
 from pystrict import strict
 
@@ -34,7 +36,7 @@ class Options:
         non_zero_mu_coeff: bool = False,
         heterogeneous_diffusion: bool = False,
         dimensionally_split: bool = False,
-        dtype: np.float32 | np.float64 = np.float64,
+        dtype: Union[np.float32, np.float64] = np.float64,
     ):
         self._values = HashableDict(
             {
