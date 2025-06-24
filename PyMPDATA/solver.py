@@ -50,8 +50,8 @@ class Solver:
         stepper: Stepper,
         advectee: ScalarField,
         advector: VectorField,
-        g_factor: ScalarField | None = None,
-        diffusivity_field: ScalarField | None = None,
+        g_factor: Union[ScalarField, None] = None,
+        diffusivity_field: Union[ScalarField, None] = None,
     ):
         def scalar_field(dtype=None):
             return ScalarField.clone(advectee, dtype=dtype)
