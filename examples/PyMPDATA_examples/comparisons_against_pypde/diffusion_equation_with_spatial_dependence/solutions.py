@@ -76,7 +76,7 @@ def pympdata_solution(args: SimulationArgs) -> SimulationResult:
 
     # ── build a Solver with native heterogeneous diffusion ───────────────────────────
     opts = Options(
-        n_iters=10,  # more MPDATA iterations → sharper features
+        n_iters=3,  # more MPDATA iterations → sharper features
         non_zero_mu_coeff=True,
         heterogeneous_diffusion=True,  # Enable native heterogeneous diffusion
     )
