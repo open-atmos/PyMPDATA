@@ -33,11 +33,12 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0 
-    - uses: mpi4py/setup-mpi@v1
     - name: Set up Python
       uses: actions/setup-python@v5.2.0
       with:
         python-version: "3.10"
+    - name: Set up MPI
+      uses: mpi4py/setup-mpi@v1
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
