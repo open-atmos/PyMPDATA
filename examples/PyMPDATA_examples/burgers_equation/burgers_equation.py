@@ -2,9 +2,7 @@
 Solution for the Burgers equation solution with MPDATA
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
-from open_atmos_jupyter_utils import show_plot
 from scipy.optimize import root_scalar
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
@@ -19,7 +17,7 @@ T_RANGE = [0, 0.1, 0.3, 0.5, 0.7, 1]
 NT = 400
 NX = 100
 
-X_ANAL = np.linspace(-1, 1, NX)
+X_ANALYTIC = np.linspace(-1, 1, NX)
 
 
 def f(x0, t, xi):
@@ -104,10 +102,10 @@ def calculate_analytical_solutions():
     - u(x, 0) = -sin(pi * x)
     - u(-1, t) = u(1, t) = 0
     """
-    solutions = np.zeros((len(X_ANAL), len(T_RANGE)))
+    solutions = np.zeros((len(X_ANALYTIC), len(T_RANGE)))
 
     for j, t in enumerate(T_RANGE):
-        solutions[:, j] = analytical_solution(X_ANAL, t)
+        solutions[:, j] = analytical_solution(X_ANALYTIC, t)
 
     return solutions
 
@@ -134,67 +132,3 @@ def run_numerical_simulation(nt=400, nx=100, t_max=1):
         states.append(solver.advectee.get().copy())
 
     return np.array(states), x, dt, dx
-
-
-def plot_analytical_solutions(solutions, t_range, figsize=(5, 5)):
-    """
-    Plots the analytical solution of the Burgers' equation.
-
-    Parameters:
-        x (list or np.ndarray): The x-coordinates.
-        solutions (list or np.ndarray): The solutions corresponding to each t in t_range.
-        t_range (list): The time points corresponding to the solutions.
-        filename (str): The name of the file to save the plot. Default is "analytical".
-        figsize (tuple): The figure size. Default is (5, 5).
-
-    Returns:
-        None
-    """
-    fig = plt.figure(figsize=figsize)
-    plt.plot(X_ANAL, solutions)
-    plt.xlabel("x")
-    plt.ylabel("u")
-    plt.xlim([-1, 1])
-    plt.ylim([-1.05, 1.05])
-    plt.title("Analytical Solution to the Burgers Equation")
-    plt.legend([f"t={t}" for t in t_range])
-    plt.grid(True)
-    show_plot(fig=fig, filename="analytical")
-
-
-def plot_numerical_vs_analytical(states, x, t, t_max, nt):
-    """
-    Plots the numerical solution at time t alongside the analytical solution.
-    """
-    analytical = analytical_solution(x, t)
-
-    time_index = int((t / t_max) * nt)
-    time_index = min(time_index, len(states) - 1)
-
-    numerical = states[time_index, :]
-
-    plt.figure(figsize=(8, 5))
-    plt.plot(x, numerical, label="Numerical")
-    plt.plot(x, analytical, label="Analytical", linestyle="--")
-    plt.xlabel("x")
-    plt.ylabel("Advectee")
-    plt.title(f"Numerical solution using MPDATA at t={t:.3f}")
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-
-
-def plot_gif(step, states, x, dt):
-    """
-    Plots the numerical solution at a specific step alongside the analytical solution.
-    """
-    fig = plt.figure()
-    plt.plot(x, analytical_solution(x, 0), label="Start")
-    plt.plot(x, states[step], label="Numerical")
-    plt.step(x, analytical_solution(x, step * dt), label="Analytical")
-    plt.xlabel("x")
-    plt.ylabel("Advectee")
-    plt.title(f"1D Advection with PyMPDATA for time={step * dt:.3f}")
-    plt.grid()
-    plt.legend()
-    return fig

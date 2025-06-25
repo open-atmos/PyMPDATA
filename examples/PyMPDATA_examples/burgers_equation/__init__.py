@@ -11,9 +11,8 @@ from .burgers_equation import (
     T_MAX,
     T_RANGE,
     T_SHOCK,
+    X_ANALYTIC,
     calculate_analytical_solutions,
-    plot_analytical_solutions,
-    plot_gif,
-    plot_numerical_vs_analytical,
     run_numerical_simulation,
+    analytical_solution,
 )
