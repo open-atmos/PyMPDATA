@@ -57,9 +57,10 @@ def analytical_solution(x, t):
             if xi == 0:
                 u[i] = 0
             else:
-                # After the schock occurs, we have discontinuity at the x=0 so we have to start finding roots from some other
-                # arbitraty point from which we have continuous function, we are starting from the -1 for the negative x values
-                # and from the 1 for the positive x values
+                # After the schock occurs, we have discontinuity at the x=0
+                # so we have to start finding roots from some other arbitraty point
+                # from which we have continuous function, we are starting from the -1
+                # for the negative x values and from the 1 for the positive x values
                 x0 = find_root(x0=xi / abs(xi), t=t, xi=xi)
                 u[i] = -np.sin(np.pi * x0)
     return u
@@ -167,12 +168,9 @@ def plot_numerical_vs_analytical(states, x, t, t_max, nt):
     """
     analytical = analytical_solution(x, t)
 
-    # Calculate the time index based on t, t_max, and nt
     time_index = int((t / t_max) * nt)
-    # Make sure it doesn't exceed available indices
     time_index = min(time_index, len(states) - 1)
 
-    # Extract the numerical solution at this time step
     numerical = states[time_index, :]
 
     plt.figure(figsize=(8, 5))
