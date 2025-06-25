@@ -2,10 +2,10 @@
 
 import numpy as np
 import pytest
-
 from PyMPDATA_examples.burgers_equation.burgers_equation import (
     run_numerical_simulation,
 )
+
 
 @pytest.fixture(name="states")
 def states_fixture():
@@ -15,7 +15,6 @@ def states_fixture():
 
 class TestBurgersEquation:
     """Test suite for general numerical verification of Burgers' equation simulation."""
-
 
     @staticmethod
     def test_total_momentum_conservation(states):
@@ -62,4 +61,3 @@ class TestBurgersEquation:
                 atol=eps,
                 err_msg=f"Periodic boundary condition violated: 0 != {right_boundary}",
             )
-
