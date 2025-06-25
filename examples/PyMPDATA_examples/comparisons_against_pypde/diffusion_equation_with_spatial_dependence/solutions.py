@@ -62,7 +62,7 @@ def pympdata_solution(args: SimulationArgs) -> SimulationResult:
     """Runs the simulation using PyMPDATA."""
 
     xmin, xmax = args.grid_bounds
-    dx = (xmax - xmin) / args.grid_points
+    dx = (xmax - xmin) / (args.grid_points - 1)
     x = np.linspace(xmin + dx / 2, xmax - dx / 2, args.grid_points)
 
     n_steps = int(args.sim_time / args.dt)
