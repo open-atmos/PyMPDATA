@@ -10,7 +10,6 @@ from PyMPDATA.boundary_conditions import Constant
 OPTIONS = Options(nonoscillatory=False, infinite_gauge=True)
 
 
-
 def initialize_simulation(nt, nx, t_max):
     """
     Initializes simulation variables and returns them.
