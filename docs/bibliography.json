@@ -207,8 +207,7 @@
     "usages": [
       "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/figs.ipynb",
       "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/table_1.ipynb",
-      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/__init__.py",
-      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/convergence_analysis.ipynb"
+      "examples/PyMPDATA_examples/Magnuszewski_et_al_2025/__init__.py"
     ],
     "label": "Magnuszewski & Arabas 2025 (arXiv)",
     "title": "Path-dependent option pricing with two-dimensional PDE using MPDATA"
