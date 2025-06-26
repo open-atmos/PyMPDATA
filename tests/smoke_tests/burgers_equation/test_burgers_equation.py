@@ -38,8 +38,8 @@ class TestBurgersEquation:
         assert max_val <= 1.0
 
     @staticmethod
-    def test_periodic_boundary_conditions(states):
-        """Verify periodic boundary conditions are satisfied at all time steps."""
+    def test_zero_constant_boundary_conditions(states):
+        """Verify zero-constant boundary conditions are satisfied at all time steps."""
         eps = 5e-2
 
         for state in states:
