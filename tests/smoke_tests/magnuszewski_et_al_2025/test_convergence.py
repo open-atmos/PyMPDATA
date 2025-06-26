@@ -4,6 +4,7 @@ tests for Asian (path-dependent) option pricing example using 2D advection-diffu
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 from open_atmos_jupyter_utils import notebook_vars
 from PyMPDATA_examples import Magnuszewski_et_al_2025
@@ -35,6 +36,16 @@ class TestFigs:
 
     @staticmethod
     @pytest.mark.parametrize(
+        "key",
+        ("upwind", "mpdata"),
+    )
+    def test_convergence_all_converge(variables, key):
+        """checks if both MPDATA and UPWIND actually converge"""
+        data = _datasets(variables)
+        assert (np.diff(data[key]) <= 0).all()
+
+    @staticmethod
+    @pytest.mark.parametrize(
         "lower, higher",
         (
             ("error_upwind", "upwind"),
@@ -43,7 +54,7 @@ class TestFigs:
             ("error_mpdata_3rd", "mpdata"),
         ),
     )
-    def test_order_of_lines(variables, lower, higher):
+    def test_convergence_order_of_lines(variables, lower, higher):
         """checks if a given set of points is above/below another one"""
         data = _datasets(variables)
         assert data[lower] <= data[higher]
