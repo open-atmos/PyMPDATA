@@ -578,6 +578,14 @@ See [README.md](https://github.com/open-atmos/PyMPDATA/tree/main/README.md).
   https://github.com/AtmosFOAM/AtmosFOAM/tree/947b192f69d973ea4a7cfab077eb5c6c6fa8b0cf/applications/solvers/advection/MPDATAadvectionFoam
 - advectionHPCtester (Fortran, CUDA, C preprocessor):
   https://zenodo.org/records/8178549
+- PISM (C++, 2D only):
+  https://github.com/pism/pism/blob/main/src/geometry/MPDATA2.cc
+- ROMS (Fortran):
+  https://github.com/myroms/roms/blob/main/ROMS/Nonlinear/mpdata_adiff.F
+- sbPOM (Fortran):
+  https://github.com/RinceWND/extPOM/blob/master/pom/solver.f
+- TourOfJulia (Julia):
+  https://github.com/themantra108/TourOfJulia.jl/blob/master/06b_smolarkiewicz.jl
 
 # Other Python packages for solving hyperbolic transport equations
 
