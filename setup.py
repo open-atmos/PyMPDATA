@@ -3,7 +3,6 @@ the magick behind ``pip install ...``
 """
 
 import os
-import platform
 import sys
 
 from setuptools import find_packages, setup
@@ -20,7 +19,6 @@ def get_long_description():
 
 
 CI = "CI" in os.environ
-_32bit = platform.architecture()[0] == "32bit"
 
 setup(
     name="pympdata",
@@ -30,22 +28,18 @@ setup(
         "numba"
         + (
             {
-                8: "==0.58.1",
-                9: "==0.58.1",
-                10: "==0.58.1",
+                10: "<0.57.0",
                 11: "==0.58.1",
                 12: "==0.59.1",
                 13: "==0.61.2",
             }[sys.version_info.minor]
-            if CI and not _32bit
+            if CI
             else ""
         ),
         "numpy"
         + (
             {
-                8: "==1.24.4",
-                9: "==1.24.4",
-                10: "==1.24.4",
+                10: "<1.24",
                 11: "==1.24.4",
                 12: "==1.26.4",
                 13: "==2.2.5",
@@ -62,14 +56,12 @@ setup(
             "scipy"
             + (
                 {
-                    8: "==1.10.1",
-                    9: "==1.10.1",
                     10: "==1.10.1",
                     11: "==1.10.1",
                     12: "==1.13.0",
                     13: "==1.15.3",
                 }[sys.version_info.minor]
-                if CI and not _32bit
+                if CI
                 else ""
             ),
             "jupyter-core" + ("<5.0.0" if CI else ""),

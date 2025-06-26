@@ -76,7 +76,7 @@ jobs:
     needs: [ precommit, pylint, devops ]
     strategy:
       matrix:
-        python-version: ["3.9", "3.13"]
+        python-version: ["3.10", "3.13"]
     runs-on: ubuntu-latest
     env:
       NUMBA_DISABLE_JIT: 1
@@ -104,16 +104,16 @@ jobs:
           verbose: true
 
   tests:
-    timeout-minutes: 120
     needs: [nojit_and_codecov]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.13"]
+        python-version: ["3.10", "3.13"]
         exclude:
           - platform: macos-14
-            python-version: "3.9"
+            python-version: "3.10"
     runs-on: ${{ matrix.platform }}
+    timeout-minutes: ${{ startsWith(matrix.platform, 'windows-') && 115 || 90 }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -149,7 +149,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.13"]
+        python-version: ["3.10", "3.13"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
