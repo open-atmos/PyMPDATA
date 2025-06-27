@@ -90,52 +90,21 @@
             </td>
             <td>
                 <ul>
-                    <li><a href="https://open-atmos.github.io/PyMPDATA-MPI/PyMPDATA_MPI.html">docs</a></li>
+                    <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_MPI.html">docs</a></li>
                     <li><a href="https://pypi.org/p/PyMPDATA-MPI/"><img src="https://img.shields.io/pypi/v/pympdata-mpi?logo=pypi&logoColor=white"></a></li>
                 </ul>
             </td>
             </tr>
             <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <ul>
                     <li><a href="https://github.com/open-atmos/PyMPDATA"><img src="https://img.shields.io/static/v1?label=PyMPDATA&logo=github&color=gold&message=code+repository"></a></li>
                         <li><a href="https://github.com/open-atmos/PyMPDATA/issues"><img src="https://img.shields.io/github/issues/open-atmos/pympdata?label=PyMPDATA%20issues&logo=github&logoColor=white"></a></li>
                 </ul>
             </td>
-            <td>
-                <ul>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI"><img src="https://img.shields.io/static/v1?label=PyMPDATA-MPI&logo=github&color=gold&message=code+repository"></a></li>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI/issues"><img src="https://img.shields.io/github/issues/open-atmos/pympdata-mpi?label=PyMPDATA-MPI%20issues&logo=github&logoColor=white)"></a></li>
-                </ul>
-            </td>
             </tr>
         </table>
-        </div>
-    <div style="padding-top: 0.5em">
-        <h2>Installation</h2>
-        <p>
-            PyMPDATA is available on PyPI and can be installed using pip:
-        </p>
-        <pre><code>pip install PyMPDATA</code></pre>
-        <p>Note: the way above <b>will not</b> install PyMPDATA-examples, to install them, and run the tests, likely the most convenient way is:</p>
-        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
-pip install -e PyMPDATA[tests] -e PyMPDATA/examples[tests]
-pytest PyMPDATA</code></pre>
-        <p>(the above should be a viable way to set up development environment for PyMPDATA, see also our <a href="https://github.com/open-atmos/python-dev-hints/wiki">Python dev hints Wiki</a> for further information)</p>
-        <p>
-            PyMPDATA-examples is available on PyPI and can be installed using pip:
-        </p>
-        <pre><code>pip install PyMPDATA-examples</code></pre>
-        <p>Note: this will also install PyMPDATA if needed, but the examples package wheels do not include the Jupyter notebooks - only common code used from the notebooks. 
-          All PyMPDATA example notebooks can be viewed on GitHub and feature header cells with badges enabling single-click execution on either 
-          <a href="https://colab.research.google.com">Google Colab</a> or <a href="https://mybinder.org">mybinder.org</a> platforms. 
-          To try the notebooks out locally, use:
-        </p>
-        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
-pip install -e PyMPDATA -e PyMPDATA/examples
-jupyter-notebook PyMPDATA/examples</code></pre>
-        </div>
-        <div style="padding-top: 0.5em">
+	<div style="padding-top: 0.5em">
         <h2>Dependencies</h2>
         <p>
             PyMPDATA depends on <a href="https://numpy.org/">NumPy</a>, <a href="https://numba.pydata.org/">Numba</a> and <a href="">pystrict</a>.
@@ -145,7 +114,42 @@ jupyter-notebook PyMPDATA/examples</code></pre>
             <a href="https://github.com/open-atmos/PyMPDATA/blob/main/examples/setup.py">setup.py</a>.
             Amongst them is PyMPDATA.
         </p>
+	<p>
+	  PyMPDATA-MPI depends on <a href="https://github.com/numba-mpi/numba-mpi">Numba-mpi</a>, <a href="https://github.com/h5py/h5py">h5py</a> and on <a href="https://github.com/mpi4py/mpi4py">mpi4py</a>  
     </div>
+        </div>
+    <div style="padding-top: 0.5em">
+        <h2>Installation</h2>
+        <p>
+            PyMPDATA is available on PyPI and can be installed using pip:
+        </p>
+        <pre><code>pip install PyMPDATA</code></pre>
+        <p>Note: the way above <b>will not</b> install PyMPDATA-examples or PyMPDATA-MPI.
+	</p>
+	<p> To install PyMPDATA-examples, and run the tests, likely the most convenient way is:</p>
+        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
+pip install -e PyMPDATA[tests] -e PyMPDATA/examples[tests]
+pytest PyMPDATA</code></pre>
+        <p>(the above should be a viable way to set up development environment for PyMPDATA, see also our <a href="https://github.com/open-atmos/python-dev-hints/wiki">Python dev hints Wiki</a> for further information)</p>
+        <p>
+            Note: PyMPDATA-examples is also available on PyPI and can be installed using pip:
+        </p>
+        <pre><code>pip install PyMPDATA-examples</code></pre>
+        <p>(this will also install PyMPDATA if needed, but the examples package wheels do not include the Jupyter notebooks - only common code used from the notebooks.)
+	</p>
+	<p>
+          All PyMPDATA example notebooks can be viewed on GitHub and feature header cells with badges enabling single-click execution on either 
+          <a href="https://colab.research.google.com">Google Colab</a> or <a href="https://mybinder.org">mybinder.org</a> platforms. 
+          To try the notebooks out locally, use:
+        </p>
+        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
+pip install -e PyMPDATA -e PyMPDATA/examples
+jupyter-notebook PyMPDATA/examples</code></pre>
+	<p> To install PyMPDATA-MPI, we first recommend to compile and install local MPI-compatible h5py for HDF storage and then install the package using pip:
+	</p>
+	<pre><code>HDF5_MPI="ON" pip install --no-binary=h5py h5py
+pip install PyMPDATA-MPI</code></pre>
+        </div>
     <div style="padding-top: 0.5em">
         <h2>Contributing, reporting issues and seeking support</h2>
         <p>

@@ -131,6 +131,7 @@ def run_pdoc(code_path, out_path):
             f"{out_path}/html",
             f"{code_path}/PyMPDATA",
             f"{code_path}/examples/PyMPDATA_examples",
+            f"{code_path}/MPI/PyMPDATA_MPI",
             "-t",
             f"{code_path}/docs/templates",
             "--math",

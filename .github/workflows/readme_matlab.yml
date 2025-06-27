@@ -18,8 +18,6 @@ jobs:
       matrix:
         # https://www.mathworks.com/support/requirements/python-compatibility.html
         include:
-          - matlab-version: "R2021b"
-            python-version: "3.9"
           - matlab-version: "R2024b"
             python-version: "3.12"
     runs-on: ubuntu-latest

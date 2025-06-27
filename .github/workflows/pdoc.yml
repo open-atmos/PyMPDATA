@@ -25,12 +25,15 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5.2.0
         with:
-          python-version: 3.9
+          python-version: "3.10"
+      - uses: mpi4py/setup-mpi@v1
+      - if: matrix.platform == 'macos-latest'
+        run: echo DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH >> $GITHUB_ENV
       - env:
           JUPYTER_PLATFORM_DIRS: 1
         run: |
           pip install pdoc nbformat gitpython
-          pip install -e . -e ./examples
+          pip install -e . -e ./examples -e ./MPI
           python -We docs/generate_html.py . .
 
           python - <<EOF

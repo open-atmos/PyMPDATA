@@ -18,7 +18,7 @@ jobs:
   dist:
     strategy:
       matrix:
-        package-dir: [".", "examples"]
+        package-dir: [".", "examples", "MPI"]
       fail-fast: false
     runs-on: ubuntu-latest
     permissions:

@@ -34,20 +34,22 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-        fetch-depth: 0
+        fetch-depth: 0 
     - name: Set up Python
       uses: actions/setup-python@v5.2.0
       with:
-        python-version: 3.11
+        python-version: "3.10"
+    - name: Set up MPI
+      uses: mpi4py/setup-mpi@v1
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         # TODO #411 https://github.com/pylint-dev/pylint/issues/9099
         pip install "pylint<3.0.0" nbqa
         pip install -r tests/devops_tests/requirements.txt
-        pip install -e .[tests] -e ./examples[tests]
+        pip install -e .[tests] -e ./examples[tests] -e. ./MPI[tests]
     - run: |
-        pylint --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
+        pylint --unsafe-load-any-extension=y --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
     - run: |
         # TODO #299
         pylint --disable=fixme --max-module-lines=200 \
@@ -75,11 +77,12 @@ jobs:
     needs: [ precommit, pylint, devops ]
     strategy:
       matrix:
-        python-version: ["3.9", "3.13"]
+        python-version: ["3.10", "3.13"]
     runs-on: ubuntu-latest
     env:
       NUMBA_DISABLE_JIT: 1
       PYTHON: ${{ matrix.python-version }}
+      MPI: 0
     steps:
       - uses: actions/checkout@master
         with:
@@ -96,22 +99,22 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          env_vars: PYTHON
+          env_vars: PYTHON,MPI
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
 
   tests:
-    timeout-minutes: 120
     needs: [nojit_and_codecov]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.13"]
+        python-version: ["3.10", "3.13"]
         exclude:
           - platform: macos-14
-            python-version: "3.9"
+            python-version: "3.10"
     runs-on: ${{ matrix.platform }}
+    timeout-minutes: ${{ startsWith(matrix.platform, 'windows-') && 115 || 90 }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -147,7 +150,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-13, macos-14, windows-latest]
-        python-version: ["3.9", "3.13"]
+        python-version: ["3.10", "3.13"]
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:

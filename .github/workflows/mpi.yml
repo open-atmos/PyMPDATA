@@ -1,0 +1,226 @@
+name: mpi
+
+defaults:
+  run:
+    shell: bash
+
+# arbitrarily selected runs
+env:
+  animation_run: '3.10/ubuntu-latest/0/openmpi'
+  # codecov_run: '3.10/ubuntu-latest/1/openmpi'
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md' 
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+  schedule:
+    - cron: '0 13 * * 4'
+  release:
+    types: [published]
+
+jobs:
+  tests_setup:
+    strategy:
+      matrix:
+        platform: [macos-13, macos-14, ubuntu-latest]
+        mpi: [ 'mpich', 'openmpi', 'intelmpi']
+        python-version: ["3.10"]
+        exclude:
+          # as of time of writing, mpi4py/setup-mpi does not support it
+          - platform: macos-13
+            mpi: intelmpi
+          - platform: macos-14
+            mpi: intelmpi
+
+          # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
+          - platform: ubuntu-latest
+            mpi: intelmpi
+
+          # https://github.com/Homebrew/homebrew-core/issues/26974
+          - platform: macos-13
+            mpi: mpich
+          - platform: macos-14
+            mpi: mpich
+            
+          # HDF5_MPI expects arm architecture with python 3.12 on macos
+          - platform: macos-13
+            python-version: '3.12'
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v5
+          with:
+            python-version: ${{ matrix.python-version }}
+        - run: |
+            echo pip_user_site=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))") >> $GITHUB_ENV
+            echo toml_ci_md5=$(cat pyproject.toml .github/workflows/mpi.yml \
+            | python -c "import hashlib;print(hashlib.md5(open(0,'rb').read()).hexdigest())") >> $GITHUB_ENV
+        - id: cache
+          uses: actions/cache@v4
+          with:
+            path: ${{ env.pip_user_site }}
+            key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
+
+        - if: steps.cache.outputs.cache-hit != 'true'
+          uses: mpi4py/setup-mpi@v1
+          with:
+            mpi: ${{ matrix.mpi }}
+        - if: steps.cache.outputs.cache-hit != 'true' && matrix.mpi == 'mpich'
+          run: echo _ch="ch" >> $GITHUB_ENV
+        - if: steps.cache.outputs.cache-hit != 'true' &&  startsWith(matrix.platform, 'ubuntu-')
+          run: |
+            sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
+            lscpu
+        - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
+          run: |
+            echo HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/mpich >> $GITHUB_ENV
+            echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
+        - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'macos-')
+          run: |
+            brew install hdf5-mpi && echo HDF5_DIR="$(brew --cellar hdf5-mpi)/$(brew list --versions hdf5-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_ENV
+            sysctl -a | grep cpu | grep hw
+        - if: steps.cache.outputs.cache-hit != 'true'
+          run: |
+            HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.13.0
+            pip install -e MPI[tests]
+        - run: pip show numpy
+        - id: cache-save
+          if: steps.cache.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v4
+          with:
+            path: ${{ env.pip_user_site }}
+            key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
+
+  tests:
+    needs: [tests_setup]
+    strategy:
+      matrix:
+        platform: [macos-13, macos-14, ubuntu-latest]
+        mpi: [ 'mpich', 'openmpi', 'intelmpi']
+        python-version: ["3.10"]
+        disable-jit: [1, 0]
+        mpi-np: [1, 2, 3]
+        exclude:
+          # as of time of writing, mpi4py/setup-mpi does not support it
+          - platform: macos-13
+            mpi: intelmpi
+          - platform: macos-14
+            mpi: intelmpi
+
+          # issues with: *** The MPI_Comm_rank() function was called before MPI_INIT was invoked.
+          - platform: ubuntu-latest
+            mpi: intelmpi
+
+          # https://github.com/Homebrew/homebrew-core/issues/26974
+          - platform: macos-13
+            mpi: mpich
+          - platform: macos-14
+            mpi: mpich
+            
+          # HDF5_MPI expects arm architecture with python 3.12 on macos
+          - platform: macos-13
+            python-version: '3.12'
+            
+      fail-fast: false
+
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: |
+          echo pip_user_site=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))") >> $GITHUB_ENV
+          echo toml_ci_md5=$(cat pyproject.toml .github/workflows/mpi.yml \
+          | python -c "import hashlib;print(hashlib.md5(open(0,'rb').read()).hexdigest())") >> $GITHUB_ENV
+      - uses: mpi4py/setup-mpi@v1
+        with:
+          mpi: ${{ matrix.mpi }}
+      - id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.pip_user_site }}
+          key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
+      - if: matrix.mpi == 'mpich'
+        run: echo _ch="ch" >> $GITHUB_ENV
+      - if: startsWith(matrix.platform, 'ubuntu-')
+        run: |
+          sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
+          echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
+      - if: startsWith(matrix.platform, 'macos-')
+        run: brew install hdf5-mpi && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+      - if: matrix.platform == 'macos-14'
+        run: echo DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH >> $GITHUB_ENV
+      - run: python -We -c "import PyMPDATA_MPI"
+      - if: matrix.mpi == 'openmpi'
+        run: echo _mpiexec_args="--oversubscribe" >> $GITHUB_ENV
+      - name: "mpiexec pytest"
+        env:
+          NUMBA_DISABLE_JIT: ${{ matrix.disable-jit }} 
+          PYTHON: ${{ matrix.python-version }}
+          MPI: 1
+          # if [ "${{ matrix.mpi-np }}" == "1" ] && [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+          #  echo "CODECOV_RUN=1" >> $GITHUB_ENV
+          #  export COV_ARGS="--cov=MPI --cov=scenarios_mpi --cov-report=xml"
+          #  pip install pytest-cov
+          # fi
+        run: |
+          if [ "$animation_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+            export CI_PLOTS_PATH=plots/$animation_run
+            mkdir -p $CI_PLOTS_PATH
+          fi
+          NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests_mpi;
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plots-${{matrix.mpi-np}}
+          path: plots
+     # - if: env.CODECOV_RUN == '1'
+     #   uses: codecov/codecov-action@v4
+     #   with: 
+     #     env_vars: PYTHON,MPI
+     #     token: ${{ secrets.CODECOV_TOKEN }}
+     #     fail_ci_if_error: true
+     #     verbose: true
+ 
+  tip-release-uploads:
+    runs-on: ubuntu-latest
+    needs: [tests]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: plots-*
+          merge-multiple: true
+          path: plots
+      - run: |
+          sudo apt install -y librsvg2-bin graphicsmagick-imagemagick-compat
+          for scenario in ./plots/${{ env.animation_run }}/*; do
+              for test_plots in $scenario/*; do
+                  if [ ! $(find "$test_plots" -maxdepth 0 -empty | wc -l) -eq 1 ]; then
+                      for file in $test_plots/*.svg; do
+                          rsvg-convert $file -o tmp.png
+                          convert tmp.png -flatten -trim +repage -bordercolor white -border 10 $file.png
+                      done;
+                      rm tmp.png
+                      convert $test_plots/*.png plots/`basename $test_plots`-`basename $scenario`-anim.gif 
+                  fi
+              done;
+          done;
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: anims
+          path: plots/*-anim.gif
+
+      - if: github.ref == 'refs/heads/main'
+        uses: eine/tip@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: plots/*-anim.gif
+          rm: true
