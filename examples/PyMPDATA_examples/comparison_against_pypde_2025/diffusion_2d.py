@@ -6,12 +6,12 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from pde import (  # pylint: disable=import-error
+from pde import (
     CartesianGrid,
     DataFieldBase,
     DiffusionPDE,
 )
-from pde import ScalarField as PDEScalarField  # pylint: disable=import-error
+from pde import ScalarField as PDEScalarField
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
