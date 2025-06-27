@@ -8,16 +8,15 @@ import numba
 import numpy as np
 import pytest
 
-if numba.__version__ < "0.59.1":
-    pytest.skip("Skipping whole file: needs numba >= 0.59.1", allow_module_level=True)
-
-
 from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d import (
     Grid,
     InitialConditions,
     mpdata_solution,
     py_pde_solution,
 )
+
+if numba.__version__ < "0.59.1":
+    pytest.skip("Skipping whole file: needs numba >= 0.59.1", allow_module_level=True)
 
 
 @pytest.fixture(name="initial_conditions")
