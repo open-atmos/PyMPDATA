@@ -6,8 +6,12 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from pde import CartesianGrid, DataFieldBase, DiffusionPDE
-from pde import ScalarField as PDEScalarField
+from pde import (  # pylint: disable=import-error
+    CartesianGrid,
+    DataFieldBase,
+    DiffusionPDE,
+)
+from pde import ScalarField as PDEScalarField  # pylint: disable=import-error
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
@@ -110,10 +114,9 @@ def py_pde_solution(initial_conditions: InitialConditions) -> Grid:
     )
     if result is not None and hasattr(result, "data"):
         return result.data
-    else:
-        raise RuntimeError(
-            "PyPDE solve did not return a valid result with a 'data' attribute."
-        )
+    raise RuntimeError(
+        "PyPDE solve did not return a valid result with a 'data' attribute."
+    )
 
 
 def mpdata_solution(initial_conditions: InitialConditions) -> Grid:
