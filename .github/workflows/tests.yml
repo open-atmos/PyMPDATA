@@ -35,7 +35,6 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0 
-    - uses: mpi4py/setup-mpi@v1
     - name: Set up Python
       uses: actions/setup-python@v5.2.0
       with:
@@ -46,7 +45,7 @@ jobs:
         # TODO #411 https://github.com/pylint-dev/pylint/issues/9099
         pip install "pylint<3.0.0" nbqa
         pip install -r tests/devops_tests/requirements.txt
-        pip install -e .[tests] -e ./examples[tests] -e ./MPI[tests]
+        pip install -e .[tests] -e ./examples[tests]
     - run: |
         pylint --unsafe-load-any-extension=y --max-module-lines=500 --disable=fixme $(git ls-files '*.py' | grep -v ^examples)
     - run: |
