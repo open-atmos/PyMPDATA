@@ -2,16 +2,15 @@
 Test the similarity of solutions from MPDATA and PyPDE for 2D diffusion
 """
 
+import time
+
 import numba
+import numpy as np
 import pytest
 
 if numba.__version__ < "0.59.1":
     pytest.skip("Skipping whole file: needs numba >= 0.59.1", allow_module_level=True)
 
-
-import time
-
-import numpy as np
 
 from examples.PyMPDATA_examples.comparison_against_pypde_2025.diffusion_2d import (
     Grid,
@@ -60,38 +59,36 @@ def test_initial_conditions(initial_conditions: InitialConditions) -> None:
 def test_similarity_of_solutions(initial_conditions: InitialConditions) -> None:
     """Test that the solutions from PyPDE and MPDATA for 2D diffusion are similar."""
 
-    # initial solutions
+    max_elapsed_time = 10  # seconds
+
+    # initial solutions and timing for PyPDE
+    py_pde_start = time.perf_counter()
     py_pde_result: Grid = py_pde_solution(
         initial_conditions=initial_conditions,
     )
+    py_pde_elapsed = time.perf_counter() - py_pde_start
+    assert py_pde_elapsed < max_elapsed_time, "PyPDE solution took too long to compute"
+    # ensure consistency across runs
+    assert np.all(
+        py_pde_result
+        == py_pde_solution(
+            initial_conditions=initial_conditions,
+        )
+    ), "PyPDE results are not consistent across runs"
 
+    # initial solutions and timing for MPDATA
+    mpdata_start = time.perf_counter()
     mpdata_result: Grid = mpdata_solution(
         initial_conditions=initial_conditions,
     )
-
-    # calculate solutions again to time them and ensure they are consistent across runs
-    py_pde_start = time.perf_counter()
-    py_pde_result2: Grid = py_pde_solution(
-        initial_conditions=initial_conditions,
-    )
-    assert np.all(
-        py_pde_result == py_pde_result2
-    ), "PyPDE results are not consistent across runs"
-
-    MAX_ELAPSED_TIME = 10  # seconds
-    assert py_pde_result.shape == mpdata_result.shape
-    py_pde_elapsed = time.perf_counter() - py_pde_start
-    assert py_pde_elapsed < MAX_ELAPSED_TIME, "PyPDE solution took too long to compute"
-
-    mpdata_start = time.perf_counter()
-    mpdata_result2: Grid = mpdata_solution(
-        initial_conditions=initial_conditions,
-    )
     mpdata_elapsed = time.perf_counter() - mpdata_start
-    assert mpdata_elapsed < MAX_ELAPSED_TIME, "MPDATA solution took too long to compute"
-
+    assert mpdata_elapsed < max_elapsed_time, "MPDATA solution took too long to compute"
+    # ensure consistency across runs
     assert np.all(
-        mpdata_result == mpdata_result2
+        mpdata_result
+        == mpdata_solution(
+            initial_conditions=initial_conditions,
+        )
     ), "MPDATA results are not consistent across runs"
 
     # sanity checks
