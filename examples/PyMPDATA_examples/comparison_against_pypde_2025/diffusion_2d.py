@@ -108,7 +108,12 @@ def py_pde_solution(initial_conditions: InitialConditions) -> Grid:
         t_range=1,
         dt=initial_conditions.time_step,
     )
-    return result.data
+    if result is not None and hasattr(result, "data"):
+        return result.data
+    else:
+        raise RuntimeError(
+            "PyPDE solve did not return a valid result with a 'data' attribute."
+        )
 
 
 def mpdata_solution(initial_conditions: InitialConditions) -> Grid:
