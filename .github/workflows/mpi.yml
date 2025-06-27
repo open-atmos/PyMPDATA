@@ -176,6 +176,7 @@ jobs:
             export COV_ARGS="--cov=MPI --cov=scenarios_mpi --cov-report=xml"
             pip install pytest-cov
           fi
+          echo DISABLE_JIT = $(NUMBA_DISABLE_JIT) on Codecov run
           NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests_mpi;
       - uses: actions/upload-artifact@v4
         with:
