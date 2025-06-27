@@ -53,30 +53,6 @@
             <h2>API Documentation</h2>
                 <ul class="memberlist">
             <li>
-                    <a class="class" href="#PostStepNull">PostStepNull</a>
-                            <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#PostStepNull.call">call</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#PostStepNull.class_type">class_type</a>
-                        </li>
-                </ul>
-
-            </li>
-            <li>
-                    <a class="class" href="#PostIterNull">PostIterNull</a>
-                            <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#PostIterNull.call">call</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#PostIterNull.class_type">class_type</a>
-                        </li>
-                </ul>
-
-            </li>
-            <li>
                     <a class="class" href="#Solver">Solver</a>
                             <ul class="memberlist">
                         <li>
@@ -281,130 +257,6 @@ as well as self-initialised temporary storage</p>
 
 
             </section>
-                <section id="PostStepNull">
-                            <input id="PostStepNull-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
-                    <div class="decorator decorator-numba.experimental.jitclass">@numba.experimental.jitclass([])</div>
-
-    <span class="def">class</span>
-    <span class="name">PostStepNull</span><wbr>(<span class="base"><a href="#PostStepNull">PostStepNull</a></span>):
-
-                <label class="view-source-button" for="PostStepNull-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#PostStepNull"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="PostStepNull-17"><a href="#PostStepNull-17"><span class="linenos">17</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">jitclass</span><span class="p">([])</span>
-</span><span id="PostStepNull-18"><a href="#PostStepNull-18"><span class="linenos">18</span></a><span class="k">class</span><span class="w"> </span><span class="nc">PostStepNull</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
-</span><span id="PostStepNull-19"><a href="#PostStepNull-19"><span class="linenos">19</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;do-nothing version of the post-step hook&quot;&quot;&quot;</span>
-</span><span id="PostStepNull-20"><a href="#PostStepNull-20"><span class="linenos">20</span></a>
-</span><span id="PostStepNull-21"><a href="#PostStepNull-21"><span class="linenos">21</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="PostStepNull-22"><a href="#PostStepNull-22"><span class="linenos">22</span></a>        <span class="k">pass</span>
-</span><span id="PostStepNull-23"><a href="#PostStepNull-23"><span class="linenos">23</span></a>
-</span><span id="PostStepNull-24"><a href="#PostStepNull-24"><span class="linenos">24</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>  <span class="c1"># pylint: disable-next=unused-argument</span>
-</span><span id="PostStepNull-25"><a href="#PostStepNull-25"><span class="linenos">25</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;think of it as a `__call__` method (which Numba does not allow)&quot;&quot;&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>do-nothing version of the post-step hook</p>
-</div>
-
-
-                            <div id="PostStepNull.call" class="classattr">
-                                        <input id="PostStepNull.call-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">call</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">psi</span>, </span><span class="param"><span class="n">step</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="PostStepNull.call-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#PostStepNull.call"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="PostStepNull.call-24"><a href="#PostStepNull.call-24"><span class="linenos">24</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>  <span class="c1"># pylint: disable-next=unused-argument</span>
-</span><span id="PostStepNull.call-25"><a href="#PostStepNull.call-25"><span class="linenos">25</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;think of it as a `__call__` method (which Numba does not allow)&quot;&quot;&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>think of it as a <code>__call__</code> method (which Numba does not allow)</p>
-</div>
-
-
-                            </div>
-                            <div id="PostStepNull.class_type" class="classattr">
-                                <div class="attr variable">
-            <span class="name">class_type</span>        =
-<span class="default_value">jitclass.PostStepNull#7f068f134a00&lt;&gt;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#PostStepNull.class_type"></a>
-    
-    
-
-                            </div>
-                </section>
-                <section id="PostIterNull">
-                            <input id="PostIterNull-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
-                    <div class="decorator decorator-numba.experimental.jitclass">@numba.experimental.jitclass([])</div>
-
-    <span class="def">class</span>
-    <span class="name">PostIterNull</span><wbr>(<span class="base"><a href="#PostIterNull">PostIterNull</a></span>):
-
-                <label class="view-source-button" for="PostIterNull-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#PostIterNull"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="PostIterNull-28"><a href="#PostIterNull-28"><span class="linenos">28</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">jitclass</span><span class="p">([])</span>
-</span><span id="PostIterNull-29"><a href="#PostIterNull-29"><span class="linenos">29</span></a><span class="k">class</span><span class="w"> </span><span class="nc">PostIterNull</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
-</span><span id="PostIterNull-30"><a href="#PostIterNull-30"><span class="linenos">30</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;do-nothing version of the post-iter hook&quot;&quot;&quot;</span>
-</span><span id="PostIterNull-31"><a href="#PostIterNull-31"><span class="linenos">31</span></a>
-</span><span id="PostIterNull-32"><a href="#PostIterNull-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="PostIterNull-33"><a href="#PostIterNull-33"><span class="linenos">33</span></a>        <span class="k">pass</span>
-</span><span id="PostIterNull-34"><a href="#PostIterNull-34"><span class="linenos">34</span></a>
-</span><span id="PostIterNull-35"><a href="#PostIterNull-35"><span class="linenos">35</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">g_factor</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
-</span><span id="PostIterNull-36"><a href="#PostIterNull-36"><span class="linenos">36</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;think of it as a `__call__` method (which Numba does not allow)&quot;&quot;&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>do-nothing version of the post-iter hook</p>
-</div>
-
-
-                            <div id="PostIterNull.call" class="classattr">
-                                        <input id="PostIterNull.call-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">call</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">flux</span>, </span><span class="param"><span class="n">g_factor</span>, </span><span class="param"><span class="n">step</span>, </span><span class="param"><span class="n">iteration</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="PostIterNull.call-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#PostIterNull.call"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="PostIterNull.call-35"><a href="#PostIterNull.call-35"><span class="linenos">35</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">g_factor</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
-</span><span id="PostIterNull.call-36"><a href="#PostIterNull.call-36"><span class="linenos">36</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;think of it as a `__call__` method (which Numba does not allow)&quot;&quot;&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>think of it as a <code>__call__</code> method (which Numba does not allow)</p>
-</div>
-
-
-                            </div>
-                            <div id="PostIterNull.class_type" class="classattr">
-                                <div class="attr variable">
-            <span class="name">class_type</span>        =
-<span class="default_value">jitclass.PostIterNull#7f068f0fad60&lt;&gt;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#PostIterNull.class_type"></a>
-    
-    
-
-                            </div>
-                </section>
                 <section id="Solver">
                             <input id="Solver-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
@@ -746,7 +598,7 @@ e.g. the changing density of a fluid.</p>
             <div class="docstring"><p>advances solution by <code>n_steps</code> steps, optionally accepts: a tuple of diffusion
 coefficients (one value per dimension) as well as <code>post_iter</code> and <code>post_step</code>
 callbacks expected to be <code>numba.jitclass</code>es with a <code>call</code> method, for
-signature see <code><a href="#PostStepNull">PostStepNull</a></code> and <code><a href="#PostIterNull">PostIterNull</a></code>;
+signature see <code>PostStepNull</code> and <code>PostIterNull</code>;
 returns CPU time per timestep (units as returned by <code>clock.clock()</code>)</p>
 </div>
 

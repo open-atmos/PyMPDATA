@@ -124,52 +124,21 @@
             </td>
             <td>
                 <ul>
-                    <li><a href="https://open-atmos.github.io/PyMPDATA-MPI/PyMPDATA_MPI.html">docs</a></li>
+                    <li><a href="https://open-atmos.github.io/PyMPDATA/PyMPDATA_MPI.html">docs</a></li>
                     <li><a href="https://pypi.org/p/PyMPDATA-MPI/"><img src="https://img.shields.io/pypi/v/pympdata-mpi?logo=pypi&logoColor=white"></a></li>
                 </ul>
             </td>
             </tr>
             <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <ul>
                     <li><a href="https://github.com/open-atmos/PyMPDATA"><img src="https://img.shields.io/static/v1?label=PyMPDATA&logo=github&color=gold&message=code+repository"></a></li>
                         <li><a href="https://github.com/open-atmos/PyMPDATA/issues"><img src="https://img.shields.io/github/issues/open-atmos/pympdata?label=PyMPDATA%20issues&logo=github&logoColor=white"></a></li>
                 </ul>
             </td>
-            <td>
-                <ul>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI"><img src="https://img.shields.io/static/v1?label=PyMPDATA-MPI&logo=github&color=gold&message=code+repository"></a></li>
-                    <li><a href="https://github.com/open-atmos/PyMPDATA-MPI/issues"><img src="https://img.shields.io/github/issues/open-atmos/pympdata-mpi?label=PyMPDATA-MPI%20issues&logo=github&logoColor=white)"></a></li>
-                </ul>
-            </td>
             </tr>
         </table>
-        </div>
-    <div style="padding-top: 0.5em">
-        <h2>Installation</h2>
-        <p>
-            PyMPDATA is available on PyPI and can be installed using pip:
-        </p>
-        <pre><code>pip install PyMPDATA</code></pre>
-        <p>Note: the way above <b>will not</b> install PyMPDATA-examples, to install them, and run the tests, likely the most convenient way is:</p>
-        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
-pip install -e PyMPDATA[tests] -e PyMPDATA/examples[tests]
-pytest PyMPDATA</code></pre>
-        <p>(the above should be a viable way to set up development environment for PyMPDATA, see also our <a href="https://github.com/open-atmos/python-dev-hints/wiki">Python dev hints Wiki</a> for further information)</p>
-        <p>
-            PyMPDATA-examples is available on PyPI and can be installed using pip:
-        </p>
-        <pre><code>pip install PyMPDATA-examples</code></pre>
-        <p>Note: this will also install PyMPDATA if needed, but the examples package wheels do not include the Jupyter notebooks - only common code used from the notebooks. 
-          All PyMPDATA example notebooks can be viewed on GitHub and feature header cells with badges enabling single-click execution on either 
-          <a href="https://colab.research.google.com">Google Colab</a> or <a href="https://mybinder.org">mybinder.org</a> platforms. 
-          To try the notebooks out locally, use:
-        </p>
-        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
-pip install -e PyMPDATA -e PyMPDATA/examples
-jupyter-notebook PyMPDATA/examples</code></pre>
-        </div>
-        <div style="padding-top: 0.5em">
+	<div style="padding-top: 0.5em">
         <h2>Dependencies</h2>
         <p>
             PyMPDATA depends on <a href="https://numpy.org/">NumPy</a>, <a href="https://numba.pydata.org/">Numba</a> and <a href="">pystrict</a>.
@@ -179,7 +148,42 @@ jupyter-notebook PyMPDATA/examples</code></pre>
             <a href="https://github.com/open-atmos/PyMPDATA/blob/main/examples/setup.py">setup.py</a>.
             Amongst them is PyMPDATA.
         </p>
+	<p>
+	  PyMPDATA-MPI depends on <a href="https://github.com/numba-mpi/numba-mpi">Numba-mpi</a>, <a href="https://github.com/h5py/h5py">h5py</a> and on <a href="https://github.com/mpi4py/mpi4py">mpi4py</a>  
     </div>
+        </div>
+    <div style="padding-top: 0.5em">
+        <h2>Installation</h2>
+        <p>
+            PyMPDATA is available on PyPI and can be installed using pip:
+        </p>
+        <pre><code>pip install PyMPDATA</code></pre>
+        <p>Note: the way above <b>will not</b> install PyMPDATA-examples or PyMPDATA-MPI.
+	</p>
+	<p> To install PyMPDATA-examples, and run the tests, likely the most convenient way is:</p>
+        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
+pip install -e PyMPDATA[tests] -e PyMPDATA/examples[tests]
+pytest PyMPDATA</code></pre>
+        <p>(the above should be a viable way to set up development environment for PyMPDATA, see also our <a href="https://github.com/open-atmos/python-dev-hints/wiki">Python dev hints Wiki</a> for further information)</p>
+        <p>
+            Note: PyMPDATA-examples is also available on PyPI and can be installed using pip:
+        </p>
+        <pre><code>pip install PyMPDATA-examples</code></pre>
+        <p>(this will also install PyMPDATA if needed, but the examples package wheels do not include the Jupyter notebooks - only common code used from the notebooks.)
+	</p>
+	<p>
+          All PyMPDATA example notebooks can be viewed on GitHub and feature header cells with badges enabling single-click execution on either 
+          <a href="https://colab.research.google.com">Google Colab</a> or <a href="https://mybinder.org">mybinder.org</a> platforms. 
+          To try the notebooks out locally, use:
+        </p>
+        <pre><code>git clone https://github.com/open-atmos/PyMPDATA.git
+pip install -e PyMPDATA -e PyMPDATA/examples
+jupyter-notebook PyMPDATA/examples</code></pre>
+	<p> To install PyMPDATA-MPI, we first recommend to compile and install local MPI-compatible h5py for HDF storage and then install the package using pip:
+	</p>
+	<pre><code>HDF5_MPI="ON" pip install --no-binary=h5py h5py
+pip install PyMPDATA-MPI</code></pre>
+        </div>
     <div style="padding-top: 0.5em">
         <h2>Contributing, reporting issues and seeking support</h2>
         <p>
@@ -233,7 +237,7 @@ jupyter-notebook PyMPDATA/examples</code></pre>
 <ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Arabas_and_Farhat_2020/__init__.py">examples/PyMPDATA_examples/Arabas_and_Farhat_2020/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_1.ipynb">examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_1.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_2.ipynb">examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_2.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_3.ipynb">examples/PyMPDATA_examples/Arabas_and_Farhat_2020/fig_3.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Arabas_and_Farhat_2020/tab_1.ipynb">examples/PyMPDATA_examples/Arabas_and_Farhat_2020/tab_1.ipynb</a></li></ul>
 <li>
 <a href="https://doi.org/10.3233/SPR-140379">Arabas et al. 2014 (Sci. Prog. 22): "<em>Formula Translation in Blitz++, NumPy and Modern Fortran: A Case Study of the Language Choice Tradeoffs</em>"</a>
-<ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/docs/markdown/pympdata_landing.md">docs/markdown/pympdata_landing.md</a></li></ul>
+<ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/MPI/docs/pympdata_mpi_landing.md">MPI/docs/pympdata_mpi_landing.md</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/docs/markdown/pympdata_landing.md">docs/markdown/pympdata_landing.md</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/scenarios_mpi/cartesian.py">scenarios_mpi/cartesian.py</a></li></ul>
 <li>
 <a href="https://doi.org/10.1111/j.1467-9965.1996.tb00111.x">Barraquand & Pudet 1996 (Math. Financ. 6): "<em>Pricing of American path‐dependent contingent claims</em>"</a>
 <ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Magnuszewski_et_al_2025/barraquand_data.py">examples/PyMPDATA_examples/Magnuszewski_et_al_2025/barraquand_data.py</a></li></ul>
@@ -248,7 +252,7 @@ jupyter-notebook PyMPDATA/examples</code></pre>
 <ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Magnuszewski_et_al_2025/monte_carlo.py">examples/PyMPDATA_examples/Magnuszewski_et_al_2025/monte_carlo.py</a></li></ul>
 <li>
 <a href="https://doi.org/10.1016/j.jcp.2015.02.003">Jarecka et al. 2015 (J. Comp. Phys. 289): "<em>A spreading drop of shallow water</em>"</a>
-<ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jarecka_et_al_2015/__init__.py">examples/PyMPDATA_examples/Jarecka_et_al_2015/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jarecka_et_al_2015/fig_6.ipynb">examples/PyMPDATA_examples/Jarecka_et_al_2015/fig_6.ipynb</a></li></ul>
+<ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/MPI/docs/pympdata_mpi_landing.md">MPI/docs/pympdata_mpi_landing.md</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jarecka_et_al_2015/__init__.py">examples/PyMPDATA_examples/Jarecka_et_al_2015/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jarecka_et_al_2015/fig_6.ipynb">examples/PyMPDATA_examples/Jarecka_et_al_2015/fig_6.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/scenarios_mpi/shallow_water.py">scenarios_mpi/shallow_water.py</a></li></ul>
 <li>
 <a href="https://doi.org/10.5194/gmd-8-1005-2015">Jaruga et al. 2015 (Geosci. Model Dev. 8): "<em>libmpdata++ 1.0: a library of parallel MPDATA solvers for systems of generalised transport equations </em>"</a>
 <ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/docs/markdown/pympdata_landing.md">docs/markdown/pympdata_landing.md</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py">examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb">examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py">examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb">examples/PyMPDATA_examples/Molenkamp_test_as_in_Jaruga_et_al_2015_Fig_12/demo.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/wikipedia_example/demo.ipynb">examples/PyMPDATA_examples/wikipedia_example/demo.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py">tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py</a></li></ul>
@@ -299,7 +303,7 @@ jupyter-notebook PyMPDATA/examples</code></pre>
 <ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py">examples/PyMPDATA_examples/Jaruga_et_al_2015/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb">examples/PyMPDATA_examples/Jaruga_et_al_2015/fig19.ipynb</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py">tests/smoke_tests/jaruga_et_al_2015/test_boussinesq.py</a></li></ul>
 <li>
 <a href="https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2">Williamson & Rasch 1989 (Mon. Weather Rev. 117): "<em>Two-Dimensional Semi-Lagrangian Transport with Shape-Preserving Interpolation</em>"</a>
-<ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/__init__.py">examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/__init__.py</a></li></ul>
+<ul style="list-style-type:square;font-size:smaller;"><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/MPI/docs/pympdata_mpi_landing.md">MPI/docs/pympdata_mpi_landing.md</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/__init__.py">examples/PyMPDATA_examples/Williamson_and_Rasch_1989_as_in_Jaruga_et_al_2015_Fig_14/__init__.py</a></li><li><a href="https://github.com/open-atmos/PyMPDATA/tree/main/scenarios_mpi/spherical.py">scenarios_mpi/spherical.py</a></li></ul>
 </ol>        <h2>EOF</h2>
         </div>
     </main>
