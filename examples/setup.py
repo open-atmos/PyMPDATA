@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 
 from setuptools import find_packages, setup
 
@@ -37,6 +38,7 @@ setup(
         "imageio",
         "meshio",
         "numdifftools",
+        *(["py-pde==0.45.0"] if CI and sys.version_info.minor >= 12 else []),
         "pandas",
     ],
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",
