@@ -102,8 +102,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: recursive
-          fetch-depth: 0
+        submodules: recursive
+        fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -116,7 +116,7 @@ jobs:
           | python -c "import hashlib;print(hashlib.md5(open(0,'rb').read()).hexdigest())") >> $GITHUB_ENV
       - id: cache
         uses: actions/cache/restore@v4
-        with:
+      with:
           path: ${{ env.pip_user_site }}
           key: ubuntu-latest-openmpi-3.10-${{ env.toml_ci_md5 }}
       - run: |
