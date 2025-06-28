@@ -15,9 +15,9 @@ Every node (process) is responsible for computing its part of the decomposed dom
 In spherical geometry, the $G$ factor represents the Jacobian of coordinate transformation.
 In this example (based on a test case from [Williamson & Rasch 1989](https://doi.org/10.1175/1520-0493(1989)117%3C0102:TDSLTW%3E2.0.CO;2)),
   domain decomposition is done cutting the sphere along meridians.
-The inner dimension uses the [`MPIPolar`](https://open-atmos.github.io/PyMPDATA-MPI/mpi_polar.html)
+The inner dimension uses the [`MPIPolar`](https://open-atmos.github.io/PyMPDATA/PyMPDATA_MPI/mpi_polar.html)
   boundary condition class, while the outer dimension uses
-  [`MPIPeriodic`](https://open-atmos.github.io/PyMPDATA-MPI/mpi_periodic.html).
+  [`MPIPeriodic`](https://open-atmos.github.io/PyMPDATA/PyMPDATA_MPI/mpi_periodic.html).
 Note that the spherical animations below depict simulations without MPDATA corrective iterations,
   i.e. only plain first-order upwind scheme is used (FIX ME).
 
