@@ -7,7 +7,7 @@ defaults:
 # arbitrarily selected runs
 env:
   animation_run: '3.10/ubuntu-latest/0/openmpi'
-  # codecov_run: '3.10/ubuntu-latest/1/openmpi'
+  codecov_run: '3.10/ubuntu-latest/1/openmpi'
 
 on:
   push:
@@ -166,28 +166,28 @@ jobs:
           NUMBA_DISABLE_JIT: ${{ matrix.disable-jit }} 
           PYTHON: ${{ matrix.python-version }}
           MPI: 1
-          # if [ "${{ matrix.mpi-np }}" == "1" ] && [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
-          #  echo "CODECOV_RUN=1" >> $GITHUB_ENV
-          #  export COV_ARGS="--cov=MPI --cov=scenarios_mpi --cov-report=xml"
-          #  pip install pytest-cov
-          # fi
         run: |
           if [ "$animation_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
             export CI_PLOTS_PATH=plots/$animation_run
             mkdir -p $CI_PLOTS_PATH
+          fi
+          if [ "${{ matrix.mpi-np }}" == "1" ] && [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+            echo "CODECOV_RUN=1" >> $GITHUB_ENV
+            export COV_ARGS="--cov=MPI --cov=scenarios_mpi --cov-report=xml"
+            pip install pytest-cov
           fi
           NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests_mpi;
       - uses: actions/upload-artifact@v4
         with:
           name: plots-${{matrix.mpi-np}}
           path: plots
-     # - if: env.CODECOV_RUN == '1'
-     #   uses: codecov/codecov-action@v4
-     #   with: 
-     #     env_vars: PYTHON,MPI
-     #     token: ${{ secrets.CODECOV_TOKEN }}
-     #     fail_ci_if_error: true
-     #     verbose: true
+      - if: env.CODECOV_RUN == '1'
+        uses: codecov/codecov-action@v4
+        with: 
+          env_vars: PYTHON,MPI
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
  
   tip-release-uploads:
     runs-on: ubuntu-latest
