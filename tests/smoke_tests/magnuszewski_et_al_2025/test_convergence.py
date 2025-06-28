@@ -24,10 +24,12 @@ def _variables_fixture():
 def _datasets(variables):
     return {
         "upwind": variables["l2_errors"]["UPWIND"],
-        "mpdata": variables["l2_errors"]["MPDATA"],
-        "error_upwind": variables["simulated_errors_upwind"],
-        "error_mpdata_2nd": variables["simulated_errors_mpdata_t2"],
-        "error_mpdata_3rd": variables["simulated_errors_mpdata_t3"],
+        "mpdata_2it": variables["l2_errors"]["MPDATA (2 it.)"],
+        "mpdata_4it": variables["l2_errors"]["MPDATA (4 it.)"],
+        "theory_upwind": variables["theory_upwind"],
+        "theory_mpdata_2it_t2": variables["theory_mpdata_2it_t2"],
+        "theory_mpdata_2it_t3": variables["theory_mpdata_2it_t3"],
+        "theory_mpdata_4it_t3": variables["theory_mpdata_4it_t3"],
     }
 
 
@@ -37,7 +39,7 @@ class TestFigs:
     @staticmethod
     @pytest.mark.parametrize(
         "key",
-        ("upwind", "mpdata"),
+        ("upwind", "mpdata_2it", "mpdata_4it"),
     )
     def test_convergence_all_converge(variables, key):
         """checks if both MPDATA and UPWIND actually converge"""
@@ -48,10 +50,10 @@ class TestFigs:
     @pytest.mark.parametrize(
         "lower, higher",
         (
-            ("error_upwind", "upwind"),
-            ("mpdata", "upwind"),
-            ("mpdata", "error_mpdata_2nd"),
-            ("error_mpdata_3rd", "mpdata"),
+            ("upwind", "theory_upwind"),
+            ("mpdata_2it", "upwind"),
+            ("mpdata_4it", "mpdata_2it"),
+            ("theory_mpdata_2it_t2", "mpdata_2it"),
         ),
     )
     def test_convergence_order_of_lines(variables, lower, higher):
