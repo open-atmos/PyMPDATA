@@ -23,13 +23,13 @@ Note that the spherical animations below depict simulations without MPDATA corre
 
 ### 1 worker (n_threads = 1)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/latest-generated-plots/n_iters.1_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.1_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="49%" />
 </p>
 
 ### 2 workers (MPI_DIM = 0, n_threads = 1)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.1_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.1_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.1_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.1_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_1-SphericalScenario-anim.gif" width="49%" />
 </p>
 
 ## Cartesian scenario (2D)
@@ -45,33 +45,33 @@ In this example, two corrective MPDATA iterations are employed.
 
 ### 1 worker (n_threads=3)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_0_size_1_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
 </p>
 
 ### 2 workers (MPI_DIM = OUTER, n_threads = 3)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
   <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
 </p>
 
 ### 2 workers (MPI_DIM = INNER, n_threads = 3)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="49%" />
 </p>
 
 ### 3 workers (MPI_DIM = OUTER, n_threads = 3)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_0_size_3_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="32%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_1_size_3_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="32%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_2_size_3_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_0_size_3_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_1_size_3_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_2_size_3_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="32%" />
 </p>
 
 ### 3 workers (MPI_DIM = INNER, n_threads = 3)
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_0_size_3_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="32%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_1_size_3_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="32%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_2_size_3_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_0_size_3_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_1_size_3_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="32%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_2_size_3_c_field_.0.5.0.25._mpi_dim_-1_n_threads_3-CartesianScenario-anim.gif" width="32%" />
 </p>
 
 ## Shallow Water Scenario
@@ -79,14 +79,14 @@ The Shallow Water Scenario is based on a numerical test case from [Jarecka et al
 
 ### MPDATA with "nonoscillatory" and "infinite-gauge" options, n_threads = 1, MPI_DIM=OUTER
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_2_c_field_None_mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_1_size_2_c_field_None_mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_2_c_field_None_mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_1_size_2_c_field_None_mpi_dim_0_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
 </p>
 
 ### MPDATA with "nonoscillatory" and "infinite-gauge" options, n_threads = 1, MPI_DIM=INNER
 <p align="middle">
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_2_c_field_None_mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_1_size_2_c_field_None_mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_0_size_2_c_field_None_mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.2_nonoscillatory.True_infinite_gauge.True_rank_1_size_2_c_field_None_mpi_dim_-1_n_threads_1-ShallowWaterScenario-anim.gif", width="49%" />
 </p>
 
 # Package architecture
@@ -133,7 +133,8 @@ click TESTS "https://pypi.org/p/PyMPDATA-MPI"
 Rectangular boxes indicate pip-installable Python packages (click to go to pypi.org package site).
 
 # Credits & acknowledgments:
-PyMPDATA-MPI started as an [MSc project of Kacper Derlatka](https://www.ap.uj.edu.pl/diplomas/166883) ([@Delcior](https://github.com/Delcior)) mentored by [@slayoo](https://github.com/slayoo).
+PyMPDATA-MPI started as a separate project for the [MSc thesis of Kacper Derlatka](https://www.ap.uj.edu.pl/diplomas/166883) ([@Delcior](https://github.com/Delcior)).
+Integration of PyMPDATA-MPI into PyMPDATA repo was carried out as a part of BEng project of [Michał Wroński](https://github.com/Sfonxu/).
 
 Development of PyMPDATA-MPI has been supported by the [Poland's National Science Centre](https://www.ncn.gov.pl/?language=en)
 (grant no. 2020/39/D/ST10/01220).
