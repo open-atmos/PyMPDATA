@@ -47,7 +47,9 @@ class TestFigs:
     def test_fig_1_axis_ranges(variables, x_or_y, l_or_r, fmt):
         """
         checks if both X and Y axes start at -dx/2, -dy/2, respectively"""
-        for axs in variables["fig1_axs"]:
+        for axs in variables["fig1_axs"].flatten()[
+            :-1
+        ]:  # -1 due to show_plot/jupyter-utils glitch
             assert str(getattr(axs, f"get_{x_or_y}lim")()[l_or_r]) == fmt.format(
                 grid_minus_half=(variables["grid"][0] - 0.5, variables["grid"][1] - 0.5)
             )
@@ -58,7 +60,7 @@ class TestFigs:
         (
             ("mpdata_4it", "upwind"),
             ("mpdata_2it", "upwind"),
-            ("mc", "black-scholes"),  # European analytic above UPWIND
+            ("mc", "black-scholes"),
             ("kemna-vorst", "mc"),
             ("mc", "upwind"),
         ),
