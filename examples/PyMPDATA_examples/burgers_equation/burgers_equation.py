@@ -45,20 +45,20 @@ def run_numerical_simulation(*, nt, nx, t_max):
     Runs the numerical simulation and returns (states, x, dt, dx).
     """
     dt, dx, x, advectee, advector, solver = initialize_simulation(nt, nx, t_max)
-    states = []
+    states = np.empty((nt, nx))
     vel = advectee.get()
     advector_n_1 = 0.5 * (vel[:-1] + np.diff(vel) / 2) * dt / dx
     assert np.all(advector_n_1 <= 1)
     i = slice(1, len(vel))
 
-    for _ in range(nt):
+    for n in range(nt):
         vel = advectee.get()
         advector_n = update_advector_n(vel, dt, dx, i)
         advector.get_component(0)[1:-1] = 0.5 * (3 * advector_n - advector_n_1)
         assert np.all(advector.get_component(0) <= 1)
 
         solver.advance(n_steps=1)
-        advector_n_1 = advector_n.copy()
-        states.append(solver.advectee.get().copy())
+        advector_n_1 = advector_n
+        states[n] = solver.advectee.get()
 
     return np.array(states), x, dt, dx
