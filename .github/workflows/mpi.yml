@@ -171,7 +171,7 @@ jobs:
             export CI_PLOTS_PATH=plots/$animation_run
             mkdir -p $CI_PLOTS_PATH
           fi
-          if [ "${{ matrix.mpi-np }}" == "1" ] && [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
+          if [ "$codecov_run" == "${{ matrix.python-version }}/${{ matrix.platform }}/${{ matrix.disable-jit }}/${{ matrix.mpi }}" ]; then
             echo "CODECOV_RUN=1" >> $GITHUB_ENV
             export COV_RUN="coverage run --source=MPI --parallel-mode -m"
             pip install coverage
