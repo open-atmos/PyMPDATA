@@ -123,7 +123,7 @@ class ShallowWaterScenario(_Scenario):
             k: Solver(stepper, v, self.advector) for k, v in advectees.items()
         }
 
-        self.interpolate = make_interpolate(mpdata_options.jit_flags)
+        self.interpolate = make_interpolate(mpdata_options)
 
     def __getitem__(self, key):
         return self.solvers[key].advectee.get()

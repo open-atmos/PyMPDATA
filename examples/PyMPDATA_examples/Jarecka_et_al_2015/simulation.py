@@ -37,7 +37,7 @@ class Simulation:
             k: Solver(stepper, v, self.advector) for k, v in advectees.items()
         }
 
-        self.interpolate = make_interpolate(settings.options.jit_flags)
+        self.interpolate = make_interpolate(settings.options)
 
     def run(self):
         s = self.settings

@@ -1,3 +1,5 @@
+"""Interpolation formulae sketch"""
+
 import numba
 import numpy as np
 
