@@ -3,7 +3,7 @@ from PyMPDATA_examples.Jarecka_et_al_2015 import formulae
 
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
-from PyMPDATA.impl.interpolate import interpolate
+from PyMPDATA.impl.interpolate import make_interpolate
 
 
 class Simulation:
@@ -37,6 +37,8 @@ class Simulation:
             k: Solver(stepper, v, self.advector) for k, v in advectees.items()
         }
 
+        self.interpolate = make_interpolate(settings.options.jit_flags)
+
     def run(self):
         s = self.settings
         grid_step = (s.dx, s.dy)
@@ -50,7 +52,7 @@ class Simulation:
                     vel = np.where(mask, np.nan, 0)
                     np.divide(self.solvers[k].advectee.get(), h, where=mask, out=vel)
                     self.advector.get_component(xy)[idx[xy]] = (
-                        interpolate(vel, axis=xy) * s.dt / grid_step[xy]
+                        self.interpolate(vel, axis=xy) * s.dt / grid_step[xy]
                     )
                 self.solvers["h"].advance(1)
                 assert h.ctypes.data == self.solvers["h"].advectee.get().ctypes.data

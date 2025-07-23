@@ -10,7 +10,7 @@ from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.enumerations import INNER, OUTER
-from PyMPDATA.impl.interpolate import interpolate
+from PyMPDATA.impl.interpolate import make_interpolate
 from scenarios_mpi._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
@@ -123,6 +123,8 @@ class ShallowWaterScenario(_Scenario):
             k: Solver(stepper, v, self.advector) for k, v in advectees.items()
         }
 
+        self.interpolate = make_interpolate(mpdata_options.jit_flags)
+
     def __getitem__(self, key):
         return self.solvers[key].advectee.get()
 
@@ -144,7 +146,7 @@ class ShallowWaterScenario(_Scenario):
                 ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
                 np.divide(self.data(k), self.data("h"), where=mask, out=vel)
                 self.advector.data[xy][:] = (
-                    interpolate(vel, xy) * self.dt / grid_step[xy]
+                    self.interpolate(vel, xy) * self.dt / grid_step[xy]
                 )
             self.solvers["h"].advance(1)
             self.solvers[  # pylint: disable=protected-access
