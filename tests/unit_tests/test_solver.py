@@ -35,3 +35,17 @@ def test_mu_arg_handling(case):
     sut = Solver(stepper, advectee, advector, case["g_factor"])
 
     sut.advance(1, mu_coeff=case["mu"])
+
+
+def test_multiple_scalar_fields():
+    opt = Options()
+    data = np.asarray([4.0, 5])
+    advector = VectorField((np.asarray([1.0, 2, 3]),), opt.n_halo, BCS)
+    advectees = [ScalarField(data, opt.n_halo, BCS)] * 5
+    stepper = Stepper(options=opt, n_dims=1)
+    sut = Solver(stepper, advectees, advector)
+
+    sut.advance(1)
+
+    for advectee in advectees:
+        assert (advectee.get() != data).all()
