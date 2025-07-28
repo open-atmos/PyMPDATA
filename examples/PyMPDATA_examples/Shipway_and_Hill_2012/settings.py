@@ -37,8 +37,12 @@ class Settings:
         self.z_max = z_max
         self.t_max = t_max
 
-        self.qv = interp1d((0, 740, 3260), (0.015, 0.0138, 0.0024))
-        self._th = interp1d((0, 740, 3260), (297.9, 297.9, 312.66))
+        self.qv = interp1d(
+            (0, 740, 3260), (0.015, 0.0138, 0.0024), fill_value="extrapolate"
+        )
+        self._th = interp1d(
+            (0, 740, 3260), (297.9, 297.9, 312.66), fill_value="extrapolate"
+        )
 
         # note: not in the paper,
         # https://github.com/BShipway/KiD/tree/master/src/physconst.f90#L43
