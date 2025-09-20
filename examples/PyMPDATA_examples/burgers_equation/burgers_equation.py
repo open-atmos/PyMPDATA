@@ -7,7 +7,7 @@ import numpy as np
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
 
-OPTIONS = Options(nonoscillatory=False, infinite_gauge=True)
+OPTIONS = Options(nonoscillatory=True, infinite_gauge=True, n_iters=3)
 
 
 def initialize_simulation(nt, nx, t_max):
