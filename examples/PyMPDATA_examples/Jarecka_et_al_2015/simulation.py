@@ -3,9 +3,11 @@ from PyMPDATA_examples.Jarecka_et_al_2015 import formulae
 
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
+from PyMPDATA.impl.interpolate import make_interpolate
 
 
 class Simulation:
+    # pylint: disable=too-few-public-methods
     def __init__(self, settings):
         self.settings = settings
         s = settings
@@ -36,13 +38,7 @@ class Simulation:
             k: Solver(stepper, v, self.advector) for k, v in advectees.items()
         }
 
-    @staticmethod
-    def interpolate(psi, axis):
-        idx = (
-            (slice(None, -1), slice(None, None)),
-            (slice(None, None), slice(None, -1)),
-        )
-        return np.diff(psi, axis=axis) / 2 + psi[idx[axis]]
+        self.interpolate = make_interpolate(settings.options)
 
     def run(self):
         s = self.settings

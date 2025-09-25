@@ -3,7 +3,7 @@ class grouping user-supplied stepper, fields and post-step/post-iter hooks,
 as well as self-initialised temporary storage
 """
 
-from typing import Union
+from typing import Iterable, Union
 
 import numba
 
@@ -14,7 +14,7 @@ from .vector_field import VectorField
 
 
 @numba.experimental.jitclass([])
-class PostStepNull:  # pylint: disable=too-few-public-methods
+class AntePostStepNull:  # pylint: disable=too-few-public-methods
     """do-nothing version of the post-step hook"""
 
     def __init__(self):
@@ -48,15 +48,18 @@ class Solver:
     def __init__(
         self,
         stepper: Stepper,
-        advectee: ScalarField,
+        advectee: [ScalarField, Iterable[ScalarField]],
         advector: VectorField,
         g_factor: [ScalarField, None] = None,
     ):
+        if isinstance(advectee, ScalarField):
+            advectee = (advectee,)
+
         def scalar_field(dtype=None):
-            return ScalarField.clone(advectee, dtype=dtype)
+            return ScalarField.clone(advectee[0], dtype=dtype)
 
         def null_scalar_field():
-            return ScalarField.make_null(advectee.n_dims, stepper.traversals)
+            return ScalarField.make_null(advectee[0].n_dims, stepper.traversals)
 
         def vector_field():
             return VectorField.clone(advector)
@@ -64,7 +67,7 @@ class Solver:
         def null_vector_field():
             return VectorField.make_null(advector.n_dims, stepper.traversals)
 
-        for field in [advector, advectee] + (
+        for field in [advector, *advectee] + (
             [g_factor] if g_factor is not None else []
         ):
             assert field.halo == stepper.options.n_halo
@@ -93,16 +96,17 @@ class Solver:
                 else null_scalar_field()
             ),
         }
-        for field in self.__fields.values():
-            field.assemble(stepper.traversals)
+        for key, value in self.__fields.items():
+            for field in (value,) if key != "advectee" else value:
+                field.assemble(stepper.traversals)
 
         self.__stepper = stepper
 
     @property
-    def advectee(self) -> ScalarField:
+    def advectee(self, index=0) -> ScalarField:
         """advectee scalar field (with halo), modified by advance(),
         may be modified from user code (e.g., source-term handling)"""
-        return self.__fields["advectee"]
+        return self.__fields["advectee"][index]
 
     @property
     def advector(self) -> VectorField:
@@ -126,6 +130,7 @@ class Solver:
         self,
         n_steps: int,
         mu_coeff: Union[tuple, None] = None,
+        ante_step=None,
         post_step=None,
         post_iter=None,
     ):
@@ -144,12 +149,14 @@ class Solver:
         ):
             raise NotImplementedError()
 
-        post_step = post_step or PostStepNull()
+        ante_step = ante_step or AntePostStepNull()
+        post_step = post_step or AntePostStepNull()
         post_iter = post_iter or PostIterNull()
 
         return self.__stepper(
             n_steps=n_steps,
             mu_coeff=mu_coeff,
+            ante_step=ante_step,
             post_step=post_step,
             post_iter=post_iter,
             fields=self.__fields,

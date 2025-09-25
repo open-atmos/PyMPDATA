@@ -10,6 +10,7 @@ from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
 from PyMPDATA.impl.enumerations import INNER, OUTER
+from PyMPDATA.impl.interpolate import make_interpolate
 from scenarios_mpi._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
@@ -122,14 +123,7 @@ class ShallowWaterScenario(_Scenario):
             k: Solver(stepper, v, self.advector) for k, v in advectees.items()
         }
 
-    @staticmethod
-    def interpolate(psi, axis):
-        """Method that does simple interpolation of given field"""
-        idx = (
-            (slice(None, -1), slice(None, None)),
-            (slice(None, None), slice(None, -1)),
-        )
-        return np.diff(psi, axis=axis) / 2 + psi[idx[axis]]
+        self.interpolate = make_interpolate(mpdata_options)
 
     def __getitem__(self, key):
         return self.solvers[key].advectee.get()
