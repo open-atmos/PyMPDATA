@@ -4,6 +4,10 @@ defaults:
   run:
     shell: bash
 
+# https://github.com/matplotlib/matplotlib/issues/29119
+env:
+  MPLBACKEND: Agg
+
 on:
   push:
     branches: [ main ]
