@@ -1,10 +1,11 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,invalid-name
 import numpy as np
 import pytest
 
 from PyMPDATA import Options, ScalarField, VectorField
 from PyMPDATA.boundary_conditions import Constant
 from PyMPDATA.impl import indexers
-from PyMPDATA.impl.enumerations import INNER, MID3D, OUTER
+from PyMPDATA.impl.enumerations import INNER, OUTER
 
 options = Options()
 bc = [Constant(value=0)]

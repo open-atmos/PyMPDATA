@@ -9,7 +9,7 @@ import numpy as np
 from numba.core.errors import NumbaExperimentalFeatureWarning
 
 from .impl.clock import clock
-from .impl.enumerations import ARG_DATA, IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NUM
+from .impl.enumerations import IMPL_BC, IMPL_META_AND_DATA, MAX_DIM_NUM
 from .impl.formulae_antidiff import make_antidiff
 from .impl.formulae_axpy import make_axpy
 from .impl.formulae_flux import make_flux_first_pass, make_flux_subsequent

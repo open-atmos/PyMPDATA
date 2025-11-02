@@ -3,7 +3,7 @@
 import numba
 import numpy as np
 
-from .enumerations import ARG_DATA, INNER, MID3D, OUTER
+from .enumerations import INNER, MID3D, OUTER
 from .meta import META_HALO_VALID
 
 
@@ -29,25 +29,25 @@ def make_divide_or_zero(options, traversals):
         dividend_inner,
         ____,
         divisor,
-        dt,
+        time_step,
         grid_step,
     ):
         eps = 1e-7
         for i in np.ndindex(out_inner_data.shape):
             if n_dims > 1:
                 out_outer_data[i] = (
-                    dividend_outer[i] / divisor[i] * dt / grid_step[OUTER]
+                    dividend_outer[i] / divisor[i] * time_step / grid_step[OUTER]
                     if divisor[i] > eps
                     else 0
                 )
                 if n_dims > 2:
                     out_mid3d_data[i] = (
-                        dividend_mid3d[i] / divisor[i] * dt / grid_step[MID3D]
+                        dividend_mid3d[i] / divisor[i] * time_step / grid_step[MID3D]
                         if divisor[i] > eps
                         else 0
                     )
             out_inner_data[i] = (
-                dividend_inner[i] / divisor[i] * dt / grid_step[INNER]
+                dividend_inner[i] / divisor[i] * time_step / grid_step[INNER]
                 if divisor[i] > eps
                 else 0
             )

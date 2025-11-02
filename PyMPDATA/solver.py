@@ -22,7 +22,7 @@ class AnteStepNull:  # pylint: disable=too-few-public-methods
 
     def call(
         self, advectee, advector, step, index, todo_outer, todo_mid3d, todo_inner
-    ):  # pylint: disable-next=unused-argument
+    ):  # pylint: disable-next=unused-argument,disable=too-many-arguments
         """think of it as a `__call__` method (which Numba does not allow)"""
 
 
@@ -142,8 +142,8 @@ class Solver:
 
     @property
     def advector(self) -> VectorField:
-        """advector vector field , todo_outer, todo_mid3d, todo_inner(with halo), unmodified by advance(),
-        may be modified from user code"""
+        """advector vector field , todo_outer, todo_mid3d, todo_inner(with halo),
+        unmodified by advance(), may be modified from user code"""
         return self.__fields["advector"]
 
     @property
@@ -158,9 +158,6 @@ class Solver:
         e.g. the changing density of a fluid."""
         return self.__fields["g_factor"]
 
-    def keys(self):
-        return self.key_to_index.keys()
-
     def advance(
         self,
         n_steps: int,
@@ -168,7 +165,7 @@ class Solver:
         ante_step=None,
         post_step=None,
         post_iter=None,
-    ):
+    ):  # pylint: disable=too-many-arguments
         """advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
         coefficients (one value per dimension) as well as `post_iter` and `post_step`
         callbacks expected to be `numba.jitclass`es with a `call` method, for
