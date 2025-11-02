@@ -182,30 +182,37 @@ def make_step_impl(
         vectmp_a,
         vectmp_b,
         vectmp_c,
+        todo_outer,
+        todo_mid3d,
+        todo_inner,
         psi_extrema,
         beta,
-        null_impl,
+        traversals_data,
     ):
         time = clock()
         for step in range(n_steps):
-            for advectee in advectees:
-                ante_step.call(advectee.field[ARG_DATA], step)
+            for index, advectee in enumerate(advectees):
+                ante_step.call(
+                    advectees, advector, step, index, todo_outer, todo_mid3d, todo_inner
+                )
                 if non_zero_mu_coeff:
                     advector_orig = advector
                     advector = vectmp_c
                 for iteration in range(n_iters):
                     if iteration == 0:
                         if nonoscillatory:
-                            nonoscillatory_psi_extrema(null_impl, psi_extrema, advectee)
+                            nonoscillatory_psi_extrema(
+                                traversals_data, psi_extrema, advectee
+                            )
                         if non_zero_mu_coeff:
-                            laplacian(null_impl, advector, advectee)
+                            laplacian(traversals_data, advector, advectee)
                             axpy(
                                 *advector.field,
                                 mu_coeff,
                                 *advector.field,
                                 *advector_orig.field,
                             )
-                        flux_first_pass(null_impl, vectmp_a, advector, advectee)
+                        flux_first_pass(traversals_data, vectmp_a, advector, advectee)
                         flux = vectmp_a
                     else:
                         if iteration == 1:
@@ -222,7 +229,7 @@ def make_step_impl(
                             flux = vectmp_b
                         if iteration < n_iters - 1:
                             antidiff(
-                                null_impl,
+                                traversals_data,
                                 advector_nonos,
                                 advectee,
                                 advector_oscil,
@@ -230,26 +237,35 @@ def make_step_impl(
                             )
                         else:
                             antidiff_last_pass(
-                                null_impl,
+                                traversals_data,
                                 advector_nonos,
                                 advectee,
                                 advector_oscil,
                                 g_factor,
                             )
-                        flux_subsequent(null_impl, flux, advectee, advector_nonos)
+                        flux_subsequent(traversals_data, flux, advectee, advector_nonos)
                         if nonoscillatory:
                             nonoscillatory_beta(
-                                null_impl, beta, flux, advectee, psi_extrema, g_factor
+                                traversals_data,
+                                beta,
+                                flux,
+                                advectee,
+                                psi_extrema,
+                                g_factor,
                             )
                             # note: in libmpdata++, the oscillatory advector from prev iter is used
-                            nonoscillatory_correction(null_impl, advector_nonos, beta)
-                            flux_subsequent(null_impl, flux, advectee, advector_nonos)
-                    upwind(null_impl, advectee, flux, g_factor)
+                            nonoscillatory_correction(
+                                traversals_data, advector_nonos, beta
+                            )
+                            flux_subsequent(
+                                traversals_data, flux, advectee, advector_nonos
+                            )
+                    upwind(traversals_data, advectee, flux, g_factor)
                     post_iter.call(flux.field, g_factor.field, step, iteration)
                 if non_zero_mu_coeff:
                     advector = advector_orig
 
-                post_step.call(advectee.field[ARG_DATA], step)
+                post_step.call(advectees, step, index)
         return (clock() - time) / n_steps if n_steps > 0 else np.nan
 
     return step, traversals
