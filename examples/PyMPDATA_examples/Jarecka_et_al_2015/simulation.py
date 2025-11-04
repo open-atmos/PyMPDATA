@@ -4,34 +4,37 @@ from PyMPDATA_examples.Jarecka_et_al_2015 import formulae
 
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Constant
-from PyMPDATA.impl.enumerations import ARG_DATA, MAX_DIM_NUM
+from PyMPDATA.impl.enumerations import ARG_DATA, ARG_FOCUS, INNER, MAX_DIM_NUM, OUTER
 from PyMPDATA.impl.formulae_divide import make_divide_or_zero
 
 
 def make_rhs_indexers(ats, grid_step, time_step, options):
     @numba.njit(**options.jit_flags)
     def rhs(m, _0, h, _1, _2, _3):
-        return m - (ats(*h, +1) - ats(*h, -1)) / 4 * ats(*h, 0) * time_step / grid_step
+        retval = (
+            m
+            - ((ats(*h, +1) - ats(*h, -1)) / 2) / 2 * ats(*h, 0) * time_step / grid_step
+        )
+        return retval
 
     return rhs
 
 
-def make_rhs(grid_step, time_step, options, traversals):
+def make_rhs(grid_step, time_step, axis, options, traversals):
     indexers = traversals.indexers[traversals.n_dims]
     apply_scalar = traversals.apply_scalar(loop=False)
 
     formulae_rhs = tuple(
         (
             make_rhs_indexers(
-                ats=indexers.ats[i],
-                grid_step=grid_step[i],
+                ats=indexers.ats[axis],
+                grid_step=grid_step[axis],
                 time_step=time_step,
                 options=options,
-            )
-            if indexers.ats[i] is not None
-            else None
+            ),
+            None,
+            None,
         )
-        for i in range(MAX_DIM_NUM)
     )
 
     @numba.njit(**options.jit_flags)
@@ -60,7 +63,7 @@ def make_rhs(grid_step, time_step, options, traversals):
 def make_interpolate_indexers(ati, options):
     @numba.njit(**options.jit_flags)
     def interpolate(momentum_x, _, momentum_y):
-        momenta = (momentum_x[0], (momentum_x[1], momentum_y[1]))
+        momenta = (momentum_x[ARG_FOCUS], (momentum_x[ARG_DATA], momentum_y[ARG_DATA]))
         return ati(*momenta, 0.5)
 
     return interpolate
@@ -131,7 +134,12 @@ class Simulation:
         grid_step = (s.dx, None, s.dy)
         interpolate = make_interpolate(settings.options, stepper.traversals)
         divide_or_zero = make_divide_or_zero(settings.options, stepper.traversals)
-        rhs = make_rhs(grid_step, time_step, settings.options, stepper.traversals)
+        rhs_x = make_rhs(
+            grid_step, time_step, OUTER, settings.options, stepper.traversals
+        )
+        rhs_y = make_rhs(
+            grid_step, time_step, INNER, settings.options, stepper.traversals
+        )
         traversals_data = stepper.traversals.data
 
         @numba.experimental.jitclass([])
@@ -162,8 +170,10 @@ class Simulation:
                         grid_step
                     )
                     interpolate(traversals_data, todo_outer, todo_inner, advector)
+                elif index == 1:
+                    rhs_x(traversals_data, advectees[index], advectees[0])
                 else:
-                    rhs(traversals_data, advectees[index], advectees[0])
+                    rhs_y(traversals_data, advectees[index], advectees[0])
 
         self.ante_step = AnteStep()
 
@@ -173,8 +183,12 @@ class Simulation:
                 pass
 
             def call(self, advectees, step, index):
-                if index != 0:
-                    rhs(traversals_data, advectees[index], advectees[0])
+                if index == 0:
+                    pass
+                if index == 1:
+                    rhs_x(traversals_data, advectees[index], advectees[0])
+                else:
+                    rhs_y(traversals_data, advectees[index], advectees[0])
 
         self.post_step = PostStep()
         self.solver = Solver(stepper, self.advectees, self.advector)
@@ -182,12 +196,16 @@ class Simulation:
     def run(self):
         s = self.settings
         output = []
-        for it in range(100):
+        for it in range(s.nt + 1):
             if it != 0:
                 self.solver.advance(
                     1, ante_step=self.ante_step, post_step=self.post_step
                 )
-            output.append(
-                {k: self.solver.advectee[k].get().copy() for k in self.advectees.keys()}
-            )
+            if it % s.outfreq == 0:
+                output.append(
+                    {
+                        k: self.solver.advectee[k].get().copy()
+                        for k in self.advectees.keys()
+                    }
+                )
         return output
