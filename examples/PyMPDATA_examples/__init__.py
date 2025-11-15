@@ -3,6 +3,7 @@
 """
 
 from importlib.metadata import PackageNotFoundError, version
+
 import PyMPDATA
 
 try:
