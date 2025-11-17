@@ -14,7 +14,9 @@ class Settings:
         self.eps = 1e-7
         self.lx0 = 2
         self.ly0 = 1
-        self.options = Options(nonoscillatory=True, infinite_gauge=True)
+        self.options = Options(
+            nonoscillatory=True, infinite_gauge=True, dynamic_advector=True
+        )
 
     @property
     def nt(self):
