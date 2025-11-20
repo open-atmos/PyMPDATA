@@ -132,7 +132,7 @@ def __make_antidiff(*, atv, ats, non_unit_g_factor, options, n_dims, last_pass):
 
             result += tmp
 
-            if n_dims > 1:
+            if n_dims > 1 and not dimensionally_split:
                 tmp = (
                     atv(*g_c, 1, 0.5)
                     + atv(*g_c, 0, 0.5)
