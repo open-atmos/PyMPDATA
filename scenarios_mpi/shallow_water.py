@@ -33,7 +33,6 @@ class ShallowWaterScenario(_Scenario):
         courant_field_multiplier,  # pylint: disable=unused-argument
         mpi_dim,
     ):
-        @staticmethod
         def initial_condition(x, y, lx, ly):
             """returns advectee array for a given grid indices"""
             # pylint: disable=invalid-name
