@@ -21,7 +21,7 @@ class _Scenario:  # pylint: disable=too-few-public-methods
                 wall_time_per_timestep = self._solver_advance(n_steps=n_steps)
                 wall_time += wall_time_per_timestep * n_steps
                 steps_done += n_steps
-            for key in self.solvers:
+            for key in self.solvers.advectee:
                 data = self[key]
                 dataset[
                     (

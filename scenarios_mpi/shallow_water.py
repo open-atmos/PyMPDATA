@@ -3,30 +3,18 @@
 import numba
 import numpy as np
 from matplotlib import pyplot
+from PyMPDATA_examples.Jarecka_et_al_2015.simulation import make_interpolate, make_rhs
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
 from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
 
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
-from PyMPDATA.impl.enumerations import INNER, OUTER
-from PyMPDATA.impl.interpolate import make_interpolate
+from PyMPDATA.impl.enumerations import INNER, MAX_DIM_NUM, OUTER
+from PyMPDATA.impl.formulae_divide import make_divide_or_zero
 from scenarios_mpi._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
-
-
-def gradient(psi, grid_step, axis, halo):
-    """Helper function needed to calculate gradients"""
-    grad_left = (
-        (slice(halo + 1, None if halo == 1 else (-halo + 1)), slice(halo, -halo)),
-        (slice(halo, -halo), slice(halo + 1, None if halo == 1 else (-halo + 1))),
-    )
-    grad_right = (
-        (slice(None if halo == 1 else (halo - 1), -halo - 1), slice(halo, -halo)),
-        (slice(halo, -halo), slice(None if halo == 1 else (halo - 1), -halo - 1)),
-    )
-    return (psi[grad_left[axis]] - psi[grad_right[axis]]) / 2 / grid_step
 
 
 class ShallowWaterScenario(_Scenario):
@@ -55,13 +43,14 @@ class ShallowWaterScenario(_Scenario):
 
         # pylint: disable=invalid-name
         self.halo = mpdata_options.n_halo
-        self.n_threads = n_threads
+        n_threads = n_threads
 
         xyi = mpi_indices(grid=grid, rank=rank, size=size, mpi_dim=mpi_dim)
         nx, ny = xyi[mpi_dim].shape
         for dim in enumerate(grid):
             xyi[dim[0]] -= (grid[dim[0]] - 1) / 2
 
+        self.rank = rank
         self.dt = 0.1
         self.dx = 32 / grid[0]
         self.dy = 32 / grid[1]
@@ -117,55 +106,87 @@ class ShallowWaterScenario(_Scenario):
             * 2  # for complex dtype
             * (2 if mpi_dim == OUTER else n_threads),
         )
-        self.traversals = stepper.traversals
+        traversals = stepper.traversals
         super().__init__(mpi_dim=mpi_dim)
-        self.solvers = {
-            k: Solver(stepper, v, self.advector) for k, v in advectees.items()
-        }
+        self.solvers = Solver(stepper, advectees, self.advector)
+        time_step = self.dt
+        grid_step = (self.dx, None, self.dy)
+        rhs_x = make_rhs(grid_step, time_step, OUTER, mpdata_options, traversals)
+        rhs_y = make_rhs(grid_step, time_step, INNER, mpdata_options, traversals)
+        interpolate = make_interpolate(mpdata_options, traversals)
+        divide_or_zero = make_divide_or_zero(mpdata_options, traversals)
+        traversals_data = traversals.data
+        print("[DEBUG]: traversals.data.buffer ", traversals_data.buffer)
 
-        self.interpolate = make_interpolate(mpdata_options)
+        @numba.experimental.jitclass([])
+        class AnteStep:
+            def __init__(self):
+                pass
+
+            def call(
+                self,
+                advectees,
+                advector,
+                step,
+                index,
+                todo_outer,
+                todo_mid3d,
+                todo_inner,
+            ):
+                if index == 0:
+                    divide_or_zero(
+                        *todo_outer.field,
+                        *todo_mid3d.field,
+                        *todo_inner.field,
+                        *advectees[1].field,
+                        *todo_mid3d.field,
+                        *advectees[2].field,
+                        *advectees[0].field,
+                        time_step,
+                        grid_step,
+                    )
+                    # print("[DEBUG] todo_outer ", todo_outer)
+                    # print("[DEBUG] todo_inner ", todo_inner)
+                    # print("[DEBUG] advector ", advector)
+                    interpolate(traversals_data, todo_outer, todo_inner, advector)
+                elif index == 1:
+                    # print("[DEBUG]: advectee", advectees[0])
+                    # print("[DEBUG]: traversals data ", traversals_data)
+                    # rhs_x(traversals_data, advectees[index], advectees[0])
+                    pass
+
+                else:
+                    pass
+                    # rhs_y(traversals_data, advectees[index], advectees[0])
+
+        self.ante_step = AnteStep()
+
+        @numba.experimental.jitclass([])
+        class PostStep:
+            def __init__(self):
+                pass
+
+            def call(self, advectees, step, index):
+                pass
+                # if index == 0:
+                #     pass
+                # elif index == 1:
+                #     rhs_x(traversals_data, advectees[index], advectees[0])
+                # else:
+                #     rhs_y(traversals_data, advectees[index], advectees[0])
+
+        self.post_step = PostStep()
 
     def __getitem__(self, key):
-        return self.solvers[key].advectee.get()
+        return self.solvers.advectee[key].get()
 
     def data(self, key):
         """Method used to get raw data from advectee"""
-        return self.solvers[key].advectee.data
+        return self.solvers.advectee[key].data
 
     def _solver_advance(self, n_steps):
-        grid_step = (self.dx, self.dy)
         for _ in range(n_steps):
-            self.solvers[  # pylint: disable=protected-access
-                "h"
-            ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-            for xy, k in enumerate(("uh", "vh")):  # pylint: disable=invalid-name
-                mask = self.data("h") > self.eps
-                vel = np.where(mask, np.nan, 0)
-                self.solvers[  # pylint: disable=protected-access
-                    k
-                ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-                np.divide(self.data(k), self.data("h"), where=mask, out=vel)
-                self.advector.data[xy][:] = (
-                    self.interpolate(vel, xy) * self.dt / grid_step[xy]
-                )
-            self.solvers["h"].advance(1)
-            self.solvers[  # pylint: disable=protected-access
-                "h"
-            ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-            for xy, k in enumerate(("uh", "vh")):  # pylint: disable=invalid-name
-                self[k][:] -= (
-                    self.dt
-                    / 2
-                    * self["h"]
-                    * gradient(self.data("h"), grid_step[xy], axis=xy, halo=self.halo)
-                )
-                self.solvers[k].advance(1)
-                self[k][:] -= (
-                    self.dt
-                    / 2
-                    * self["h"]
-                    * gradient(self.data("h"), grid_step[xy], axis=xy, halo=self.halo)
-                )
+            self.solvers.advance(1, ante_step=self.ante_step)
         return -1
 
     @staticmethod
