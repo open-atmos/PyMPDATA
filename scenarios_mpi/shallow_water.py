@@ -3,7 +3,7 @@
 import numba
 import numpy as np
 from matplotlib import pyplot
-from PyMPDATA_examples.Jarecka_et_al_2015.simulation import make_interpolate, make_rhs
+from PyMPDATA_examples.Jarecka_et_al_2015.simulation import make_hooks
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
 from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
 
@@ -105,76 +105,15 @@ class ShallowWaterScenario(_Scenario):
             * 2  # for complex dtype
             * (2 if mpi_dim == OUTER else n_threads),
         )
-        traversals = stepper.traversals
         super().__init__(mpi_dim=mpi_dim)
         self.solvers = Solver(stepper, advectees, self.advector)
-        time_step = self.dt
-        grid_step = (self.dx, None, self.dy)
-        rhs_x = make_rhs(grid_step, time_step, OUTER, mpdata_options, traversals)
-        rhs_y = make_rhs(grid_step, time_step, INNER, mpdata_options, traversals)
-        interpolate = make_interpolate(mpdata_options, traversals)
-        divide_or_zero = make_divide_or_zero(mpdata_options, traversals)
-        traversals_data = traversals.data
-        print("[DEBUG]: traversals.data.buffer ", traversals_data.buffer)
 
-        @numba.experimental.jitclass([])
-        class AnteStep:
-            def __init__(self):
-                pass
-
-            def call(
-                self,
-                advectees,
-                advector,
-                step,
-                index,
-                todo_outer,
-                todo_mid3d,
-                todo_inner,
-            ):
-                if index == 0:
-                    divide_or_zero(
-                        *todo_outer.field,
-                        *todo_mid3d.field,
-                        *todo_inner.field,
-                        *advectees[1].field,
-                        *todo_mid3d.field,
-                        *advectees[2].field,
-                        *advectees[0].field,
-                        time_step,
-                        grid_step,
-                    )
-                    # print("[DEBUG] todo_outer ", todo_outer)
-                    # print("[DEBUG] todo_inner ", todo_inner)
-                    # print("[DEBUG] advector ", advector)
-                    interpolate(traversals_data, todo_outer, todo_inner, advector)
-                elif index == 1:
-                    # print("[DEBUG]: advectee", advectees[0])
-                    # print("[DEBUG]: traversals data ", traversals_data)
-                    # rhs_x(traversals_data, advectees[index], advectees[0])
-                    pass
-
-                else:
-                    pass
-                    # rhs_y(traversals_data, advectees[index], advectees[0])
-
-        self.ante_step = AnteStep()
-
-        @numba.experimental.jitclass([])
-        class PostStep:
-            def __init__(self):
-                pass
-
-            def call(self, advectees, step, index):
-                pass
-                # if index == 0:
-                #     pass
-                # elif index == 1:
-                #     rhs_x(traversals_data, advectees[index], advectees[0])
-                # else:
-                #     rhs_y(traversals_data, advectees[index], advectees[0])
-
-        self.post_step = PostStep()
+        self.ante_step, self.post_step = make_hooks(
+            traversals=stepper.traversals,
+            options=mpdata_options,
+            grid_step=(self.dx, None, self.dy),
+            time_step=self.dt,
+        )
 
     def __getitem__(self, key):
         return self.solvers.advectee[key].get()

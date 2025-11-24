@@ -100,6 +100,61 @@ def make_interpolate(options, traversals):
 
     return apply
 
+def make_hooks(*, traversals, options, grid_step, time_step):
+    traversals_data = traversals.data
+
+    divide_or_zero = make_divide_or_zero(options, traversals)
+    interpolate = make_interpolate(options, traversals)
+    rhs_x = make_rhs(grid_step, time_step, OUTER, options, traversals)
+    rhs_y = make_rhs(grid_step, time_step, INNER, options, traversals)
+
+    @numba.experimental.jitclass([])
+    class AnteStep:
+        def __init__(self):
+            pass
+
+        def call(
+            self,
+            advectees,
+            advector,
+            step,
+            index,
+            todo_outer,
+            todo_mid3d,
+            todo_inner,
+        ):
+            if index == 0:
+                divide_or_zero(
+                    *todo_outer.field,
+                    *todo_mid3d.field,
+                    *todo_inner.field,
+                    *advectees[1].field,
+                    *todo_mid3d.field,
+                    *advectees[2].field,
+                    *advectees[0].field,
+                    time_step,
+                    grid_step
+                )
+                interpolate(traversals_data, todo_outer, todo_inner, advector)
+            elif index == 1:
+                rhs_x(traversals_data, advectees[index], advectees[0])
+            else:
+                rhs_y(traversals_data, advectees[index], advectees[0])
+
+    @numba.experimental.jitclass([])
+    class PostStep:
+        def __init__(self):
+            pass
+        def call(self, advectees, step, index):
+            if index == 0:
+                pass
+            if index == 1:
+                rhs_x(traversals_data, advectees[index], advectees[0])
+            else:
+                rhs_y(traversals_data, advectees[index], advectees[0])
+
+    return AnteStep(), PostStep()
+
 
 class Simulation:
     # pylint: disable=too-few-public-methods
@@ -107,7 +162,6 @@ class Simulation:
         self.settings = settings
         s = settings
 
-        time_step = s.dt
         halo = settings.options.n_halo
         grid = (s.nx, s.ny)
         bcs = [Constant(value=0)] * len(grid)
@@ -131,66 +185,13 @@ class Simulation:
 
         stepper = Stepper(options=s.options, grid=grid)
 
-        grid_step = (s.dx, None, s.dy)
-        interpolate = make_interpolate(settings.options, stepper.traversals)
-        divide_or_zero = make_divide_or_zero(settings.options, stepper.traversals)
-        rhs_x = make_rhs(
-            grid_step, time_step, OUTER, settings.options, stepper.traversals
+        self.ante_step, self.post_step = make_hooks(
+            traversals=stepper.traversals,
+            options=settings.options,
+            grid_step=(s.dx, None, s.dy),
+            time_step=s.dt
         )
-        rhs_y = make_rhs(
-            grid_step, time_step, INNER, settings.options, stepper.traversals
-        )
-        traversals_data = stepper.traversals.data
 
-        @numba.experimental.jitclass([])
-        class AnteStep:
-            def __init__(self):
-                pass
-
-            def call(
-                self,
-                advectees,
-                advector,
-                step,
-                index,
-                todo_outer,
-                todo_mid3d,
-                todo_inner,
-            ):
-                if index == 0:
-                    divide_or_zero(
-                        *todo_outer.field,
-                        *todo_mid3d.field,
-                        *todo_inner.field,
-                        *advectees[1].field,
-                        *todo_mid3d.field,
-                        *advectees[2].field,
-                        *advectees[0].field,
-                        time_step,
-                        grid_step
-                    )
-                    interpolate(traversals_data, todo_outer, todo_inner, advector)
-                elif index == 1:
-                    rhs_x(traversals_data, advectees[index], advectees[0])
-                else:
-                    rhs_y(traversals_data, advectees[index], advectees[0])
-
-        self.ante_step = AnteStep()
-
-        @numba.experimental.jitclass([])
-        class PostStep:
-            def __init__(self):
-                pass
-
-            def call(self, advectees, step, index):
-                if index == 0:
-                    pass
-                if index == 1:
-                    rhs_x(traversals_data, advectees[index], advectees[0])
-                else:
-                    rhs_y(traversals_data, advectees[index], advectees[0])
-
-        self.post_step = PostStep()
         self.solver = Solver(stepper, self.advectees, self.advector)
 
     def run(self):
