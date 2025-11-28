@@ -15,13 +15,21 @@ from .vector_field import VectorField
 
 @numba.experimental.jitclass([])
 class AnteStepNull:  # pylint: disable=too-few-public-methods
-    """do-nothing version of the post-step hook"""
+    """do-nothing version of the ante-step hook"""
 
     def __init__(self):
         pass
 
     def call(
-        self, advectee, advector, step, index, todo_outer, todo_mid3d, todo_inner
+        self,
+        traversals_data,
+        advectee,
+        advector,
+        step,
+        index,
+        todo_outer,
+        todo_mid3d,
+        todo_inner,
     ):  # pylint: disable-next=unused-argument,disable=too-many-arguments
         """think of it as a `__call__` method (which Numba does not allow)"""
 
@@ -33,7 +41,9 @@ class PostStepNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def call(self, psi, step, index):  # pylint: disable-next=unused-argument
+    def call(
+        self, traversals_data, psi, step, index
+    ):  # pylint: disable-next=unused-argument
         """think of it as a `__call__` method (which Numba does not allow)"""
 
 
@@ -44,7 +54,9 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def call(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
+    def call(
+        self, traversals_data, flux, g_factor, step, iteration
+    ):  # pylint: disable=unused-argument
         """think of it as a `__call__` method (which Numba does not allow)"""
 
 

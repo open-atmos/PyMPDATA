@@ -193,7 +193,14 @@ def make_step_impl(
         for step in range(n_steps):
             for index, advectee in enumerate(advectees):
                 ante_step.call(
-                    advectees, advector, step, index, todo_outer, todo_mid3d, todo_inner
+                    traversals_data,
+                    advectees,
+                    advector,
+                    step,
+                    index,
+                    todo_outer,
+                    todo_mid3d,
+                    todo_inner,
                 )
                 if non_zero_mu_coeff:
                     advector_orig = advector
@@ -261,11 +268,12 @@ def make_step_impl(
                                 traversals_data, flux, advectee, advector_nonos
                             )
                     upwind(traversals_data, advectee, flux, g_factor)
-                    post_iter.call(flux.field, g_factor.field, step, iteration)
+                    post_iter.call(
+                        traversals_data, flux.field, g_factor.field, step, iteration
+                    )
                 if non_zero_mu_coeff:
                     advector = advector_orig
-
-                post_step.call(advectees, step, index)
+                post_step.call(traversals_data, advectees, step, index)
         return (clock() - time) / n_steps if n_steps > 0 else np.nan
 
     return step, traversals

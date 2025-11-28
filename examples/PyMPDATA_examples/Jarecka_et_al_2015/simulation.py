@@ -100,8 +100,8 @@ def make_interpolate(options, traversals):
 
     return apply
 
+
 def make_hooks(*, traversals, options, grid_step, time_step):
-    traversals_data = traversals.data
 
     divide_or_zero = make_divide_or_zero(options, traversals)
     interpolate = make_interpolate(options, traversals)
@@ -115,6 +115,7 @@ def make_hooks(*, traversals, options, grid_step, time_step):
 
         def call(
             self,
+            traversals_data,
             advectees,
             advector,
             step,
@@ -145,7 +146,8 @@ def make_hooks(*, traversals, options, grid_step, time_step):
     class PostStep:
         def __init__(self):
             pass
-        def call(self, advectees, step, index):
+
+        def call(self, traversals_data, advectees, step, index):
             if index == 0:
                 pass
             if index == 1:
@@ -189,7 +191,7 @@ class Simulation:
             traversals=stepper.traversals,
             options=settings.options,
             grid_step=(s.dx, None, s.dy),
-            time_step=s.dt
+            time_step=s.dt,
         )
 
         self.solver = Solver(stepper, self.advectees, self.advector)

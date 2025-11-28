@@ -37,7 +37,7 @@ class ShallowWaterScenario(_Scenario):
             """returns advectee array for a given grid indices"""
             # pylint: disable=invalid-name
             A = 1 / lx / ly
-            h = A * (1 - (x / lx) ** 2 - (y / ly) ** 2) * 6.25
+            h = A * (1 - (x / lx) ** 2 - (y / ly) ** 2)
             return np.where(h > 0, h, 0)
 
         # pylint: disable=invalid-name
@@ -124,7 +124,7 @@ class ShallowWaterScenario(_Scenario):
 
     def _solver_advance(self, n_steps):
         for _ in range(n_steps):
-            self.solvers.advance(1, ante_step=self.ante_step)
+            self.solvers.advance(1, ante_step=self.ante_step, post_step=self.post_step)
         return -1
 
     @staticmethod

@@ -22,9 +22,9 @@ from scenarios_mpi import CartesianScenario, ShallowWaterScenario, SphericalScen
 
 OPTIONS_KWARGS = (
     {"n_iters": 1},
-    # {"n_iters": 2, "third_order_terms": True},
-    # {"n_iters": 2, "nonoscillatory": True, "infinite_gauge": True},
-    # {"n_iters": 3},
+    {"n_iters": 2, "third_order_terms": True},
+    {"n_iters": 2, "nonoscillatory": True, "infinite_gauge": True},
+    {"n_iters": 3},
 )
 
 COURANT_FIELD_MULTIPLIER = (
@@ -37,7 +37,7 @@ COURANT_FIELD_MULTIPLIER = (
 
 CARTESIAN_OUTPUT_STEPS = range(0, 24, 2)
 
-SHALLOW_WATER_OUTPUT_STEPS = range(0, 2, 1)
+SHALLOW_WATER_OUTPUT_STEPS = range(0, 48, 4)
 
 SPHERICAL_OUTPUT_STEPS = range(0, 2000, 100)
 
@@ -103,7 +103,9 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
         pytest.skip("threading requires Numba JIT to be enabled")
 
     if scenario_class is ShallowWaterScenario and (
-        options_kwargs["n_iters"] == 3 or options_kwargs.get("third_order_terms", False)
+        options_kwargs["n_iters"] == 3
+        or options_kwargs.get("third_order_terms", False)
+        or mpi_dim == INNER
     ):
         pytest.skip("Unsupported method for simulation")
     # pylint: disable=too-many-boolean-expressions
