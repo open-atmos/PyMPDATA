@@ -43,4 +43,5 @@ tests = [
     "pytest-mpi",
     "pytest-timeout",
     "matplotlib",
+    "pympdata-examples"
 ]
