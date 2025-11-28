@@ -56,7 +56,7 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
 
     def call(
         self, traversals_data, flux, g_factor, step, iteration
-    ):  # pylint: disable=unused-argument
+    ):  # pylint: disable=unused-argument,disable=too-many-arguments
         """think of it as a `__call__` method (which Numba does not allow)"""
 
 
@@ -81,11 +81,10 @@ class Solver:
         n_dims = advector.n_dims
         if isinstance(advectee, ScalarField):
             self.__fields = {"advectee": (advectee,)}
-        #    self.advectee = advectee
 
         elif isinstance(advectee, Mapping):
             self.__fields = {"advectee": tuple(advectee.values())}
-        #    advectee = tuple(advectee.values())
+
         elif isinstance(advectee, Iterable):
             self.__fields = {"advectee": tuple(advectee)}
 

@@ -10,8 +10,7 @@ from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
 from PyMPDATA import ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Periodic
 from PyMPDATA.impl.domain_decomposition import make_subdomain
-from PyMPDATA.impl.enumerations import INNER, MAX_DIM_NUM, OUTER
-from PyMPDATA.impl.formulae_divide import make_divide_or_zero
+from PyMPDATA.impl.enumerations import INNER, OUTER
 from scenarios_mpi._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
@@ -42,7 +41,6 @@ class ShallowWaterScenario(_Scenario):
 
         # pylint: disable=invalid-name
         self.halo = mpdata_options.n_halo
-        n_threads = n_threads
 
         xyi = mpi_indices(grid=grid, rank=rank, size=size, mpi_dim=mpi_dim)
         nx, ny = xyi[mpi_dim].shape
