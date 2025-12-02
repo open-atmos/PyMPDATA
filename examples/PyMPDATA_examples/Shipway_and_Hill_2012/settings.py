@@ -54,7 +54,7 @@ class Settings:
             if not apprx_drhod_dz:  # to resolve issue #335
                 qv = self.qv(z)
                 dqv_dz = Derivative(self.qv)(z)
-                drhod_dz = drhod_dz / (1 + qv) - rhod * dqv_dz / (1 + qv)**2
+                drhod_dz = drhod_dz / (1 + qv) - rhod * dqv_dz / (1 + qv) ** 2
             return drhod_dz
 
         z_points = np.arange(0, self.z_max + self.dz / 2, self.dz / 2)
