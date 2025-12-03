@@ -13,7 +13,4 @@ except PackageNotFoundError:
     # package is not installed
     pass
 
-validator = r"[0-9].+[0-9]"
-PyMPDATA_ver = re.search(validator, PyMPDATA.__version__)[0]
-examples_ver = re.search(validator, __version__)[0]
-assert PyMPDATA_ver == examples_ver
+assert PyMPDATA.__version__ == __version__
