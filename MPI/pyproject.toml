@@ -32,6 +32,7 @@ dependencies = [
     "numpy<1.25.0",
     "numba_mpi>=0.30",
     "PyMPDATA",
+    "PyMPDATA-examples"
     "mpi4py==4.0.3",
     "h5py",
 ]
@@ -43,5 +44,4 @@ tests = [
     "pytest-mpi",
     "pytest-timeout",
     "matplotlib",
-    "pympdata-examples"
 ]
