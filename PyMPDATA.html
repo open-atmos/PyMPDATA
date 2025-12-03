@@ -131,7 +131,7 @@ It enables one to code once for multiple dimensions, and automatically
   handles (and hides from the user) any halo-filling logic related with boundary conditions.
 Numba <code>prange()</code> functionality is used for implementing multi-threading
   (it offers analogous functionality to OpenMP parallel loop execution directives).
-The Numba's deviation from Python semantics rendering <a href="https://numba.pydata.org/numba-doc/dev/reference/pysemantics.html#global-and-closure-variables">closure variables
+The Numba's deviation from Python semantics rendering <a href="https://numba.readthedocs.io/en/stable/reference/pysemantics.html?highlight=deviations#global-and-closure-variables">closure variables
   as compile-time constants</a>
   is extensively exploited within <code><a href="">PyMPDATA</a></code>
   code base enabling the just-in-time compilation to benefit from
