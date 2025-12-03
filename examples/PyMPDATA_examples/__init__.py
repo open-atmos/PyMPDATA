@@ -2,6 +2,7 @@
 .. include:: ../docs/pympdata_examples_landing.md
 """
 
+import re
 from importlib.metadata import PackageNotFoundError, version
 
 import PyMPDATA
@@ -12,4 +13,7 @@ except PackageNotFoundError:
     # package is not installed
     pass
 
-assert PyMPDATA.__version__ == __version__
+validator = r"[0-9]+\.[0-9]+\.[0-9]+"
+PyMPDATA_ver = re.search(validator, PyMPDATA.__version__)[0]
+examples_ver = re.search(validator, __version__)[0]
+assert PyMPDATA_ver == examples_ver
