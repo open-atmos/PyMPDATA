@@ -88,7 +88,7 @@ jobs:
         - if: steps.cache.outputs.cache-hit != 'true'
           run: |
             HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.13.0
-            pip install -e PyMPDATA_examples
+            pip install -e examples
             pip install -e MPI[tests]
         - run: pip show numpy
         - id: cache-save
