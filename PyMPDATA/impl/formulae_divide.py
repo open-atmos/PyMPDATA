@@ -1,4 +1,5 @@
-"""basic a*x+y operation logic for use in Fickian term handling"""
+"""operation logic for dividing the field by a set divisor table and saving
+the result to a temporary field. Requires 'dynmaic_advector' option to be enabled"""
 
 import numba
 import numpy as np
