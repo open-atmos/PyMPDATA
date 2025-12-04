@@ -1,5 +1,7 @@
 """Provides base _Scenario base class that every scenario should inherit"""
 
+from typing import Iterable
+
 from PyMPDATA.impl.enumerations import INNER, OUTER
 
 
@@ -21,7 +23,11 @@ class _Scenario:  # pylint: disable=too-few-public-methods
                 wall_time_per_timestep = self._solver_advance(n_steps=n_steps)
                 wall_time += wall_time_per_timestep * n_steps
                 steps_done += n_steps
-                data = self.solver.advectee.get()
+                data = (
+                    self.solver.advectee.get()
+                    if not isinstance(self.solver.advectee, Iterable)
+                    else self.solver.advectee["h"].get()
+                )
                 dataset[
                     (
                         mpi_range if self.mpi_dim == OUTER else slice(None),

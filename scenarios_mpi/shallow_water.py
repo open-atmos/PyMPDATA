@@ -104,7 +104,7 @@ class ShallowWaterScenario(_Scenario):
             * (2 if mpi_dim == OUTER else n_threads),
         )
         super().__init__(mpi_dim=mpi_dim)
-        self.solvers = Solver(stepper, advectees, self.advector)
+        self.solver = Solver(stepper, advectees, self.advector)
 
         self.ante_step, self.post_step = make_hooks(
             traversals=stepper.traversals,
@@ -114,15 +114,15 @@ class ShallowWaterScenario(_Scenario):
         )
 
     def __getitem__(self, key):
-        return self.solvers.advectee[key].get()
+        return self.solver.advectee[key].get()
 
     def data(self, key):
         """Method used to get raw data from advectee"""
-        return self.solvers.advectee[key].data
+        return self.solver.advectee[key].data
 
     def _solver_advance(self, n_steps):
         for _ in range(n_steps):
-            self.solvers.advance(1, ante_step=self.ante_step, post_step=self.post_step)
+            self.solver.advance(1, ante_step=self.ante_step, post_step=self.post_step)
         return -1
 
     @staticmethod
