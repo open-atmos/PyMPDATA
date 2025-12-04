@@ -14,7 +14,7 @@ build-backend = "setuptools.build_meta"
 name = "pympdata-mpi"
 description = "PyMPDATA + numba-mpi coupler sandbox"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 keywords = ["MPI", "MPDATA", "Numba", "PyMPDATA"]
 license = {text = "GPL-3.0"}
 classifiers = [
@@ -32,6 +32,7 @@ dependencies = [
     "numpy<1.25.0",
     "numba_mpi>=0.30",
     "PyMPDATA",
+    "PyMPDATA-examples",
     "mpi4py==4.0.3",
     "h5py",
 ]
