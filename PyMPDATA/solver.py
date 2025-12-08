@@ -27,9 +27,9 @@ class AnteStepNull:  # pylint: disable=too-few-public-methods
         advector,
         step,
         index,
-        dynamic_advcetor_stash_outer,
-        dynamic_advcetor_stash_mid3d,
-        dynamic_advcetor_stash_inner,
+        dynamic_advector_stash_outer,
+        dynamic_advector_stash_mid3d,
+        dynamic_advector_stash_inner,
     ):  # pylint: disable-next=unused-argument,disable=too-many-arguments
         """think of it as a `__call__` method (which Numba does not allow)"""
 
@@ -118,17 +118,17 @@ class Solver:
                     if stepper.options.non_zero_mu_coeff
                     else null_vector_field()
                 ),
-                "dynamic_advcetor_stash_outer": (
+                "dynamic_advector_stash_outer": (
                     scalar_field()
                     if stepper.options.dynamic_advector and n_dims > 1
                     else null_scalar_field()
                 ),
-                "dynamic_advcetor_stash_mid3d": (
+                "dynamic_advector_stash_mid3d": (
                     scalar_field()
                     if stepper.options.dynamic_advector and n_dims > 2
                     else null_scalar_field()
                 ),
-                "dynamic_advcetor_stash_inner": (
+                "dynamic_advector_stash_inner": (
                     scalar_field()
                     if stepper.options.dynamic_advector
                     else null_scalar_field()
@@ -153,7 +153,7 @@ class Solver:
 
     @property
     def advector(self) -> VectorField:
-        """advector vector field , dynamic_advcetor_stash_outer, dynamic_advcetor_stash_mid3d, dynamic_advcetor_stash_inner(with halo),
+        """advector vector field , dynamic_advector_stash_outer, dynamic_advector_stash_mid3d, dynamic_advector_stash_inner(with halo),
         unmodified by advance(), may be modified from user code"""
         return self.__fields["advector"]
 

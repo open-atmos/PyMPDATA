@@ -198,9 +198,9 @@ def make_step_impl(
                     advector,
                     step,
                     index,
-                    dynamic_advcetor_stash_outer,
-                    dynamic_advcetor_stash_mid3d,
-                    dynamic_advcetor_stash_inner,
+                    dynamic_advector_stash_outer,
+                    dynamic_advector_stash_mid3d,
+                    dynamic_advector_stash_inner,
                 )
                 if non_zero_mu_coeff:
                     advector_orig = advector
