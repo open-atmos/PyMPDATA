@@ -134,9 +134,6 @@ jobs:
           python -We -c "import PyMPDATA"
           python -m pip install $PIP_INSTALL_ARGS -e .[tests] -e ./examples
 
-      - if: startsWith(matrix.platform, 'macos-')
-        run: python -m pip install intel-openmp
-
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
 

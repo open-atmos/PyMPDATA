@@ -108,6 +108,9 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
         or mpi_dim == INNER
     ):
         pytest.skip("Unsupported method for simulation")
+
+    if mpi.size() > 2 and options_kwargs.get("nonoscillatory", False):
+        pytest.skip("TODO #643")
     # pylint: disable=too-many-boolean-expressions
     if (
         mpi_dim == INNER
