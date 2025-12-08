@@ -2,7 +2,6 @@
 .. include:: ../docs/pympdata_examples_landing.md
 """
 
-import re
 from importlib.metadata import PackageNotFoundError, version
 
 import PyMPDATA

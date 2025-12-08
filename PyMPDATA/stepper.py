@@ -182,9 +182,9 @@ def make_step_impl(
         vectmp_a,
         vectmp_b,
         vectmp_c,
-        todo_outer,
-        todo_mid3d,
-        todo_inner,
+        dynamic_advector_stash_outer,
+        dynamic_advcetor_stash_mid3d,
+        dynamic_advcetor_stash_inner,
         psi_extrema,
         beta,
         traversals_data,
@@ -198,9 +198,9 @@ def make_step_impl(
                     advector,
                     step,
                     index,
-                    todo_outer,
-                    todo_mid3d,
-                    todo_inner,
+                    dynamic_advcetor_stash_outer,
+                    dynamic_advcetor_stash_mid3d,
+                    dynamic_advcetor_stash_inner,
                 )
                 if non_zero_mu_coeff:
                     advector_orig = advector
