@@ -23,19 +23,19 @@ class _Scenario:  # pylint: disable=too-few-public-methods
                 wall_time_per_timestep = self._solver_advance(n_steps=n_steps)
                 wall_time += wall_time_per_timestep * n_steps
                 steps_done += n_steps
-                data = (
-                    self.solver.advectee.get()
-                    if not isinstance(self.solver.advectee, Iterable)
-                    else self.solver.advectee["h"].get()
+            data = (
+                self.solver.advectee.get()
+                if not isinstance(self.solver.advectee, Iterable)
+                else self.solver.advectee["h"].get()
+            )
+            dataset[
+                (
+                    mpi_range if self.mpi_dim == OUTER else slice(None),
+                    mpi_range if self.mpi_dim == INNER else slice(None),
+                    slice(index, index + 1),
                 )
-                dataset[
-                    (
-                        mpi_range if self.mpi_dim == OUTER else slice(None),
-                        mpi_range if self.mpi_dim == INNER else slice(None),
-                        slice(index, index + 1),
-                    )
-                ] = data.reshape((data.shape[0], data.shape[1], 1))
-                # TODO #510: add logic to seperatly read multp. advectees
+            ] = data.reshape((data.shape[0], data.shape[1], 1))
+            # TODO #510: add logic to seperatly read multp. advectees
         return wall_time
 
     def _solver_advance(self, n_steps):
