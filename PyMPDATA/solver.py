@@ -153,7 +153,8 @@ class Solver:
 
     @property
     def advector(self) -> VectorField:
-        """advector vector field , dynamic_advector_stash_outer, dynamic_advector_stash_mid3d, dynamic_advector_stash_inner(with halo),
+        """advector vector field , dynamic_advector_stash_outer,
+        dynamic_advector_stash_mid3d, dynamic_advector_stash_inner(with halo),
         unmodified by advance(), may be modified from user code"""
         return self.__fields["advector"]
 
