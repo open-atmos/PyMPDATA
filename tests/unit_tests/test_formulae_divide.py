@@ -79,10 +79,9 @@ def test_divide():
     assert np.isfinite(
         output_field_impl[IMPL_META_AND_DATA][ARG_DATA][halo:-halo]
     ).all()
-    assert (
-        output_field_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-        == False
-    )
+    assert not output_field_impl[IMPL_META_AND_DATA][META_AND_DATA_META][
+        META_HALO_VALID
+    ]
     np.testing.assert_array_equal(
         output_field_impl[IMPL_META_AND_DATA][ARG_DATA][halo:-halo], expected
     )
