@@ -41,11 +41,19 @@ def test_multiple_scalar_fields():
     opt = Options()
     data = np.asarray([4.0, 5])
     advector = VectorField((np.asarray([1.0, 2, 3]),), opt.n_halo, BCS)
-    advectees = [ScalarField(data, opt.n_halo, BCS)] * 5
+    advectees_iterable = [ScalarField(data, opt.n_halo, BCS)] * 5
+    advectees_mappable = {
+        0: ScalarField(data, opt.n_halo, BCS),
+        1: ScalarField(data, opt.n_halo, BCS),
+    }
     stepper = Stepper(options=opt, n_dims=1)
-    sut = Solver(stepper, advectees, advector)
+    sut_iter = Solver(stepper, advectees_iterable, advector)
+    sut_map = Solver(stepper, advectees_mappable, advector)
 
-    sut.advance(1)
+    sut_iter.advance(1)
+    sut_map.advance(1)
 
-    for advectee in advectees:
+    for advectee in advectees_iterable:
+        assert (advectee.get() != data).all()
+    for advectee in advectees_mappable.values():
         assert (advectee.get() != data).all()
