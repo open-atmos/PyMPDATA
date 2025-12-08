@@ -20,14 +20,15 @@ from PyMPDATA.impl.traversals import Traversals
 # pylint: disable=too-many-locals
 def test_divide():
     # Arrange
-    data = np.array((2, 4, 6, 8), dtype=float)
+    data_input = np.array((2, 4, 6, 8), dtype=float)
     data_divisor = np.array((2, 2, 2, 2), dtype=float)
     expected = np.array((4, 8, 12, 16), dtype=float)
 
     options = Options()
     halo = options.n_halo
+    # pylint: disable=duplicate-code
     traversals = Traversals(
-        grid=data.shape,
+        grid=data_input.shape,
         halo=halo,
         jit_flags=options.jit_flags,
         n_threads=1,
@@ -38,11 +39,11 @@ def test_divide():
 
     boundary_condition = (Constant(value=0),)
 
-    input_field = ScalarField(data, halo, boundary_condition)
+    input_field = ScalarField(data_input, halo, boundary_condition)
     input_field.assemble(traversals)
     input_field_impl = input_field.impl
 
-    output_field = ScalarField(np.zeros_like(data), halo, boundary_condition)
+    output_field = ScalarField(np.zeros_like(data_input), halo, boundary_condition)
     output_field.assemble(traversals)
     output_field_impl = output_field.impl
 
