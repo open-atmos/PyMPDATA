@@ -81,7 +81,7 @@ def test_divide():
     ).all()
     assert (
         output_field_impl[IMPL_META_AND_DATA][META_AND_DATA_META][META_HALO_VALID]
-        is False
+        == False
     )
     np.testing.assert_array_equal(
         output_field_impl[IMPL_META_AND_DATA][ARG_DATA][halo:-halo], expected
