@@ -42,7 +42,7 @@ PyMPDATA [documentation](https://open-atmos.github.io/PyMPDATA/index.html) is ge
 
 A [``PyMPDATA``] and [``numba-mpi``] coupler sandbox called [``PyMPDATA-MPI``](https://pypi.org/project/pympdata-mpi/)
   depicts how [``numba-mpi``](https://pypi.org/project/numba-mpi) can be used
-  to enable distributed memory parallelism in PyMPDATA.applications, and provide a validation of the implementation
+  to enable distributed memory parallelism in PyMPDATA applications, and provide a validation of the implementation
   and its performance.
 
 ## Dependencies and installation
