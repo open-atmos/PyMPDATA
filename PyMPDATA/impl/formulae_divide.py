@@ -1,5 +1,7 @@
-"""operation logic for dividing the field by a set divisor table and saving the result to a temporary field.
-Requires 'dynmaic_advector' option to be enabled.
+"""Operation logic for dividing the field by
+a set divisor table and saving the result
+to a seperate field. Requires 'dynmaic_advector'
+option to be enabled.
 Scalar field inputs are named after dimensional
 components of the VectorField, not to be confused
 with internal enumerations on axis indexing"""
