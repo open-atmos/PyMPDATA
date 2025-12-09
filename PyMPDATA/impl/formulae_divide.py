@@ -1,5 +1,8 @@
-"""operation logic for dividing the field by a set divisor table and saving
-the result to a temporary field. Requires 'dynmaic_advector' option to be enabled"""
+"""operation logic for dividing the field by a set divisor table and saving the result to a temporary field.
+Requires 'dynmaic_advector' option to be enabled.
+Scalar field inputs are named after dimensional
+components of the VectorField, not to be confused
+with internal enumerations on axis indexing"""
 
 import numba
 import numpy as np
@@ -52,7 +55,6 @@ def make_divide_or_zero(options, traversals):
                 if divisor[i] > eps
                 else 0
             )
-
         if n_dims > 1:
             out_outer_meta[META_HALO_VALID] = False
             if n_dims > 2:
