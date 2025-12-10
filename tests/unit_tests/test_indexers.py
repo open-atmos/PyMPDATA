@@ -115,9 +115,11 @@ def test_ati2D(axis):
     sut = indexers[2].ati[axis]
     index_vec = 2.5
     index = 2
+    index_nan = 2.5
 
     # act
     value = sut(focus, arrs, index_vec, halo)
+    value_nan = sut(focus, arrs, index_vec, index_nan)
 
     # assert
     assert (
@@ -128,3 +130,4 @@ def test_ati2D(axis):
         )
         / 2
     )
+    assert np.isnan(value_nan)
