@@ -7,6 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import numba
+import numpy as np
 
 from .enumerations import INNER, INVALID_INDEX, MID3D, OUTER
 
@@ -81,20 +82,26 @@ def make_indexers(jit_flags):
         @staticmethod
         @numba.njit(**jit_flags)
         def ati_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
-            dim, _ii, _kk = OUTER, int(i - 0.5), int(k)
-            return (
-                arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
-                + arrs[dim][focus[OUTER] + _ii + 1, focus[INNER] + _kk]
-            ) / 2
+            if _is_integral(k):
+                dim, _ii, _kk = OUTER, int(i - 0.5), int(k)
+                return (
+                    arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
+                    + arrs[dim][focus[OUTER] + _ii + 1, focus[INNER] + _kk]
+                ) / 2
+            else:
+                return np.nan
 
         @staticmethod
         @numba.njit(**jit_flags)
         def ati_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
-            dim, _ii, _kk = INNER, int(i), int(k - 0.5)
-            return (
-                arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
-                + arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk + 1]
-            ) / 2
+            if _is_integral(i):
+                dim, _ii, _kk = INNER, int(i), int(k - 0.5)
+                return (
+                    arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
+                    + arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk + 1]
+                ) / 2
+            else:
+                return np.nan
 
         @staticmethod
         @numba.njit(**jit_flags)
