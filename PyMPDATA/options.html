@@ -92,6 +92,9 @@
                                 <a class="variable" href="#Options.non_zero_mu_coeff">non_zero_mu_coeff</a>
                         </li>
                         <li>
+                                <a class="variable" href="#Options.dynamic_advector">dynamic_advector</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#Options.dimensionally_split">dimensionally_split</a>
                         </li>
                         <li>
@@ -160,144 +163,151 @@
 </span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>        <span class="n">DPDC</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># pylint: disable=invalid-name</span>
 </span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>        <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-15</span><span class="p">,</span>
 </span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>        <span class="n">non_zero_mu_coeff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>        <span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>        <span class="n">dtype</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>    <span class="p">):</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">HashableDict</span><span class="p">(</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>            <span class="p">{</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>                <span class="s2">&quot;n_iters&quot;</span><span class="p">:</span> <span class="n">n_iters</span><span class="p">,</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>                <span class="s2">&quot;infinite_gauge&quot;</span><span class="p">:</span> <span class="n">infinite_gauge</span><span class="p">,</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="n">epsilon</span><span class="p">,</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>                <span class="s2">&quot;divergent_flow&quot;</span><span class="p">:</span> <span class="n">divergent_flow</span><span class="p">,</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>                <span class="s2">&quot;nonoscillatory&quot;</span><span class="p">:</span> <span class="n">nonoscillatory</span><span class="p">,</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>                <span class="s2">&quot;third_order_terms&quot;</span><span class="p">:</span> <span class="n">third_order_terms</span><span class="p">,</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>                <span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">:</span> <span class="n">non_zero_mu_coeff</span><span class="p">,</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>                <span class="s2">&quot;dimensionally_split&quot;</span><span class="p">:</span> <span class="n">dimensionally_split</span><span class="p">,</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>                <span class="s2">&quot;DPDC&quot;</span><span class="p">:</span> <span class="n">DPDC</span><span class="p">,</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>            <span class="p">}</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>        <span class="p">)</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="k">if</span> <span class="p">(</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>            <span class="nb">any</span><span class="p">(</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>                <span class="p">(</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>                    <span class="n">infinite_gauge</span><span class="p">,</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>                    <span class="n">divergent_flow</span><span class="p">,</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>                    <span class="n">nonoscillatory</span><span class="p">,</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>                    <span class="n">third_order_terms</span><span class="p">,</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>                    <span class="n">DPDC</span><span class="p">,</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>                <span class="p">)</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>            <span class="p">)</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>            <span class="ow">and</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">2</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>        <span class="p">):</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>        <span class="k">if</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>        <span class="n">dynamic_advector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>        <span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>        <span class="n">dtype</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>    <span class="p">):</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">HashableDict</span><span class="p">(</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>            <span class="p">{</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>                <span class="s2">&quot;n_iters&quot;</span><span class="p">:</span> <span class="n">n_iters</span><span class="p">,</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>                <span class="s2">&quot;infinite_gauge&quot;</span><span class="p">:</span> <span class="n">infinite_gauge</span><span class="p">,</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="n">epsilon</span><span class="p">,</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>                <span class="s2">&quot;divergent_flow&quot;</span><span class="p">:</span> <span class="n">divergent_flow</span><span class="p">,</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>                <span class="s2">&quot;nonoscillatory&quot;</span><span class="p">:</span> <span class="n">nonoscillatory</span><span class="p">,</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>                <span class="s2">&quot;third_order_terms&quot;</span><span class="p">:</span> <span class="n">third_order_terms</span><span class="p">,</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>                <span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">:</span> <span class="n">non_zero_mu_coeff</span><span class="p">,</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>                <span class="s2">&quot;dynamic_advector&quot;</span><span class="p">:</span> <span class="n">dynamic_advector</span><span class="p">,</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>                <span class="s2">&quot;dimensionally_split&quot;</span><span class="p">:</span> <span class="n">dimensionally_split</span><span class="p">,</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>                <span class="s2">&quot;DPDC&quot;</span><span class="p">:</span> <span class="n">DPDC</span><span class="p">,</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>            <span class="p">}</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="p">)</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>            <span class="nb">any</span><span class="p">(</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>                <span class="p">(</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>                    <span class="n">infinite_gauge</span><span class="p">,</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>                    <span class="n">divergent_flow</span><span class="p">,</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>                    <span class="n">nonoscillatory</span><span class="p">,</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>                    <span class="n">third_order_terms</span><span class="p">,</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>                    <span class="n">DPDC</span><span class="p">,</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>                <span class="p">)</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>            <span class="p">)</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>            <span class="ow">and</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">2</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>        <span class="p">):</span>
 </span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>    <span class="nd">@property</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;data type (e.g., np.float64)&quot;&quot;&quot;</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
-</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>    <span class="nd">@property</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of corrective iterations in the MPDATA algorithm + 1</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">        Bigger values mean smaller error, but more computational cost.</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">        It does not change the order of the method.</span>
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">        The order of the method depends on the variant of antidiffusive</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">        velocity used, see for example `third_order_terms` option.</span>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a><span class="sd">        Note: not to confuse with n_steps in the Stepper.&quot;&quot;&quot;</span>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;n_iters&quot;</span><span class="p">]</span>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>    <span class="nd">@property</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">infinite_gauge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the infinite-gauge option, see e.g.:</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="sd">        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;infinite_gauge&quot;</span><span class="p">]</span>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="nd">@property</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;value of constant used to prevent from divisions by zero</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">        in statements such as (a - b)/(a + b + eps)&quot;&quot;&quot;</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>    <span class="nd">@property</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">divergent_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the divergent-flow option, see e.g.:</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),</span>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
-</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;divergent_flow&quot;</span><span class="p">]</span>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>    <span class="nd">@property</span>
-</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nonoscillatory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the nonoscillatory option, see</span>
-</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="sd">        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)</span>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;nonoscillatory&quot;</span><span class="p">]</span>
-</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
-</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>    <span class="nd">@property</span>
-</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">third_order_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the third-order-terms option, see</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&quot;&quot;&quot;</span>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;third_order_terms&quot;</span><span class="p">]</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>    <span class="nd">@property</span>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">DPDC</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the double-pass donor-cell option, see:</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="sd">        [Beason &amp; Margolin, 1988](https://osti.gov/biblio/7049237),</span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;DPDC&quot;</span><span class="p">]</span>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>    <span class="nd">@property</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">non_zero_mu_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling handling of Fickian diffusion term&quot;&quot;&quot;</span>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">]</span>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>    <span class="nd">@property</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionally_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag disabling cross-dimensional terms in antidiffusive velocities&quot;&quot;&quot;</span>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dimensionally_split&quot;</span><span class="p">]</span>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>        <span class="n">value</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span> <span class="o">+</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>        <span class="k">return</span> <span class="n">value</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>        <span class="k">if</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="nd">@property</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;data type (e.g., np.float64)&quot;&quot;&quot;</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>    <span class="nd">@property</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of corrective iterations in the MPDATA algorithm + 1</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">        Bigger values mean smaller error, but more computational cost.</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">        It does not change the order of the method.</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a><span class="sd">        The order of the method depends on the variant of antidiffusive</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a><span class="sd">        velocity used, see for example `third_order_terms` option.</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="sd">        Note: not to confuse with n_steps in the Stepper.&quot;&quot;&quot;</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;n_iters&quot;</span><span class="p">]</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>    <span class="nd">@property</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">infinite_gauge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the infinite-gauge option, see e.g.:</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;infinite_gauge&quot;</span><span class="p">]</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>    <span class="nd">@property</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;value of constant used to prevent from divisions by zero</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">        in statements such as (a - b)/(a + b + eps)&quot;&quot;&quot;</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="nd">@property</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">divergent_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the divergent-flow option, see e.g.:</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;divergent_flow&quot;</span><span class="p">]</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>    <span class="nd">@property</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nonoscillatory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the nonoscillatory option, see</span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="sd">        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;nonoscillatory&quot;</span><span class="p">]</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>    <span class="nd">@property</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">third_order_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the third-order-terms option, see</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&quot;&quot;&quot;</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;third_order_terms&quot;</span><span class="p">]</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>    <span class="nd">@property</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">DPDC</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the double-pass donor-cell option, see:</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="sd">        [Beason &amp; Margolin, 1988](https://osti.gov/biblio/7049237),</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;DPDC&quot;</span><span class="p">]</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>    <span class="nd">@property</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">non_zero_mu_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling handling of Fickian diffusion term&quot;&quot;&quot;</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">]</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>    <span class="nd">@property</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dynamic_advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling (todo desc)&quot;&quot;&quot;</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dynamic_advector&quot;</span><span class="p">]</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>    <span class="nd">@property</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionally_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag disabling cross-dimensional terms in antidiffusive velocities&quot;&quot;&quot;</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dimensionally_split&quot;</span><span class="p">]</span>
 </span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>        <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
 </span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="nd">@property</span>
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_halo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Halo extent for a given options set.</span>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="sd">        The halo extent is the number of &#39;ghost layers&#39; that need to be added</span>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a><span class="sd">        to the outside of the domain to ensure that the MPDATA stencil operations can be</span>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="sd">        applied to the edges of the domain.</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">        It is similar to</span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a><span class="sd">        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).</span>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="sd">        The halo extent is determined by the options set.&quot;&quot;&quot;</span>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divergent_flow</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonoscillatory</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_order_terms</span><span class="p">:</span>
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>            <span class="k">return</span> <span class="mi">2</span>
-</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="mi">1</span>
-</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>    <span class="nd">@property</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">jit_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HashableDict</span><span class="p">:</span>
-</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;options passed [to numba.njit()](</span>
-</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="sd">        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&quot;&quot;&quot;</span>
-</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>        <span class="k">return</span> <span class="n">HashableDict</span><span class="p">(</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>            <span class="p">{</span>
-</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>                <span class="s2">&quot;fastmath&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>                <span class="s2">&quot;error_model&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
-</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>                <span class="s2">&quot;boundscheck&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>            <span class="p">}</span>
-</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>        <span class="p">)</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>        <span class="n">value</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span> <span class="o">+</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="n">value</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>        <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="nd">@property</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_halo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Halo extent for a given options set.</span>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a><span class="sd">        The halo extent is the number of &#39;ghost layers&#39; that need to be added</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a><span class="sd">        to the outside of the domain to ensure that the MPDATA stencil operations can be</span>
+</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a><span class="sd">        applied to the edges of the domain.</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a><span class="sd">        It is similar to</span>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).</span>
+</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="sd">        The halo extent is determined by the options set.&quot;&quot;&quot;</span>
+</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divergent_flow</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonoscillatory</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_order_terms</span><span class="p">:</span>
+</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>            <span class="k">return</span> <span class="mi">2</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>        <span class="k">return</span> <span class="mi">1</span>
+</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>    <span class="nd">@property</span>
+</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">jit_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HashableDict</span><span class="p">:</span>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;options passed [to numba.njit()](</span>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a><span class="sd">        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&quot;&quot;&quot;</span>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a>        <span class="k">return</span> <span class="n">HashableDict</span><span class="p">(</span>
+</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>            <span class="p">{</span>
+</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>                <span class="s2">&quot;fastmath&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>                <span class="s2">&quot;error_model&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>                <span class="s2">&quot;boundscheck&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a>            <span class="p">}</span>
+</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
@@ -357,144 +367,151 @@
 </span><span id="Options-33"><a href="#Options-33"><span class="linenos"> 33</span></a>        <span class="n">DPDC</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># pylint: disable=invalid-name</span>
 </span><span id="Options-34"><a href="#Options-34"><span class="linenos"> 34</span></a>        <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-15</span><span class="p">,</span>
 </span><span id="Options-35"><a href="#Options-35"><span class="linenos"> 35</span></a>        <span class="n">non_zero_mu_coeff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="Options-36"><a href="#Options-36"><span class="linenos"> 36</span></a>        <span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="Options-37"><a href="#Options-37"><span class="linenos"> 37</span></a>        <span class="n">dtype</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
-</span><span id="Options-38"><a href="#Options-38"><span class="linenos"> 38</span></a>    <span class="p">):</span>
-</span><span id="Options-39"><a href="#Options-39"><span class="linenos"> 39</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">HashableDict</span><span class="p">(</span>
-</span><span id="Options-40"><a href="#Options-40"><span class="linenos"> 40</span></a>            <span class="p">{</span>
-</span><span id="Options-41"><a href="#Options-41"><span class="linenos"> 41</span></a>                <span class="s2">&quot;n_iters&quot;</span><span class="p">:</span> <span class="n">n_iters</span><span class="p">,</span>
-</span><span id="Options-42"><a href="#Options-42"><span class="linenos"> 42</span></a>                <span class="s2">&quot;infinite_gauge&quot;</span><span class="p">:</span> <span class="n">infinite_gauge</span><span class="p">,</span>
-</span><span id="Options-43"><a href="#Options-43"><span class="linenos"> 43</span></a>                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="n">epsilon</span><span class="p">,</span>
-</span><span id="Options-44"><a href="#Options-44"><span class="linenos"> 44</span></a>                <span class="s2">&quot;divergent_flow&quot;</span><span class="p">:</span> <span class="n">divergent_flow</span><span class="p">,</span>
-</span><span id="Options-45"><a href="#Options-45"><span class="linenos"> 45</span></a>                <span class="s2">&quot;nonoscillatory&quot;</span><span class="p">:</span> <span class="n">nonoscillatory</span><span class="p">,</span>
-</span><span id="Options-46"><a href="#Options-46"><span class="linenos"> 46</span></a>                <span class="s2">&quot;third_order_terms&quot;</span><span class="p">:</span> <span class="n">third_order_terms</span><span class="p">,</span>
-</span><span id="Options-47"><a href="#Options-47"><span class="linenos"> 47</span></a>                <span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">:</span> <span class="n">non_zero_mu_coeff</span><span class="p">,</span>
-</span><span id="Options-48"><a href="#Options-48"><span class="linenos"> 48</span></a>                <span class="s2">&quot;dimensionally_split&quot;</span><span class="p">:</span> <span class="n">dimensionally_split</span><span class="p">,</span>
-</span><span id="Options-49"><a href="#Options-49"><span class="linenos"> 49</span></a>                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
-</span><span id="Options-50"><a href="#Options-50"><span class="linenos"> 50</span></a>                <span class="s2">&quot;DPDC&quot;</span><span class="p">:</span> <span class="n">DPDC</span><span class="p">,</span>
-</span><span id="Options-51"><a href="#Options-51"><span class="linenos"> 51</span></a>            <span class="p">}</span>
-</span><span id="Options-52"><a href="#Options-52"><span class="linenos"> 52</span></a>        <span class="p">)</span>
-</span><span id="Options-53"><a href="#Options-53"><span class="linenos"> 53</span></a>
-</span><span id="Options-54"><a href="#Options-54"><span class="linenos"> 54</span></a>        <span class="k">if</span> <span class="p">(</span>
-</span><span id="Options-55"><a href="#Options-55"><span class="linenos"> 55</span></a>            <span class="nb">any</span><span class="p">(</span>
-</span><span id="Options-56"><a href="#Options-56"><span class="linenos"> 56</span></a>                <span class="p">(</span>
-</span><span id="Options-57"><a href="#Options-57"><span class="linenos"> 57</span></a>                    <span class="n">infinite_gauge</span><span class="p">,</span>
-</span><span id="Options-58"><a href="#Options-58"><span class="linenos"> 58</span></a>                    <span class="n">divergent_flow</span><span class="p">,</span>
-</span><span id="Options-59"><a href="#Options-59"><span class="linenos"> 59</span></a>                    <span class="n">nonoscillatory</span><span class="p">,</span>
-</span><span id="Options-60"><a href="#Options-60"><span class="linenos"> 60</span></a>                    <span class="n">third_order_terms</span><span class="p">,</span>
-</span><span id="Options-61"><a href="#Options-61"><span class="linenos"> 61</span></a>                    <span class="n">DPDC</span><span class="p">,</span>
-</span><span id="Options-62"><a href="#Options-62"><span class="linenos"> 62</span></a>                <span class="p">)</span>
-</span><span id="Options-63"><a href="#Options-63"><span class="linenos"> 63</span></a>            <span class="p">)</span>
-</span><span id="Options-64"><a href="#Options-64"><span class="linenos"> 64</span></a>            <span class="ow">and</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">2</span>
-</span><span id="Options-65"><a href="#Options-65"><span class="linenos"> 65</span></a>        <span class="p">):</span>
-</span><span id="Options-66"><a href="#Options-66"><span class="linenos"> 66</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span id="Options-67"><a href="#Options-67"><span class="linenos"> 67</span></a>        <span class="k">if</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="Options-36"><a href="#Options-36"><span class="linenos"> 36</span></a>        <span class="n">dynamic_advector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="Options-37"><a href="#Options-37"><span class="linenos"> 37</span></a>        <span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="Options-38"><a href="#Options-38"><span class="linenos"> 38</span></a>        <span class="n">dtype</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+</span><span id="Options-39"><a href="#Options-39"><span class="linenos"> 39</span></a>    <span class="p">):</span>
+</span><span id="Options-40"><a href="#Options-40"><span class="linenos"> 40</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">HashableDict</span><span class="p">(</span>
+</span><span id="Options-41"><a href="#Options-41"><span class="linenos"> 41</span></a>            <span class="p">{</span>
+</span><span id="Options-42"><a href="#Options-42"><span class="linenos"> 42</span></a>                <span class="s2">&quot;n_iters&quot;</span><span class="p">:</span> <span class="n">n_iters</span><span class="p">,</span>
+</span><span id="Options-43"><a href="#Options-43"><span class="linenos"> 43</span></a>                <span class="s2">&quot;infinite_gauge&quot;</span><span class="p">:</span> <span class="n">infinite_gauge</span><span class="p">,</span>
+</span><span id="Options-44"><a href="#Options-44"><span class="linenos"> 44</span></a>                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="n">epsilon</span><span class="p">,</span>
+</span><span id="Options-45"><a href="#Options-45"><span class="linenos"> 45</span></a>                <span class="s2">&quot;divergent_flow&quot;</span><span class="p">:</span> <span class="n">divergent_flow</span><span class="p">,</span>
+</span><span id="Options-46"><a href="#Options-46"><span class="linenos"> 46</span></a>                <span class="s2">&quot;nonoscillatory&quot;</span><span class="p">:</span> <span class="n">nonoscillatory</span><span class="p">,</span>
+</span><span id="Options-47"><a href="#Options-47"><span class="linenos"> 47</span></a>                <span class="s2">&quot;third_order_terms&quot;</span><span class="p">:</span> <span class="n">third_order_terms</span><span class="p">,</span>
+</span><span id="Options-48"><a href="#Options-48"><span class="linenos"> 48</span></a>                <span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">:</span> <span class="n">non_zero_mu_coeff</span><span class="p">,</span>
+</span><span id="Options-49"><a href="#Options-49"><span class="linenos"> 49</span></a>                <span class="s2">&quot;dynamic_advector&quot;</span><span class="p">:</span> <span class="n">dynamic_advector</span><span class="p">,</span>
+</span><span id="Options-50"><a href="#Options-50"><span class="linenos"> 50</span></a>                <span class="s2">&quot;dimensionally_split&quot;</span><span class="p">:</span> <span class="n">dimensionally_split</span><span class="p">,</span>
+</span><span id="Options-51"><a href="#Options-51"><span class="linenos"> 51</span></a>                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
+</span><span id="Options-52"><a href="#Options-52"><span class="linenos"> 52</span></a>                <span class="s2">&quot;DPDC&quot;</span><span class="p">:</span> <span class="n">DPDC</span><span class="p">,</span>
+</span><span id="Options-53"><a href="#Options-53"><span class="linenos"> 53</span></a>            <span class="p">}</span>
+</span><span id="Options-54"><a href="#Options-54"><span class="linenos"> 54</span></a>        <span class="p">)</span>
+</span><span id="Options-55"><a href="#Options-55"><span class="linenos"> 55</span></a>
+</span><span id="Options-56"><a href="#Options-56"><span class="linenos"> 56</span></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="Options-57"><a href="#Options-57"><span class="linenos"> 57</span></a>            <span class="nb">any</span><span class="p">(</span>
+</span><span id="Options-58"><a href="#Options-58"><span class="linenos"> 58</span></a>                <span class="p">(</span>
+</span><span id="Options-59"><a href="#Options-59"><span class="linenos"> 59</span></a>                    <span class="n">infinite_gauge</span><span class="p">,</span>
+</span><span id="Options-60"><a href="#Options-60"><span class="linenos"> 60</span></a>                    <span class="n">divergent_flow</span><span class="p">,</span>
+</span><span id="Options-61"><a href="#Options-61"><span class="linenos"> 61</span></a>                    <span class="n">nonoscillatory</span><span class="p">,</span>
+</span><span id="Options-62"><a href="#Options-62"><span class="linenos"> 62</span></a>                    <span class="n">third_order_terms</span><span class="p">,</span>
+</span><span id="Options-63"><a href="#Options-63"><span class="linenos"> 63</span></a>                    <span class="n">DPDC</span><span class="p">,</span>
+</span><span id="Options-64"><a href="#Options-64"><span class="linenos"> 64</span></a>                <span class="p">)</span>
+</span><span id="Options-65"><a href="#Options-65"><span class="linenos"> 65</span></a>            <span class="p">)</span>
+</span><span id="Options-66"><a href="#Options-66"><span class="linenos"> 66</span></a>            <span class="ow">and</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">2</span>
+</span><span id="Options-67"><a href="#Options-67"><span class="linenos"> 67</span></a>        <span class="p">):</span>
 </span><span id="Options-68"><a href="#Options-68"><span class="linenos"> 68</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span id="Options-69"><a href="#Options-69"><span class="linenos"> 69</span></a>
-</span><span id="Options-70"><a href="#Options-70"><span class="linenos"> 70</span></a>    <span class="nd">@property</span>
-</span><span id="Options-71"><a href="#Options-71"><span class="linenos"> 71</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Options-72"><a href="#Options-72"><span class="linenos"> 72</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;data type (e.g., np.float64)&quot;&quot;&quot;</span>
-</span><span id="Options-73"><a href="#Options-73"><span class="linenos"> 73</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
-</span><span id="Options-74"><a href="#Options-74"><span class="linenos"> 74</span></a>
-</span><span id="Options-75"><a href="#Options-75"><span class="linenos"> 75</span></a>    <span class="nd">@property</span>
-</span><span id="Options-76"><a href="#Options-76"><span class="linenos"> 76</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="Options-77"><a href="#Options-77"><span class="linenos"> 77</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of corrective iterations in the MPDATA algorithm + 1</span>
-</span><span id="Options-78"><a href="#Options-78"><span class="linenos"> 78</span></a><span class="sd">        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).</span>
-</span><span id="Options-79"><a href="#Options-79"><span class="linenos"> 79</span></a><span class="sd">        Bigger values mean smaller error, but more computational cost.</span>
-</span><span id="Options-80"><a href="#Options-80"><span class="linenos"> 80</span></a><span class="sd">        It does not change the order of the method.</span>
-</span><span id="Options-81"><a href="#Options-81"><span class="linenos"> 81</span></a><span class="sd">        The order of the method depends on the variant of antidiffusive</span>
-</span><span id="Options-82"><a href="#Options-82"><span class="linenos"> 82</span></a><span class="sd">        velocity used, see for example `third_order_terms` option.</span>
-</span><span id="Options-83"><a href="#Options-83"><span class="linenos"> 83</span></a><span class="sd">        Note: not to confuse with n_steps in the Stepper.&quot;&quot;&quot;</span>
-</span><span id="Options-84"><a href="#Options-84"><span class="linenos"> 84</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;n_iters&quot;</span><span class="p">]</span>
-</span><span id="Options-85"><a href="#Options-85"><span class="linenos"> 85</span></a>
-</span><span id="Options-86"><a href="#Options-86"><span class="linenos"> 86</span></a>    <span class="nd">@property</span>
-</span><span id="Options-87"><a href="#Options-87"><span class="linenos"> 87</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">infinite_gauge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options-88"><a href="#Options-88"><span class="linenos"> 88</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the infinite-gauge option, see e.g.:</span>
-</span><span id="Options-89"><a href="#Options-89"><span class="linenos"> 89</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
-</span><span id="Options-90"><a href="#Options-90"><span class="linenos"> 90</span></a><span class="sd">        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)</span>
-</span><span id="Options-91"><a href="#Options-91"><span class="linenos"> 91</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options-92"><a href="#Options-92"><span class="linenos"> 92</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;infinite_gauge&quot;</span><span class="p">]</span>
-</span><span id="Options-93"><a href="#Options-93"><span class="linenos"> 93</span></a>
-</span><span id="Options-94"><a href="#Options-94"><span class="linenos"> 94</span></a>    <span class="nd">@property</span>
-</span><span id="Options-95"><a href="#Options-95"><span class="linenos"> 95</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="Options-96"><a href="#Options-96"><span class="linenos"> 96</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;value of constant used to prevent from divisions by zero</span>
-</span><span id="Options-97"><a href="#Options-97"><span class="linenos"> 97</span></a><span class="sd">        in statements such as (a - b)/(a + b + eps)&quot;&quot;&quot;</span>
-</span><span id="Options-98"><a href="#Options-98"><span class="linenos"> 98</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
-</span><span id="Options-99"><a href="#Options-99"><span class="linenos"> 99</span></a>
-</span><span id="Options-100"><a href="#Options-100"><span class="linenos">100</span></a>    <span class="nd">@property</span>
-</span><span id="Options-101"><a href="#Options-101"><span class="linenos">101</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">divergent_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options-102"><a href="#Options-102"><span class="linenos">102</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the divergent-flow option, see e.g.:</span>
-</span><span id="Options-103"><a href="#Options-103"><span class="linenos">103</span></a><span class="sd">        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),</span>
-</span><span id="Options-104"><a href="#Options-104"><span class="linenos">104</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
-</span><span id="Options-105"><a href="#Options-105"><span class="linenos">105</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options-106"><a href="#Options-106"><span class="linenos">106</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;divergent_flow&quot;</span><span class="p">]</span>
-</span><span id="Options-107"><a href="#Options-107"><span class="linenos">107</span></a>
-</span><span id="Options-108"><a href="#Options-108"><span class="linenos">108</span></a>    <span class="nd">@property</span>
-</span><span id="Options-109"><a href="#Options-109"><span class="linenos">109</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nonoscillatory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options-110"><a href="#Options-110"><span class="linenos">110</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the nonoscillatory option, see</span>
-</span><span id="Options-111"><a href="#Options-111"><span class="linenos">111</span></a><span class="sd">        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)</span>
-</span><span id="Options-112"><a href="#Options-112"><span class="linenos">112</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options-113"><a href="#Options-113"><span class="linenos">113</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;nonoscillatory&quot;</span><span class="p">]</span>
-</span><span id="Options-114"><a href="#Options-114"><span class="linenos">114</span></a>
-</span><span id="Options-115"><a href="#Options-115"><span class="linenos">115</span></a>    <span class="nd">@property</span>
-</span><span id="Options-116"><a href="#Options-116"><span class="linenos">116</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">third_order_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options-117"><a href="#Options-117"><span class="linenos">117</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the third-order-terms option, see</span>
-</span><span id="Options-118"><a href="#Options-118"><span class="linenos">118</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&quot;&quot;&quot;</span>
-</span><span id="Options-119"><a href="#Options-119"><span class="linenos">119</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;third_order_terms&quot;</span><span class="p">]</span>
-</span><span id="Options-120"><a href="#Options-120"><span class="linenos">120</span></a>
-</span><span id="Options-121"><a href="#Options-121"><span class="linenos">121</span></a>    <span class="nd">@property</span>
-</span><span id="Options-122"><a href="#Options-122"><span class="linenos">122</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">DPDC</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-</span><span id="Options-123"><a href="#Options-123"><span class="linenos">123</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the double-pass donor-cell option, see:</span>
-</span><span id="Options-124"><a href="#Options-124"><span class="linenos">124</span></a><span class="sd">        [Beason &amp; Margolin, 1988](https://osti.gov/biblio/7049237),</span>
-</span><span id="Options-125"><a href="#Options-125"><span class="linenos">125</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
-</span><span id="Options-126"><a href="#Options-126"><span class="linenos">126</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
-</span><span id="Options-127"><a href="#Options-127"><span class="linenos">127</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options-128"><a href="#Options-128"><span class="linenos">128</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;DPDC&quot;</span><span class="p">]</span>
-</span><span id="Options-129"><a href="#Options-129"><span class="linenos">129</span></a>
-</span><span id="Options-130"><a href="#Options-130"><span class="linenos">130</span></a>    <span class="nd">@property</span>
-</span><span id="Options-131"><a href="#Options-131"><span class="linenos">131</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">non_zero_mu_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options-132"><a href="#Options-132"><span class="linenos">132</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling handling of Fickian diffusion term&quot;&quot;&quot;</span>
-</span><span id="Options-133"><a href="#Options-133"><span class="linenos">133</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">]</span>
-</span><span id="Options-134"><a href="#Options-134"><span class="linenos">134</span></a>
-</span><span id="Options-135"><a href="#Options-135"><span class="linenos">135</span></a>    <span class="nd">@property</span>
-</span><span id="Options-136"><a href="#Options-136"><span class="linenos">136</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionally_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options-137"><a href="#Options-137"><span class="linenos">137</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag disabling cross-dimensional terms in antidiffusive velocities&quot;&quot;&quot;</span>
-</span><span id="Options-138"><a href="#Options-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dimensionally_split&quot;</span><span class="p">]</span>
-</span><span id="Options-139"><a href="#Options-139"><span class="linenos">139</span></a>
-</span><span id="Options-140"><a href="#Options-140"><span class="linenos">140</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Options-141"><a href="#Options-141"><span class="linenos">141</span></a>        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
-</span><span id="Options-142"><a href="#Options-142"><span class="linenos">142</span></a>
-</span><span id="Options-143"><a href="#Options-143"><span class="linenos">143</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Options-144"><a href="#Options-144"><span class="linenos">144</span></a>        <span class="n">value</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span> <span class="o">+</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
-</span><span id="Options-145"><a href="#Options-145"><span class="linenos">145</span></a>        <span class="k">return</span> <span class="n">value</span>
+</span><span id="Options-69"><a href="#Options-69"><span class="linenos"> 69</span></a>        <span class="k">if</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="Options-70"><a href="#Options-70"><span class="linenos"> 70</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+</span><span id="Options-71"><a href="#Options-71"><span class="linenos"> 71</span></a>
+</span><span id="Options-72"><a href="#Options-72"><span class="linenos"> 72</span></a>    <span class="nd">@property</span>
+</span><span id="Options-73"><a href="#Options-73"><span class="linenos"> 73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Options-74"><a href="#Options-74"><span class="linenos"> 74</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;data type (e.g., np.float64)&quot;&quot;&quot;</span>
+</span><span id="Options-75"><a href="#Options-75"><span class="linenos"> 75</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
+</span><span id="Options-76"><a href="#Options-76"><span class="linenos"> 76</span></a>
+</span><span id="Options-77"><a href="#Options-77"><span class="linenos"> 77</span></a>    <span class="nd">@property</span>
+</span><span id="Options-78"><a href="#Options-78"><span class="linenos"> 78</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Options-79"><a href="#Options-79"><span class="linenos"> 79</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of corrective iterations in the MPDATA algorithm + 1</span>
+</span><span id="Options-80"><a href="#Options-80"><span class="linenos"> 80</span></a><span class="sd">        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).</span>
+</span><span id="Options-81"><a href="#Options-81"><span class="linenos"> 81</span></a><span class="sd">        Bigger values mean smaller error, but more computational cost.</span>
+</span><span id="Options-82"><a href="#Options-82"><span class="linenos"> 82</span></a><span class="sd">        It does not change the order of the method.</span>
+</span><span id="Options-83"><a href="#Options-83"><span class="linenos"> 83</span></a><span class="sd">        The order of the method depends on the variant of antidiffusive</span>
+</span><span id="Options-84"><a href="#Options-84"><span class="linenos"> 84</span></a><span class="sd">        velocity used, see for example `third_order_terms` option.</span>
+</span><span id="Options-85"><a href="#Options-85"><span class="linenos"> 85</span></a><span class="sd">        Note: not to confuse with n_steps in the Stepper.&quot;&quot;&quot;</span>
+</span><span id="Options-86"><a href="#Options-86"><span class="linenos"> 86</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;n_iters&quot;</span><span class="p">]</span>
+</span><span id="Options-87"><a href="#Options-87"><span class="linenos"> 87</span></a>
+</span><span id="Options-88"><a href="#Options-88"><span class="linenos"> 88</span></a>    <span class="nd">@property</span>
+</span><span id="Options-89"><a href="#Options-89"><span class="linenos"> 89</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">infinite_gauge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-90"><a href="#Options-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the infinite-gauge option, see e.g.:</span>
+</span><span id="Options-91"><a href="#Options-91"><span class="linenos"> 91</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
+</span><span id="Options-92"><a href="#Options-92"><span class="linenos"> 92</span></a><span class="sd">        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)</span>
+</span><span id="Options-93"><a href="#Options-93"><span class="linenos"> 93</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options-94"><a href="#Options-94"><span class="linenos"> 94</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;infinite_gauge&quot;</span><span class="p">]</span>
+</span><span id="Options-95"><a href="#Options-95"><span class="linenos"> 95</span></a>
+</span><span id="Options-96"><a href="#Options-96"><span class="linenos"> 96</span></a>    <span class="nd">@property</span>
+</span><span id="Options-97"><a href="#Options-97"><span class="linenos"> 97</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Options-98"><a href="#Options-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;value of constant used to prevent from divisions by zero</span>
+</span><span id="Options-99"><a href="#Options-99"><span class="linenos"> 99</span></a><span class="sd">        in statements such as (a - b)/(a + b + eps)&quot;&quot;&quot;</span>
+</span><span id="Options-100"><a href="#Options-100"><span class="linenos">100</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
+</span><span id="Options-101"><a href="#Options-101"><span class="linenos">101</span></a>
+</span><span id="Options-102"><a href="#Options-102"><span class="linenos">102</span></a>    <span class="nd">@property</span>
+</span><span id="Options-103"><a href="#Options-103"><span class="linenos">103</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">divergent_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-104"><a href="#Options-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the divergent-flow option, see e.g.:</span>
+</span><span id="Options-105"><a href="#Options-105"><span class="linenos">105</span></a><span class="sd">        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),</span>
+</span><span id="Options-106"><a href="#Options-106"><span class="linenos">106</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
+</span><span id="Options-107"><a href="#Options-107"><span class="linenos">107</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options-108"><a href="#Options-108"><span class="linenos">108</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;divergent_flow&quot;</span><span class="p">]</span>
+</span><span id="Options-109"><a href="#Options-109"><span class="linenos">109</span></a>
+</span><span id="Options-110"><a href="#Options-110"><span class="linenos">110</span></a>    <span class="nd">@property</span>
+</span><span id="Options-111"><a href="#Options-111"><span class="linenos">111</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nonoscillatory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-112"><a href="#Options-112"><span class="linenos">112</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the nonoscillatory option, see</span>
+</span><span id="Options-113"><a href="#Options-113"><span class="linenos">113</span></a><span class="sd">        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)</span>
+</span><span id="Options-114"><a href="#Options-114"><span class="linenos">114</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options-115"><a href="#Options-115"><span class="linenos">115</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;nonoscillatory&quot;</span><span class="p">]</span>
+</span><span id="Options-116"><a href="#Options-116"><span class="linenos">116</span></a>
+</span><span id="Options-117"><a href="#Options-117"><span class="linenos">117</span></a>    <span class="nd">@property</span>
+</span><span id="Options-118"><a href="#Options-118"><span class="linenos">118</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">third_order_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-119"><a href="#Options-119"><span class="linenos">119</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the third-order-terms option, see</span>
+</span><span id="Options-120"><a href="#Options-120"><span class="linenos">120</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&quot;&quot;&quot;</span>
+</span><span id="Options-121"><a href="#Options-121"><span class="linenos">121</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;third_order_terms&quot;</span><span class="p">]</span>
+</span><span id="Options-122"><a href="#Options-122"><span class="linenos">122</span></a>
+</span><span id="Options-123"><a href="#Options-123"><span class="linenos">123</span></a>    <span class="nd">@property</span>
+</span><span id="Options-124"><a href="#Options-124"><span class="linenos">124</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">DPDC</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+</span><span id="Options-125"><a href="#Options-125"><span class="linenos">125</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the double-pass donor-cell option, see:</span>
+</span><span id="Options-126"><a href="#Options-126"><span class="linenos">126</span></a><span class="sd">        [Beason &amp; Margolin, 1988](https://osti.gov/biblio/7049237),</span>
+</span><span id="Options-127"><a href="#Options-127"><span class="linenos">127</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
+</span><span id="Options-128"><a href="#Options-128"><span class="linenos">128</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
+</span><span id="Options-129"><a href="#Options-129"><span class="linenos">129</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options-130"><a href="#Options-130"><span class="linenos">130</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;DPDC&quot;</span><span class="p">]</span>
+</span><span id="Options-131"><a href="#Options-131"><span class="linenos">131</span></a>
+</span><span id="Options-132"><a href="#Options-132"><span class="linenos">132</span></a>    <span class="nd">@property</span>
+</span><span id="Options-133"><a href="#Options-133"><span class="linenos">133</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">non_zero_mu_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-134"><a href="#Options-134"><span class="linenos">134</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling handling of Fickian diffusion term&quot;&quot;&quot;</span>
+</span><span id="Options-135"><a href="#Options-135"><span class="linenos">135</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">]</span>
+</span><span id="Options-136"><a href="#Options-136"><span class="linenos">136</span></a>
+</span><span id="Options-137"><a href="#Options-137"><span class="linenos">137</span></a>    <span class="nd">@property</span>
+</span><span id="Options-138"><a href="#Options-138"><span class="linenos">138</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dynamic_advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-139"><a href="#Options-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling (todo desc)&quot;&quot;&quot;</span>
+</span><span id="Options-140"><a href="#Options-140"><span class="linenos">140</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dynamic_advector&quot;</span><span class="p">]</span>
+</span><span id="Options-141"><a href="#Options-141"><span class="linenos">141</span></a>
+</span><span id="Options-142"><a href="#Options-142"><span class="linenos">142</span></a>    <span class="nd">@property</span>
+</span><span id="Options-143"><a href="#Options-143"><span class="linenos">143</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionally_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options-144"><a href="#Options-144"><span class="linenos">144</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag disabling cross-dimensional terms in antidiffusive velocities&quot;&quot;&quot;</span>
+</span><span id="Options-145"><a href="#Options-145"><span class="linenos">145</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dimensionally_split&quot;</span><span class="p">]</span>
 </span><span id="Options-146"><a href="#Options-146"><span class="linenos">146</span></a>
-</span><span id="Options-147"><a href="#Options-147"><span class="linenos">147</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span id="Options-148"><a href="#Options-148"><span class="linenos">148</span></a>        <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+</span><span id="Options-147"><a href="#Options-147"><span class="linenos">147</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Options-148"><a href="#Options-148"><span class="linenos">148</span></a>        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
 </span><span id="Options-149"><a href="#Options-149"><span class="linenos">149</span></a>
-</span><span id="Options-150"><a href="#Options-150"><span class="linenos">150</span></a>    <span class="nd">@property</span>
-</span><span id="Options-151"><a href="#Options-151"><span class="linenos">151</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_halo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="Options-152"><a href="#Options-152"><span class="linenos">152</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Halo extent for a given options set.</span>
-</span><span id="Options-153"><a href="#Options-153"><span class="linenos">153</span></a><span class="sd">        The halo extent is the number of &#39;ghost layers&#39; that need to be added</span>
-</span><span id="Options-154"><a href="#Options-154"><span class="linenos">154</span></a><span class="sd">        to the outside of the domain to ensure that the MPDATA stencil operations can be</span>
-</span><span id="Options-155"><a href="#Options-155"><span class="linenos">155</span></a><span class="sd">        applied to the edges of the domain.</span>
-</span><span id="Options-156"><a href="#Options-156"><span class="linenos">156</span></a><span class="sd">        It is similar to</span>
-</span><span id="Options-157"><a href="#Options-157"><span class="linenos">157</span></a><span class="sd">        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).</span>
-</span><span id="Options-158"><a href="#Options-158"><span class="linenos">158</span></a><span class="sd">        The halo extent is determined by the options set.&quot;&quot;&quot;</span>
-</span><span id="Options-159"><a href="#Options-159"><span class="linenos">159</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divergent_flow</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonoscillatory</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_order_terms</span><span class="p">:</span>
-</span><span id="Options-160"><a href="#Options-160"><span class="linenos">160</span></a>            <span class="k">return</span> <span class="mi">2</span>
-</span><span id="Options-161"><a href="#Options-161"><span class="linenos">161</span></a>        <span class="k">return</span> <span class="mi">1</span>
-</span><span id="Options-162"><a href="#Options-162"><span class="linenos">162</span></a>
-</span><span id="Options-163"><a href="#Options-163"><span class="linenos">163</span></a>    <span class="nd">@property</span>
-</span><span id="Options-164"><a href="#Options-164"><span class="linenos">164</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">jit_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HashableDict</span><span class="p">:</span>
-</span><span id="Options-165"><a href="#Options-165"><span class="linenos">165</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;options passed [to numba.njit()](</span>
-</span><span id="Options-166"><a href="#Options-166"><span class="linenos">166</span></a><span class="sd">        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&quot;&quot;&quot;</span>
-</span><span id="Options-167"><a href="#Options-167"><span class="linenos">167</span></a>        <span class="k">return</span> <span class="n">HashableDict</span><span class="p">(</span>
-</span><span id="Options-168"><a href="#Options-168"><span class="linenos">168</span></a>            <span class="p">{</span>
-</span><span id="Options-169"><a href="#Options-169"><span class="linenos">169</span></a>                <span class="s2">&quot;fastmath&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="Options-170"><a href="#Options-170"><span class="linenos">170</span></a>                <span class="s2">&quot;error_model&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
-</span><span id="Options-171"><a href="#Options-171"><span class="linenos">171</span></a>                <span class="s2">&quot;boundscheck&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="Options-172"><a href="#Options-172"><span class="linenos">172</span></a>            <span class="p">}</span>
-</span><span id="Options-173"><a href="#Options-173"><span class="linenos">173</span></a>        <span class="p">)</span>
+</span><span id="Options-150"><a href="#Options-150"><span class="linenos">150</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Options-151"><a href="#Options-151"><span class="linenos">151</span></a>        <span class="n">value</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span> <span class="o">+</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
+</span><span id="Options-152"><a href="#Options-152"><span class="linenos">152</span></a>        <span class="k">return</span> <span class="n">value</span>
+</span><span id="Options-153"><a href="#Options-153"><span class="linenos">153</span></a>
+</span><span id="Options-154"><a href="#Options-154"><span class="linenos">154</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span id="Options-155"><a href="#Options-155"><span class="linenos">155</span></a>        <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+</span><span id="Options-156"><a href="#Options-156"><span class="linenos">156</span></a>
+</span><span id="Options-157"><a href="#Options-157"><span class="linenos">157</span></a>    <span class="nd">@property</span>
+</span><span id="Options-158"><a href="#Options-158"><span class="linenos">158</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_halo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Options-159"><a href="#Options-159"><span class="linenos">159</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Halo extent for a given options set.</span>
+</span><span id="Options-160"><a href="#Options-160"><span class="linenos">160</span></a><span class="sd">        The halo extent is the number of &#39;ghost layers&#39; that need to be added</span>
+</span><span id="Options-161"><a href="#Options-161"><span class="linenos">161</span></a><span class="sd">        to the outside of the domain to ensure that the MPDATA stencil operations can be</span>
+</span><span id="Options-162"><a href="#Options-162"><span class="linenos">162</span></a><span class="sd">        applied to the edges of the domain.</span>
+</span><span id="Options-163"><a href="#Options-163"><span class="linenos">163</span></a><span class="sd">        It is similar to</span>
+</span><span id="Options-164"><a href="#Options-164"><span class="linenos">164</span></a><span class="sd">        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).</span>
+</span><span id="Options-165"><a href="#Options-165"><span class="linenos">165</span></a><span class="sd">        The halo extent is determined by the options set.&quot;&quot;&quot;</span>
+</span><span id="Options-166"><a href="#Options-166"><span class="linenos">166</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divergent_flow</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonoscillatory</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_order_terms</span><span class="p">:</span>
+</span><span id="Options-167"><a href="#Options-167"><span class="linenos">167</span></a>            <span class="k">return</span> <span class="mi">2</span>
+</span><span id="Options-168"><a href="#Options-168"><span class="linenos">168</span></a>        <span class="k">return</span> <span class="mi">1</span>
+</span><span id="Options-169"><a href="#Options-169"><span class="linenos">169</span></a>
+</span><span id="Options-170"><a href="#Options-170"><span class="linenos">170</span></a>    <span class="nd">@property</span>
+</span><span id="Options-171"><a href="#Options-171"><span class="linenos">171</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">jit_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HashableDict</span><span class="p">:</span>
+</span><span id="Options-172"><a href="#Options-172"><span class="linenos">172</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;options passed [to numba.njit()](</span>
+</span><span id="Options-173"><a href="#Options-173"><span class="linenos">173</span></a><span class="sd">        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&quot;&quot;&quot;</span>
+</span><span id="Options-174"><a href="#Options-174"><span class="linenos">174</span></a>        <span class="k">return</span> <span class="n">HashableDict</span><span class="p">(</span>
+</span><span id="Options-175"><a href="#Options-175"><span class="linenos">175</span></a>            <span class="p">{</span>
+</span><span id="Options-176"><a href="#Options-176"><span class="linenos">176</span></a>                <span class="s2">&quot;fastmath&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="Options-177"><a href="#Options-177"><span class="linenos">177</span></a>                <span class="s2">&quot;error_model&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
+</span><span id="Options-178"><a href="#Options-178"><span class="linenos">178</span></a>                <span class="s2">&quot;boundscheck&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="Options-179"><a href="#Options-179"><span class="linenos">179</span></a>            <span class="p">}</span>
+</span><span id="Options-180"><a href="#Options-180"><span class="linenos">180</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
@@ -509,7 +526,7 @@ equipped with meaningful <code>__str__</code> <code>__hash__</code>, <code>__eq_
                                         <input id="Options.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
-        <span class="name">Options</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">n_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>,</span><span class="param">	<span class="n">infinite_gauge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">divergent_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">nonoscillatory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">third_order_terms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">DPDC</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-15</span>,</span><span class="param">	<span class="n">non_zero_mu_coeff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	dtype: [&lt;class &#x27;numpy.float32&#x27;&gt;, &lt;class &#x27;numpy.float64&#x27;&gt;] = &lt;class &#x27;numpy.float64&#x27;&gt;</span>)</span>
+        <span class="name">Options</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">n_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>,</span><span class="param">	<span class="n">infinite_gauge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">divergent_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">nonoscillatory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">third_order_terms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">DPDC</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-15</span>,</span><span class="param">	<span class="n">non_zero_mu_coeff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">dynamic_advector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	dtype: [&lt;class &#x27;numpy.float32&#x27;&gt;, &lt;class &#x27;numpy.float64&#x27;&gt;] = &lt;class &#x27;numpy.float64&#x27;&gt;</span>)</span>
 
                 <label class="view-source-button" for="Options.__init__-view-source"><span>View Source</span></label>
 
@@ -526,39 +543,41 @@ equipped with meaningful <code>__str__</code> <code>__hash__</code>, <code>__eq_
 </span><span id="Options.__init__-33"><a href="#Options.__init__-33"><span class="linenos">33</span></a>        <span class="n">DPDC</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># pylint: disable=invalid-name</span>
 </span><span id="Options.__init__-34"><a href="#Options.__init__-34"><span class="linenos">34</span></a>        <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-15</span><span class="p">,</span>
 </span><span id="Options.__init__-35"><a href="#Options.__init__-35"><span class="linenos">35</span></a>        <span class="n">non_zero_mu_coeff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="Options.__init__-36"><a href="#Options.__init__-36"><span class="linenos">36</span></a>        <span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="Options.__init__-37"><a href="#Options.__init__-37"><span class="linenos">37</span></a>        <span class="n">dtype</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
-</span><span id="Options.__init__-38"><a href="#Options.__init__-38"><span class="linenos">38</span></a>    <span class="p">):</span>
-</span><span id="Options.__init__-39"><a href="#Options.__init__-39"><span class="linenos">39</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">HashableDict</span><span class="p">(</span>
-</span><span id="Options.__init__-40"><a href="#Options.__init__-40"><span class="linenos">40</span></a>            <span class="p">{</span>
-</span><span id="Options.__init__-41"><a href="#Options.__init__-41"><span class="linenos">41</span></a>                <span class="s2">&quot;n_iters&quot;</span><span class="p">:</span> <span class="n">n_iters</span><span class="p">,</span>
-</span><span id="Options.__init__-42"><a href="#Options.__init__-42"><span class="linenos">42</span></a>                <span class="s2">&quot;infinite_gauge&quot;</span><span class="p">:</span> <span class="n">infinite_gauge</span><span class="p">,</span>
-</span><span id="Options.__init__-43"><a href="#Options.__init__-43"><span class="linenos">43</span></a>                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="n">epsilon</span><span class="p">,</span>
-</span><span id="Options.__init__-44"><a href="#Options.__init__-44"><span class="linenos">44</span></a>                <span class="s2">&quot;divergent_flow&quot;</span><span class="p">:</span> <span class="n">divergent_flow</span><span class="p">,</span>
-</span><span id="Options.__init__-45"><a href="#Options.__init__-45"><span class="linenos">45</span></a>                <span class="s2">&quot;nonoscillatory&quot;</span><span class="p">:</span> <span class="n">nonoscillatory</span><span class="p">,</span>
-</span><span id="Options.__init__-46"><a href="#Options.__init__-46"><span class="linenos">46</span></a>                <span class="s2">&quot;third_order_terms&quot;</span><span class="p">:</span> <span class="n">third_order_terms</span><span class="p">,</span>
-</span><span id="Options.__init__-47"><a href="#Options.__init__-47"><span class="linenos">47</span></a>                <span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">:</span> <span class="n">non_zero_mu_coeff</span><span class="p">,</span>
-</span><span id="Options.__init__-48"><a href="#Options.__init__-48"><span class="linenos">48</span></a>                <span class="s2">&quot;dimensionally_split&quot;</span><span class="p">:</span> <span class="n">dimensionally_split</span><span class="p">,</span>
-</span><span id="Options.__init__-49"><a href="#Options.__init__-49"><span class="linenos">49</span></a>                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
-</span><span id="Options.__init__-50"><a href="#Options.__init__-50"><span class="linenos">50</span></a>                <span class="s2">&quot;DPDC&quot;</span><span class="p">:</span> <span class="n">DPDC</span><span class="p">,</span>
-</span><span id="Options.__init__-51"><a href="#Options.__init__-51"><span class="linenos">51</span></a>            <span class="p">}</span>
-</span><span id="Options.__init__-52"><a href="#Options.__init__-52"><span class="linenos">52</span></a>        <span class="p">)</span>
-</span><span id="Options.__init__-53"><a href="#Options.__init__-53"><span class="linenos">53</span></a>
-</span><span id="Options.__init__-54"><a href="#Options.__init__-54"><span class="linenos">54</span></a>        <span class="k">if</span> <span class="p">(</span>
-</span><span id="Options.__init__-55"><a href="#Options.__init__-55"><span class="linenos">55</span></a>            <span class="nb">any</span><span class="p">(</span>
-</span><span id="Options.__init__-56"><a href="#Options.__init__-56"><span class="linenos">56</span></a>                <span class="p">(</span>
-</span><span id="Options.__init__-57"><a href="#Options.__init__-57"><span class="linenos">57</span></a>                    <span class="n">infinite_gauge</span><span class="p">,</span>
-</span><span id="Options.__init__-58"><a href="#Options.__init__-58"><span class="linenos">58</span></a>                    <span class="n">divergent_flow</span><span class="p">,</span>
-</span><span id="Options.__init__-59"><a href="#Options.__init__-59"><span class="linenos">59</span></a>                    <span class="n">nonoscillatory</span><span class="p">,</span>
-</span><span id="Options.__init__-60"><a href="#Options.__init__-60"><span class="linenos">60</span></a>                    <span class="n">third_order_terms</span><span class="p">,</span>
-</span><span id="Options.__init__-61"><a href="#Options.__init__-61"><span class="linenos">61</span></a>                    <span class="n">DPDC</span><span class="p">,</span>
-</span><span id="Options.__init__-62"><a href="#Options.__init__-62"><span class="linenos">62</span></a>                <span class="p">)</span>
-</span><span id="Options.__init__-63"><a href="#Options.__init__-63"><span class="linenos">63</span></a>            <span class="p">)</span>
-</span><span id="Options.__init__-64"><a href="#Options.__init__-64"><span class="linenos">64</span></a>            <span class="ow">and</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">2</span>
-</span><span id="Options.__init__-65"><a href="#Options.__init__-65"><span class="linenos">65</span></a>        <span class="p">):</span>
-</span><span id="Options.__init__-66"><a href="#Options.__init__-66"><span class="linenos">66</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span id="Options.__init__-67"><a href="#Options.__init__-67"><span class="linenos">67</span></a>        <span class="k">if</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="Options.__init__-36"><a href="#Options.__init__-36"><span class="linenos">36</span></a>        <span class="n">dynamic_advector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="Options.__init__-37"><a href="#Options.__init__-37"><span class="linenos">37</span></a>        <span class="n">dimensionally_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="Options.__init__-38"><a href="#Options.__init__-38"><span class="linenos">38</span></a>        <span class="n">dtype</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+</span><span id="Options.__init__-39"><a href="#Options.__init__-39"><span class="linenos">39</span></a>    <span class="p">):</span>
+</span><span id="Options.__init__-40"><a href="#Options.__init__-40"><span class="linenos">40</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">HashableDict</span><span class="p">(</span>
+</span><span id="Options.__init__-41"><a href="#Options.__init__-41"><span class="linenos">41</span></a>            <span class="p">{</span>
+</span><span id="Options.__init__-42"><a href="#Options.__init__-42"><span class="linenos">42</span></a>                <span class="s2">&quot;n_iters&quot;</span><span class="p">:</span> <span class="n">n_iters</span><span class="p">,</span>
+</span><span id="Options.__init__-43"><a href="#Options.__init__-43"><span class="linenos">43</span></a>                <span class="s2">&quot;infinite_gauge&quot;</span><span class="p">:</span> <span class="n">infinite_gauge</span><span class="p">,</span>
+</span><span id="Options.__init__-44"><a href="#Options.__init__-44"><span class="linenos">44</span></a>                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="n">epsilon</span><span class="p">,</span>
+</span><span id="Options.__init__-45"><a href="#Options.__init__-45"><span class="linenos">45</span></a>                <span class="s2">&quot;divergent_flow&quot;</span><span class="p">:</span> <span class="n">divergent_flow</span><span class="p">,</span>
+</span><span id="Options.__init__-46"><a href="#Options.__init__-46"><span class="linenos">46</span></a>                <span class="s2">&quot;nonoscillatory&quot;</span><span class="p">:</span> <span class="n">nonoscillatory</span><span class="p">,</span>
+</span><span id="Options.__init__-47"><a href="#Options.__init__-47"><span class="linenos">47</span></a>                <span class="s2">&quot;third_order_terms&quot;</span><span class="p">:</span> <span class="n">third_order_terms</span><span class="p">,</span>
+</span><span id="Options.__init__-48"><a href="#Options.__init__-48"><span class="linenos">48</span></a>                <span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">:</span> <span class="n">non_zero_mu_coeff</span><span class="p">,</span>
+</span><span id="Options.__init__-49"><a href="#Options.__init__-49"><span class="linenos">49</span></a>                <span class="s2">&quot;dynamic_advector&quot;</span><span class="p">:</span> <span class="n">dynamic_advector</span><span class="p">,</span>
+</span><span id="Options.__init__-50"><a href="#Options.__init__-50"><span class="linenos">50</span></a>                <span class="s2">&quot;dimensionally_split&quot;</span><span class="p">:</span> <span class="n">dimensionally_split</span><span class="p">,</span>
+</span><span id="Options.__init__-51"><a href="#Options.__init__-51"><span class="linenos">51</span></a>                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">,</span>
+</span><span id="Options.__init__-52"><a href="#Options.__init__-52"><span class="linenos">52</span></a>                <span class="s2">&quot;DPDC&quot;</span><span class="p">:</span> <span class="n">DPDC</span><span class="p">,</span>
+</span><span id="Options.__init__-53"><a href="#Options.__init__-53"><span class="linenos">53</span></a>            <span class="p">}</span>
+</span><span id="Options.__init__-54"><a href="#Options.__init__-54"><span class="linenos">54</span></a>        <span class="p">)</span>
+</span><span id="Options.__init__-55"><a href="#Options.__init__-55"><span class="linenos">55</span></a>
+</span><span id="Options.__init__-56"><a href="#Options.__init__-56"><span class="linenos">56</span></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="Options.__init__-57"><a href="#Options.__init__-57"><span class="linenos">57</span></a>            <span class="nb">any</span><span class="p">(</span>
+</span><span id="Options.__init__-58"><a href="#Options.__init__-58"><span class="linenos">58</span></a>                <span class="p">(</span>
+</span><span id="Options.__init__-59"><a href="#Options.__init__-59"><span class="linenos">59</span></a>                    <span class="n">infinite_gauge</span><span class="p">,</span>
+</span><span id="Options.__init__-60"><a href="#Options.__init__-60"><span class="linenos">60</span></a>                    <span class="n">divergent_flow</span><span class="p">,</span>
+</span><span id="Options.__init__-61"><a href="#Options.__init__-61"><span class="linenos">61</span></a>                    <span class="n">nonoscillatory</span><span class="p">,</span>
+</span><span id="Options.__init__-62"><a href="#Options.__init__-62"><span class="linenos">62</span></a>                    <span class="n">third_order_terms</span><span class="p">,</span>
+</span><span id="Options.__init__-63"><a href="#Options.__init__-63"><span class="linenos">63</span></a>                    <span class="n">DPDC</span><span class="p">,</span>
+</span><span id="Options.__init__-64"><a href="#Options.__init__-64"><span class="linenos">64</span></a>                <span class="p">)</span>
+</span><span id="Options.__init__-65"><a href="#Options.__init__-65"><span class="linenos">65</span></a>            <span class="p">)</span>
+</span><span id="Options.__init__-66"><a href="#Options.__init__-66"><span class="linenos">66</span></a>            <span class="ow">and</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">2</span>
+</span><span id="Options.__init__-67"><a href="#Options.__init__-67"><span class="linenos">67</span></a>        <span class="p">):</span>
 </span><span id="Options.__init__-68"><a href="#Options.__init__-68"><span class="linenos">68</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+</span><span id="Options.__init__-69"><a href="#Options.__init__-69"><span class="linenos">69</span></a>        <span class="k">if</span> <span class="n">n_iters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="Options.__init__-70"><a href="#Options.__init__-70"><span class="linenos">70</span></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -574,10 +593,10 @@ equipped with meaningful <code>__str__</code> <code>__hash__</code>, <code>__eq_
 
     </div>
     <a class="headerlink" href="#Options.dtype"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.dtype-70"><a href="#Options.dtype-70"><span class="linenos">70</span></a>    <span class="nd">@property</span>
-</span><span id="Options.dtype-71"><a href="#Options.dtype-71"><span class="linenos">71</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Options.dtype-72"><a href="#Options.dtype-72"><span class="linenos">72</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;data type (e.g., np.float64)&quot;&quot;&quot;</span>
-</span><span id="Options.dtype-73"><a href="#Options.dtype-73"><span class="linenos">73</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.dtype-72"><a href="#Options.dtype-72"><span class="linenos">72</span></a>    <span class="nd">@property</span>
+</span><span id="Options.dtype-73"><a href="#Options.dtype-73"><span class="linenos">73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Options.dtype-74"><a href="#Options.dtype-74"><span class="linenos">74</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;data type (e.g., np.float64)&quot;&quot;&quot;</span>
+</span><span id="Options.dtype-75"><a href="#Options.dtype-75"><span class="linenos">75</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -595,16 +614,16 @@ equipped with meaningful <code>__str__</code> <code>__hash__</code>, <code>__eq_
 
     </div>
     <a class="headerlink" href="#Options.n_iters"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.n_iters-75"><a href="#Options.n_iters-75"><span class="linenos">75</span></a>    <span class="nd">@property</span>
-</span><span id="Options.n_iters-76"><a href="#Options.n_iters-76"><span class="linenos">76</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="Options.n_iters-77"><a href="#Options.n_iters-77"><span class="linenos">77</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of corrective iterations in the MPDATA algorithm + 1</span>
-</span><span id="Options.n_iters-78"><a href="#Options.n_iters-78"><span class="linenos">78</span></a><span class="sd">        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).</span>
-</span><span id="Options.n_iters-79"><a href="#Options.n_iters-79"><span class="linenos">79</span></a><span class="sd">        Bigger values mean smaller error, but more computational cost.</span>
-</span><span id="Options.n_iters-80"><a href="#Options.n_iters-80"><span class="linenos">80</span></a><span class="sd">        It does not change the order of the method.</span>
-</span><span id="Options.n_iters-81"><a href="#Options.n_iters-81"><span class="linenos">81</span></a><span class="sd">        The order of the method depends on the variant of antidiffusive</span>
-</span><span id="Options.n_iters-82"><a href="#Options.n_iters-82"><span class="linenos">82</span></a><span class="sd">        velocity used, see for example `third_order_terms` option.</span>
-</span><span id="Options.n_iters-83"><a href="#Options.n_iters-83"><span class="linenos">83</span></a><span class="sd">        Note: not to confuse with n_steps in the Stepper.&quot;&quot;&quot;</span>
-</span><span id="Options.n_iters-84"><a href="#Options.n_iters-84"><span class="linenos">84</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;n_iters&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.n_iters-77"><a href="#Options.n_iters-77"><span class="linenos">77</span></a>    <span class="nd">@property</span>
+</span><span id="Options.n_iters-78"><a href="#Options.n_iters-78"><span class="linenos">78</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Options.n_iters-79"><a href="#Options.n_iters-79"><span class="linenos">79</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of corrective iterations in the MPDATA algorithm + 1</span>
+</span><span id="Options.n_iters-80"><a href="#Options.n_iters-80"><span class="linenos">80</span></a><span class="sd">        e.g. (1: upwind, 2: upwind + one corrective iteration, ...).</span>
+</span><span id="Options.n_iters-81"><a href="#Options.n_iters-81"><span class="linenos">81</span></a><span class="sd">        Bigger values mean smaller error, but more computational cost.</span>
+</span><span id="Options.n_iters-82"><a href="#Options.n_iters-82"><span class="linenos">82</span></a><span class="sd">        It does not change the order of the method.</span>
+</span><span id="Options.n_iters-83"><a href="#Options.n_iters-83"><span class="linenos">83</span></a><span class="sd">        The order of the method depends on the variant of antidiffusive</span>
+</span><span id="Options.n_iters-84"><a href="#Options.n_iters-84"><span class="linenos">84</span></a><span class="sd">        velocity used, see for example `third_order_terms` option.</span>
+</span><span id="Options.n_iters-85"><a href="#Options.n_iters-85"><span class="linenos">85</span></a><span class="sd">        Note: not to confuse with n_steps in the Stepper.&quot;&quot;&quot;</span>
+</span><span id="Options.n_iters-86"><a href="#Options.n_iters-86"><span class="linenos">86</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;n_iters&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -628,13 +647,13 @@ Note: not to confuse with n_steps in the Stepper.</p>
 
     </div>
     <a class="headerlink" href="#Options.infinite_gauge"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.infinite_gauge-86"><a href="#Options.infinite_gauge-86"><span class="linenos">86</span></a>    <span class="nd">@property</span>
-</span><span id="Options.infinite_gauge-87"><a href="#Options.infinite_gauge-87"><span class="linenos">87</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">infinite_gauge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options.infinite_gauge-88"><a href="#Options.infinite_gauge-88"><span class="linenos">88</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the infinite-gauge option, see e.g.:</span>
-</span><span id="Options.infinite_gauge-89"><a href="#Options.infinite_gauge-89"><span class="linenos">89</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
-</span><span id="Options.infinite_gauge-90"><a href="#Options.infinite_gauge-90"><span class="linenos">90</span></a><span class="sd">        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)</span>
-</span><span id="Options.infinite_gauge-91"><a href="#Options.infinite_gauge-91"><span class="linenos">91</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options.infinite_gauge-92"><a href="#Options.infinite_gauge-92"><span class="linenos">92</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;infinite_gauge&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.infinite_gauge-88"><a href="#Options.infinite_gauge-88"><span class="linenos">88</span></a>    <span class="nd">@property</span>
+</span><span id="Options.infinite_gauge-89"><a href="#Options.infinite_gauge-89"><span class="linenos">89</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">infinite_gauge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.infinite_gauge-90"><a href="#Options.infinite_gauge-90"><span class="linenos">90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the infinite-gauge option, see e.g.:</span>
+</span><span id="Options.infinite_gauge-91"><a href="#Options.infinite_gauge-91"><span class="linenos">91</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
+</span><span id="Options.infinite_gauge-92"><a href="#Options.infinite_gauge-92"><span class="linenos">92</span></a><span class="sd">        [Smolarkiewicz &amp; Clark, 1986](https://doi.org/10.1016/0021-9991(86)90270-6)</span>
+</span><span id="Options.infinite_gauge-93"><a href="#Options.infinite_gauge-93"><span class="linenos">93</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options.infinite_gauge-94"><a href="#Options.infinite_gauge-94"><span class="linenos">94</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;infinite_gauge&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -654,11 +673,11 @@ Note: not to confuse with n_steps in the Stepper.</p>
 
     </div>
     <a class="headerlink" href="#Options.epsilon"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.epsilon-94"><a href="#Options.epsilon-94"><span class="linenos">94</span></a>    <span class="nd">@property</span>
-</span><span id="Options.epsilon-95"><a href="#Options.epsilon-95"><span class="linenos">95</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="Options.epsilon-96"><a href="#Options.epsilon-96"><span class="linenos">96</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;value of constant used to prevent from divisions by zero</span>
-</span><span id="Options.epsilon-97"><a href="#Options.epsilon-97"><span class="linenos">97</span></a><span class="sd">        in statements such as (a - b)/(a + b + eps)&quot;&quot;&quot;</span>
-</span><span id="Options.epsilon-98"><a href="#Options.epsilon-98"><span class="linenos">98</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.epsilon-96"><a href="#Options.epsilon-96"><span class="linenos"> 96</span></a>    <span class="nd">@property</span>
+</span><span id="Options.epsilon-97"><a href="#Options.epsilon-97"><span class="linenos"> 97</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Options.epsilon-98"><a href="#Options.epsilon-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;value of constant used to prevent from divisions by zero</span>
+</span><span id="Options.epsilon-99"><a href="#Options.epsilon-99"><span class="linenos"> 99</span></a><span class="sd">        in statements such as (a - b)/(a + b + eps)&quot;&quot;&quot;</span>
+</span><span id="Options.epsilon-100"><a href="#Options.epsilon-100"><span class="linenos">100</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -677,13 +696,13 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.divergent_flow"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.divergent_flow-100"><a href="#Options.divergent_flow-100"><span class="linenos">100</span></a>    <span class="nd">@property</span>
-</span><span id="Options.divergent_flow-101"><a href="#Options.divergent_flow-101"><span class="linenos">101</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">divergent_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options.divergent_flow-102"><a href="#Options.divergent_flow-102"><span class="linenos">102</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the divergent-flow option, see e.g.:</span>
-</span><span id="Options.divergent_flow-103"><a href="#Options.divergent_flow-103"><span class="linenos">103</span></a><span class="sd">        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),</span>
-</span><span id="Options.divergent_flow-104"><a href="#Options.divergent_flow-104"><span class="linenos">104</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
-</span><span id="Options.divergent_flow-105"><a href="#Options.divergent_flow-105"><span class="linenos">105</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options.divergent_flow-106"><a href="#Options.divergent_flow-106"><span class="linenos">106</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;divergent_flow&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.divergent_flow-102"><a href="#Options.divergent_flow-102"><span class="linenos">102</span></a>    <span class="nd">@property</span>
+</span><span id="Options.divergent_flow-103"><a href="#Options.divergent_flow-103"><span class="linenos">103</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">divergent_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.divergent_flow-104"><a href="#Options.divergent_flow-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the divergent-flow option, see e.g.:</span>
+</span><span id="Options.divergent_flow-105"><a href="#Options.divergent_flow-105"><span class="linenos">105</span></a><span class="sd">        [Smolarkiewicz, 1984](https://doi.org/10.1016/0021-9991(84)90121-9),</span>
+</span><span id="Options.divergent_flow-106"><a href="#Options.divergent_flow-106"><span class="linenos">106</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
+</span><span id="Options.divergent_flow-107"><a href="#Options.divergent_flow-107"><span class="linenos">107</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options.divergent_flow-108"><a href="#Options.divergent_flow-108"><span class="linenos">108</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;divergent_flow&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -703,12 +722,12 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.nonoscillatory"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.nonoscillatory-108"><a href="#Options.nonoscillatory-108"><span class="linenos">108</span></a>    <span class="nd">@property</span>
-</span><span id="Options.nonoscillatory-109"><a href="#Options.nonoscillatory-109"><span class="linenos">109</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nonoscillatory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options.nonoscillatory-110"><a href="#Options.nonoscillatory-110"><span class="linenos">110</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the nonoscillatory option, see</span>
-</span><span id="Options.nonoscillatory-111"><a href="#Options.nonoscillatory-111"><span class="linenos">111</span></a><span class="sd">        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)</span>
-</span><span id="Options.nonoscillatory-112"><a href="#Options.nonoscillatory-112"><span class="linenos">112</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options.nonoscillatory-113"><a href="#Options.nonoscillatory-113"><span class="linenos">113</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;nonoscillatory&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.nonoscillatory-110"><a href="#Options.nonoscillatory-110"><span class="linenos">110</span></a>    <span class="nd">@property</span>
+</span><span id="Options.nonoscillatory-111"><a href="#Options.nonoscillatory-111"><span class="linenos">111</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nonoscillatory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.nonoscillatory-112"><a href="#Options.nonoscillatory-112"><span class="linenos">112</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the nonoscillatory option, see</span>
+</span><span id="Options.nonoscillatory-113"><a href="#Options.nonoscillatory-113"><span class="linenos">113</span></a><span class="sd">        [Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)</span>
+</span><span id="Options.nonoscillatory-114"><a href="#Options.nonoscillatory-114"><span class="linenos">114</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options.nonoscillatory-115"><a href="#Options.nonoscillatory-115"><span class="linenos">115</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;nonoscillatory&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -727,11 +746,11 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.third_order_terms"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.third_order_terms-115"><a href="#Options.third_order_terms-115"><span class="linenos">115</span></a>    <span class="nd">@property</span>
-</span><span id="Options.third_order_terms-116"><a href="#Options.third_order_terms-116"><span class="linenos">116</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">third_order_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options.third_order_terms-117"><a href="#Options.third_order_terms-117"><span class="linenos">117</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the third-order-terms option, see</span>
-</span><span id="Options.third_order_terms-118"><a href="#Options.third_order_terms-118"><span class="linenos">118</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&quot;&quot;&quot;</span>
-</span><span id="Options.third_order_terms-119"><a href="#Options.third_order_terms-119"><span class="linenos">119</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;third_order_terms&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.third_order_terms-117"><a href="#Options.third_order_terms-117"><span class="linenos">117</span></a>    <span class="nd">@property</span>
+</span><span id="Options.third_order_terms-118"><a href="#Options.third_order_terms-118"><span class="linenos">118</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">third_order_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.third_order_terms-119"><a href="#Options.third_order_terms-119"><span class="linenos">119</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the third-order-terms option, see</span>
+</span><span id="Options.third_order_terms-120"><a href="#Options.third_order_terms-120"><span class="linenos">120</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz 1998](https://doi.org/10.1137/S106482759324700X)&quot;&quot;&quot;</span>
+</span><span id="Options.third_order_terms-121"><a href="#Options.third_order_terms-121"><span class="linenos">121</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;third_order_terms&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -750,14 +769,14 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.DPDC"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.DPDC-121"><a href="#Options.DPDC-121"><span class="linenos">121</span></a>    <span class="nd">@property</span>
-</span><span id="Options.DPDC-122"><a href="#Options.DPDC-122"><span class="linenos">122</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">DPDC</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-</span><span id="Options.DPDC-123"><a href="#Options.DPDC-123"><span class="linenos">123</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the double-pass donor-cell option, see:</span>
-</span><span id="Options.DPDC-124"><a href="#Options.DPDC-124"><span class="linenos">124</span></a><span class="sd">        [Beason &amp; Margolin, 1988](https://osti.gov/biblio/7049237),</span>
-</span><span id="Options.DPDC-125"><a href="#Options.DPDC-125"><span class="linenos">125</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
-</span><span id="Options.DPDC-126"><a href="#Options.DPDC-126"><span class="linenos">126</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
-</span><span id="Options.DPDC-127"><a href="#Options.DPDC-127"><span class="linenos">127</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Options.DPDC-128"><a href="#Options.DPDC-128"><span class="linenos">128</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;DPDC&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.DPDC-123"><a href="#Options.DPDC-123"><span class="linenos">123</span></a>    <span class="nd">@property</span>
+</span><span id="Options.DPDC-124"><a href="#Options.DPDC-124"><span class="linenos">124</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">DPDC</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+</span><span id="Options.DPDC-125"><a href="#Options.DPDC-125"><span class="linenos">125</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling the double-pass donor-cell option, see:</span>
+</span><span id="Options.DPDC-126"><a href="#Options.DPDC-126"><span class="linenos">126</span></a><span class="sd">        [Beason &amp; Margolin, 1988](https://osti.gov/biblio/7049237),</span>
+</span><span id="Options.DPDC-127"><a href="#Options.DPDC-127"><span class="linenos">127</span></a><span class="sd">        [Margolin &amp; Shashkov, 2006](https://doi.org/10.1002/fld.1070),</span>
+</span><span id="Options.DPDC-128"><a href="#Options.DPDC-128"><span class="linenos">128</span></a><span class="sd">        [Margolin &amp; Smolarkiewicz, 1998](https://doi.org/10.1137/S106482759324700X)</span>
+</span><span id="Options.DPDC-129"><a href="#Options.DPDC-129"><span class="linenos">129</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Options.DPDC-130"><a href="#Options.DPDC-130"><span class="linenos">130</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;DPDC&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -778,14 +797,35 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.non_zero_mu_coeff"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.non_zero_mu_coeff-130"><a href="#Options.non_zero_mu_coeff-130"><span class="linenos">130</span></a>    <span class="nd">@property</span>
-</span><span id="Options.non_zero_mu_coeff-131"><a href="#Options.non_zero_mu_coeff-131"><span class="linenos">131</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">non_zero_mu_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options.non_zero_mu_coeff-132"><a href="#Options.non_zero_mu_coeff-132"><span class="linenos">132</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling handling of Fickian diffusion term&quot;&quot;&quot;</span>
-</span><span id="Options.non_zero_mu_coeff-133"><a href="#Options.non_zero_mu_coeff-133"><span class="linenos">133</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.non_zero_mu_coeff-132"><a href="#Options.non_zero_mu_coeff-132"><span class="linenos">132</span></a>    <span class="nd">@property</span>
+</span><span id="Options.non_zero_mu_coeff-133"><a href="#Options.non_zero_mu_coeff-133"><span class="linenos">133</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">non_zero_mu_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.non_zero_mu_coeff-134"><a href="#Options.non_zero_mu_coeff-134"><span class="linenos">134</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling handling of Fickian diffusion term&quot;&quot;&quot;</span>
+</span><span id="Options.non_zero_mu_coeff-135"><a href="#Options.non_zero_mu_coeff-135"><span class="linenos">135</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;non_zero_mu_coeff&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>flag enabling handling of Fickian diffusion term</p>
+</div>
+
+
+                            </div>
+                            <div id="Options.dynamic_advector" class="classattr">
+                                        <input id="Options.dynamic_advector-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr variable">
+            <span class="name">dynamic_advector</span><span class="annotation">: bool</span>
+
+                <label class="view-source-button" for="Options.dynamic_advector-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Options.dynamic_advector"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.dynamic_advector-137"><a href="#Options.dynamic_advector-137"><span class="linenos">137</span></a>    <span class="nd">@property</span>
+</span><span id="Options.dynamic_advector-138"><a href="#Options.dynamic_advector-138"><span class="linenos">138</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dynamic_advector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.dynamic_advector-139"><a href="#Options.dynamic_advector-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag enabling (todo desc)&quot;&quot;&quot;</span>
+</span><span id="Options.dynamic_advector-140"><a href="#Options.dynamic_advector-140"><span class="linenos">140</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dynamic_advector&quot;</span><span class="p">]</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>flag enabling (todo desc)</p>
 </div>
 
 
@@ -799,10 +839,10 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.dimensionally_split"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.dimensionally_split-135"><a href="#Options.dimensionally_split-135"><span class="linenos">135</span></a>    <span class="nd">@property</span>
-</span><span id="Options.dimensionally_split-136"><a href="#Options.dimensionally_split-136"><span class="linenos">136</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionally_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Options.dimensionally_split-137"><a href="#Options.dimensionally_split-137"><span class="linenos">137</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag disabling cross-dimensional terms in antidiffusive velocities&quot;&quot;&quot;</span>
-</span><span id="Options.dimensionally_split-138"><a href="#Options.dimensionally_split-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dimensionally_split&quot;</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.dimensionally_split-142"><a href="#Options.dimensionally_split-142"><span class="linenos">142</span></a>    <span class="nd">@property</span>
+</span><span id="Options.dimensionally_split-143"><a href="#Options.dimensionally_split-143"><span class="linenos">143</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionally_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Options.dimensionally_split-144"><a href="#Options.dimensionally_split-144"><span class="linenos">144</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;flag disabling cross-dimensional terms in antidiffusive velocities&quot;&quot;&quot;</span>
+</span><span id="Options.dimensionally_split-145"><a href="#Options.dimensionally_split-145"><span class="linenos">145</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="s2">&quot;dimensionally_split&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -820,18 +860,18 @@ in statements such as (a - b)/(a + b + eps)</p>
 
     </div>
     <a class="headerlink" href="#Options.n_halo"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.n_halo-150"><a href="#Options.n_halo-150"><span class="linenos">150</span></a>    <span class="nd">@property</span>
-</span><span id="Options.n_halo-151"><a href="#Options.n_halo-151"><span class="linenos">151</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_halo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="Options.n_halo-152"><a href="#Options.n_halo-152"><span class="linenos">152</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Halo extent for a given options set.</span>
-</span><span id="Options.n_halo-153"><a href="#Options.n_halo-153"><span class="linenos">153</span></a><span class="sd">        The halo extent is the number of &#39;ghost layers&#39; that need to be added</span>
-</span><span id="Options.n_halo-154"><a href="#Options.n_halo-154"><span class="linenos">154</span></a><span class="sd">        to the outside of the domain to ensure that the MPDATA stencil operations can be</span>
-</span><span id="Options.n_halo-155"><a href="#Options.n_halo-155"><span class="linenos">155</span></a><span class="sd">        applied to the edges of the domain.</span>
-</span><span id="Options.n_halo-156"><a href="#Options.n_halo-156"><span class="linenos">156</span></a><span class="sd">        It is similar to</span>
-</span><span id="Options.n_halo-157"><a href="#Options.n_halo-157"><span class="linenos">157</span></a><span class="sd">        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).</span>
-</span><span id="Options.n_halo-158"><a href="#Options.n_halo-158"><span class="linenos">158</span></a><span class="sd">        The halo extent is determined by the options set.&quot;&quot;&quot;</span>
-</span><span id="Options.n_halo-159"><a href="#Options.n_halo-159"><span class="linenos">159</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divergent_flow</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonoscillatory</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_order_terms</span><span class="p">:</span>
-</span><span id="Options.n_halo-160"><a href="#Options.n_halo-160"><span class="linenos">160</span></a>            <span class="k">return</span> <span class="mi">2</span>
-</span><span id="Options.n_halo-161"><a href="#Options.n_halo-161"><span class="linenos">161</span></a>        <span class="k">return</span> <span class="mi">1</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.n_halo-157"><a href="#Options.n_halo-157"><span class="linenos">157</span></a>    <span class="nd">@property</span>
+</span><span id="Options.n_halo-158"><a href="#Options.n_halo-158"><span class="linenos">158</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">n_halo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Options.n_halo-159"><a href="#Options.n_halo-159"><span class="linenos">159</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Halo extent for a given options set.</span>
+</span><span id="Options.n_halo-160"><a href="#Options.n_halo-160"><span class="linenos">160</span></a><span class="sd">        The halo extent is the number of &#39;ghost layers&#39; that need to be added</span>
+</span><span id="Options.n_halo-161"><a href="#Options.n_halo-161"><span class="linenos">161</span></a><span class="sd">        to the outside of the domain to ensure that the MPDATA stencil operations can be</span>
+</span><span id="Options.n_halo-162"><a href="#Options.n_halo-162"><span class="linenos">162</span></a><span class="sd">        applied to the edges of the domain.</span>
+</span><span id="Options.n_halo-163"><a href="#Options.n_halo-163"><span class="linenos">163</span></a><span class="sd">        It is similar to</span>
+</span><span id="Options.n_halo-164"><a href="#Options.n_halo-164"><span class="linenos">164</span></a><span class="sd">        [array padding](https://numpy.org/doc/stable/reference/generated/numpy.pad.html).</span>
+</span><span id="Options.n_halo-165"><a href="#Options.n_halo-165"><span class="linenos">165</span></a><span class="sd">        The halo extent is determined by the options set.&quot;&quot;&quot;</span>
+</span><span id="Options.n_halo-166"><a href="#Options.n_halo-166"><span class="linenos">166</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divergent_flow</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonoscillatory</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_order_terms</span><span class="p">:</span>
+</span><span id="Options.n_halo-167"><a href="#Options.n_halo-167"><span class="linenos">167</span></a>            <span class="k">return</span> <span class="mi">2</span>
+</span><span id="Options.n_halo-168"><a href="#Options.n_halo-168"><span class="linenos">168</span></a>        <span class="k">return</span> <span class="mi">1</span>
 </span></pre></div>
 
 
@@ -855,17 +895,17 @@ The halo extent is determined by the options set.</p>
 
     </div>
     <a class="headerlink" href="#Options.jit_flags"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.jit_flags-163"><a href="#Options.jit_flags-163"><span class="linenos">163</span></a>    <span class="nd">@property</span>
-</span><span id="Options.jit_flags-164"><a href="#Options.jit_flags-164"><span class="linenos">164</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">jit_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HashableDict</span><span class="p">:</span>
-</span><span id="Options.jit_flags-165"><a href="#Options.jit_flags-165"><span class="linenos">165</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;options passed [to numba.njit()](</span>
-</span><span id="Options.jit_flags-166"><a href="#Options.jit_flags-166"><span class="linenos">166</span></a><span class="sd">        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&quot;&quot;&quot;</span>
-</span><span id="Options.jit_flags-167"><a href="#Options.jit_flags-167"><span class="linenos">167</span></a>        <span class="k">return</span> <span class="n">HashableDict</span><span class="p">(</span>
-</span><span id="Options.jit_flags-168"><a href="#Options.jit_flags-168"><span class="linenos">168</span></a>            <span class="p">{</span>
-</span><span id="Options.jit_flags-169"><a href="#Options.jit_flags-169"><span class="linenos">169</span></a>                <span class="s2">&quot;fastmath&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="Options.jit_flags-170"><a href="#Options.jit_flags-170"><span class="linenos">170</span></a>                <span class="s2">&quot;error_model&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
-</span><span id="Options.jit_flags-171"><a href="#Options.jit_flags-171"><span class="linenos">171</span></a>                <span class="s2">&quot;boundscheck&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="Options.jit_flags-172"><a href="#Options.jit_flags-172"><span class="linenos">172</span></a>            <span class="p">}</span>
-</span><span id="Options.jit_flags-173"><a href="#Options.jit_flags-173"><span class="linenos">173</span></a>        <span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Options.jit_flags-170"><a href="#Options.jit_flags-170"><span class="linenos">170</span></a>    <span class="nd">@property</span>
+</span><span id="Options.jit_flags-171"><a href="#Options.jit_flags-171"><span class="linenos">171</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">jit_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HashableDict</span><span class="p">:</span>
+</span><span id="Options.jit_flags-172"><a href="#Options.jit_flags-172"><span class="linenos">172</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;options passed [to numba.njit()](</span>
+</span><span id="Options.jit_flags-173"><a href="#Options.jit_flags-173"><span class="linenos">173</span></a><span class="sd">        https://numba.pydata.org/numba-doc/dev/user/jit.html#compilation-options)&quot;&quot;&quot;</span>
+</span><span id="Options.jit_flags-174"><a href="#Options.jit_flags-174"><span class="linenos">174</span></a>        <span class="k">return</span> <span class="n">HashableDict</span><span class="p">(</span>
+</span><span id="Options.jit_flags-175"><a href="#Options.jit_flags-175"><span class="linenos">175</span></a>            <span class="p">{</span>
+</span><span id="Options.jit_flags-176"><a href="#Options.jit_flags-176"><span class="linenos">176</span></a>                <span class="s2">&quot;fastmath&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="Options.jit_flags-177"><a href="#Options.jit_flags-177"><span class="linenos">177</span></a>                <span class="s2">&quot;error_model&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
+</span><span id="Options.jit_flags-178"><a href="#Options.jit_flags-178"><span class="linenos">178</span></a>                <span class="s2">&quot;boundscheck&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="Options.jit_flags-179"><a href="#Options.jit_flags-179"><span class="linenos">179</span></a>            <span class="p">}</span>
+</span><span id="Options.jit_flags-180"><a href="#Options.jit_flags-180"><span class="linenos">180</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 

@@ -128,15 +128,17 @@
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-7</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lx0</span> <span class="o">=</span> <span class="mi">2</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ly0</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">nonoscillatory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infinite_gauge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="nd">@property</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">7</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="nd">@property</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">outfreq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>            <span class="n">nonoscillatory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infinite_gauge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dynamic_advector</span><span class="o">=</span><span class="kc">True</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>        <span class="p">)</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="nd">@property</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">7</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="nd">@property</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">outfreq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -164,15 +166,17 @@
 </span><span id="Settings-15"><a href="#Settings-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-7</span>
 </span><span id="Settings-16"><a href="#Settings-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lx0</span> <span class="o">=</span> <span class="mi">2</span>
 </span><span id="Settings-17"><a href="#Settings-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ly0</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="Settings-18"><a href="#Settings-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">nonoscillatory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infinite_gauge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="Settings-19"><a href="#Settings-19"><span class="linenos">19</span></a>
-</span><span id="Settings-20"><a href="#Settings-20"><span class="linenos">20</span></a>    <span class="nd">@property</span>
-</span><span id="Settings-21"><a href="#Settings-21"><span class="linenos">21</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Settings-22"><a href="#Settings-22"><span class="linenos">22</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">7</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-</span><span id="Settings-23"><a href="#Settings-23"><span class="linenos">23</span></a>
-</span><span id="Settings-24"><a href="#Settings-24"><span class="linenos">24</span></a>    <span class="nd">@property</span>
-</span><span id="Settings-25"><a href="#Settings-25"><span class="linenos">25</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">outfreq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Settings-26"><a href="#Settings-26"><span class="linenos">26</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</span><span id="Settings-18"><a href="#Settings-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span>
+</span><span id="Settings-19"><a href="#Settings-19"><span class="linenos">19</span></a>            <span class="n">nonoscillatory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infinite_gauge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dynamic_advector</span><span class="o">=</span><span class="kc">True</span>
+</span><span id="Settings-20"><a href="#Settings-20"><span class="linenos">20</span></a>        <span class="p">)</span>
+</span><span id="Settings-21"><a href="#Settings-21"><span class="linenos">21</span></a>
+</span><span id="Settings-22"><a href="#Settings-22"><span class="linenos">22</span></a>    <span class="nd">@property</span>
+</span><span id="Settings-23"><a href="#Settings-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Settings-24"><a href="#Settings-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">7</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</span><span id="Settings-25"><a href="#Settings-25"><span class="linenos">25</span></a>
+</span><span id="Settings-26"><a href="#Settings-26"><span class="linenos">26</span></a>    <span class="nd">@property</span>
+</span><span id="Settings-27"><a href="#Settings-27"><span class="linenos">27</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">outfreq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Settings-28"><a href="#Settings-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -286,9 +290,9 @@
 
     </div>
     <a class="headerlink" href="#Settings.nt"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Settings.nt-20"><a href="#Settings.nt-20"><span class="linenos">20</span></a>    <span class="nd">@property</span>
-</span><span id="Settings.nt-21"><a href="#Settings.nt-21"><span class="linenos">21</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Settings.nt-22"><a href="#Settings.nt-22"><span class="linenos">22</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">7</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Settings.nt-22"><a href="#Settings.nt-22"><span class="linenos">22</span></a>    <span class="nd">@property</span>
+</span><span id="Settings.nt-23"><a href="#Settings.nt-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Settings.nt-24"><a href="#Settings.nt-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">7</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -304,9 +308,9 @@
 
     </div>
     <a class="headerlink" href="#Settings.outfreq"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Settings.outfreq-24"><a href="#Settings.outfreq-24"><span class="linenos">24</span></a>    <span class="nd">@property</span>
-</span><span id="Settings.outfreq-25"><a href="#Settings.outfreq-25"><span class="linenos">25</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">outfreq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Settings.outfreq-26"><a href="#Settings.outfreq-26"><span class="linenos">26</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Settings.outfreq-26"><a href="#Settings.outfreq-26"><span class="linenos">26</span></a>    <span class="nd">@property</span>
+</span><span id="Settings.outfreq-27"><a href="#Settings.outfreq-27"><span class="linenos">27</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">outfreq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Settings.outfreq-28"><a href="#Settings.outfreq-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 </span></pre></div>
 
 
