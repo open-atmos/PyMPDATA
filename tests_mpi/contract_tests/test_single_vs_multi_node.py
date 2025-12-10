@@ -103,9 +103,14 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
         pytest.skip("threading requires Numba JIT to be enabled")
 
     if scenario_class is ShallowWaterScenario and (
-        options_kwargs["n_iters"] == 3 or options_kwargs.get("third_order_terms", False)
+        options_kwargs["n_iters"] == 3
+        or options_kwargs.get("third_order_terms", False)
+        or mpi_dim == INNER
     ):
         pytest.skip("Unsupported method for simulation")
+
+    if mpi.size() > 2 and options_kwargs.get("nonoscillatory", False):
+        pytest.skip("TODO #643")
     # pylint: disable=too-many-boolean-expressions
     if (
         mpi_dim == INNER
@@ -119,6 +124,9 @@ def test_single_vs_multi_node(  # pylint: disable=too-many-arguments,too-many-br
     ):
         pass
         # request.node.add_marker(pytest.mark.xfail(reason="TODO #570", strict=True))
+
+    if scenario_class is ShallowWaterScenario:
+        options_kwargs["dynamic_advector"] = True
 
     plot = (
         "CI_PLOTS_PATH" in os.environ

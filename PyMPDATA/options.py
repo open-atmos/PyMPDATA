@@ -32,6 +32,7 @@ class Options:
         DPDC: bool = False,  # pylint: disable=invalid-name
         epsilon: float = 1e-15,
         non_zero_mu_coeff: bool = False,
+        dynamic_advector: bool = False,
         dimensionally_split: bool = False,
         dtype: [np.float32, np.float64] = np.float64
     ):
@@ -44,6 +45,7 @@ class Options:
                 "nonoscillatory": nonoscillatory,
                 "third_order_terms": third_order_terms,
                 "non_zero_mu_coeff": non_zero_mu_coeff,
+                "dynamic_advector": dynamic_advector,
                 "dimensionally_split": dimensionally_split,
                 "dtype": dtype,
                 "DPDC": DPDC,
@@ -130,6 +132,11 @@ class Options:
     def non_zero_mu_coeff(self) -> bool:
         """flag enabling handling of Fickian diffusion term"""
         return self._values["non_zero_mu_coeff"]
+
+    @property
+    def dynamic_advector(self) -> bool:
+        """flag enabling (todo desc)"""
+        return self._values["dynamic_advector"]
 
     @property
     def dimensionally_split(self) -> bool:

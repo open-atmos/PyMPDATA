@@ -3,6 +3,7 @@
 import numba
 import numpy as np
 from matplotlib import pyplot
+from PyMPDATA_examples.Jarecka_et_al_2015.simulation import make_hooks
 from PyMPDATA_MPI.domain_decomposition import mpi_indices
 from PyMPDATA_MPI.mpi_periodic import MPIPeriodic
 
@@ -13,19 +14,6 @@ from PyMPDATA.impl.enumerations import INNER, OUTER
 from scenarios_mpi._scenario import _Scenario
 
 subdomain = make_subdomain(jit_flags={})
-
-
-def gradient(psi, grid_step, axis, halo):
-    """Helper function needed to calculate gradients"""
-    grad_left = (
-        (slice(halo + 1, None if halo == 1 else (-halo + 1)), slice(halo, -halo)),
-        (slice(halo, -halo), slice(halo + 1, None if halo == 1 else (-halo + 1))),
-    )
-    grad_right = (
-        (slice(None if halo == 1 else (halo - 1), -halo - 1), slice(halo, -halo)),
-        (slice(halo, -halo), slice(None if halo == 1 else (halo - 1), -halo - 1)),
-    )
-    return (psi[grad_left[axis]] - psi[grad_right[axis]]) / 2 / grid_step
 
 
 class ShallowWaterScenario(_Scenario):
@@ -44,7 +32,6 @@ class ShallowWaterScenario(_Scenario):
         courant_field_multiplier,  # pylint: disable=unused-argument
         mpi_dim,
     ):
-        @staticmethod
         def initial_condition(x, y, lx, ly):
             """returns advectee array for a given grid indices"""
             # pylint: disable=invalid-name
@@ -54,13 +41,13 @@ class ShallowWaterScenario(_Scenario):
 
         # pylint: disable=invalid-name
         self.halo = mpdata_options.n_halo
-        self.n_threads = n_threads
 
         xyi = mpi_indices(grid=grid, rank=rank, size=size, mpi_dim=mpi_dim)
         nx, ny = xyi[mpi_dim].shape
         for dim in enumerate(grid):
             xyi[dim[0]] -= (grid[dim[0]] - 1) / 2
 
+        self.rank = rank
         self.dt = 0.1
         self.dx = 32 / grid[0]
         self.dy = 32 / grid[1]
@@ -116,62 +103,26 @@ class ShallowWaterScenario(_Scenario):
             * 2  # for complex dtype
             * (2 if mpi_dim == OUTER else n_threads),
         )
-        self.traversals = stepper.traversals
-        super().__init__(mpi_dim=mpi_dim)
-        self.solvers = {
-            k: Solver(stepper, v, self.advector) for k, v in advectees.items()
-        }
+        solver = Solver(stepper, advectees, self.advector)
+        super().__init__(mpi_dim=mpi_dim, solver=solver)
 
-    @staticmethod
-    def interpolate(psi, axis):
-        """Method that does simple interpolation of given field"""
-        idx = (
-            (slice(None, -1), slice(None, None)),
-            (slice(None, None), slice(None, -1)),
+        self.ante_step, self.post_step = make_hooks(
+            traversals=stepper.traversals,
+            options=mpdata_options,
+            grid_step=(self.dx, None, self.dy),
+            time_step=self.dt,
         )
-        return np.diff(psi, axis=axis) / 2 + psi[idx[axis]]
 
     def __getitem__(self, key):
-        return self.solvers[key].advectee.get()
+        return self.solver.advectee[key].get()
 
     def data(self, key):
         """Method used to get raw data from advectee"""
-        return self.solvers[key].advectee.data
+        return self.solver.advectee[key].data
 
     def _solver_advance(self, n_steps):
-        grid_step = (self.dx, self.dy)
         for _ in range(n_steps):
-            self.solvers[  # pylint: disable=protected-access
-                "h"
-            ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-            for xy, k in enumerate(("uh", "vh")):  # pylint: disable=invalid-name
-                mask = self.data("h") > self.eps
-                vel = np.where(mask, np.nan, 0)
-                self.solvers[  # pylint: disable=protected-access
-                    k
-                ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-                np.divide(self.data(k), self.data("h"), where=mask, out=vel)
-                self.advector.data[xy][:] = (
-                    self.interpolate(vel, xy) * self.dt / grid_step[xy]
-                )
-            self.solvers["h"].advance(1)
-            self.solvers[  # pylint: disable=protected-access
-                "h"
-            ].advectee._debug_fill_halos(self.traversals, range(self.n_threads))
-            for xy, k in enumerate(("uh", "vh")):  # pylint: disable=invalid-name
-                self[k][:] -= (
-                    self.dt
-                    / 2
-                    * self["h"]
-                    * gradient(self.data("h"), grid_step[xy], axis=xy, halo=self.halo)
-                )
-                self.solvers[k].advance(1)
-                self[k][:] -= (
-                    self.dt
-                    / 2
-                    * self["h"]
-                    * gradient(self.data("h"), grid_step[xy], axis=xy, halo=self.halo)
-                )
+            self.solver.advance(1, ante_step=self.ante_step, post_step=self.post_step)
         return -1
 
     @staticmethod

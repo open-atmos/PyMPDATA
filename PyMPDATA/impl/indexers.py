@@ -7,6 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import numba
+import numpy as np
 
 from .enumerations import INNER, INVALID_INDEX, MID3D, OUTER
 
@@ -30,6 +31,14 @@ def make_indexers(jit_flags):
         @numba.njit(**jit_flags)
         def atv_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
             return arrs[INNER][focus[INNER] + int(k - 0.5)]
+
+        @staticmethod
+        @numba.njit(**jit_flags)
+        def ati_1d(focus, arrs, k, _=INVALID_INDEX, __=INVALID_INDEX):
+            return (
+                arrs[INNER][focus[INNER] + int(k - 0.5)]
+                + arrs[INNER][focus[INNER] + int(k + 0.5)]
+            ) / 2
 
         @staticmethod
         @numba.njit(**jit_flags)
@@ -69,6 +78,28 @@ def make_indexers(jit_flags):
             else:
                 dim, _ii, _kk = OUTER, int(i - 0.5), int(k)
             return arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
+
+        @staticmethod
+        @numba.njit(**jit_flags)
+        def ati_axis0(focus, arrs, i, k=0, _=INVALID_INDEX):
+            if _is_integral(k):
+                dim, _ii, _kk = OUTER, int(i - 0.5), int(k)
+                return (
+                    arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
+                    + arrs[dim][focus[OUTER] + _ii + 1, focus[INNER] + _kk]
+                ) / 2
+            return np.nan
+
+        @staticmethod
+        @numba.njit(**jit_flags)
+        def ati_axis1(focus, arrs, k, i=0, _=INVALID_INDEX):
+            if _is_integral(i):
+                dim, _ii, _kk = INNER, int(i), int(k - 0.5)
+                return (
+                    arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
+                    + arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk + 1]
+                ) / 2
+            return np.nan
 
         @staticmethod
         @numba.njit(**jit_flags)
@@ -140,17 +171,23 @@ def make_indexers(jit_flags):
             return arr[i, j, k]
 
     Indexers = namedtuple(  # pylint: disable=invalid-name
-        Path(__file__).stem + "_Indexers", ("ats", "atv", "set", "get", "n_dims")
+        Path(__file__).stem + "_Indexers", ("ats", "atv", "ati", "set", "get", "n_dims")
     )
 
     indexers = (
         None,
         Indexers(
-            (None, None, _1D.ats_1d), (None, None, _1D.atv_1d), _1D.set, _1D.get, 1
+            (None, None, _1D.ats_1d),
+            (None, None, _1D.atv_1d),
+            (None, None, _1D.ati_1d),
+            _1D.set,
+            _1D.get,
+            1,
         ),
         Indexers(
             (_2D.ats_axis0, None, _2D.ats_axis1),
             (_2D.atv_axis0, None, _2D.atv_axis1),
+            (_2D.ati_axis0, None, _2D.ati_axis1),
             _2D.set,
             _2D.get,
             2,
@@ -158,6 +195,7 @@ def make_indexers(jit_flags):
         Indexers(
             (_3D.ats_axis0, _3D.ats_axis1, _3D.ats_axis2),
             (_3D.atv_axis0, _3D.atv_axis1, _3D.atv_axis2),
+            (None, None, None),
             _3D.set,
             _3D.get,
             3,
