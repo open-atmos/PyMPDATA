@@ -101,15 +101,18 @@ jobs:
     needs: [tests_setup]
     strategy:
       matrix:
-        platform: [macos-15-intel, macos-14, ubuntu-latest]
+        # Due to reported performance issues, runs on macos-15-intel are skipped
+        # https://github.com/actions/runner-images/issues/12545
+        # platform: [macos-15-intel, macos-14, ubuntu-latest]
+        platoform: [macos-14, ubuntu-latest]
         mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
         disable-jit: [1, 0]
         mpi-np: [1, 2, 3]
         exclude:
           # as of time of writing, mpi4py/setup-mpi does not support it
-          - platform: macos-15-intel
-            mpi: intelmpi
+          # - platform: macos-15-intel
+          #  mpi: intelmpi
           - platform: macos-14
             mpi: intelmpi
 
@@ -118,14 +121,14 @@ jobs:
             mpi: intelmpi
 
           # https://github.com/Homebrew/homebrew-core/issues/26974
-          - platform: macos-15-intel
-            mpi: mpich
+          # - platform: macos-15-intel
+          #  mpi: mpich
           - platform: macos-14
             mpi: mpich
             
           # HDF5_MPI expects arm architecture with python 3.12 on macos
-          - platform: macos-15-intel
-            python-version: '3.12'
+          # - platform: macos-15-intel
+          #  python-version: '3.12'
             
       fail-fast: false
 
