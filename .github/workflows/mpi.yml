@@ -104,7 +104,7 @@ jobs:
         # Due to reported performance issues, runs on macos-15-intel are skipped
         # https://github.com/actions/runner-images/issues/12545
         # platform: [macos-15-intel, macos-14, ubuntu-latest]
-        platoform: [macos-14, ubuntu-latest]
+        platform: [macos-14, ubuntu-latest]
         mpi: [ 'mpich', 'openmpi', 'intelmpi']
         python-version: ["3.10"]
         disable-jit: [1, 0]
