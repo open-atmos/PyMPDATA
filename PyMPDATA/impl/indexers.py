@@ -88,8 +88,7 @@ def make_indexers(jit_flags):
                     arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
                     + arrs[dim][focus[OUTER] + _ii + 1, focus[INNER] + _kk]
                 ) / 2
-            else:
-                return np.nan
+            return np.nan
 
         @staticmethod
         @numba.njit(**jit_flags)
@@ -100,8 +99,7 @@ def make_indexers(jit_flags):
                     arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk]
                     + arrs[dim][focus[OUTER] + _ii, focus[INNER] + _kk + 1]
                 ) / 2
-            else:
-                return np.nan
+            return np.nan
 
         @staticmethod
         @numba.njit(**jit_flags)
