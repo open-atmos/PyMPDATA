@@ -173,11 +173,12 @@ class Solver:
     def advance(
         self,
         n_steps: int,
+        *,
         mu_coeff: Union[tuple, None] = None,
         ante_step=None,
         post_step=None,
         post_iter=None,
-    ):  # pylint: disable=too-many-arguments
+    ):
         """advances solution by `n_steps` steps, optionally accepts: a tuple of diffusion
         coefficients (one value per dimension) as well as `post_iter` and `post_step`
         callbacks expected to be `numba.jitclass`es with a `call` method, for
