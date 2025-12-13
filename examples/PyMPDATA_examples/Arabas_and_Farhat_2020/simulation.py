@@ -106,9 +106,11 @@ class Simulation:
                         - psi[index].field[ARG_DATA]
                     )
 
-            self.solvers[n_iters].advance(self.nt, self.mu_coeff, post_step=PostStep())
+            self.solvers[n_iters].advance(
+                self.nt, mu_coeff=self.mu_coeff, post_step=PostStep()
+            )
         else:
-            self.solvers[n_iters].advance(self.nt, self.mu_coeff)
+            self.solvers[n_iters].advance(self.nt, mu_coeff=self.mu_coeff)
 
         return self.solvers[n_iters].advectee.get()
 
