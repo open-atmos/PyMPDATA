@@ -101,7 +101,7 @@ jobs:
           pip install pytest-cov
           pytest --durations=10 -We tests/unit_tests --cov-report=xml --cov=PyMPDATA
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5.5.2
         with:
           env_vars: PYTHON,MPI
           token: ${{ secrets.CODECOV_TOKEN }}
