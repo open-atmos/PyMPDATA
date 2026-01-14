@@ -47,7 +47,7 @@ Development of PyMPDATA-MPI has been supported by the [Poland's National Science
 (grant no. 2020/39/D/ST10/01220).
 
 We acknowledge Poland’s high-performance computing infrastructure [PLGrid](https://plgrid.pl/) (HPC Centers: [ACK Cyfronet AGH](https://www.cyfronet.pl/en/))
-for providing computer facilities and support within computational grant no. PLG/2023/016369
+for providing computer facilities and support within computational grants no. PLG/2023/016369 and no. PLG/2024/017823.
 
 copyright: [Jagiellonian University](https://en.uj.edu.pl/en) & [AGH University of Krakow](https://agh.edu.pl/en)
 licence: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
