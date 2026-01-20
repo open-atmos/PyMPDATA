@@ -31,7 +31,22 @@ jobs:
           pre-commit clean
           pre-commit autoupdate
           pre-commit run --all-files
-
+  
+  url-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: urlstechie/urlchecker-action@master
+        with:
+          file_types: .md,.py,.json,.ipynb,.yaml,.yml,.jinja2,.toml
+          print_all: false
+          verbose: true
+          timeout: 7
+          retry_count: 3
+          exclude_urls: https://www.gnu.org/licenses/gpl-3.0.html,https://open-atmos.github.io/PyMPDATA/\2/\3.html
+          exclude_patterns: http://purl.org,http://www.w3.org
+          exclude_files: docs/generate_html.py,.github/workflows/tests.yml
+  
   pylint:
     runs-on: ubuntu-latest
     steps:
@@ -63,7 +78,6 @@ jobs:
         nbqa pylint --disable=fixme,trailing-whitespace,wrong-import-position,wrong-import-order,ungrouped-imports \
                     --disable=duplicate-code,invalid-name,missing-module-docstring,line-too-long,missing-function-docstring,redefined-outer-name,too-many-arguments,no-member,too-many-locals,cell-var-from-loop,missing-class-docstring $(git ls-files '*.ipynb')
 
-
   devops:
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +92,7 @@ jobs:
         run: pytest --durations=10 -v -s -We -p no:unraisableexception -k "not run_notebooks" tests/devops_tests
 
   nojit_and_codecov:
-    needs: [ precommit, pylint, devops ]
+    needs: [ precommit, pylint, devops, url-check ]
     strategy:
       matrix:
         python-version: ["3.10", "3.13"]
