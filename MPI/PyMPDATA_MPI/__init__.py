@@ -2,6 +2,7 @@
 """
 .. include:: ../docs/pympdata_mpi_landing.md
 """
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:
