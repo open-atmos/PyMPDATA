@@ -27,6 +27,7 @@ class Settings:
         ksi_1: float = default_ksi_1.to_base_units().magnitude,
         z_max: float = 3000 * si.metres,
         apprx_drhod_dz: bool = True,
+        use_max_step: bool = True,
     ):
         self.dt = dt
         self.dz = dz
@@ -58,11 +59,16 @@ class Settings:
             return drhod_dz
 
         z_points = np.arange(0, self.z_max + self.dz / 2, self.dz / 2)
+        if use_max_step:
+            max_step=self.dz/2
+        else:
+            max_step = np.inf  # (same as default in solve_ivp docs)
         rhod_solution = solve_ivp(
             fun=drhod_dz,
             t_span=(0, self.z_max),
             y0=np.asarray((self.rhod0,)),
             t_eval=z_points,
+            max_step=max_step,
         )
         assert rhod_solution.success
 
