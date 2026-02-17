@@ -24,7 +24,7 @@ repos:
         files: '.json'
 
   - repo: https://github.com/AgnieszkaZaba/devops_tests
-    rev: 6260ff80f0fb46f72de26dcbe173ce5564f236de
+    rev: b2f0a463b946d4d229e2e5edf2bed0c0f4c566d0
     hooks:
       - id: check-notebook-open-atmos-structure
         name: check notebook has open-atmos structure
