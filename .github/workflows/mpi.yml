@@ -57,45 +57,56 @@ jobs:
         - uses: actions/setup-python@v5
           with:
             python-version: ${{ matrix.python-version }}
-        - run: |
-            echo pip_user_site=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))") >> $GITHUB_ENV
-            echo toml_ci_md5=$(cat pyproject.toml .github/workflows/mpi.yml \
-            | python -c "import hashlib;print(hashlib.md5(open(0,'rb').read()).hexdigest())") >> $GITHUB_ENV
-        - id: cache
-          uses: actions/cache@v4
-          with:
-            path: ${{ env.pip_user_site }}
-            key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
 
-        - if: steps.cache.outputs.cache-hit != 'true'
-          uses: mpi4py/setup-mpi@v1
+        - uses: mpi4py/setup-mpi@v1
           with:
             mpi: ${{ matrix.mpi }}
-        - if: steps.cache.outputs.cache-hit != 'true' && matrix.mpi == 'mpich'
+  
+        - if: matrix.mpi == 'mpich'
           run: echo _ch="ch" >> $GITHUB_ENV
-        - if: steps.cache.outputs.cache-hit != 'true' &&  startsWith(matrix.platform, 'ubuntu-')
+  
+        - if: startsWith(matrix.platform, 'ubuntu-')
           run: |
             sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
             lscpu
-        - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
+            HDF5_VERSION=$(dpkg-query -W -f='${Version}' libhdf5-mpi$_ch-dev)
+            echo "HDF5_VERSION=$HDF5_VERSION" >> $GITHUB_ENV
+  
+        - if: startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
           run: |
             echo HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/mpich >> $GITHUB_ENV
             echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
-        - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'macos-')
+
+        - if: startsWith(matrix.platform, 'macos-')
           run: |
-            brew install hdf5-mpi && echo HDF5_DIR="$(brew --cellar hdf5-mpi)/$(brew list --versions hdf5-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_ENV
+            brew install hdf5-mpi
+            HDF5_VERSION=$(brew list --versions hdf5-mpi | awk '{print $2}')
+            echo "HDF5_VERSION=$HDF5_VERSION" >> $GITHUB_ENV
+            echo HDF5_DIR="$(brew --prefix hdf5-mpi)" >> $GITHUB_ENV
             sysctl -a | grep cpu | grep hw
-        - if: steps.cache.outputs.cache-hit != 'true'
-          run: |
-            HDF5_MPI="ON" CC=mpicc pip install --no-binary=h5py h5py==3.13.0
-            pip install -e .[tests]  -e ./examples[tests] -e ./MPI[tests]
-        - run: pip show numpy
-        - id: cache-save
-          if: steps.cache.outputs.cache-hit != 'true'
-          uses: actions/cache/save@v4
+  
+        - id: cache-h5py
+          uses: actions/cache@v4
           with:
-            path: ${{ env.pip_user_site }}
-            key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
+            path: wheelhouse
+            key: >
+              ${{ matrix.platform }}-
+              ${{ matrix.mpi }}-
+              ${{ matrix.python-version }}-
+              hdf5-${{ env.HDF5_VERSION }}-
+              h5py-3.13.0
+  
+        - if: steps.cache-h5py.outputs.cache-hit != 'true'
+          run: |
+            mkdir -p wheelhouse
+            HDF5_MPI="ON" CC=mpicc \
+            pip wheel --no-binary=h5py h5py==3.13.0 -w wheelhouse
+  
+        - run: |
+            pip install --no-index --find-links=wheelhouse h5py==3.13.0
+            pip install -e .[tests]  -e ./examples[tests] -e ./MPI[tests]
+  
+        - run: pip show numpy
 
   tests:
     needs: [tests_setup]
