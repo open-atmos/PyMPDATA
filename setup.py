@@ -73,7 +73,7 @@ setup(
             "ghapi",
             "pytest",
             "pytest-benchmark",
-            "joblib" + ("==1.4.0" if CI else ""),
+            "joblib" + ("==1.5.3" if CI else ""),
             "imageio",
             "nbformat",
             "pyparsing" + ("<3.2.5" if CI else ""),
