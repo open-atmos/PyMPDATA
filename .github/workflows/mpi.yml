@@ -99,8 +99,9 @@ jobs:
         - if: steps.cache-h5py.outputs.cache-hit != 'true'
           run: |
             mkdir -p wheelhouse
-            HDF5_MPI="ON" CC=mpicc \
-            pip wheel --no-binary=h5py --no-build-isolation h5py==3.13.0 -w wheelhouse
+            pip install --upgrade pip setuptools wheel
+            pip install Cython numpy mpi4py
+            HDF5_MPI="ON" CC=mpicc pip wheel --no-binary=h5py --no-build-isolation h5py==3.13.0 -w wheelhouse
   
         - run: |
             pip install --no-index --find-links=wheelhouse h5py==3.13.0
