@@ -100,7 +100,7 @@ jobs:
           run: |
             mkdir -p wheelhouse
             pip install --upgrade pip setuptools wheel
-            pip install Cython numpy mpi4py
+            pip install Cython numpy mpi4py pkgconfig
             HDF5_MPI="ON" CC=mpicc pip wheel --no-binary=h5py --no-build-isolation h5py==3.13.0 -w wheelhouse
   
         - run: |
