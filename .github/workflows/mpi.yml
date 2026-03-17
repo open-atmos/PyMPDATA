@@ -68,7 +68,7 @@ jobs:
             key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
 
         - if: steps.cache.outputs.cache-hit != 'true'
-          uses: mpi4py/setup-mpi@v1
+          uses: mpi4py/setup-mpi@v1.4.1
           with:
             mpi: ${{ matrix.mpi }}
         - if: steps.cache.outputs.cache-hit != 'true' && matrix.mpi == 'mpich'
@@ -143,7 +143,7 @@ jobs:
           echo pip_user_site=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))") >> $GITHUB_ENV
           echo toml_ci_md5=$(cat pyproject.toml .github/workflows/mpi.yml \
           | python -c "import hashlib;print(hashlib.md5(open(0,'rb').read()).hexdigest())") >> $GITHUB_ENV
-      - uses: mpi4py/setup-mpi@v1
+      - uses: mpi4py/setup-mpi@v1.4.1
         with:
           mpi: ${{ matrix.mpi }}
       - id: cache
