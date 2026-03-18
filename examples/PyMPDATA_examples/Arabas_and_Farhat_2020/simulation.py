@@ -4,6 +4,7 @@ from PyMPDATA_examples.Arabas_and_Farhat_2020.options import OPTIONS
 
 from PyMPDATA import Options, ScalarField, Solver, Stepper, VectorField
 from PyMPDATA.boundary_conditions import Extrapolated
+from PyMPDATA.impl.enumerations import ARG_DATA
 
 
 class Simulation:
@@ -98,13 +99,18 @@ class Simulation:
                 def __init__(self):
                     pass
 
-                def call(self, psi, step):
+                def call(self, _, psi, step, index):
                     t = T - (step + 1) * dt
-                    psi += np.maximum(psi, f_T / np.exp(r * t)) - psi
+                    psi[index].field[ARG_DATA][:] += (
+                        np.maximum(psi[index].field[ARG_DATA], f_T / np.exp(r * t))
+                        - psi[index].field[ARG_DATA]
+                    )
 
-            self.solvers[n_iters].advance(self.nt, self.mu_coeff, PostStep())
+            self.solvers[n_iters].advance(
+                self.nt, mu_coeff=self.mu_coeff, post_step=PostStep()
+            )
         else:
-            self.solvers[n_iters].advance(self.nt, self.mu_coeff)
+            self.solvers[n_iters].advance(self.nt, mu_coeff=self.mu_coeff)
 
         return self.solvers[n_iters].advectee.get()
 
