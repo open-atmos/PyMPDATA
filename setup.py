@@ -76,6 +76,7 @@ setup(
             "joblib" + ("==1.4.0" if CI else ""),
             "imageio",
             "nbformat",
+            "pyparsing" + ("<3.2.5" if CI else ""),
         ]
     },
     author="https://github.com/open-atmos/PyMPDATA/graphs/contributors",

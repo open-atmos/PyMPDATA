@@ -3,7 +3,7 @@ class grouping user-supplied stepper, fields and post-step/post-iter hooks,
 as well as self-initialised temporary storage
 """
 
-from typing import Union
+from typing import Hashable, Iterable, Mapping, Union
 
 import numba
 
@@ -14,13 +14,36 @@ from .vector_field import VectorField
 
 
 @numba.experimental.jitclass([])
+class AnteStepNull:  # pylint: disable=too-few-public-methods
+    """do-nothing version of the ante-step hook"""
+
+    def __init__(self):
+        pass
+
+    def call(
+        self,
+        traversals_data,
+        advectee,
+        advector,
+        step,
+        index,
+        dynamic_advector_stash_outer,
+        dynamic_advector_stash_mid3d,
+        dynamic_advector_stash_inner,
+    ):  # pylint: disable-next=unused-argument,disable=too-many-arguments
+        """think of it as a `__call__` method (which Numba does not allow)"""
+
+
+@numba.experimental.jitclass([])
 class PostStepNull:  # pylint: disable=too-few-public-methods
     """do-nothing version of the post-step hook"""
 
     def __init__(self):
         pass
 
-    def call(self, psi, step):  # pylint: disable-next=unused-argument
+    def call(
+        self, traversals_data, psi, step, index
+    ):  # pylint: disable-next=unused-argument
         """think of it as a `__call__` method (which Numba does not allow)"""
 
 
@@ -31,7 +54,9 @@ class PostIterNull:  # pylint: disable=too-few-public-methods
     def __init__(self):
         pass
 
-    def call(self, flux, g_factor, step, iteration):  # pylint: disable=unused-argument
+    def call(
+        self, traversals_data, flux, g_factor, step, iteration
+    ):  # pylint: disable=unused-argument,disable=too-many-arguments
         """think of it as a `__call__` method (which Numba does not allow)"""
 
 
@@ -48,66 +73,89 @@ class Solver:
     def __init__(
         self,
         stepper: Stepper,
-        advectee: ScalarField,
+        advectee: [ScalarField, Iterable[ScalarField], Mapping[Hashable, ScalarField]],
         advector: VectorField,
         g_factor: [ScalarField, None] = None,
     ):
+        self.advectee = advectee
+        n_dims = advector.n_dims
+        if isinstance(advectee, ScalarField):
+            self.__fields = {"advectee": (advectee,)}
+
+        elif isinstance(advectee, Mapping):
+            self.__fields = {"advectee": tuple(advectee.values())}
+
+        elif isinstance(advectee, Iterable):
+            self.__fields = {"advectee": tuple(advectee)}
+
         def scalar_field(dtype=None):
-            return ScalarField.clone(advectee, dtype=dtype)
+            return ScalarField.clone(self.__fields["advectee"][0], dtype=dtype)
 
         def null_scalar_field():
-            return ScalarField.make_null(advectee.n_dims, stepper.traversals)
+            return ScalarField.make_null(n_dims, stepper.traversals)
 
         def vector_field():
             return VectorField.clone(advector)
 
         def null_vector_field():
-            return VectorField.make_null(advector.n_dims, stepper.traversals)
+            return VectorField.make_null(n_dims, stepper.traversals)
 
-        for field in [advector, advectee] + (
+        for field in [advector, *self.__fields["advectee"]] + (
             [g_factor] if g_factor is not None else []
         ):
             assert field.halo == stepper.options.n_halo
             assert field.dtype == stepper.options.dtype
             assert field.grid == advector.grid
 
-        self.__fields = {
-            "advectee": advectee,
-            "advector": advector,
-            "g_factor": g_factor or null_scalar_field(),
-            "vectmp_a": vector_field(),
-            "vectmp_b": vector_field(),
-            "vectmp_c": (
-                vector_field()
-                if stepper.options.non_zero_mu_coeff
-                else null_vector_field()
-            ),
-            "nonosc_xtrm": (
-                scalar_field(dtype=complex)
-                if stepper.options.nonoscillatory
-                else null_scalar_field()
-            ),
-            "nonosc_beta": (
-                scalar_field(dtype=complex)
-                if stepper.options.nonoscillatory
-                else null_scalar_field()
-            ),
-        }
-        for field in self.__fields.values():
-            field.assemble(stepper.traversals)
+        self.__fields.update(
+            {
+                "advector": advector,
+                "g_factor": g_factor or null_scalar_field(),
+                "vectmp_a": vector_field(),
+                "vectmp_b": vector_field(),
+                "vectmp_c": (
+                    vector_field()
+                    if stepper.options.non_zero_mu_coeff
+                    else null_vector_field()
+                ),
+                "dynamic_advector_stash_outer": (
+                    scalar_field()
+                    if stepper.options.dynamic_advector and n_dims > 1
+                    else null_scalar_field()
+                ),
+                "dynamic_advector_stash_mid3d": (
+                    scalar_field()
+                    if stepper.options.dynamic_advector and n_dims > 2
+                    else null_scalar_field()
+                ),
+                "dynamic_advector_stash_inner": (
+                    scalar_field()
+                    if stepper.options.dynamic_advector
+                    else null_scalar_field()
+                ),
+                "nonosc_xtrm": (
+                    scalar_field(dtype=complex)
+                    if stepper.options.nonoscillatory
+                    else null_scalar_field()
+                ),
+                "nonosc_beta": (
+                    scalar_field(dtype=complex)
+                    if stepper.options.nonoscillatory
+                    else null_scalar_field()
+                ),
+            }
+        )
+        for key, value in self.__fields.items():
+            for field in (value,) if key != "advectee" else value:
+                field.assemble(stepper.traversals)
 
         self.__stepper = stepper
 
     @property
-    def advectee(self) -> ScalarField:
-        """advectee scalar field (with halo), modified by advance(),
-        may be modified from user code (e.g., source-term handling)"""
-        return self.__fields["advectee"]
-
-    @property
     def advector(self) -> VectorField:
-        """advector vector field (with halo), unmodified by advance(),
-        may be modified from user code"""
+        """advector vector field , dynamic_advector_stash_outer,
+        dynamic_advector_stash_mid3d, dynamic_advector_stash_inner(with halo),
+        unmodified by advance(), may be modified from user code"""
         return self.__fields["advector"]
 
     @property
@@ -125,7 +173,9 @@ class Solver:
     def advance(
         self,
         n_steps: int,
+        *,
         mu_coeff: Union[tuple, None] = None,
+        ante_step=None,
         post_step=None,
         post_iter=None,
     ):
@@ -144,12 +194,14 @@ class Solver:
         ):
             raise NotImplementedError()
 
+        ante_step = ante_step or AnteStepNull()
         post_step = post_step or PostStepNull()
         post_iter = post_iter or PostIterNull()
 
         return self.__stepper(
             n_steps=n_steps,
             mu_coeff=mu_coeff,
+            ante_step=ante_step,
             post_step=post_step,
             post_iter=post_iter,
             fields=self.__fields,

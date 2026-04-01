@@ -51,7 +51,7 @@ In this example, two corrective MPDATA iterations are employed.
 ### 2 workers (MPI_DIM = OUTER, n_threads = 3)
 <p align="middle">
   <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_0_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
-  <img src="https://github.com/open-atmos/PyMPDATA/releases/tip/latest-generated-plots/n_iters.3_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
+  <img src="https://github.com/open-atmos/PyMPDATA/releases/download/tip/n_iters.3_rank_1_size_2_c_field_.0.5.0.25._mpi_dim_0_n_threads_3-CartesianScenario-anim.gif" width="49%" />
 </p>
 
 ### 2 workers (MPI_DIM = INNER, n_threads = 3)
