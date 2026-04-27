@@ -75,7 +75,7 @@ jobs:
           run: echo _ch="ch" >> $GITHUB_ENV
         - if: steps.cache.outputs.cache-hit != 'true' &&  startsWith(matrix.platform, 'ubuntu-')
           run: |
-            sudo apt-get update && sudo apt-get install -y libhdf5-mpi==2.0.0$_ch-dev pkg-config
+            sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
             lscpu
         - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'ubuntu-') && matrix.mpi == 'mpich'
           run: |
@@ -83,7 +83,7 @@ jobs:
             echo HDF5_INCLUDEDIR=/usr/include/hdf5/mpich >> $GITHUB_ENV
         - if: steps.cache.outputs.cache-hit != 'true' && startsWith(matrix.platform, 'macos-')
           run: |
-            brew install hdf5-mpi==2.0.0 && echo HDF5_DIR="$(brew --cellar hdf5-mpi)/$(brew list --versions hdf5-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_ENV
+            brew install hdf5-mpi && echo HDF5_DIR="$(brew --cellar hdf5-mpi)/$(brew list --versions hdf5-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_ENV
             sysctl -a | grep cpu | grep hw
         - if: steps.cache.outputs.cache-hit != 'true'
           run: |
@@ -155,10 +155,14 @@ jobs:
         run: echo _ch="ch" >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'ubuntu-')
         run: |
-          sudo apt-get update && sudo apt-get install -y libhdf5-mpi==2.0.0$_ch-dev pkg-config
+          sudo apt-get update && sudo apt-get install -y libhdf5-mpi$_ch-dev pkg-config
           echo NUMBA_THREADING_LAYER=omp >> $GITHUB_ENV
       - if: startsWith(matrix.platform, 'macos-')
-        run: brew install hdf5-mpi==2.0.0 && echo HDF5_DIR=/opt/homebrew >> $GITHUB_ENV
+        run: |
+          brew install hdf5-mpi 
+          echo HDF5_DIR=$(brew --prefix hdf5-mpi) >> $GITHUB_ENV
+          echo DYLD_FALLBACK_LIBRARY_PATH=$(brew --prefix hdf5-mpi)/lib:$DYLD_FALLBACK_LIBRARY_PATH >> $GITHUB_ENV
+
       - if: matrix.platform == 'macos-14'
         run: echo DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH >> $GITHUB_ENV
       - run: python -We -c "import PyMPDATA_MPI"
