@@ -217,5 +217,12 @@
     ],
     "label": "Magnuszewski & Arabas 2025 (arXiv)",
     "title": "Path-dependent option pricing with two-dimensional PDE using MPDATA"
+  },
+  "https://doi.org/10.1016/S0065-2156(08)70100-5": {
+    "usages": [
+      "examples/PyMPDATA_examples/burgers_equation/burgers_equation.ipynb"
+    ],
+    "label": "Burgers 1948 (Adv. Appl. Mech. 1)",
+    "title": "A Mathematical Model Illustrating the Theory of Turbulence"
   }
 }
