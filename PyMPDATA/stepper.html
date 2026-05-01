@@ -177,7 +177,7 @@
 </span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="nb">max</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 </span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
 </span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>                        <span class="s2">&quot;n_threads&gt;1 requested, but Numba does not seem to parallelize&quot;</span>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>                        <span class="s2">&quot; (try changing Numba threading backend?)&quot;</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>                        <span class="s2">&quot; (try setting the NUMBA_THREADING_LAYER env var to &#39;workqueue&#39;)&quot;</span>
 </span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>                    <span class="p">)</span>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__n_dims</span> <span class="o">=</span> <span class="n">n_dims</span>
@@ -448,7 +448,7 @@
 </span><span id="Stepper-80"><a href="#Stepper-80"><span class="linenos"> 80</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="nb">max</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 </span><span id="Stepper-81"><a href="#Stepper-81"><span class="linenos"> 81</span></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
 </span><span id="Stepper-82"><a href="#Stepper-82"><span class="linenos"> 82</span></a>                        <span class="s2">&quot;n_threads&gt;1 requested, but Numba does not seem to parallelize&quot;</span>
-</span><span id="Stepper-83"><a href="#Stepper-83"><span class="linenos"> 83</span></a>                        <span class="s2">&quot; (try changing Numba threading backend?)&quot;</span>
+</span><span id="Stepper-83"><a href="#Stepper-83"><span class="linenos"> 83</span></a>                        <span class="s2">&quot; (try setting the NUMBA_THREADING_LAYER env var to &#39;workqueue&#39;)&quot;</span>
 </span><span id="Stepper-84"><a href="#Stepper-84"><span class="linenos"> 84</span></a>                    <span class="p">)</span>
 </span><span id="Stepper-85"><a href="#Stepper-85"><span class="linenos"> 85</span></a>
 </span><span id="Stepper-86"><a href="#Stepper-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__n_dims</span> <span class="o">=</span> <span class="n">n_dims</span>
@@ -575,7 +575,7 @@
 </span><span id="Stepper.__init__-80"><a href="#Stepper.__init__-80"><span class="linenos">80</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="nb">max</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 </span><span id="Stepper.__init__-81"><a href="#Stepper.__init__-81"><span class="linenos">81</span></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
 </span><span id="Stepper.__init__-82"><a href="#Stepper.__init__-82"><span class="linenos">82</span></a>                        <span class="s2">&quot;n_threads&gt;1 requested, but Numba does not seem to parallelize&quot;</span>
-</span><span id="Stepper.__init__-83"><a href="#Stepper.__init__-83"><span class="linenos">83</span></a>                        <span class="s2">&quot; (try changing Numba threading backend?)&quot;</span>
+</span><span id="Stepper.__init__-83"><a href="#Stepper.__init__-83"><span class="linenos">83</span></a>                        <span class="s2">&quot; (try setting the NUMBA_THREADING_LAYER env var to &#39;workqueue&#39;)&quot;</span>
 </span><span id="Stepper.__init__-84"><a href="#Stepper.__init__-84"><span class="linenos">84</span></a>                    <span class="p">)</span>
 </span><span id="Stepper.__init__-85"><a href="#Stepper.__init__-85"><span class="linenos">85</span></a>
 </span><span id="Stepper.__init__-86"><a href="#Stepper.__init__-86"><span class="linenos">86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">__n_dims</span> <span class="o">=</span> <span class="n">n_dims</span>
