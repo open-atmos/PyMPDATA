@@ -79,7 +79,7 @@ class Stepper:
                 if not max(arr) > 0:
                     raise ValueError(
                         "n_threads>1 requested, but Numba does not seem to parallelize"
-                        " (try changing Numba threading backend?)"
+                        " (try setting the NUMBA_THREADING_LAYER env var to 'workqueue')"
                     )
 
         self.__n_dims = n_dims
