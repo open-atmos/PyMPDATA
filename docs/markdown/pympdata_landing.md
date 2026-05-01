@@ -586,6 +586,8 @@ See [README.md](https://github.com/open-atmos/PyMPDATA/tree/main/README.md).
   https://github.com/RinceWND/extPOM/blob/master/pom/solver.f
 - TourOfJulia (Julia):
   https://github.com/themantra108/TourOfJulia.jl/blob/master/06b_smolarkiewicz.jl
+- ICAR (Fortran):
+  https://github.com/NCAR/icar/blob/main/src/physics/adv_mpdata.f90
 
 # Other Python packages for solving hyperbolic transport equations
 

@@ -52,8 +52,7 @@ setup(
     extras_require={
         "tests": [
             "PyMPDATA-examples",
-            "pillow"
-            + ("<11.3.0" if CI else ""),  # until matplotlib fixes deprecation errors
+            "pillow",
             "matplotlib" + (">=3.2.2" if CI else ""),
             "scipy"
             + (
