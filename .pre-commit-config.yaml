@@ -22,3 +22,10 @@ repos:
       - id: debug-statements
       - id: check-json
         files: '.json'
+
+  - repo: https://github.com/AgnieszkaZaba/devops_tests
+    rev: dc88fdee2a5a3e4bd1e6e8b2a1c7c7418ea5fbf5
+    hooks:
+      - id: check-notebook-open-atmos-structure
+        name: check notebook has open-atmos structure
+        args: [--repo-name=PyMPDATA]

@@ -28,9 +28,14 @@ jobs:
           python-version: "3.10"
       - run: |
           pip install pre-commit
-          pre-commit clean
-          pre-commit autoupdate
-          pre-commit run --all-files
+          
+          # avoiding failures unrelated to PR contents 
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            pre-commit clean
+            pre-commit autoupdate
+          fi
+          
+          pre-commit run --all-files --show-diff-on-failure
 
   pylint:
     runs-on: ubuntu-latest
