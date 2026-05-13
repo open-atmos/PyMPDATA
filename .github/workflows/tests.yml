@@ -180,7 +180,7 @@ jobs:
           sudo make install
           cd ../../../
           rm -rf libmpdataxx
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
       - run: julia --version
 
       # https://github.com/numba/numba/issues/6350#issuecomment-728174860
