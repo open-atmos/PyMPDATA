@@ -184,7 +184,7 @@ jobs:
             pip install coverage
           fi
           NUMBA_NUM_THREADS=3 mpiexec $_mpiexec_args -n ${{ matrix.mpi-np }} python -m $COV_RUN pytest -p no:cacheprovider $COV_ARGS --timeout=600 --timeout_method=thread -s -vv -We tests_mpi;
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: plots-${{matrix.mpi-np}}
           path: plots
@@ -220,7 +220,7 @@ jobs:
               done;
           done;
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: anims
           path: plots/*-anim.gif
