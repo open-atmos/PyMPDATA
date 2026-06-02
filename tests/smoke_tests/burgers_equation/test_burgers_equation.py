@@ -22,4 +22,4 @@ def _variables_fixture():
 class TestBurgersEquation:
     """assertions on the final notebook state"""
 
-    pass
+    pass  # pylint: disable=unnecessary-pass
