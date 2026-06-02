@@ -18,7 +18,7 @@ def _variables_fixture():
 
 
 # TODO #591
-# pylint: dsiable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class TestBurgersEquation:
     """assertions on the final notebook state"""
 
