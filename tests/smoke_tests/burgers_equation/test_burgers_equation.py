@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-import numpy as np
 import pytest
 from open_atmos_jupyter_utils import notebook_vars
 from PyMPDATA_examples import burgers_equation
@@ -18,9 +17,8 @@ def _variables_fixture():
     )
 
 
+# TODO #591
+# pylint: dsiable=too-few-public-methods
 class TestBurgersEquation:
     """assertions on the final notebook state"""
-
-    @staticmethod
-    def test_vs_analytic(variables):
-        pass
+    pass
