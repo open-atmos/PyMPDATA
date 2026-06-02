@@ -21,4 +21,5 @@ def _variables_fixture():
 # pylint: dsiable=too-few-public-methods
 class TestBurgersEquation:
     """assertions on the final notebook state"""
+
     pass
