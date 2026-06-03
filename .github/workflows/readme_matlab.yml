@@ -34,10 +34,10 @@ jobs:
         with:
           release: ${{ matrix.matlab-version }}
           cache: true
-      - uses: matlab-actions/run-command@v2.1.1
+      - uses: matlab-actions/run-command@v3.1.2
         with:
           command: pe=pyenv; assert(pe.Version == "${{ matrix.python-version }}");
       - run: echo NUMBA_NUM_THREADS=1 >> $GITHUB_ENV
-      - uses: matlab-actions/run-command@v2.1.1
+      - uses: matlab-actions/run-command@v3.1.2
         with:
           command: readme
