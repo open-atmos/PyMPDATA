@@ -62,7 +62,7 @@ jobs:
             echo toml_ci_md5=$(cat pyproject.toml .github/workflows/mpi.yml \
             | python -c "import hashlib;print(hashlib.md5(open(0,'rb').read()).hexdigest())") >> $GITHUB_ENV
         - id: cache
-          uses: actions/cache@v4
+          uses: actions/cache@v5
           with:
             path: ${{ env.pip_user_site }}
             key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
@@ -92,7 +92,7 @@ jobs:
         - run: pip show numpy
         - id: cache-save
           if: steps.cache.outputs.cache-hit != 'true'
-          uses: actions/cache/save@v4
+          uses: actions/cache/save@v5
           with:
             path: ${{ env.pip_user_site }}
             key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
@@ -147,7 +147,7 @@ jobs:
         with:
           mpi: ${{ matrix.mpi }}
       - id: cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ${{ env.pip_user_site }}
           key: ${{ matrix.platform }}-${{ matrix.mpi }}-${{ matrix.python-version }}-${{ env.toml_ci_md5 }}
