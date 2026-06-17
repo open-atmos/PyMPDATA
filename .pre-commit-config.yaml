@@ -22,3 +22,8 @@ repos:
       - id: debug-statements
       - id: check-json
         files: '.json'
+
+  - repo: https://github.com/christopher-hacker/enforce-notebook-run-order
+    rev: 2.1.1
+    hooks:
+    - id: enforce-notebook-run-order
