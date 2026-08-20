@@ -75,7 +75,7 @@
 
                         <label class="view-source-button" for="mod-traversals_halos_scalar-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">&quot;&quot;&quot;halo-filling logic for scalar field traversals (incl. multi-threading)&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">"""halo-filling logic for scalar field traversals (incl. multi-threading)"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="c1"># pylint: disable=too-many-arguments</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
@@ -99,9 +99,9 @@
 </span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="p">):</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>    <span class="n">common</span> <span class="o">=</span> <span class="n">make_common</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">,</span> <span class="n">spanner</span><span class="p">,</span> <span class="n">chunker</span><span class="p">)</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>        <span class="s2">&quot;jit_flags&quot;</span><span class="p">:</span> <span class="n">jit_flags</span><span class="p">,</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>        <span class="s2">&quot;halo&quot;</span><span class="p">:</span> <span class="n">halo</span><span class="p">,</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>        <span class="s2">&quot;n_dims&quot;</span><span class="p">:</span> <span class="n">n_dims</span><span class="p">,</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>        <span class="s2">"jit_flags"</span><span class="p">:</span> <span class="n">jit_flags</span><span class="p">,</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>        <span class="s2">"halo"</span><span class="p">:</span> <span class="n">halo</span><span class="p">,</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>        <span class="s2">"n_dims"</span><span class="p">:</span> <span class="n">n_dims</span><span class="p">,</span>
 </span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>    <span class="p">}</span>
 </span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>    <span class="n">mid3d</span> <span class="o">=</span> <span class="n">__make_mid3d</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">left_first</span><span class="o">=</span><span class="n">left_first</span><span class="p">[</span><span class="n">MID3D</span><span class="p">])</span>
 </span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>    <span class="n">outer</span> <span class="o">=</span> <span class="n">__make_outer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">left_first</span><span class="o">=</span><span class="n">left_first</span><span class="p">[</span><span class="n">OUTER</span><span class="p">])</span>

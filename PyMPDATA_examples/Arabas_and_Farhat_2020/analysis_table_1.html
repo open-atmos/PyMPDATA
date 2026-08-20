@@ -115,7 +115,7 @@
 </span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
 </span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>
 </span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="k">def</span><span class="w"> </span><span class="nf">table_1_data</span><span class="p">():</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="k">with</span> <span class="n">parallel_backend</span><span class="p">(</span><span class="s2">&quot;threading&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="k">with</span> <span class="n">parallel_backend</span><span class="p">(</span><span class="s2">"threading"</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="mi">10</span><span class="p">)(</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>            <span class="n">delayed</span><span class="p">(</span><span class="n">compute_row</span><span class="p">)(</span>
 </span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>                <span class="nb">tuple</span><span class="p">(</span>
@@ -184,7 +184,7 @@
     </div>
     <a class="headerlink" href="#table_1_data"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="table_1_data-37"><a href="#table_1_data-37"><span class="linenos">37</span></a><span class="k">def</span><span class="w"> </span><span class="nf">table_1_data</span><span class="p">():</span>
-</span><span id="table_1_data-38"><a href="#table_1_data-38"><span class="linenos">38</span></a>    <span class="k">with</span> <span class="n">parallel_backend</span><span class="p">(</span><span class="s2">&quot;threading&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+</span><span id="table_1_data-38"><a href="#table_1_data-38"><span class="linenos">38</span></a>    <span class="k">with</span> <span class="n">parallel_backend</span><span class="p">(</span><span class="s2">"threading"</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
 </span><span id="table_1_data-39"><a href="#table_1_data-39"><span class="linenos">39</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="mi">10</span><span class="p">)(</span>
 </span><span id="table_1_data-40"><a href="#table_1_data-40"><span class="linenos">40</span></a>            <span class="n">delayed</span><span class="p">(</span><span class="n">compute_row</span><span class="p">)(</span>
 </span><span id="table_1_data-41"><a href="#table_1_data-41"><span class="linenos">41</span></a>                <span class="nb">tuple</span><span class="p">(</span>

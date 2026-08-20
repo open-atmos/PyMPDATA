@@ -89,20 +89,20 @@
                         <label class="view-source-button" for="mod-asian_option-view-source"><span>View Source</span></label>
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="c1"># pylint: disable=line-too-long</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">"""</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">Closed-forms for geometric Asian options are taken from:</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="sd">[Derivatives Markets Appendix 19A](https://media.pearsoncmg.com/ph/bp/bridgepages/teamsite/mcdonald/McDonald-web-19-A.pdf)</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">"""</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
 </span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.Black_Scholes_1973</span><span class="w"> </span><span class="kn">import</span> <span class="n">c_euro_with_dividend</span><span class="p">,</span> <span class="n">p_euro_with_dividend</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="c1"># for fun in (c_euro_with_dividend, p_euro_with_dividend):</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="c1">#     locals()[&#39;geometric_asian_average_price_&#39;+fun.__name__[0]] = lambda **args: fun(</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="c1">#         **{key:value for key, value in args.items() if key not in (&#39;sgma&#39;, &#39;dividend_yield&#39;)},</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="c1">#         sgma=args[&#39;sgma&#39;]/np.sqrt(3),</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="c1">#         dividend_yield=0.5*(args[&#39;r&#39;] + args[&#39;dividend_yield&#39;] + args[&#39;sgma&#39;]**2/6),</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="c1">#     locals()['geometric_asian_average_price_'+fun.__name__[0]] = lambda **args: fun(</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="c1">#         **{key:value for key, value in args.items() if key not in ('sgma', 'dividend_yield')},</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="c1">#         sgma=args['sgma']/np.sqrt(3),</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="c1">#         dividend_yield=0.5*(args['r'] + args['dividend_yield'] + args['sgma']**2/6),</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="c1">#     )</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>

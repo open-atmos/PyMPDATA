@@ -85,8 +85,8 @@
 
                         <label class="view-source-button" for="mod-formulae_nonoscillatory-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">&quot;&quot;&quot;the nonoscillatory option for MPDATA as introduced in</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="sd">[Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">"""the nonoscillatory option for MPDATA as introduced in</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="sd">[Smolarkiewicz &amp; Grabowski 1990](https://doi.org/10.1016/0021-9991(90)90105-A)"""</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -101,7 +101,7 @@
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_psi_extrema</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns an njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="w">    </span><span class="sd">"""returns an njit-ted function for use with given traversals"""</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span><span class="p">:</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -186,7 +186,7 @@
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>
 </span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>
 </span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_beta</span><span class="p">(</span><span class="n">non_unit_g_factor</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="w">    </span><span class="sd">"""returns njit-ted function for use with given traversals"""</span>
 </span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span><span class="p">:</span>
 </span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -363,7 +363,7 @@
 </span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a>
 </span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a>
 </span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_correction</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a><span class="w">    </span><span class="sd">"""returns njit-ted function for use with given traversals"""</span>
 </span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span><span class="p">:</span>
 </span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>
 </span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -428,7 +428,7 @@
     </div>
     <a class="headerlink" href="#make_psi_extrema"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_psi_extrema-17"><a href="#make_psi_extrema-17"><span class="linenos">17</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_psi_extrema</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="make_psi_extrema-18"><a href="#make_psi_extrema-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns an njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="make_psi_extrema-18"><a href="#make_psi_extrema-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">"""returns an njit-ted function for use with given traversals"""</span>
 </span><span id="make_psi_extrema-19"><a href="#make_psi_extrema-19"><span class="linenos">19</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span><span class="p">:</span>
 </span><span id="make_psi_extrema-20"><a href="#make_psi_extrema-20"><span class="linenos">20</span></a>
 </span><span id="make_psi_extrema-21"><a href="#make_psi_extrema-21"><span class="linenos">21</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -487,7 +487,7 @@
     </div>
     <a class="headerlink" href="#make_beta"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_beta-102"><a href="#make_beta-102"><span class="linenos">102</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_beta</span><span class="p">(</span><span class="n">non_unit_g_factor</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="make_beta-103"><a href="#make_beta-103"><span class="linenos">103</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="make_beta-103"><a href="#make_beta-103"><span class="linenos">103</span></a><span class="w">    </span><span class="sd">"""returns njit-ted function for use with given traversals"""</span>
 </span><span id="make_beta-104"><a href="#make_beta-104"><span class="linenos">104</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span><span class="p">:</span>
 </span><span id="make_beta-105"><a href="#make_beta-105"><span class="linenos">105</span></a>
 </span><span id="make_beta-106"><a href="#make_beta-106"><span class="linenos">106</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -553,7 +553,7 @@
     </div>
     <a class="headerlink" href="#make_correction"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_correction-279"><a href="#make_correction-279"><span class="linenos">279</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_correction</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="make_correction-280"><a href="#make_correction-280"><span class="linenos">280</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="make_correction-280"><a href="#make_correction-280"><span class="linenos">280</span></a><span class="w">    </span><span class="sd">"""returns njit-ted function for use with given traversals"""</span>
 </span><span id="make_correction-281"><a href="#make_correction-281"><span class="linenos">281</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">nonoscillatory</span><span class="p">:</span>
 </span><span id="make_correction-282"><a href="#make_correction-282"><span class="linenos">282</span></a>
 </span><span id="make_correction-283"><a href="#make_correction-283"><span class="linenos">283</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>

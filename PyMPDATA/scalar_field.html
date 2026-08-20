@@ -99,9 +99,9 @@
 
                         <label class="view-source-button" for="mod-scalar_field-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">scalar field abstractions for the staggered grid</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">"""</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
 </span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
@@ -113,7 +113,7 @@
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="k">class</span><span class="w"> </span><span class="nc">ScalarField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc.&quot;&quot;&quot;</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="w">    </span><span class="sd">"""n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc."""</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">halo</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -121,7 +121,7 @@
 </span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>            <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
 </span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>            <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>            <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>            <span class="n">fill_halos_name</span><span class="o">=</span><span class="s2">&quot;fill_halos_scalar&quot;</span><span class="p">,</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>            <span class="n">fill_halos_name</span><span class="o">=</span><span class="s2">"fill_halos_scalar"</span><span class="p">,</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="p">)</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
 </span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="k">for</span> <span class="n">dim_length</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
@@ -139,8 +139,8 @@
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="nd">@staticmethod</span>
 </span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">clone</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns an instance with the same dimensionality and same halo size as the argument</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="sd">        optionally with a different data type&quot;&quot;&quot;</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">"""returns an instance with the same dimensionality and same halo size as the argument</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="sd">        optionally with a different data type"""</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="ow">or</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span>
 </span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>        <span class="c1"># note: copy=False is OK as the ctor anyhow copies the data to an array with halo</span>
 </span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span>
@@ -148,14 +148,14 @@
 </span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>        <span class="p">)</span>
 </span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>
 </span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>  <span class="c1"># note: actually a view is returned</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a view (not a copy) of the field data excluding halo&quot;&quot;&quot;</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="w">        </span><span class="sd">"""returns a view (not a copy) of the field data excluding halo"""</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">]</span>
 </span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>        <span class="k">return</span> <span class="n">results</span>
 </span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>
 </span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>    <span class="nd">@staticmethod</span>
 </span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_null</span><span class="p">(</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a scalar field instance with no allocated data storage,</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="sd">        see `Field._make_null` other properties of the returned field&quot;&quot;&quot;</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a><span class="w">        </span><span class="sd">"""returns a scalar field instance with no allocated data storage,</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="sd">        see `Field._make_null` other properties of the returned field"""</span>
 </span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>        <span class="k">return</span> <span class="n">Field</span><span class="o">.</span><span class="n">_make_null</span><span class="p">(</span>
 </span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>            <span class="n">ScalarField</span><span class="p">(</span>
 </span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>                <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_dims</span><span class="p">),</span>
@@ -180,7 +180,7 @@
     </div>
     <a class="headerlink" href="#ScalarField"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="ScalarField-15"><a href="#ScalarField-15"><span class="linenos">15</span></a><span class="k">class</span><span class="w"> </span><span class="nc">ScalarField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
-</span><span id="ScalarField-16"><a href="#ScalarField-16"><span class="linenos">16</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc.&quot;&quot;&quot;</span>
+</span><span id="ScalarField-16"><a href="#ScalarField-16"><span class="linenos">16</span></a><span class="w">    </span><span class="sd">"""n-dimensional scalar field including halo data, used to represent advectee, g_factor, etc."""</span>
 </span><span id="ScalarField-17"><a href="#ScalarField-17"><span class="linenos">17</span></a>
 </span><span id="ScalarField-18"><a href="#ScalarField-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">halo</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
 </span><span id="ScalarField-19"><a href="#ScalarField-19"><span class="linenos">19</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -188,7 +188,7 @@
 </span><span id="ScalarField-21"><a href="#ScalarField-21"><span class="linenos">21</span></a>            <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
 </span><span id="ScalarField-22"><a href="#ScalarField-22"><span class="linenos">22</span></a>            <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
 </span><span id="ScalarField-23"><a href="#ScalarField-23"><span class="linenos">23</span></a>            <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-</span><span id="ScalarField-24"><a href="#ScalarField-24"><span class="linenos">24</span></a>            <span class="n">fill_halos_name</span><span class="o">=</span><span class="s2">&quot;fill_halos_scalar&quot;</span><span class="p">,</span>
+</span><span id="ScalarField-24"><a href="#ScalarField-24"><span class="linenos">24</span></a>            <span class="n">fill_halos_name</span><span class="o">=</span><span class="s2">"fill_halos_scalar"</span><span class="p">,</span>
 </span><span id="ScalarField-25"><a href="#ScalarField-25"><span class="linenos">25</span></a>        <span class="p">)</span>
 </span><span id="ScalarField-26"><a href="#ScalarField-26"><span class="linenos">26</span></a>
 </span><span id="ScalarField-27"><a href="#ScalarField-27"><span class="linenos">27</span></a>        <span class="k">for</span> <span class="n">dim_length</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
@@ -206,8 +206,8 @@
 </span><span id="ScalarField-39"><a href="#ScalarField-39"><span class="linenos">39</span></a>
 </span><span id="ScalarField-40"><a href="#ScalarField-40"><span class="linenos">40</span></a>    <span class="nd">@staticmethod</span>
 </span><span id="ScalarField-41"><a href="#ScalarField-41"><span class="linenos">41</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">clone</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="ScalarField-42"><a href="#ScalarField-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns an instance with the same dimensionality and same halo size as the argument</span>
-</span><span id="ScalarField-43"><a href="#ScalarField-43"><span class="linenos">43</span></a><span class="sd">        optionally with a different data type&quot;&quot;&quot;</span>
+</span><span id="ScalarField-42"><a href="#ScalarField-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">"""returns an instance with the same dimensionality and same halo size as the argument</span>
+</span><span id="ScalarField-43"><a href="#ScalarField-43"><span class="linenos">43</span></a><span class="sd">        optionally with a different data type"""</span>
 </span><span id="ScalarField-44"><a href="#ScalarField-44"><span class="linenos">44</span></a>        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="ow">or</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span>
 </span><span id="ScalarField-45"><a href="#ScalarField-45"><span class="linenos">45</span></a>        <span class="c1"># note: copy=False is OK as the ctor anyhow copies the data to an array with halo</span>
 </span><span id="ScalarField-46"><a href="#ScalarField-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span>
@@ -215,14 +215,14 @@
 </span><span id="ScalarField-48"><a href="#ScalarField-48"><span class="linenos">48</span></a>        <span class="p">)</span>
 </span><span id="ScalarField-49"><a href="#ScalarField-49"><span class="linenos">49</span></a>
 </span><span id="ScalarField-50"><a href="#ScalarField-50"><span class="linenos">50</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>  <span class="c1"># note: actually a view is returned</span>
-</span><span id="ScalarField-51"><a href="#ScalarField-51"><span class="linenos">51</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a view (not a copy) of the field data excluding halo&quot;&quot;&quot;</span>
+</span><span id="ScalarField-51"><a href="#ScalarField-51"><span class="linenos">51</span></a><span class="w">        </span><span class="sd">"""returns a view (not a copy) of the field data excluding halo"""</span>
 </span><span id="ScalarField-52"><a href="#ScalarField-52"><span class="linenos">52</span></a>        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">]</span>
 </span><span id="ScalarField-53"><a href="#ScalarField-53"><span class="linenos">53</span></a>        <span class="k">return</span> <span class="n">results</span>
 </span><span id="ScalarField-54"><a href="#ScalarField-54"><span class="linenos">54</span></a>
 </span><span id="ScalarField-55"><a href="#ScalarField-55"><span class="linenos">55</span></a>    <span class="nd">@staticmethod</span>
 </span><span id="ScalarField-56"><a href="#ScalarField-56"><span class="linenos">56</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_null</span><span class="p">(</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="ScalarField-57"><a href="#ScalarField-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a scalar field instance with no allocated data storage,</span>
-</span><span id="ScalarField-58"><a href="#ScalarField-58"><span class="linenos">58</span></a><span class="sd">        see `Field._make_null` other properties of the returned field&quot;&quot;&quot;</span>
+</span><span id="ScalarField-57"><a href="#ScalarField-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">"""returns a scalar field instance with no allocated data storage,</span>
+</span><span id="ScalarField-58"><a href="#ScalarField-58"><span class="linenos">58</span></a><span class="sd">        see `Field._make_null` other properties of the returned field"""</span>
 </span><span id="ScalarField-59"><a href="#ScalarField-59"><span class="linenos">59</span></a>        <span class="k">return</span> <span class="n">Field</span><span class="o">.</span><span class="n">_make_null</span><span class="p">(</span>
 </span><span id="ScalarField-60"><a href="#ScalarField-60"><span class="linenos">60</span></a>            <span class="n">ScalarField</span><span class="p">(</span>
 </span><span id="ScalarField-61"><a href="#ScalarField-61"><span class="linenos">61</span></a>                <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_dims</span><span class="p">),</span>
@@ -254,7 +254,7 @@
 </span><span id="ScalarField.__init__-21"><a href="#ScalarField.__init__-21"><span class="linenos">21</span></a>            <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
 </span><span id="ScalarField.__init__-22"><a href="#ScalarField.__init__-22"><span class="linenos">22</span></a>            <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
 </span><span id="ScalarField.__init__-23"><a href="#ScalarField.__init__-23"><span class="linenos">23</span></a>            <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-</span><span id="ScalarField.__init__-24"><a href="#ScalarField.__init__-24"><span class="linenos">24</span></a>            <span class="n">fill_halos_name</span><span class="o">=</span><span class="s2">&quot;fill_halos_scalar&quot;</span><span class="p">,</span>
+</span><span id="ScalarField.__init__-24"><a href="#ScalarField.__init__-24"><span class="linenos">24</span></a>            <span class="n">fill_halos_name</span><span class="o">=</span><span class="s2">"fill_halos_scalar"</span><span class="p">,</span>
 </span><span id="ScalarField.__init__-25"><a href="#ScalarField.__init__-25"><span class="linenos">25</span></a>        <span class="p">)</span>
 </span><span id="ScalarField.__init__-26"><a href="#ScalarField.__init__-26"><span class="linenos">26</span></a>
 </span><span id="ScalarField.__init__-27"><a href="#ScalarField.__init__-27"><span class="linenos">27</span></a>        <span class="k">for</span> <span class="n">dim_length</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
@@ -311,8 +311,8 @@
     <a class="headerlink" href="#ScalarField.clone"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="ScalarField.clone-40"><a href="#ScalarField.clone-40"><span class="linenos">40</span></a>    <span class="nd">@staticmethod</span>
 </span><span id="ScalarField.clone-41"><a href="#ScalarField.clone-41"><span class="linenos">41</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">clone</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="ScalarField.clone-42"><a href="#ScalarField.clone-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns an instance with the same dimensionality and same halo size as the argument</span>
-</span><span id="ScalarField.clone-43"><a href="#ScalarField.clone-43"><span class="linenos">43</span></a><span class="sd">        optionally with a different data type&quot;&quot;&quot;</span>
+</span><span id="ScalarField.clone-42"><a href="#ScalarField.clone-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">"""returns an instance with the same dimensionality and same halo size as the argument</span>
+</span><span id="ScalarField.clone-43"><a href="#ScalarField.clone-43"><span class="linenos">43</span></a><span class="sd">        optionally with a different data type"""</span>
 </span><span id="ScalarField.clone-44"><a href="#ScalarField.clone-44"><span class="linenos">44</span></a>        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="ow">or</span> <span class="n">field</span><span class="o">.</span><span class="n">dtype</span>
 </span><span id="ScalarField.clone-45"><a href="#ScalarField.clone-45"><span class="linenos">45</span></a>        <span class="c1"># note: copy=False is OK as the ctor anyhow copies the data to an array with halo</span>
 </span><span id="ScalarField.clone-46"><a href="#ScalarField.clone-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span>
@@ -339,7 +339,7 @@ optionally with a different data type</p>
     </div>
     <a class="headerlink" href="#ScalarField.get"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="ScalarField.get-50"><a href="#ScalarField.get-50"><span class="linenos">50</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>  <span class="c1"># note: actually a view is returned</span>
-</span><span id="ScalarField.get-51"><a href="#ScalarField.get-51"><span class="linenos">51</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a view (not a copy) of the field data excluding halo&quot;&quot;&quot;</span>
+</span><span id="ScalarField.get-51"><a href="#ScalarField.get-51"><span class="linenos">51</span></a><span class="w">        </span><span class="sd">"""returns a view (not a copy) of the field data excluding halo"""</span>
 </span><span id="ScalarField.get-52"><a href="#ScalarField.get-52"><span class="linenos">52</span></a>        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">]</span>
 </span><span id="ScalarField.get-53"><a href="#ScalarField.get-53"><span class="linenos">53</span></a>        <span class="k">return</span> <span class="n">results</span>
 </span></pre></div>
@@ -364,8 +364,8 @@ optionally with a different data type</p>
     <a class="headerlink" href="#ScalarField.make_null"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="ScalarField.make_null-55"><a href="#ScalarField.make_null-55"><span class="linenos">55</span></a>    <span class="nd">@staticmethod</span>
 </span><span id="ScalarField.make_null-56"><a href="#ScalarField.make_null-56"><span class="linenos">56</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_null</span><span class="p">(</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">traversals</span><span class="p">):</span>
-</span><span id="ScalarField.make_null-57"><a href="#ScalarField.make_null-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a scalar field instance with no allocated data storage,</span>
-</span><span id="ScalarField.make_null-58"><a href="#ScalarField.make_null-58"><span class="linenos">58</span></a><span class="sd">        see `Field._make_null` other properties of the returned field&quot;&quot;&quot;</span>
+</span><span id="ScalarField.make_null-57"><a href="#ScalarField.make_null-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">"""returns a scalar field instance with no allocated data storage,</span>
+</span><span id="ScalarField.make_null-58"><a href="#ScalarField.make_null-58"><span class="linenos">58</span></a><span class="sd">        see `Field._make_null` other properties of the returned field"""</span>
 </span><span id="ScalarField.make_null-59"><a href="#ScalarField.make_null-59"><span class="linenos">59</span></a>        <span class="k">return</span> <span class="n">Field</span><span class="o">.</span><span class="n">_make_null</span><span class="p">(</span>
 </span><span id="ScalarField.make_null-60"><a href="#ScalarField.make_null-60"><span class="linenos">60</span></a>            <span class="n">ScalarField</span><span class="p">(</span>
 </span><span id="ScalarField.make_null-61"><a href="#ScalarField.make_null-61"><span class="linenos">61</span></a>                <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_dims</span><span class="p">),</span>

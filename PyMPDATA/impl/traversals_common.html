@@ -84,7 +84,7 @@
 
                         <label class="view-source-button" for="mod-traversals_common-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;commons for scalar and vector field traversals&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""commons for scalar and vector field traversals"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="c1"># pylint: disable=too-many-arguments,line-too-long,unused-argument</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
@@ -93,7 +93,7 @@
 </span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_common</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">,</span> <span class="n">spanner</span><span class="p">,</span> <span class="n">chunker</span><span class="p">):</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns Numba-compiled callable producing common parameters&quot;&quot;&quot;</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="w">    </span><span class="sd">"""returns Numba-compiled callable producing common parameters"""</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">jit_flags</span><span class="p">)</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">common</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">thread_id</span><span class="p">):</span>
@@ -107,7 +107,7 @@
 </span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
 </span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_fill_halos_loop</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">,</span> <span class="n">set_value</span><span class="p">,</span> <span class="n">fill_halos</span><span class="p">):</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns Numba-compiled halo-filling callable&quot;&quot;&quot;</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="w">    </span><span class="sd">"""returns Numba-compiled halo-filling callable"""</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
 </span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">jit_flags</span><span class="p">)</span>
 </span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_halos_loop</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">i_rng</span><span class="p">,</span> <span class="n">j_rng</span><span class="p">,</span> <span class="n">k_rng</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">sign</span><span class="p">):</span>
@@ -123,7 +123,7 @@
 </span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_fill_halos_loop_vector</span><span class="p">(</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="n">jit_flags</span><span class="p">,</span> <span class="n">set_value</span><span class="p">,</span> <span class="n">fill_halos_parallel</span><span class="p">,</span> <span class="n">fill_halos_normal</span><span class="p">,</span> <span class="n">dimension_index</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="p">):</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns Numba-compiled halo-filling callable&quot;&quot;&quot;</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="w">    </span><span class="sd">"""returns Numba-compiled halo-filling callable"""</span>
 </span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
 </span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">jit_flags</span><span class="p">)</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_halos_loop_vector</span><span class="p">(</span>
@@ -164,7 +164,7 @@
     </div>
     <a class="headerlink" href="#make_common"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_common-10"><a href="#make_common-10"><span class="linenos">10</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_common</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">,</span> <span class="n">spanner</span><span class="p">,</span> <span class="n">chunker</span><span class="p">):</span>
-</span><span id="make_common-11"><a href="#make_common-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns Numba-compiled callable producing common parameters&quot;&quot;&quot;</span>
+</span><span id="make_common-11"><a href="#make_common-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">"""returns Numba-compiled callable producing common parameters"""</span>
 </span><span id="make_common-12"><a href="#make_common-12"><span class="linenos">12</span></a>
 </span><span id="make_common-13"><a href="#make_common-13"><span class="linenos">13</span></a>    <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">jit_flags</span><span class="p">)</span>
 </span><span id="make_common-14"><a href="#make_common-14"><span class="linenos">14</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">common</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">thread_id</span><span class="p">):</span>
@@ -195,7 +195,7 @@
     </div>
     <a class="headerlink" href="#make_fill_halos_loop"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_fill_halos_loop-24"><a href="#make_fill_halos_loop-24"><span class="linenos">24</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_fill_halos_loop</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">,</span> <span class="n">set_value</span><span class="p">,</span> <span class="n">fill_halos</span><span class="p">):</span>
-</span><span id="make_fill_halos_loop-25"><a href="#make_fill_halos_loop-25"><span class="linenos">25</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns Numba-compiled halo-filling callable&quot;&quot;&quot;</span>
+</span><span id="make_fill_halos_loop-25"><a href="#make_fill_halos_loop-25"><span class="linenos">25</span></a><span class="w">    </span><span class="sd">"""returns Numba-compiled halo-filling callable"""</span>
 </span><span id="make_fill_halos_loop-26"><a href="#make_fill_halos_loop-26"><span class="linenos">26</span></a>
 </span><span id="make_fill_halos_loop-27"><a href="#make_fill_halos_loop-27"><span class="linenos">27</span></a>    <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">jit_flags</span><span class="p">)</span>
 </span><span id="make_fill_halos_loop-28"><a href="#make_fill_halos_loop-28"><span class="linenos">28</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_halos_loop</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">i_rng</span><span class="p">,</span> <span class="n">j_rng</span><span class="p">,</span> <span class="n">k_rng</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">sign</span><span class="p">):</span>
@@ -228,7 +228,7 @@
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_fill_halos_loop_vector-38"><a href="#make_fill_halos_loop_vector-38"><span class="linenos">38</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_fill_halos_loop_vector</span><span class="p">(</span>
 </span><span id="make_fill_halos_loop_vector-39"><a href="#make_fill_halos_loop_vector-39"><span class="linenos">39</span></a>    <span class="n">jit_flags</span><span class="p">,</span> <span class="n">set_value</span><span class="p">,</span> <span class="n">fill_halos_parallel</span><span class="p">,</span> <span class="n">fill_halos_normal</span><span class="p">,</span> <span class="n">dimension_index</span>
 </span><span id="make_fill_halos_loop_vector-40"><a href="#make_fill_halos_loop_vector-40"><span class="linenos">40</span></a><span class="p">):</span>
-</span><span id="make_fill_halos_loop_vector-41"><a href="#make_fill_halos_loop_vector-41"><span class="linenos">41</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns Numba-compiled halo-filling callable&quot;&quot;&quot;</span>
+</span><span id="make_fill_halos_loop_vector-41"><a href="#make_fill_halos_loop_vector-41"><span class="linenos">41</span></a><span class="w">    </span><span class="sd">"""returns Numba-compiled halo-filling callable"""</span>
 </span><span id="make_fill_halos_loop_vector-42"><a href="#make_fill_halos_loop_vector-42"><span class="linenos">42</span></a>
 </span><span id="make_fill_halos_loop_vector-43"><a href="#make_fill_halos_loop_vector-43"><span class="linenos">43</span></a>    <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">jit_flags</span><span class="p">)</span>
 </span><span id="make_fill_halos_loop_vector-44"><a href="#make_fill_halos_loop_vector-44"><span class="linenos">44</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_halos_loop_vector</span><span class="p">(</span>

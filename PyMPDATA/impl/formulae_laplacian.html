@@ -78,7 +78,7 @@
 
                         <label class="view-source-button" for="mod-formulae_laplacian-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;logic for handling the Fickian term by modifying physical velocity&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""logic for handling the Fickian term by modifying physical velocity"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
@@ -88,7 +88,7 @@
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_laplacian</span><span class="p">(</span><span class="n">non_unit_g_factor</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">:</span> <span class="n">Traversals</span><span class="p">):</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">"""returns njit-ted function for use with given traversals"""</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span><span class="p">:</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -158,7 +158,7 @@
     </div>
     <a class="headerlink" href="#make_laplacian"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_laplacian-11"><a href="#make_laplacian-11"><span class="linenos">11</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_laplacian</span><span class="p">(</span><span class="n">non_unit_g_factor</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Options</span><span class="p">,</span> <span class="n">traversals</span><span class="p">:</span> <span class="n">Traversals</span><span class="p">):</span>
-</span><span id="make_laplacian-12"><a href="#make_laplacian-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns njit-ted function for use with given traversals&quot;&quot;&quot;</span>
+</span><span id="make_laplacian-12"><a href="#make_laplacian-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">"""returns njit-ted function for use with given traversals"""</span>
 </span><span id="make_laplacian-13"><a href="#make_laplacian-13"><span class="linenos">13</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">non_zero_mu_coeff</span><span class="p">:</span>
 </span><span id="make_laplacian-14"><a href="#make_laplacian-14"><span class="linenos">14</span></a>
 </span><span id="make_laplacian-15"><a href="#make_laplacian-15"><span class="linenos">15</span></a>        <span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="o">.</span><span class="n">jit_flags</span><span class="p">)</span>

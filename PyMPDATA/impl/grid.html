@@ -81,9 +81,9 @@
 
                         <label class="view-source-button" for="mod-grid-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">static (extents known to JIT) and dynamic (run-time extents) grid handling logic</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">"""</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
 </span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
@@ -92,8 +92,8 @@
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_chunk</span><span class="p">(</span><span class="n">span</span><span class="p">,</span> <span class="n">n_threads</span><span class="p">,</span> <span class="n">jit_flags</span><span class="p">):</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns an njit-ted function which returns the subdomain extent for a</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    given thread, for static grid size no calculations are done at run-time&quot;&quot;&quot;</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">"""returns an njit-ted function which returns the subdomain extent for a</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    given thread, for static grid size no calculations are done at run-time"""</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="n">static</span> <span class="o">=</span> <span class="n">span</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="n">subdomain</span> <span class="o">=</span> <span class="n">make_subdomain</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -115,8 +115,8 @@
 </span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
 </span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
 </span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_domain</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">jit_flags</span><span class="p">):</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns an njit-ted function which, for static grids, returns a compile-time-constant</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">    grid size, and otherwise returns the grid size encoded in the meta tuple&quot;&quot;&quot;</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">"""returns an njit-ted function which, for static grids, returns a compile-time-constant</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">    grid size, and otherwise returns the grid size encoded in the meta tuple"""</span>
 </span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="n">static</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="k">if</span> <span class="n">static</span><span class="p">:</span>
@@ -148,8 +148,8 @@
     </div>
     <a class="headerlink" href="#make_chunk"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_chunk-12"><a href="#make_chunk-12"><span class="linenos">12</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_chunk</span><span class="p">(</span><span class="n">span</span><span class="p">,</span> <span class="n">n_threads</span><span class="p">,</span> <span class="n">jit_flags</span><span class="p">):</span>
-</span><span id="make_chunk-13"><a href="#make_chunk-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns an njit-ted function which returns the subdomain extent for a</span>
-</span><span id="make_chunk-14"><a href="#make_chunk-14"><span class="linenos">14</span></a><span class="sd">    given thread, for static grid size no calculations are done at run-time&quot;&quot;&quot;</span>
+</span><span id="make_chunk-13"><a href="#make_chunk-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">"""returns an njit-ted function which returns the subdomain extent for a</span>
+</span><span id="make_chunk-14"><a href="#make_chunk-14"><span class="linenos">14</span></a><span class="sd">    given thread, for static grid size no calculations are done at run-time"""</span>
 </span><span id="make_chunk-15"><a href="#make_chunk-15"><span class="linenos">15</span></a>    <span class="n">static</span> <span class="o">=</span> <span class="n">span</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </span><span id="make_chunk-16"><a href="#make_chunk-16"><span class="linenos">16</span></a>
 </span><span id="make_chunk-17"><a href="#make_chunk-17"><span class="linenos">17</span></a>    <span class="n">subdomain</span> <span class="o">=</span> <span class="n">make_subdomain</span><span class="p">(</span><span class="n">jit_flags</span><span class="p">)</span>
@@ -189,8 +189,8 @@ given thread, for static grid size no calculations are done at run-time</p>
     </div>
     <a class="headerlink" href="#make_domain"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="make_domain-35"><a href="#make_domain-35"><span class="linenos">35</span></a><span class="k">def</span><span class="w"> </span><span class="nf">make_domain</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">jit_flags</span><span class="p">):</span>
-</span><span id="make_domain-36"><a href="#make_domain-36"><span class="linenos">36</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;returns an njit-ted function which, for static grids, returns a compile-time-constant</span>
-</span><span id="make_domain-37"><a href="#make_domain-37"><span class="linenos">37</span></a><span class="sd">    grid size, and otherwise returns the grid size encoded in the meta tuple&quot;&quot;&quot;</span>
+</span><span id="make_domain-36"><a href="#make_domain-36"><span class="linenos">36</span></a><span class="w">    </span><span class="sd">"""returns an njit-ted function which, for static grids, returns a compile-time-constant</span>
+</span><span id="make_domain-37"><a href="#make_domain-37"><span class="linenos">37</span></a><span class="sd">    grid size, and otherwise returns the grid size encoded in the meta tuple"""</span>
 </span><span id="make_domain-38"><a href="#make_domain-38"><span class="linenos">38</span></a>    <span class="n">static</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </span><span id="make_domain-39"><a href="#make_domain-39"><span class="linenos">39</span></a>
 </span><span id="make_domain-40"><a href="#make_domain-40"><span class="linenos">40</span></a>    <span class="k">if</span> <span class="n">static</span><span class="p">:</span>
