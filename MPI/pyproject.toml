@@ -33,7 +33,7 @@ dependencies = [
     "numba_mpi>=0.30",
     "PyMPDATA",
     "PyMPDATA-examples",
-    "mpi4py==4.0.3",
+    "mpi4py==4.1",
     "h5py",
 ]
 dynamic = ["version"]
