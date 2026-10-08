@@ -135,7 +135,10 @@ class Options:
 
     @property
     def dynamic_advector(self) -> bool:
-        """flag enabling (todo desc)"""
+        """flag allocating and exposing additional scalar_field objects
+        for use in calculating the advancement of the advector via
+        the ante_step solver hook
+        """
         return self._values["dynamic_advector"]
 
     @property
