@@ -1,21 +1,21 @@
 files: '.py|.json'
 exclude: '.git'
-default_stages: [commit]
+default_stages: [pre-commit]
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 26.10.1
     hooks:
       - id: black
 
   - repo: https://github.com/timothycrosley/isort
-    rev: 6.0.0
+    rev: 9.0.2
     hooks:
       - id: isort
         args: ["--profile", "black"]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -23,8 +23,8 @@ repos:
       - id: check-json
         files: '.json'
 
-  - repo: https://github.com/AgnieszkaZaba/devops_tests
-    rev: badges-hook
+  - repo: https://github.com/open-atmos/devops_tests
+    rev: v0.0.3
     hooks:
       - id: check-notebook-open-atmos-structure
         name: check notebook has open-atmos structure
