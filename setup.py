@@ -28,7 +28,6 @@ setup(
         "numba"
         + (
             {
-                10: "<0.57.0",
                 11: "==0.58.1",
                 12: "==0.59.1",
                 13: "==0.61.2",
@@ -39,8 +38,7 @@ setup(
         "numpy"
         + (
             {
-                10: "<1.24",
-                11: "==1.24.4",
+                11: "==1.26.4",
                 12: "==1.26.4",
                 13: "==2.2.5",
             }[sys.version_info.minor]
@@ -68,7 +66,7 @@ setup(
             "jupyter-core" + ("<5.0.0" if CI else ""),
             "jupyter_client" + ("==8.6.3" if CI else ""),
             "ipywidgets" + ("==8.1.7" if CI else ""),
-            "ipykernel" + ("==7.0.0a1" if CI else ""),
+            "ipykernel" + ("==7.0.1" if CI else ""),
             "ghapi",
             "pytest",
             "pytest-benchmark",
