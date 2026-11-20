@@ -11,11 +11,7 @@ from setuptools import find_packages, setup
 def get_long_description():
     """returns contents of README.md file"""
     with open("README.md", "r", encoding="utf8") as file:
-        long_description = file.read()
-        long_description = long_description.replace(
-            "pympdata_logo.svg", "pympdata_logo.png"
-        )
-    return long_description
+        return file.read()
 
 
 CI = "CI" in os.environ
